@@ -222,7 +222,7 @@ subprojects {
         ballerinaStdLibs "org.ballerinalang:auth-ballerina:${stdlibAuthVersion}"
         ballerinaStdLibs "org.ballerinalang:http-ballerina:${stdlibHttpVersion}"
 
-        externalJars (group: 'oracledb', name: 'oracledb-connector-java', version: "${oracleDBDriverVersion}") {
+        externalJars (group: 'com.oracle.database.jdbc', name: 'ojdbc10', version: "${oracleDBDriverVersion}") {
             transitive = false
         }
     }
