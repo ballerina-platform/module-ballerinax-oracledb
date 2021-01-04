@@ -11,7 +11,7 @@ plugins {
     id "com.gradle.enterprise" version "3.2"
 }
 
-rootProject.name = 'module-ballerinax-oracledb'
+rootProject.name = 'ballerina-oracledb'
 include(':build-config:checkstyle')
 include ':oracledb-native', ':oracledb-ballerina'
 

@@ -28,7 +28,7 @@ dependencies {
         transitive = false
     }
     compile project(':oracledb-native')
- }
+}
 
 clean {
     delete "$project.projectDir/target"
