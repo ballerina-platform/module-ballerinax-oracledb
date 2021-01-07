@@ -19,7 +19,6 @@ import ballerina/java;
 import ballerina/sql;
 
 public client class Client{
-    *sql:Client;
 
     # Initialize Oracle Client.
     #
@@ -46,7 +45,7 @@ public client class Client{
             password: password,
             host: host,
             port: port,
-            database: database
+            database: database,
             options: options,
             connectionPool: connectionPool
         };
@@ -79,10 +78,10 @@ public type SSLConfig record {|
 # + socketTimeoutInSeconds - Timeout duration for reading from a socket.
 public type Options record {|
    SSLConfig ssl?;
-   int loginTimeoutInSeconds?;
+   decimal loginTimeoutInSeconds?;
    boolean autoCommit?;
-   int connectTimeoutInSeconds?;
-   int socketTimeoutInSeconds?;
+   decimal connectTimeoutInSeconds?;
+   decimal socketTimeoutInSeconds?;
 |};
 
 # Client Configuration record for connection initialization

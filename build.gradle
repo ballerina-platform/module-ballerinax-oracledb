@@ -207,7 +207,7 @@ subprojects {
         ballerinaStdLibs group: 'org.ballerinalang', name: 'io-ballerina', version: "${stdlibIoVersion}"
         ballerinaStdLibs group: 'org.ballerinalang', name: 'time-ballerina', version: "${stdlibTimeVersion}"
         ballerinaStdLibs group: 'org.ballerinalang', name: 'stringutils-ballerina', version: "${stdlibStringUtilsVersion}"
-        ballerinaStdLibs group: 'org.ballerinalang', name: 'system-ballerina', version: "${stdlibSystemVersion}"
+        ballerinaStdLibs group: 'org.ballerinalang', name: 'os-ballerina', version: "${stdlibOsVersion}"
         ballerinaStdLibs group: 'org.ballerinalang', name: 'runtime-ballerina', version: "${stdlibRuntimeVersion}"
         ballerinaStdLibs group: 'org.ballerinalang', name: 'crypto-ballerina', version: "${stdlibCryptoVersion}"
         ballerinaStdLibs group: 'org.ballerinalang', name: 'log-ballerina', version: "${stdlibLogVersion}"

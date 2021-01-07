@@ -18,12 +18,14 @@
 
 package org.ballerinalang.oracledb;
 
+import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import org.ballerinalang.sql.datasource.SQLDatasource;
 import org.ballerinalang.sql.utils.ClientUtils;
 
+import java.io.Console;
 import java.util.Properties;
 
 /**
@@ -35,10 +37,11 @@ public class NativeImpl {
             BObject client, BMap<BString, Object> clientConfig, BMap<BString, Object> globalConnPool
     ) {
 
-        BString host = clientConfig.getStringValue(Constants.ClientConfiguration.HOST);
+        String host = clientConfig.getStringValue(Constants.ClientConfiguration.HOST).getValue();
         int port = clientConfig.getIntValue(Constants.ClientConfiguration.PORT).intValue();
+        String database = clientConfig.getStringValue(Constants.ClientConfiguration.DATABASE).getValue();
 
-        String url = Constants.DRIVER + host + ":" + port;
+        String url = Constants.DRIVER + host + ":" + Integer.toString(port) + "/" + database;
 
         String user = clientConfig.getStringValue(Constants.ClientConfiguration.USER).getValue();
         String password = clientConfig.getStringValue(Constants.ClientConfiguration.PASSWORD).getValue();
@@ -66,9 +69,7 @@ public class NativeImpl {
                 .setConnectionPool(connectionPool, globalConnPool)
                 .setPoolProperties(poolProperties);
 
-        // Object x = ClientUtils.createClient(client, sqlDatasourceParams);
-        return sqlDatasourceParams;
-
+        return ClientUtils.createClient(client, sqlDatasourceParams);
     }
 
     public static Object close(BObject client) {

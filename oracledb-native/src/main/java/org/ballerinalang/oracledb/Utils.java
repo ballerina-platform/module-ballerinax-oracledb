@@ -18,13 +18,13 @@ class Utils {
 
         Properties connProperties = setConnectionProperties(clientOptions);
         if (connProperties.size() > 0) {
-            options.put(Constants.DatabaseProps.SET_CONN_PROPERTIES, connProperties);
+            options.put(Constants.DatabaseProps.CONN_PROPERTIES, connProperties);
         }
 
         return options;
     }
 
-    static long getTimeoutInMilliSeconds(Object secondsDecimal) {
+    private static long getTimeoutInMilliSeconds(Object secondsDecimal) {
         if (secondsDecimal instanceof BDecimal) {
             BDecimal timeoutSec = (BDecimal) secondsDecimal;
             if (timeoutSec.floatValue() > 0) {
@@ -34,11 +34,10 @@ class Utils {
         return -1;
     }
 
-    static Properties setConnectionProperties(BMap clientOptions) {
-        // TODO: add SSL properties
+    private static Properties setConnectionProperties(BMap clientOptions) {
         Properties connProperties = new Properties();
 
-        long connectTimeout = getTimeoutInMilliSeconds(clientOptions.get(Constants.Options.LOGIN_TIMEOUT_SECONDS));
+        long connectTimeout = getTimeoutInMilliSeconds(clientOptions.get(Constants.Options.CONNECT_TIMEOUT_SECONDS));
         if (connectTimeout > 0) {
             connProperties.put(Constants.DatabaseProps.ConnProperties.CONNECT_TIMEOUT, connectTimeout);
         }
@@ -52,6 +51,8 @@ class Utils {
         if (autocommit != null) {
             connProperties.put(Constants.DatabaseProps.ConnProperties.AUTO_COMMIT, autocommit);
         }
+
+        setSSLConProperties(clientOptions, connProperties);
 
         return connProperties;
     }
@@ -73,4 +74,37 @@ class Utils {
         }
         return poolProperties;
     }
+
+    private static void setSSLConProperties(BMap sslConfig, Properties connProperties) {
+        if (sslConfig != null) {
+
+            BMap keyStore = sslConfig.getMapValue(Constants.SSLConfig.KEYSTORE);
+            if (keyStore != null) {
+                connProperties.put(Constants.DatabaseProps.ConnProperties.KEYSTORE, keyStore
+                        .getStringValue(Constants.SSLConfig.CryptoKeyStoreRecord.PATH_FIELD));
+                connProperties.put(Constants.DatabaseProps.ConnProperties.KEYSTORE_PASSWORD, keyStore
+                        .getStringValue(Constants.SSLConfig.CryptoKeyStoreRecord.PASSWORD_FIELD));
+            }
+
+            BString keyStoreType = sslConfig.getStringValue(Constants.SSLConfig.KEYSTORE_TYPE);
+            if (keyStoreType != null) {
+                connProperties.put(Constants.DatabaseProps.ConnProperties.KEYSTORE_TYPE, keyStoreType.getValue());
+            }
+
+            BMap trustStore = sslConfig.getMapValue(Constants.SSLConfig.TRUSTSTORE);
+            if (trustStore != null) {
+                connProperties.put(Constants.DatabaseProps.ConnProperties.TRUSTSTORE, trustStore
+                        .getStringValue(Constants.SSLConfig.CryptoTrustStoreRecord.PATH_FIELD));
+                connProperties.put(Constants.DatabaseProps.ConnProperties.TRUSTSTORE_PASSWORD, trustStore
+                        .getStringValue(Constants.SSLConfig.CryptoTrustStoreRecord.PASSWORD_FIELD));
+            }
+
+            BString trustStoreType = sslConfig.getStringValue(Constants.SSLConfig.TRUSTSTORE_TYPE);
+            if (trustStoreType != null) {
+                connProperties.put(Constants.DatabaseProps.ConnProperties.TRUSTSTORE_TYPE, trustStoreType.getValue());
+            }
+
+        }
+    }
+
 }

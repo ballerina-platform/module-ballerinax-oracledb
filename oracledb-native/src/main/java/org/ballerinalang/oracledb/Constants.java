@@ -29,6 +29,7 @@ final class Constants {
         static final BString PORT = StringUtils.fromString("port");
         static final BString USER = StringUtils.fromString("user");
         static final BString PASSWORD = StringUtils.fromString("password");
+        static final BString DATABASE = StringUtils.fromString("database");
         static final BString OPTIONS = StringUtils.fromString("options");
         static final BString CONNECTION_POOL_OPTIONS = StringUtils.fromString("connectionPool");
     }
@@ -41,9 +42,26 @@ final class Constants {
         static final BString SOCKET_TIMEOUT_SECONDS = StringUtils.fromString("socketTimeoutInSeconds");
     }
 
+    static final class SSLConfig {
+        static final BString KEYSTORE = StringUtils.fromString("keyStore");
+        static final BString TRUSTSTORE = StringUtils.fromString("trustStore");
+        static final BString KEYSTORE_TYPE = StringUtils.fromString("keyStoreType");
+        static final BString TRUSTSTORE_TYPE = StringUtils.fromString("trustStoreType");
+
+        static final class CryptoKeyStoreRecord {
+            static final BString PATH_FIELD = StringUtils.fromString("path");
+            static final BString PASSWORD_FIELD = StringUtils.fromString("password");
+        }
+
+        static final class CryptoTrustStoreRecord {
+            static final BString PATH_FIELD = StringUtils.fromString("path");
+            static final BString PASSWORD_FIELD = StringUtils.fromString("password");
+        }
+    }
+
     static final class DatabaseProps {
         static final BString LOGIN_TIMEOUT = StringUtils.fromString("loginTimeout");
-        static final BString SET_CONN_PROPERTIES = StringUtils.fromString("setConnectionProperties");
+        static final BString CONN_PROPERTIES = StringUtils.fromString("connectionProperties");
 
         static final class ConnProperties {
             static final BString CONNECT_TIMEOUT = StringUtils.fromString("oracle.net.CONNECT_TIMEOUT");
