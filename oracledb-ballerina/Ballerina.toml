@@ -1,31 +1,30 @@
 [package]
 org = "ballerinax"
 name = "oracledb"
-version = "@toml.version@"
+version = "0.1.0"
 
 [[dependency]]
 org = "ballerina"
 name = "sql"
-version = "@stdlib.sql.version@"
+version = "0.5.4"
 
 [[dependency]]
 org = "ballerina"
 name = "crypto"
-version = "@stdlib.crypto.version@"
-
+version = "1.0.5"
 
 [[platform.java11.dependency]]
-path = "../oracledb-native/build/libs/oracledb-native-@project.version@.jar"
+path = "../oracledb-native/build/libs/oracledb-native-0.1.0-SNAPSHOT.jar"
 groupId = "org.ballerinalang"
 artifactId = "oracledb-native"
-version = "@project.version@"
+version = "0.1.0-SNAPSHOT"
 
 
 [[platform.java11.dependency]]
-path = "@project.path@/repo/balo/ballerina/sql/@stdlib.sql.version@/platform/java11/sql-native-@stdlib.sql.native.version@.jar"
+path = "/home/gayal/Desktop/Project/Implementation/module-ballerinax-oracledb/oracledb-ballerina/build/target/jballerina-tools-2.0.0-Preview9-SNAPSHOT/repo/balo/ballerina/sql/0.5.4/platform/java11/sql-native-0.5.4-SNAPSHOT.jar"
 groupId = "org.ballerinalang"
 artifactId = "ballerina-sql"
-version = "@stdlib.sql.native.version@"
+version = "0.5.4-SNAPSHOT"
 
 
 [[platform.java11.dependency]]
