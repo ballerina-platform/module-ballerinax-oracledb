@@ -18,14 +18,13 @@
 
 package org.ballerinalang.oracledb;
 
-import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
+import io.ballerina.runtime.api.values.BTypedesc;
 import org.ballerinalang.sql.datasource.SQLDatasource;
-import org.ballerinalang.sql.utils.ClientUtils;
+import org.ballerinalang.sql.nativeimpl.ClientProcessor;
 
-import java.io.Console;
 import java.util.Properties;
 
 /**
@@ -33,6 +32,13 @@ import java.util.Properties;
  */
 public class NativeImpl {
 
+    /**
+     * Creates the database client.
+     * @param client ballerina client instance
+     * @param clientConfig connection configurations from client
+     * @param globalConnPool global connection pool
+     * @return connection errors if there is any
+     */
     public static Object createClient(
             BObject client, BMap<BString, Object> clientConfig, BMap<BString, Object> globalConnPool
     ) {
@@ -46,8 +52,7 @@ public class NativeImpl {
         String user = clientConfig.getStringValue(Constants.ClientConfiguration.USER).getValue();
         String password = clientConfig.getStringValue(Constants.ClientConfiguration.PASSWORD).getValue();
 
-        BMap options = clientConfig.getMapValue(
-            Constants.ClientConfiguration.OPTIONS);
+        BMap options = clientConfig.getMapValue(Constants.ClientConfiguration.OPTIONS);
         BMap<BString, Object> datasourceOptions = null;
         Properties poolProperties = null;
 
@@ -69,10 +74,14 @@ public class NativeImpl {
                 .setConnectionPool(connectionPool, globalConnPool)
                 .setPoolProperties(poolProperties);
 
-        return ClientUtils.createClient(client, sqlDatasourceParams);
+        return ClientProcessor.createClient(client, sqlDatasourceParams);
     }
 
     public static Object close(BObject client) {
-        return ClientUtils.close(client);
+        return ClientProcessor.close(client);
+    }
+
+    public static void nextResult(BObject result, BTypedesc typeDesc){
+
     }
 }
