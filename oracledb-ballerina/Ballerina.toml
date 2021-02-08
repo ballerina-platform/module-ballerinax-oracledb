@@ -1,35 +1,26 @@
 [package]
 org = "ballerinax"
 name = "oracledb"
-version = "0.1.0"
+version = "@toml.version@"
 
-[[dependency]]
-org = "ballerina"
-name = "sql"
-version = "0.5.4"
-
-[[dependency]]
-org = "ballerina"
-name = "crypto"
-version = "1.0.5"
 
 [[platform.java11.dependency]]
-path = "../oracledb-native/build/libs/oracledb-native-0.1.0-SNAPSHOT.jar"
+path = "../oracledb-native/build/libs/oracledb-native-@project.version@.jar"
 groupId = "org.ballerinalang"
 artifactId = "oracledb-native"
-version = "0.1.0-SNAPSHOT"
+version = "@project.version@"
 
 
 [[platform.java11.dependency]]
-path = "/home/gayal/Desktop/Project/Implementation/module-ballerinax-oracledb/oracledb-ballerina/build/target/jballerina-tools-2.0.0-Preview9-SNAPSHOT/repo/balo/ballerina/sql/0.5.4/platform/java11/sql-native-0.5.4-SNAPSHOT.jar"
+path = "@project.path@/repo/balo/ballerina/sql/@stdlib.sql.version@/platform/java11/sql-native-@stdlib.sql.native.version@.jar"
 groupId = "org.ballerinalang"
 artifactId = "ballerina-sql"
-version = "0.5.4-SNAPSHOT"
+version = "@stdlib.sql.native.version@"
 
 
 [[platform.java11.dependency]]
-path = "./lib/ojdbc10.jar"
-artafactId = "ojdbc10"
+path = "./lib/ojdbc8-12.2.0.1.jar"
+artafactId = "ojdbc8"
 groupId = "com.oracle.database.jdbc"
 scope = "testOnly"
-version = "19.8.0.0"
+version = "12.2.0.1"

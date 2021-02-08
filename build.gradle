@@ -240,7 +240,7 @@ subprojects {
         ballerinaStdLibs "org.ballerinalang:encoding-ballerina:${stdlibEncodingVersion}"
         ballerinaStdLibs "org.ballerinalang:http-ballerina:${stdlibHttpVersion}"
 
-        externalJars (group: 'com.oracle.database.jdbc', name: 'ojdbc10', version: "${oracleDBDriverVersion}") {
+        externalJars (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
             transitive = false
         }
     }
