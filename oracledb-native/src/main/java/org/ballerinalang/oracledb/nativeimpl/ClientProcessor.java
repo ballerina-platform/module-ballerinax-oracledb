@@ -1,36 +1,41 @@
 /*
- *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- *  WSO2 Inc. licenses this file to you under the Apache License,
- *  Version 2.0 (the "License"); you may not use this file except
- *  in compliance with the License.
- *  You may obtain a copy of the License at
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
-package org.ballerinalang.oracledb;
+ package org.ballerinalang.oracledb.nativeimpl;
 
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BTypedesc;
+import org.ballerinalang.oracledb.Constants;
+import org.ballerinalang.oracledb.Utils;
 import org.ballerinalang.sql.datasource.SQLDatasource;
-import org.ballerinalang.sql.nativeimpl.ClientProcessor;
 
 import java.util.Properties;
 
 /**
- * Native Implementation of Client Initialization.
+ * This class contains the utility methods for the oracledb clients.
+ *
+ * @since 0.1.0
  */
-public class NativeImpl {
+public class ClientProcessor {
+
+    private ClientProcessor() {}
 
     /**
      * Creates the database client.
@@ -40,8 +45,7 @@ public class NativeImpl {
      * @return connection errors if there is any
      */
     public static Object createClient(
-            BObject client, BMap<BString, Object> clientConfig, BMap<BString, Object> globalConnPool
-    ) {
+            BObject client, BMap<BString, Object> clientConfig, BMap<BString, Object> globalConnPool) {
 
         String host = clientConfig.getStringValue(Constants.ClientConfiguration.HOST).getValue();
         int port = clientConfig.getIntValue(Constants.ClientConfiguration.PORT).intValue();
@@ -77,11 +81,14 @@ public class NativeImpl {
         return ClientProcessor.createClient(client, sqlDatasourceParams);
     }
 
+
+    public static void nextResult(BObject result, BTypedesc typeDesc) {
+        return sqlDatasourceParams;
+    }
+
     public static Object close(BObject client) {
-        return ClientProcessor.close(client);
+        return org.ballerinalang.sql.nativeimpl.ClientProcessor.close(client);
     }
 
-    public static void nextResult(BObject result, BTypedesc typeDesc){
-
-    }
 }
+
