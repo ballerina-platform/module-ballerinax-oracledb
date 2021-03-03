@@ -21,7 +21,6 @@
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
-import io.ballerina.runtime.api.values.BTypedesc;
 import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.oracledb.Utils;
 import org.ballerinalang.sql.datasource.SQLDatasource;

@@ -211,26 +211,3 @@ function close(Client oracledbClient) returns sql:Error? = @java:Method {
     'class: "org.ballerinalang.oracledb.nativeimpl.ClientProcessor"
 } external;
 
-function nativeQuery(Client sqlClient, string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? rowType)
-returns stream <record {}, sql:Error> = @java:Method {
-    'class: "org.ballerinalang.sql.nativeimpl.QueryProcessor"
-} external;
-
-function nativeExecute(Client sqlClient, string|sql:ParameterizedQuery sqlQuery)
-returns sql:ExecutionResult|sql:Error = @java:Method {
-    'class: "org.ballerinalang.sql.nativeimpl.ExecuteProcessor"
-} external;
-
-function nativeBatchExecute(Client sqlClient, sql:ParameterizedQuery[] sqlQueries)
-returns sql:ExecutionResult[]|sql:Error = @java:Method {
-    'class: "org.ballerinalang.sql.nativeimpl.ExecuteProcessor"
-} external;
-
-function nativeCall(Client sqlClient, string|sql:ParameterizedCallQuery sqlQuery, typedesc<record {}>[] rowTypes)
-returns sql:ProcedureCallResult|sql:Error = @java:Method {
-    'class: "org.ballerinalang.sql.nativeimpl.CallProcessor"
-} external;
-
-function close(Client oracledbClient) returns sql:Error? = @java:Method {
-    'class: "org.ballerinalang.oracledb.NativeImpl"
-} external;
