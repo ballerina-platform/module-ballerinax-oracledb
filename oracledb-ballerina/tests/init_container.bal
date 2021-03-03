@@ -14,11 +14,10 @@
 // under the License.
 
 
-// import ballerina/io;
-import ballerina/system;
+import ballerina/os;
 import ballerina/test;
 import ballerina/file;
-import ballerina/runtime;
+import ballerina/lang.runtime as runtime;
 
 string resourcePath = check file:getAbsolutePath("tests/resources");
 
@@ -31,18 +30,18 @@ string resourcePath = check file:getAbsolutePath("tests/resources");
 function beforeSuite() {
 
     // login to registory
-    system:Process process = checkpanic system:exec("docker", {}, resourcePath, "login", "container-registry.oracle.com");
+    os:Process process = checkpanic os:exec("docker", {}, resourcePath, "login", "container-registry.oracle.com");
     int exitCode = checkpanic process.waitForExit();
     test:assertExactEquals(exitCode, 0, "Docker login failed!");
     
     // run the dockerfile to create custom docker image
-    process = checkpanic system:exec("docker", {}, resourcePath, "build", "-t", "ballerina-oracledb", ".");
+    process = checkpanic os:exec("docker", {}, resourcePath, "build", "-t", "ballerina-oracledb", ".");
     exitCode = checkpanic process.waitForExit();
     test:assertExactEquals(exitCode, 0, "Docker image 'ballerina-oracledb' creation failed!");
     
     // build the docker container
     // docker run  -d -it --name oracle -p1521:1521 -v oracledata:/ORCL store/oracle/database-enterprise:12.2.0.1
-    process = checkpanic system:exec("docker", {}, resourcePath, 
+    process = checkpanic os:exec("docker", {}, resourcePath, 
                     "run", "--rm", "-d", "--name", "ballerina-oracledb", "-p", "1522:1521", "-t", "ballerina-oracledb");
     exitCode = checkpanic process.waitForExit();
     test:assertExactEquals(exitCode, 0, "Docker container 'ballerina-oracledb' creation failed!");
@@ -50,7 +49,7 @@ function beforeSuite() {
 
     // mount the database
     string command = "'source /home/oracle/.bashrc; sqlplus /nolog' && 'connect sys as sysdba;' && 'alter session set \"_ORACLE_SCRIPT\"=true;' && 'create user admin identified by password;' && 'GRANT CONNECT, RESOURCE, DBA TO admin/password;'";
-    process = checkpanic system:exec("docker", {}, resourcePath, "exec", "-it", "ballerina-oracledb", "bash", "-c", command);
+    process = checkpanic os:exec("docker", {}, resourcePath, "exec", "-it", "ballerina-oracledb", "bash", "-c", command);
     exitCode = checkpanic process.waitForExit();
     test:assertExactEquals(exitCode, 0, "Oracle database mounting to the container 'ballerina-oracledb' failed!");
     runtime:sleep(50000);
@@ -62,7 +61,7 @@ function beforeSuite() {
     // int counter = 0;
     // while(healthCheck > 0 && counter < 12) {
     //     runtime:sleep(10000);
-    //     process = checkpanic system:exec("docker", {}, resourcePath, 
+    //     process = checkpanic os:exec("docker", {}, resourcePath, 
     //                 "exec", "ballerina-oracledb", "mysqladmin", "ping", "-hlocalhost", "-uroot", "-pTest123#", "--silent");
     //     healthCheck = checkpanic process.waitForExit();
     //     counter = counter + 1;
@@ -73,7 +72,7 @@ function beforeSuite() {
 
 @test:AfterSuite {}
 function afterSuite() {
-    system:Process process = checkpanic system:exec("docker", {}, resourcePath, "stop", "ballerina-oracledb");
+    os:Process process = checkpanic os:exec("docker", {}, resourcePath, "stop", "ballerina-oracledb");
     int exitCode = checkpanic process.waitForExit();
     test:assertExactEquals(exitCode, 0, "Docker container 'ballerina-oracledb' stop failed!");
 }

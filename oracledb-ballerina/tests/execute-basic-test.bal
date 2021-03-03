@@ -33,7 +33,7 @@ function testCreateTable() {
 @test:Config{
     enable: true,
     groups:["execute","execute-basic"],
-    dependsOn: ["testCreateTable"]
+    dependsOn: [testCreateTable]
 }
 function testAlterTable() {
     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
@@ -46,7 +46,7 @@ function testAlterTable() {
 @test:Config{
     enable: true,
     groups:["execute","execute-basic"],
-    dependsOn: ["testAlterTable"]
+    dependsOn: [testAlterTable]
 }
 function testInsertTable() {
     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
@@ -62,7 +62,7 @@ function testInsertTable() {
 @test:Config{
     enable: true,
     groups:["execute","execute-basic"],
-    dependsOn: ["testInsertTable"]
+    dependsOn: [testInsertTable]
 }
 function testUpdateTable() {
     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
@@ -75,7 +75,7 @@ function testUpdateTable() {
 @test:Config{
     enable: true,
     groups:["execute","execute-basic"],
-    after: "testInsertTable"
+    after: testInsertTable
 }
 function testDropTable() {
     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
