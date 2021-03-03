@@ -234,14 +234,12 @@ subprojects {
 
         ballerinaStdLibs "org.ballerinalang:transaction-ballerina:${stdlibTransactionVersion}"
         ballerinaStdLibs "org.ballerinalang:task-ballerina:${stdlibTaskVersion}"
-        ballerinaStdLibs "org.ballerinalang:reflect-ballerina:${stdlibReflectVersion}"
         ballerinaStdLibs "org.ballerinalang:uuid-ballerina:${stdlibUuidVersion}"
         ballerinaStdLibs "org.ballerinalang:mime-ballerina:${stdlibMimeVersion}"
         ballerinaStdLibs "org.ballerinalang:cache-ballerina:${stdlibCacheVersion}"
         ballerinaStdLibs "org.ballerinalang:auth-ballerina:${stdlibAuthVersion}"
         ballerinaStdLibs "org.ballerinalang:jwt-ballerina:${stdlibJwtVersion}"
         ballerinaStdLibs "org.ballerinalang:oauth2-ballerina:${stdlibOAuth2Version}"
-        ballerinaStdLibs "org.ballerinalang:encoding-ballerina:${stdlibEncodingVersion}"
         ballerinaStdLibs "org.ballerinalang:http-ballerina:${stdlibHttpVersion}"
 
         externalJars (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {

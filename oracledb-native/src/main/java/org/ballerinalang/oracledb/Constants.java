@@ -33,8 +33,9 @@ public final class Constants {
         public static final BString PORT = StringUtils.fromString("port");
         public static final BString USER = StringUtils.fromString("user");
         public static final BString PASSWORD = StringUtils.fromString("password");
+        public static final BString DATABASE = StringUtils.fromString("database");
         public static final BString OPTIONS = StringUtils.fromString("options");
-        public static final BString CONNECTION_POOL_OPTIONS = StringUtils.fromString("connectionPool");
+        public static final BString CONNECTION_POOL_OPTIONS = StringUtils.fromString("connectionPool"); 
     }
 
     /**
@@ -70,7 +71,8 @@ public final class Constants {
      */
     public static final class DatabaseProps {
         public static final BString LOGIN_TIMEOUT = StringUtils.fromString("loginTimeout");
-        public static final BString SET_CONN_PROPERTIES = StringUtils.fromString("setConnectionProperties");
+        // public static final BString SET_CONN_PROPERTIES = StringUtils.fromString("setConnectionProperties");
+        static final BString CONN_PROPERTIES = StringUtils.fromString("connectionProperties");
 
         /**
          * Constants for oracle driver properties.
