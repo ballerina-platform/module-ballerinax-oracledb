@@ -15,7 +15,7 @@
 
 import ballerina/sql;
 import ballerina/test;
-// import ballerina/io;
+import ballerina/io;
 
 @test:Config{
     enable: true,
@@ -23,6 +23,7 @@ import ballerina/test;
 }
 function testCreateTable() {
     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+    io:println(oracledbClient);
     sql:ExecutionResult result = checkpanic oracledbClient->execute("CREATE TABLE TestExecuteTable(field NUMBER, field2 VARCHAR2(255))");
     checkpanic oracledbClient.close();
 

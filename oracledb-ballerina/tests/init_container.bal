@@ -14,25 +14,25 @@
 // under the License.
 
 
-import ballerina/os;
-import ballerina/test;
-import ballerina/file;
-import ballerina/lang.runtime as runtime;
+// import ballerina/os;
+// import ballerina/test;
+// import ballerina/file;
+// import ballerina/lang.runtime as runtime;
 
-string resourcePath = check file:getAbsolutePath("tests/resources");
+// string resourcePath = check file:getAbsolutePath("tests/resources");
 
 // string host = "localhost";
 // string user = "sysdba";
 // string password = "Oradoc_db1";
 // int port = 1521;
 
-@test:BeforeSuite
-function beforeSuite() {
+// @test:BeforeSuite
+// function beforeSuite() {
 
     // login to registory
-    os:Process process = checkpanic os:exec("docker", {}, resourcePath, "login", "container-registry.oracle.com");
-    int exitCode = checkpanic process.waitForExit();
-    test:assertExactEquals(exitCode, 0, "Docker login failed!");
+    // os:Process process = checkpanic os:exec("docker", {}, resourcePath, "login", "container-registry.oracle.com");
+    // int exitCode = checkpanic process.waitForExit();
+    // test:assertExactEquals(exitCode, 0, "Docker login failed!");
 
     //// run the dockerfile to create custom docker image
     //process = checkpanic os:exec("docker", {}, resourcePath, "build", "-t", "ballerina-oracledb", ".");
@@ -68,11 +68,11 @@ function beforeSuite() {
     // }
     // test:assertExactEquals(healthCheck, 0, "Docker container 'ballerina-oracledb' health test exceeded timeout!");
     // io:println("Docker container started.");
-}
+// }
 
-@test:AfterSuite {}
-function afterSuite() {
+// @test:AfterSuite {}
+// function afterSuite() {
     //os:Process process = checkpanic os:exec("docker", {}, resourcePath, "stop", "ballerina-oracledb");
     //int exitCode = checkpanic process.waitForExit();
     //test:assertExactEquals(exitCode, 0, "Docker container 'ballerina-oracledb' stop failed!");
-}
+// }

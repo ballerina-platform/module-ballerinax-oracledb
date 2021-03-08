@@ -20,6 +20,6 @@ final Options options = {
 
 final sql:ConnectionPool connectionPool = {
    maxOpenConnections: 5,
-   maxConnectionLifeTimeInSeconds: 2000.0,
+   maxConnectionLifeTime: 2000.0,
    minIdleConnections: 5
 };
