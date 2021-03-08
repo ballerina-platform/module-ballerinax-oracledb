@@ -49,20 +49,29 @@ public final class Constants {
         public static final BString SOCKET_TIMEOUT_SECONDS = StringUtils.fromString("socketTimeoutInSeconds");
     }
 
-    static final class SSLConfig {
-        static final BString KEYSTORE = StringUtils.fromString("keyStore");
-        static final BString TRUSTSTORE = StringUtils.fromString("trustStore");
-        static final BString KEYSTORE_TYPE = StringUtils.fromString("keyStoreType");
-        static final BString TRUSTSTORE_TYPE = StringUtils.fromString("trustStoreType");
+    /**
+     * Constants for configuring database SSL options.
+     */
+    public static final class SSLConfig {
+        public static final BString KEYSTORE = StringUtils.fromString("keyStore");
+        public static final BString TRUSTSTORE = StringUtils.fromString("trustStore");
+        public static final BString KEYSTORE_TYPE = StringUtils.fromString("keyStoreType");
+        public static final BString TRUSTSTORE_TYPE = StringUtils.fromString("trustStoreType");
 
-        static final class CryptoKeyStoreRecord {
-            static final BString PATH_FIELD = StringUtils.fromString("path");
-            static final BString PASSWORD_FIELD = StringUtils.fromString("password");
+        /**
+         * Constants for setting crypto keystore.
+         */
+        public static final class CryptoKeyStoreRecord {
+            public static final BString PATH_FIELD = StringUtils.fromString("path");
+            public static final BString PASSWORD_FIELD = StringUtils.fromString("password");
         }
 
-        static final class CryptoTrustStoreRecord {
-            static final BString PATH_FIELD = StringUtils.fromString("path");
-            static final BString PASSWORD_FIELD = StringUtils.fromString("password");
+        /**
+         * Constants for setting crypto truststore.
+         */
+        public static final class CryptoTrustStoreRecord {
+            public static final BString PATH_FIELD = StringUtils.fromString("path");
+            public static final BString PASSWORD_FIELD = StringUtils.fromString("password");
         }
     }
 
@@ -72,7 +81,7 @@ public final class Constants {
     public static final class DatabaseProps {
         public static final BString LOGIN_TIMEOUT = StringUtils.fromString("loginTimeout");
         // public static final BString SET_CONN_PROPERTIES = StringUtils.fromString("setConnectionProperties");
-        static final BString CONN_PROPERTIES = StringUtils.fromString("connectionProperties");
+        public static final BString CONN_PROPERTIES = StringUtils.fromString("connectionProperties");
 
         /**
          * Constants for oracle driver properties.

@@ -20,7 +20,7 @@ version = "@stdlib.sql.native.version@"
 
 [[platform.java11.dependency]]
 path = "./lib/ojdbc8-12.2.0.1.jar"
-artafactId = "ojdbc8"
+artifactId = "ojdbc8"
 groupId = "com.oracle.database.jdbc"
 scope = "testOnly"
 version = "12.2.0.1"

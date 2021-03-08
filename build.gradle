@@ -106,14 +106,6 @@ allprojects {
         }
 
         maven {
-            url 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-encoding'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
             url 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-oauth2'
             credentials {
                 username System.getenv("packageUser")
@@ -155,14 +147,6 @@ allprojects {
 
         maven {
             url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-file'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-reflect'
             credentials {
                 username System.getenv("packageUser")
                 password System.getenv("packagePAT")

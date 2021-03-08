@@ -7,3 +7,8 @@ version = "@stdlib.sql.version@"
 org = "ballerina"
 name = "crypto"
 version = "@stdlib.crypto.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "time"
+version = "@stdlib.time.version@"

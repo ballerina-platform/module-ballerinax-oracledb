@@ -12,9 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# pull the base image
-FROM container-registry.oracle.com/database/enterprise:12.2.0.1
+# Dockerfile using Instant Client Zips from OTN
 
+FROM oraclelinux:7-slim
+
+WORKDIR /opt/oracle
+
+RUN yum install -y wget unzip libaio && \
+    rm -rf /var/cache/yum
+RUN wget https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linuxx64.zip && \
+    unzip instantclient-basiclite-linuxx64.zip && \
+    rm -f instantclient-basiclite-linuxx64.zip && \
+    cd instantclient* && \
+    rm -f *jdbc* *occi* *mysql* *jar uidrvci genezi adrci && \
+    echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf && \
+    ldconfig
+
+
+# pull the base image
+# FROM container-registry.oracle.com/database/enterprise:12.2.0.1
+#
 # Pool test case
 COPY sql-scripts/pool/connection-pool-test-data.sql /docker-entrypoint-initdb.d/
 
@@ -38,12 +55,12 @@ COPY sql-scripts/transaction/local-transaction-test-data.sql /docker-entrypoint-
 COPY sql-scripts/transaction/xa-transaction-test-data-1.sql /docker-entrypoint-initdb.d/
 COPY sql-scripts/transaction/xa-transaction-test-data-2.sql /docker-entrypoint-initdb.d/
 
-# RUN mkdir -p /etc/ssl
-# COPY keystore/server/ /etc/ssl/
-# RUN chown -R mysql /etc/ssl
-
-COPY my.cnf /etc/
-
-# ENV MYSQL_ROOT_PASSWORD Test123#
-
-
+# # RUN mkdir -p /etc/ssl
+# # COPY keystore/server/ /etc/ssl/
+# # RUN chown -R mysql /etc/ssl
+#
+# COPY my.cnf /etc/
+#
+# # ENV MYSQL_ROOT_PASSWORD Test123#
+#
+#
