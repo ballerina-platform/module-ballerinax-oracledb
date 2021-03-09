@@ -1,15 +1,36 @@
-# module-ballerinax-oracledb
+Ballerina OracleDB Library
+===================
 
-Oracle Database Connector for Ballerina.
+  [![Build](https://github.com/ballerina-platform/module-ballerinax-oracledb/workflows/Build/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions?query=workflow%3ABuild)
+  [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-oracledb.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/commits/master)
+  [![Github issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-standard-library/module/oracledb.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-standard-library/labels/module%2Foracledb)
+  [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+  [![codecov](https://codecov.io/gh/ballerina-platform/module-ballerinax-oracledb/branch/master/graph/badge.svg)](https://codecov.io/gh/ballerina-platform/module-ballerinax-oracledb)
 
-## Issues and Projects
+The OracleDB library is one of the standard library packages of the<a target="_blank" href="https://ballerina.io/"> Ballerina</a> language.
 
-Issues and Projects tabs are disabled for this repository as this is part of the Ballerina Standard Library. To report bugs, request new features, start new discussions, view project boards, etc. please visit Ballerina Standard Library [parent repository](https://github.com/ballerina-platform/ballerina-standard-library).
-This repository only contains the source code for the module.
+This provides the functionality required to access and manipulate data stored in a OracleDB database.  
+
+For more information on the operations supported by the `oracledb:Client`, which include the below, go to [The OracleDB Package](https://ballerina.io/learn/api-docs/ballerina/oracledb/).
+
+- Pooling connections
+- Querying data
+- Inserting data
+- Updating data
+- Deleting data
+- Updating data in batches
+- Executing stored procedures
+- Closing the client
+
+For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/oracledb-init-options.html).
+
+## Issues and Projects 
+
+Issues and Projects tabs are disabled for this repository as this is part of the Ballerina Standard Library. To report bugs, request new features, start new discussions, view project boards, etc. please visit Ballerina Standard Library [parent repository](https://github.com/ballerina-platform/ballerina-standard-library). 
+
+This repository only contains the source code for the package.
 
 ## Building from the Source
-
-*TODO*
 
 ### Setting Up the Prerequisites
 
@@ -18,23 +39,58 @@ This repository only contains the source code for the module.
    * [OpenJDK](http://openjdk.java.net/install/index.html)
 
 2. Download and install [Docker](https://www.docker.com/get-started)
-
+   
 3. Export Github Personal access token with read package permissions as follows,
-
-``` sh
-    export packageUser=<Username>
-    export packagePAT=<Personal access token>
-```
-
-*TODO*
+        
+        export packageUser=<Username>
+        export packagePAT=<Personal access token>
 
 ### Building the Source
 
-*TODO*
+Execute the commands below to build from the source.
+
+1. To build the library:
+
+        ./gradlew clean build
+        
+2. To run the integration tests:
+
+        ./gradlew clean test
+
+3. To build the package without tests:
+
+        ./gradlew clean build -x test
+
+4. To run only specific tests:
+
+        ./gradlew clean build -Pgroups=<Comma separated groups/test cases>
+
+   **Tip:** The following groups of test cases are available.<br>
+   Groups | Test Cases
+   ---| ---
+   connection | connection-init<br> ssl
+   pool | pool
+   transaction | local-transaction <br> xa-transaction
+   execute | execute-basic <br> execute-params
+   batch-execute | batch-execute 
+   query | query-simple-params<br>query-numeric-params<br>query-complex-params
+   procedures | procedures
+
+5. To disable some specific groups during test,
+
+        ./gradlew clean build -Pdisable-groups=<Comma separated groups/test cases>
+
+6. To debug the tests:
+
+        ./gradlew clean build -Pdebug=<port>
+
+7. To debug the package with Ballerina language:
+
+        ./gradlew clean build -PbalJavaDebug=<port>     
 
 ## Contributing to Ballerina
 
-As an open source project, Ballerina welcomes contributions from the community.
+As an open source project, Ballerina welcomes contributions from the community. 
 
 For more information, go to the [contribution guidelines](https://github.com/ballerina-platform/ballerina-lang/blob/master/CONTRIBUTING.md).
 

@@ -20,6 +20,8 @@ package org.ballerinalang.oracledb.nativeimpl;
 
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BStream;
+import org.ballerinalang.oracledb.parameterprocessor.OracleDBResultParameterProcessor;
+import org.ballerinalang.oracledb.parameterprocessor.OracleDBStatementParameterProcessor;
 import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
 import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
 
@@ -33,9 +35,9 @@ public class QueryProcessor {
 
     public static BStream nativeQuery(BObject client, Object paramSQLString,
                                       Object recordType) {
-        DefaultStatementParameterProcessor statementParametersProcessor = DefaultStatementParameterProcessor
+        DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();
-        DefaultResultParameterProcessor resultParametersProcessor = DefaultResultParameterProcessor
+        DefaultResultParameterProcessor resultParametersProcessor = OracleDBResultParameterProcessor
                 .getInstance();
         return org.ballerinalang.sql.nativeimpl.QueryProcessor.nativeQuery(client, paramSQLString, recordType,
                 statementParametersProcessor, resultParametersProcessor);

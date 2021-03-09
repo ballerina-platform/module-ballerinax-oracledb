@@ -71,7 +71,7 @@ function testWithOptionsExceptSSL() {
     test:assertTrue(oracledbClient is Client, "Initializing with options fail");
 }
 
-// with all params and connection Pool
+// with all params, options and connection Pool
 @test:Config{
     enable: true,
     groups:["connection","connection-init"]

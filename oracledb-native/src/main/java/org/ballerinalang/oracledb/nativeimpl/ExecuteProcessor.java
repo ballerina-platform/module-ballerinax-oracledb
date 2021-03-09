@@ -20,6 +20,7 @@ package org.ballerinalang.oracledb.nativeimpl;
 
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BObject;
+import org.ballerinalang.oracledb.parameterprocessor.OracleDBStatementParameterProcessor;
 import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
 
 /**
@@ -32,13 +33,17 @@ public class ExecuteProcessor {
     private ExecuteProcessor() {}
 
     public static Object nativeExecute(BObject client, Object paramSQLString) {
+        DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
+                .getInstance();
         return org.ballerinalang.sql.nativeimpl.ExecuteProcessor.nativeExecute(client, paramSQLString,
-          DefaultStatementParameterProcessor.getInstance());
+                statementParametersProcessor);
     }
 
     public static Object nativeBatchExecute(BObject client, BArray paramSQLStrings) {
+        DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
+                .getInstance();
         return org.ballerinalang.sql.nativeimpl.ExecuteProcessor.nativeBatchExecute(client, paramSQLStrings,
-                DefaultStatementParameterProcessor.getInstance());    
+                statementParametersProcessor);
     }
 }
 

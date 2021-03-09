@@ -14,17 +14,21 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/time;
 import ballerina/jballerina.java;
 import ballerina/sql;
 
-# Represents Date SQL field.
+type IntervalYearToMonthRecord record {|
+    int|string year;
+    int|string month;
+|};
+
+# Represents INTERVAL YEAR TO MONTH Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public class DateValue {
-    public string|int|time:Time? value;
+public class IntervalYearToMonthValue {
+    public IntervalYearToMonthRecord|string? value;
 
-    public isolated function init(string|int|time:Time? value = ()) {
+    public isolated function init(IntervalYearToMonthRecord|string? value = ()) {
         self.value = value;
     }
 }

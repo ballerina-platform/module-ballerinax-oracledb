@@ -20,6 +20,8 @@ package org.ballerinalang.oracledb.nativeimpl;
 
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BObject;
+import org.ballerinalang.oracledb.parameterprocessor.OracleDBResultParameterProcessor;
+import org.ballerinalang.oracledb.parameterprocessor.OracleDBStatementParameterProcessor;
 import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
 import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
 
@@ -33,9 +35,12 @@ public class CallProcessor {
     private CallProcessor() {}
 
     public static Object nativeCall(BObject client, Object paramSQLString, BArray recordTypes) {
+        DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
+                .getInstance();
+        DefaultResultParameterProcessor resultParametersProcessor = OracleDBResultParameterProcessor
+                .getInstance();
         return org.ballerinalang.sql.nativeimpl.CallProcessor.nativeCall(client, paramSQLString,
-            recordTypes, DefaultStatementParameterProcessor.getInstance(),
-            DefaultResultParameterProcessor.getInstance());
+            recordTypes, statementParametersProcessor, resultParametersProcessor);
     }
 }
 

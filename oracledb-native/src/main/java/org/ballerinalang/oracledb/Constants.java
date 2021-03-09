@@ -20,6 +20,8 @@ package org.ballerinalang.oracledb;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BString;
 
+import static io.ballerina.runtime.api.utils.StringUtils.fromString;
+
 /**
  * Constants for oracle database client.
  */
@@ -108,6 +110,49 @@ public final class Constants {
         public static final BString CONNECT_TIMEOUT = StringUtils.fromString("connectionTimeout");
         public static final BString AUTO_COMMIT = StringUtils.fromString("autoCommit");
 
+    }
+
+    /**
+     * Constants related to TypedValue fields.
+     */
+    public static final class TypedValueFields {
+        public static final BString VALUE = fromString("value");
+    }
+
+    /**
+     * Constants related to Oracle DB types supported.
+     */
+    public static final class Types {
+
+        /**
+         * Constants related to Oracle Database type names.
+         */
+        public static final class OracleDbTypes {
+            public static final String INTERVAL_YEAR_TO_MONTH = "INTERVAL_YEAR_TO_MONTH";
+        }
+
+        /**
+         * Constants related to custom ballerina type names.
+         */
+        public static final class CustomTypes {
+            public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthValue";
+        }
+
+        /**
+         * Constants related to ballerina type names.
+         */
+        public static final class BallerinaTypes {
+            public static final String STRING = "string";
+        }
+
+        /**
+         * Constants related to the attributes of Oracle DB types supported.
+         */
+        public static final class IntervalYearToMonth {
+            public static final String YEAR = "year";
+            public static final String MONTH = "month";
+
+        }
     }
 
     public static final String DRIVER = "jdbc:oracle:thin:@//";
