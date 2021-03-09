@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/io;
+import ballerina/sql;
 
 isolated function getUntaintedData(record {}|error? value, string fieldName) returns @untainted anydata {
     if (value is record {}) {
@@ -23,24 +24,38 @@ isolated function getUntaintedData(record {}|error? value, string fieldName) ret
     return {};
 }
 
-function getByteColumnChannel() returns @untainted io:ReadableByteChannel {
+isolated function getByteColumnChannel() returns @untainted io:ReadableByteChannel {
     io:ReadableByteChannel byteChannel = checkpanic io:openReadableFile("./tests/resources/files/byteValue.txt");
     return byteChannel;
 }
 
-function getBlobColumnChannel() returns @untainted io:ReadableByteChannel {
+isolated function getBlobColumnChannel() returns @untainted io:ReadableByteChannel {
     io:ReadableByteChannel byteChannel = checkpanic io:openReadableFile("./tests/resources/files/blobValue.txt");
     return byteChannel;
 }
 
-function getClobColumnChannel() returns @untainted io:ReadableCharacterChannel {
+isolated function getClobColumnChannel() returns @untainted io:ReadableCharacterChannel {
     io:ReadableByteChannel byteChannel = checkpanic io:openReadableFile("./tests/resources/files/clobValue.txt");
     io:ReadableCharacterChannel sourceChannel = new (byteChannel, "UTF-8");
     return sourceChannel;
 }
 
-function getTextColumnChannel() returns @untainted io:ReadableCharacterChannel {
+isolated function getTextColumnChannel() returns @untainted io:ReadableCharacterChannel {
     io:ReadableByteChannel byteChannel = checkpanic io:openReadableFile("./tests/resources/files/clobValue.txt");
     io:ReadableCharacterChannel sourceChannel = new (byteChannel, "UTF-8");
     return sourceChannel;
+}
+
+function dropTableIfExists(string tablename) returns sql:ExecutionResult|error {
+    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+    sql:ExecutionResult result = checkpanic oracledbClient->execute("BEGIN "+
+        "EXECUTE IMMEDIATE 'DROP TABLE ' || '" + tablename + "'; "+
+        "EXCEPTION "+
+        "WHEN OTHERS THEN "+
+            "IF SQLCODE != -942 THEN "+
+                "RAISE; "+
+            "END IF; "+
+        "END;");
+    _ = checkpanic oracledbClient.close();
+    return result;
 }
