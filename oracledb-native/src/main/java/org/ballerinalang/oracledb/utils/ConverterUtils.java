@@ -38,26 +38,49 @@ public class ConverterUtils {
         Map<String, Object> fields = getRecordData(value);
         Object yearObject = fields.get(Constants.Types.IntervalYearToMonth.YEAR);
         Object monthObject = fields.get(Constants.Types.IntervalYearToMonth.MONTH);
-        String year = "";
-        String month = "";
 
-        if (yearObject instanceof BString) {
-            year = ((BString) yearObject).getValue();
-        } else if (yearObject instanceof Long) {
-            year = yearObject.toString();
-        } else {
-            throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.INTERVAL_YEAR_TO_MONTH);
-        }
-
-        if (monthObject instanceof BString) {
-            month = ((BString) monthObject).getValue();
-        } else if (monthObject instanceof Long) {
-            month = monthObject.toString();
-        } else {
-            throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.INTERVAL_YEAR_TO_MONTH);
-        }
+        String year = getIntervalString(yearObject, Constants.Types.OracleDbTypes.INTERVAL_YEAR_TO_MONTH);
+        String month = getIntervalString(monthObject, Constants.Types.OracleDbTypes.INTERVAL_YEAR_TO_MONTH);
 
         return year + "-" + month;
+    }
+
+    /**
+     * Converts IntervalDayToSecond value to String.
+     * @param value Custom IntervalDayToSecond value
+     * @return String of INTERVAL_DAY_TO_SECOND
+     * @throws ApplicationError error thrown if invalid types are passed
+     */
+    public static String convertIntervalDayToSecond(Object value) throws ApplicationError {
+        Type type = TypeUtils.getType(value);
+        if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
+            throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
+        }
+
+        Map<String, Object> fields = getRecordData(value);
+        Object dayObject = fields.get(Constants.Types.IntervalDayToSecond.DAY);
+        Object hourObject = fields.get(Constants.Types.IntervalDayToSecond.HOUR);
+        Object minuteObject = fields.get(Constants.Types.IntervalDayToSecond.MINUTE);
+        Object secondObject = fields.get(Constants.Types.IntervalDayToSecond.SECOND);
+
+        String day = getIntervalString(dayObject, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
+        String hour = getIntervalString(hourObject, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
+        String minute = getIntervalString(minuteObject, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
+        String second = getIntervalString(secondObject, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
+
+        return day + " " + hour + ":" + minute + ":" + second;
+    }
+
+    private static String getIntervalString(Object param, String typeName) throws ApplicationError {
+        String value = null;
+        if (param instanceof BString) {
+            value = ((BString) param).getValue();
+        } else if (param instanceof Long || param instanceof Double) {
+            value = param.toString();
+        } else {
+            throwApplicationErrorForInvalidTypes(typeName);
+        }
+        return value;
     }
 
     private static Map<String, Object> getRecordData(Object value) {

@@ -37,6 +37,7 @@ if (Os.isFamily(Os.FAMILY_WINDOWS)) {
 def distributionBinPath = distributionPath + "/bin"
 def originalConfig = ballerinaConfigFile.text
 def originalDependencies = ballerinaDependencyFile.text
+def testCoverageParam = "--code-coverage --includes=org.ballerinalang.oracledb.*:ballerinax.*"
 
 configurations {
     jbalTools
@@ -108,7 +109,7 @@ task updateTomlFile {
         newConfig = newConfig.replace("@project.path@", distributionPath)
         newConfig = newConfig.replace("@stdlib.sql.native.version@", project.stdlibSqlVersion.toString())
         newConfig = newConfig.replace("@stdlib.sql.version@", stdlibDependentSqlVersion)
-        
+
         ballerinaConfigFile.text = newConfig
 
         def newDependencyConfig = ballerinaDependencyFile.text.replace("@stdlib.sql.version@", stdlibDependentSqlVersion)
@@ -160,7 +161,7 @@ task initializeVariables {
         }
 
         if (graph.hasTask(":${packageName}-ballerina:test")) {
-            testParams = "--code-coverage --includes=*"
+            testParams = "${testCoverageParam}"
         } else {
             testParams = "--skip-tests"
         }
@@ -180,9 +181,9 @@ task ballerinaTest {
             environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
             environment "STDLIB_VERSION", tomlVersion
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "$balJavaDebugParam $distributionBinPath/bal.bat test --code-coverage --includes=* ${groupParams} ${disableGroups} ${debugParams} && exit %%ERRORLEVEL%%"
+                commandLine 'cmd', '/c', "$balJavaDebugParam $distributionBinPath/bal.bat test ${testCoverageParam} ${groupParams} ${disableGroups} ${debugParams} && exit %%ERRORLEVEL%%"
             } else {
-                commandLine 'sh', '-c', "$balJavaDebugParam $distributionBinPath/bal test --code-coverage --includes=* ${groupParams} ${disableGroups} ${debugParams}"
+                commandLine 'sh', '-c', "$balJavaDebugParam $distributionBinPath/bal test -${testCoverageParam} ${groupParams} ${disableGroups} ${debugParams}"
             }
         }
     }
@@ -203,9 +204,12 @@ task ballerinaBuild {
                 commandLine 'sh', '-c', "$balJavaDebugParam $distributionBinPath/bal build ${testParams} ${debugParams}"
             }
         }
-        copy {
-            from file("$project.projectDir/target/bala")
-            into file("$artifactCacheParent/bala/${packageOrg}/${packageName}/${tomlVersion}")
+        // extract bala file to artifact cache library
+        file("$project.projectDir/target/bala").eachFileMatch(~/.*.bala/) { balaFile ->
+            copy {
+                from zipTree(balaFile)
+                into file("$artifactCacheParent/bala/${packageOrg}/${packageName}/${tomlVersion}/${platform}")
+            }
         }
         copy {
             from file("$project.projectDir/target/cache")
@@ -286,15 +290,130 @@ publishing {
     }
 }
 
+static def checkExecResult(execResult, failText, standardOutput){
+    if (execResult) {
+        if (execResult.getExitValue() != 0) {
+            throw new GradleException('Non-zero exit value: ' + execResult.getExitValue())
+        }
+        if (standardOutput.toString().contains(failText)){
+            throw new GradleException('"' + failText + '" string in output: ' + standardOutput.toString())
+        }
+    } else {
+        throw new GradleException('Returned a null execResult object')
+    }
+}
+
+task createTestDockerImage(type: Exec) {
+    if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+        def standardOutput = new ByteArrayOutputStream()
+        commandLine 'sh', '-c', "docker build -f $project.projectDir/tests/resources/Dockerfile -t ballerina-oracledb" +
+                " -q $project.projectDir/tests/resources/"
+        doLast {
+            checkExecResult(execResult, 'Error', standardOutput)
+            sleep(10 * 1000)
+        }
+    }
+}
+
+def waitForContainerHealth() {
+    def containerName = "ballerina-oracledb";
+    if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+        def HEALTH_STATUS = ""
+        def counter = 0;
+        while (counter < 60 && !HEALTH_STATUS.toString().contains("healthy")) {
+            sleep(10000);
+            def output = new ByteArrayOutputStream();
+            try {
+                exec {
+                    commandLine 'sh', '-c',
+                            "docker inspect --format='{{json .State.Health.Status}}' ${containerName}"
+                    standardOutput = output
+                }
+                HEALTH_STATUS = output.toString().trim();
+                if (HEALTH_STATUS.toString().contains("unhealthy")) {
+                    return 1;
+                }
+                if (counter % 6 == 0) {
+                    println("${counter/6}: Waiting for container to be healthy");
+                    println("   HEALTH_STATUS: $HEALTH_STATUS \n");
+                }
+                counter = counter + 1;
+            } catch (err) {
+                println(err);
+                return 1;
+            }
+        }
+        return 0;
+    }
+}
+
+def initializeDatabase() {
+    if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+        try {
+            return exec {
+                commandLine 'sh', '-c',
+                        "docker exec ballerina-oracledb  /bin/bash -c 'cd home/oracle && source .bashrc; sqlplus /nolog <<< @create-schema.sql'"
+            }.exitValue
+        } catch (all) {
+            println(all);
+            return 1;
+        }
+    }
+}
+
+task startTestDockerContainer(type: Exec) {
+    if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+        def standardOutput = new ByteArrayOutputStream()
+//        commandLine 'sh', '-c', "docker run --rm -d --name ballerina-oracledb -e ORACLE_PWD=password -p 1521:1521 -t ballerina-oracledb"
+        commandLine 'sh', '-c', "docker run --rm -d --name ballerina-oracledb -p 1521:1521 -t ballerina-oracledb"
+
+        def healthCheck = 1;
+        def counter = 0;
+        doLast {
+            healthCheck = waitForContainerHealth();
+            if (healthCheck != 0) {
+                throw new GradleException("Docker container 'ballerina-oracledb' health test failed!")
+            }
+            println("Docker container 'ballerina-oracledb' health test passed!");
+
+            def initializeCheck = initializeDatabase()
+            if(initializeCheck != 0) {
+                throw new GradleException("Failed to initialize the database!")
+            }
+            println("Database initialized!");
+
+        }
+    }
+}
+
+task stopTestDockerContainer() {
+    doLast {
+        if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+            try {
+                def stdOut = new ByteArrayOutputStream()
+                exec {
+                    commandLine 'sh', '-c', "docker stop ballerina-oracledb"
+                    standardOutput = stdOut
+                }
+            } catch (ignore) {
+                println("Process can safely ignore stopTestDockerContainer task")
+            }
+        }
+    }
+}
+
 unpackJballerinaTools.dependsOn copyToLib
 unpackStdLibs.dependsOn unpackJballerinaTools
 copyStdlibs.dependsOn unpackStdLibs
 updateTomlFile.dependsOn copyStdlibs
+startTestDockerContainer.dependsOn createTestDockerImage
 
 ballerinaTest.dependsOn updateTomlFile
 ballerinaTest.dependsOn initializeVariables
 ballerinaTest.dependsOn ":${packageName}-native:build"
+ballerinaTest.dependsOn startTestDockerContainer
 ballerinaTest.finalizedBy revertTomlFile
+ballerinaTest.finalizedBy stopTestDockerContainer
 test.dependsOn ballerinaTest
 
 ballerinaBuild.dependsOn test
@@ -302,6 +421,7 @@ ballerinaBuild.dependsOn updateTomlFile
 ballerinaBuild.dependsOn initializeVariables
 ballerinaBuild.dependsOn ":${packageName}-native:build"
 ballerinaBuild.finalizedBy revertTomlFile
+ballerinaBuild.finalizedBy stopTestDockerContainer
 build.dependsOn ballerinaBuild
 
 ballerinaPublish.finalizedBy revertTomlFile
@@ -310,4 +430,3 @@ ballerinaPublish.dependsOn updateTomlFile
 ballerinaPublish.dependsOn ":${packageName}-native:build"
 ballerinaPublish.dependsOn ballerinaBuild
 publish.dependsOn ballerinaPublish
-

@@ -75,18 +75,18 @@ spotbugsTest {
     enabled = false
 }
 
-task validateSpotbugs() {
-    doLast {
-        if (spotbugsMain.reports.size() > 0 &&
-                spotbugsMain.reports[0].destination.exists() &&
-                spotbugsMain.reports[0].destination.text.readLines().size() > 0) {
-            spotbugsMain.reports[0].destination?.eachLine {
-                println 'Failure: ' + it
-            }
-            throw new GradleException("Spotbugs rule violations were found.");
-        }
-    }
-}
+//task validateSpotbugs() {
+//    doLast {
+//        if (spotbugsMain.reports.size() > 0 &&
+//                spotbugsMain.reports[0].destination.exists() &&
+//                spotbugsMain.reports[0].destination.text.readLines().size() > 0) {
+//            spotbugsMain.reports[0].destination?.eachLine {
+//                println 'Failure: ' + it
+//            }
+//            throw new GradleException("Spotbugs rule violations were found.");
+//        }
+//    }
+//}
 
 checkstyle {
     toolVersion "${checkstyleToolVersion}"
@@ -99,7 +99,7 @@ tasks.withType(Checkstyle) {
     exclude '**/module-info.java'
 }
 
-spotbugsMain.finalizedBy validateSpotbugs
+//spotbugsMain.finalizedBy validateSpotbugs
 checkstyleMain.dependsOn(":build-config:checkstyle:downloadMultipleFiles")
 
 compileJava {
@@ -109,4 +109,9 @@ compileJava {
         ]
         classpath = files()
     }
+}
+
+task copyToLib(type: Copy) {
+    into "$project.projectDir/lib"
+    from configurations.externalJars
 }

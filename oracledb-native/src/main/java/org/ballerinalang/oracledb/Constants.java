@@ -129,6 +129,7 @@ public final class Constants {
          */
         public static final class OracleDbTypes {
             public static final String INTERVAL_YEAR_TO_MONTH = "INTERVAL_YEAR_TO_MONTH";
+            public static final String INTERVAL_DAY_TO_SECOND = "INTERVAL_DAY_TO_SECOND";
         }
 
         /**
@@ -136,6 +137,7 @@ public final class Constants {
          */
         public static final class CustomTypes {
             public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthValue";
+            public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondValue";
         }
 
         /**
@@ -146,12 +148,22 @@ public final class Constants {
         }
 
         /**
-         * Constants related to the attributes of Oracle DB types supported.
+         * Constants related to the attributes of INTERVAL_YEAR_TO_MONTH Oracle DB type.
          */
         public static final class IntervalYearToMonth {
             public static final String YEAR = "year";
             public static final String MONTH = "month";
 
+        }
+
+        /**
+         * Constants related to the attributes of INTERVAL_DAY_TO_SECOND Oracle DB type.
+         */
+        public class IntervalDayToSecond {
+            public static final String DAY = "day";
+            public static final String HOUR = "hour";
+            public static final String MINUTE = "minute";
+            public static final String SECOND = "second";
         }
     }
 

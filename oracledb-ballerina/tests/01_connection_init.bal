@@ -87,3 +87,4 @@ function testWithConnectionPoolParam() {
     );
     test:assertTrue(oracledbClient is Client, "Initializing with connection pool param fail");
 }
+

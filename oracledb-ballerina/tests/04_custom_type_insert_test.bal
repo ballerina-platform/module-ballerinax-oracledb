@@ -15,15 +15,15 @@
 
 import ballerina/sql;
 import ballerina/test;
-// import ballerina/io;
+import ballerina/time;
 
 @test:BeforeGroups { value:["insert-time"] }
 function beforeGroupsFunc() {
     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
-    sql:ExecutionResult result = checkpanic dropTableIfExists("DATETIME_TEST");
+    sql:ExecutionResult result = checkpanic dropTableIfExists("TestDateTimeTable");
     result = checkpanic oracledbClient->execute("ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-RR HH:MI:SS AM'");
     result = checkpanic oracledbClient->execute("ALTER session set NLS_TIMESTAMP_TZ_FORMAT = 'DD-MON-RR HH:MI:SS AM TZR'");
-    result = checkpanic oracledbClient->execute("CREATE TABLE DATETIME_TEST(" +
+    result = checkpanic oracledbClient->execute("CREATE TABLE TestDateTimeTable(" +
         "PK NUMBER GENERATED ALWAYS AS IDENTITY, "+
         "COL_DATE  DATE, " +
         "COL_TIMESTAMP_1  TIMESTAMP (9), " +
@@ -37,171 +37,202 @@ function beforeGroupsFunc() {
     _ = checkpanic oracledbClient.close();
 }
 
+// @test:Config{
+//     enable: true,
+//     groups:["insert","insert-time"]
+// }
+// function insertIntervalYearToMonthWithString() {
+//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     string intervalYtoM = "15-11";
+//     string intervalDtoS = "200 5:12:45.89";
+
+//     sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
+//         COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
+//     sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
+
+//     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+//     var insertId = result.lastInsertId;
+//     test:assertTrue(insertId is string, "Last Insert id should be string");
+
+//     _ = checkpanic oracledbClient.close();
+// }
+
+// @test:Config{
+//     enable: true,
+//     groups:["insert","insert-time"],
+//     dependsOn: [insertIntervalYearToMonthWithString]
+// }
+// function insertIntervalYearToMonthWithBalTypeString() {
+//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     IntervalYearToMonthValue intervalYtoM = new("15-11");
+//     IntervalDayToSecondValue intervalDtoS = new("13 5:34:23.45");
+
+//     sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
+//             COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
+//     sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
+
+//     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+//     var insertId = result.lastInsertId;
+//     test:assertTrue(insertId is string, "Last Insert id should be string");
+
+//     _ = checkpanic oracledbClient.close();
+
+// }
+
+// @test:Config{
+//     enable: true,
+//     groups:["insert","insert-time"],
+//     dependsOn: [insertIntervalYearToMonthWithBalTypeString]
+// }
+// function insertIntervalYearToMonthWithBalType1() {
+//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     IntervalYearToMonthValue intervalYtoM = new({ year:15, month: 11 });
+//     IntervalDayToSecondValue intervalDtoS = new({ day:13, hour: 5, minute: 34, second: 23.45 });
+
+//     sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
+//         COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
+//     sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
+
+//     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+//     var insertId = result.lastInsertId;
+//     test:assertTrue(insertId is string, "Last Insert id should be string");
+
+//     _ = checkpanic oracledbClient.close();
+
+// }
+
+// @test:Config{
+//     enable: true,
+//     groups:["insert","insert-time"],
+//     dependsOn: [insertIntervalYearToMonthWithBalType1]
+// }
+// function insertIntervalYearToMonthWithBalType2() {
+//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     IntervalYearToMonthValue intervalYtoM = new({year:"15", month: "11"});
+//     IntervalDayToSecondValue intervalDtoS = new({ day:"13", hour: "5", minute: "34", second: "23.45" });
+
+//     sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
+//             COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
+//     sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
+
+//     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+//     var insertId = result.lastInsertId;
+//     test:assertTrue(insertId is string, "Last Insert id should be string");
+
+//     _ = checkpanic oracledbClient.close();
+
+// }
+
+// @test:Config{
+//     enable: true,
+//     groups:["insert","insert-time"],
+//     dependsOn: [insertIntervalYearToMonthWithBalType2]
+// }
+// function insertIntervalYearToMonthWithBalType3() {
+//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     IntervalYearToMonthValue intervalYtoM = new({year:15, month: "11"});
+//     IntervalDayToSecondValue intervalDtoS = new({ day:"13", hour: 5, minute: "34", second: 23.45 });
+
+//     sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
+//             COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
+//     sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
+
+//     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+//     var insertId = result.lastInsertId;
+//     test:assertTrue(insertId is string, "Last Insert id should be string");
+
+//     _ = checkpanic oracledbClient.close();
+
+// }
+
+// @test:Config{
+//     enable: true,
+//     groups:["insert","insert-time"],
+//     dependsOn: [insertIntervalYearToMonthWithBalType3]
+// }
+// function insertIntervalYearToMonthWithNullBalType() {
+//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     IntervalYearToMonthValue intervalYtoM = new ();
+//     IntervalDayToSecondValue intervalDtoS = new();
+
+
+//     sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
+//             COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
+//     sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
+
+//     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+//     var insertId = result.lastInsertId;
+//     test:assertTrue(insertId is string, "Last Insert id should be string");
+
+//     _ = checkpanic oracledbClient.close();
+// }
+
+// @test:Config{
+//     enable: true,
+//     groups:["insert","insert-time"],
+//     dependsOn: [insertIntervalYearToMonthWithNullBalType]
+// }
+// function insertIntervalYearToMonthWithEmptyBalType() {
+//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     IntervalYearToMonthValue intervalYtoM = new({year:"", month: ""});
+//     IntervalDayToSecondValue intervalDtoS = new({ day:"", hour: "", minute: "", second: "" });
+
+//     sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
+//             COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
+//     sql:ExecutionResult|sql:Error result = oracledbClient->execute(insertQuery);
+
+//     if (result is sql:DatabaseError) {
+//         sql:DatabaseErrorDetail errorDetails = result.detail();
+//         test:assertEquals(errorDetails.errorCode, 1867, "SQL Error code does not match");
+//         test:assertEquals(errorDetails.sqlState, "22008", "SQL Error state does not match");
+//     } else {
+//         test:assertFail("Database Error expected.");
+//     }
+
+//     _ = checkpanic oracledbClient.close();
+// }
+
+// @test:Config{
+//     enable: true,
+//     groups:["insert","insert-time"],
+//     dependsOn: [insertIntervalYearToMonthWithEmptyBalType]
+// }
+// function insertIntervalYearToMonthWithInvalidBalType() {
+//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     IntervalYearToMonthValue intervalYtoM = new({year:"A", month: "1"});
+//     IntervalDayToSecondValue intervalDtoS = new({ day:"A", hour: "5", minute: "34", second: "23.45" });
+
+//     sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
+//             COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
+//     sql:ExecutionResult|sql:Error result = oracledbClient->execute(insertQuery);
+
+//     if (result is sql:DatabaseError) {
+//         sql:DatabaseErrorDetail errorDetails = result.detail();
+//         test:assertEquals(errorDetails.errorCode, 1867, "SQL Error code does not match");
+//         test:assertEquals(errorDetails.sqlState, "22008", "SQL Error state does not match");
+//     } else {
+//         test:assertFail("Database Error expected.");
+//     }
+
+//     _ = checkpanic oracledbClient.close();
+// }
+
 @test:Config{
     enable: true,
     groups:["insert","insert-time"]
+    // dependsOn: [insertIntervalYearToMonthWithInvalidBalType]
 }
-function insertIntervalYearToMonthWithString() {
+function insertDateTime() {
     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
-    string interval = "15-11";
 
-    sql:ParameterizedQuery insertQuery = `INSERT INTO DATETIME_TEST(COL_INTERVAL_YEAR_TO_MONTH) VALUES (${interval})`;
+    time:Time timeCreated = checkpanic time:createTime(2017, 3, 28, 23, 42, 45, 554, "America/Panama");
+    sql:DateValue date = new(timeCreated);
+
+    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_DATE) VALUES (${date})`;
     sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
-
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     var insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    _ = checkpanic oracledbClient.close();
-}
-
-@test:Config{
-    enable: true,
-    groups:["insert","insert-time"],
-    dependsOn: [insertIntervalYearToMonthWithString]
-}
-function insertIntervalYearToMonthWithBalTypeString() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
-    IntervalYearToMonthValue interval = new("15-11");
-
-    sql:ParameterizedQuery insertQuery = `INSERT INTO DATETIME_TEST(COL_INTERVAL_YEAR_TO_MONTH) VALUES (${interval})`;
-    sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
-
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
-    test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    _ = checkpanic oracledbClient.close();
-
-}
-
-@test:Config{
-    enable: true,
-    groups:["insert","insert-time"],
-    dependsOn: [insertIntervalYearToMonthWithBalTypeString]
-}
-function insertIntervalYearToMonthWithBalType1() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
-    IntervalYearToMonthValue interval = new({year:15, month: 11});
-
-    sql:ParameterizedQuery insertQuery = `INSERT INTO DATETIME_TEST(COL_INTERVAL_YEAR_TO_MONTH) VALUES (${interval})`;
-    sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
-
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
-    test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    _ = checkpanic oracledbClient.close();
-
-}
-
-@test:Config{
-    enable: true,
-    groups:["insert","insert-time"],
-    dependsOn: [insertIntervalYearToMonthWithBalType1]
-}
-function insertIntervalYearToMonthWithBalType2() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
-    IntervalYearToMonthValue interval = new({year:15, month: 11});
-
-    sql:ParameterizedQuery insertQuery = `INSERT INTO DATETIME_TEST(COL_INTERVAL_YEAR_TO_MONTH) VALUES (${interval})`;
-    sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
-
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
-    test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    _ = checkpanic oracledbClient.close();
-
-}
-
-@test:Config{
-    enable: true,
-    groups:["insert","insert-time"],
-    dependsOn: [insertIntervalYearToMonthWithBalType2]
-}
-function insertIntervalYearToMonthWithBalType3() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
-    IntervalYearToMonthValue interval = new({year:15, month: "11"});
-
-    sql:ParameterizedQuery insertQuery = `INSERT INTO DATETIME_TEST(COL_INTERVAL_YEAR_TO_MONTH) VALUES (${interval})`;
-    sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
-
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
-    test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    _ = checkpanic oracledbClient.close();
-
-}
-
-@test:Config{
-    enable: true,
-    groups:["insert","insert-time"],
-    dependsOn: [insertIntervalYearToMonthWithBalType3]
-}
-function insertIntervalYearToMonthWithNullBalType() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
-    IntervalYearToMonthValue interval = new ();
-
-    sql:ParameterizedQuery insertQuery = `INSERT INTO DATETIME_TEST(COL_INTERVAL_YEAR_TO_MONTH) VALUES (${interval})`;
-    sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
-
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
-    test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    _ = checkpanic oracledbClient.close();
-}
-
-@test:Config{
-    enable: true,
-    groups:["insert","insert-time"],
-    dependsOn: [insertIntervalYearToMonthWithNullBalType]
-}
-function insertIntervalYearToMonthWithEmptyBalType() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
-    IntervalYearToMonthValue interval = new({year:"", month: ""});
-
-    sql:ParameterizedQuery insertQuery = `INSERT INTO DATETIME_TEST(COL_INTERVAL_YEAR_TO_MONTH) VALUES (${interval})`;
-    sql:ExecutionResult|sql:Error result = oracledbClient->execute(insertQuery);
-
-    if (result is sql:DatabaseError) {
-        test:assertTrue(result.message().startsWith("Error while executing SQL query: INSERT INTO DATETIME_TEST" + 
-                        "(COL_INTERVAL_YEAR_TO_MONTH) VALUES ( ? ). ORA-01867: the interval is invalid"), 
-                        "Error message does not match, actual :'" + result.message() + "'");
-        sql:DatabaseErrorDetail errorDetails = result.detail();
-        test:assertEquals(errorDetails.errorCode, 1867, "SQL Error code does not match");
-        test:assertEquals(errorDetails.sqlState, "22008", "SQL Error state does not match");
-    } else {
-        test:assertFail("Database Error expected.");
-    }
-
-    _ = checkpanic oracledbClient.close();
-}
-
-@test:Config{
-    enable: true,
-    groups:["insert","insert-time"],
-    dependsOn: [insertIntervalYearToMonthWithEmptyBalType]
-}
-function insertIntervalYearToMonthWithInvalidBalType() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
-    IntervalYearToMonthValue interval = new({year:"A", month: "1"});
-
-    sql:ParameterizedQuery insertQuery = `INSERT INTO DATETIME_TEST(COL_INTERVAL_YEAR_TO_MONTH) VALUES (${interval})`;
-    sql:ExecutionResult|sql:Error result = oracledbClient->execute(insertQuery);
-
-    if (result is sql:DatabaseError) {
-        test:assertTrue(result.message().startsWith("Error while executing SQL query: INSERT INTO DATETIME_TEST" + 
-                        "(COL_INTERVAL_YEAR_TO_MONTH) VALUES ( ? ). ORA-01867: the interval is invalid"), 
-                        "Error message does not match, actual :'" + result.message() + "'");
-        sql:DatabaseErrorDetail errorDetails = result.detail();
-        test:assertEquals(errorDetails.errorCode, 1867, "SQL Error code does not match");
-        test:assertEquals(errorDetails.sqlState, "22008", "SQL Error state does not match");
-    } else {
-        test:assertFail("Database Error expected.");
-    }
 
     _ = checkpanic oracledbClient.close();
 }

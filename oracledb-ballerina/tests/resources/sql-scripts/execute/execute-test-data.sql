@@ -1,36 +1,44 @@
-CREATE DATABASE IF NOT EXISTS EXECUTE_DB;
+-- CREATE DATABASE IF NOT EXISTS EXECUTE_DB;
 
-USE EXECUTE_DB;
+-- USE EXECUTE_DB;
 
-DROP TABLE IF EXISTS NumericTypes;
+BEGIN
+EXECUTE IMMEDIATE 'DROP TABLE ' || 'TestCharacterTable';
+EXCEPTION
+WHEN OTHERS THEN
+    IF SQLCODE != -942 THEN
+        RAISE;
+    END IF;
+END;
 
-CREATE TABLE NumericTypes (
-   id INT AUTO_INCREMENT,
-   int_type INT,
-   bigint_type BIGINT,
-   smallint_type SMALLINT,
-   tinyint_type TINYINT,
-   bit_type BIT,
-   decimal_type DECIMAL(10,2),
-   numeric_type NUMERIC(10,2),
-   float_type FLOAT,
-   real_type REAL,
-   PRIMARY KEY (id)
+BEGIN
+EXECUTE IMMEDIATE 'DROP TABLE ' || 'TestNumericTable';
+EXCEPTION
+WHEN OTHERS THEN
+    IF SQLCODE != -942 THEN
+        RAISE;
+    END IF;
+END;
+
+
+CREATE TABLE TestCharacterTable(
+   id NUMBER,
+   col_varchar2  VARCHAR2(4000),
+   col_varchar  VARCHAR2(4000),
+   col_nvarchar2 NVARCHAR2(2000),
+   col_char CHAR(2000),
+   col_nchar NCHAR(1000),
+   PRIMARY KEY(id)
 );
 
-INSERT INTO NumericTypes (int_type) VALUES (10);
-
-DROP TABLE IF EXISTS StringTypes;
-
-CREATE TABLE StringTypes (
-   id INT,
-   varchar_type VARCHAR(255),
-   charmax_type CHAR(10),
-   char_type CHAR,
-   charactermax_type CHARACTER(10),
-   character_type CHARACTER,
-   nvarcharmax_type NVARCHAR(255),
-   longvarchar_type VARCHAR(511),
-   clob_type TEXT,
-   PRIMARY KEY (id)
+CREATE TABLE TestNumericTable (
+   id NUMBER GENERATED ALWAYS AS IDENTITY,
+   col_number  NUMBER,
+   col_float  FLOAT,
+   col_binary_float BINARY_FLOAT,
+   col_binary_double BINARY_DOUBLE,
+   PRIMARY KEY(id)
 );
+
+INSERT INTO TestNumericTable (col_number) VALUES (10);
+

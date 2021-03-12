@@ -46,6 +46,9 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             case Constants.Types.CustomTypes.INTERVAL_YEAR_TO_MONTH:
                 setIntervalYearToMonth(connection, preparedStatement, index, value);
                 break;
+            case Constants.Types.CustomTypes.INTERVAL_DAY_TO_SECOND:
+                setIntervalDayToSecond(connection, preparedStatement, index, value);
+                break;
             default:
                 super.setCustomSqlTypedParam(connection, preparedStatement, index, typedValue);
         }
@@ -86,6 +89,18 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             preparedStatement.setString(index, value.toString());
         } else {
             String intervalYToM = ConverterUtils.convertIntervalYearToMonth(value);
+            preparedStatement.setString(index, intervalYToM);
+        }
+    }
+
+    private void setIntervalDayToSecond(Connection connection, PreparedStatement preparedStatement,
+                                        int index, Object value) throws SQLException, ApplicationError {
+        if (value == null) {
+            preparedStatement.setString(index, null);
+        } else if (value instanceof BString) {
+            preparedStatement.setString(index, value.toString());
+        } else {
+            String intervalYToM = ConverterUtils.convertIntervalDayToSecond(value);
             preparedStatement.setString(index, intervalYToM);
         }
     }

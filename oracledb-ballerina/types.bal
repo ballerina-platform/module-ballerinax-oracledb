@@ -17,9 +17,24 @@
 import ballerina/jballerina.java;
 import ballerina/sql;
 
+# Structure of  NTERVAL YEAR TO MONTH.
+# + year - Number of years
+# + month - Number of months
 type IntervalYearToMonthRecord record {|
     int|string year;
     int|string month;
+|};
+
+# Structure of NTERVAL DAY TO SECOND.
+# + day - Number of days
+# + hour - Number of hours
+# + minute - Number of minutes
+# + second - Number of seconds
+type IntervalDayToSecondRecord record {|
+    int|string day;
+    int|string hour;
+    int|string minute;
+    float|string second;
 |};
 
 # Represents INTERVAL YEAR TO MONTH Oracle DB field.
@@ -33,6 +48,16 @@ public class IntervalYearToMonthValue {
     }
 }
 
+# Represents INTERVAL DAY TO SECOND Oracle DB field.
+#
+# + value - Value of parameter passed into the SQL statement
+public class IntervalDayToSecondValue {
+    public IntervalDayToSecondRecord|string? value;
+
+    public isolated function init(IntervalDayToSecondRecord|string? value = ()) {
+        self.value = value;
+    }
+}
 
 # The class with custom implementations for nextResult and getNextQueryResult in the connector modules.
 # 
