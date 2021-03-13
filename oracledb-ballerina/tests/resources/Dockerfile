@@ -16,7 +16,7 @@
 
 # ARG REPO_LOCATION=gayaldassanayake/database
 # ARG BASE_VERSION=19.3.0-ee
-ARG REPO_LOCATION=store/oracle/database-enterprise
+ARG REPO_LOCATION=gayaldassanayake/oracle-enterprise
 ARG BASE_VERSION=12.2.0.1
 FROM ${REPO_LOCATION}:${BASE_VERSION}
 

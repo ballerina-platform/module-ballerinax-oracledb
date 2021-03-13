@@ -1,6 +1,5 @@
 package org.ballerinalang.oracledb.parameterprocessor;
 
-import io.ballerina.runtime.api.values.BObject;
 import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
 
 /**
