@@ -33,7 +33,7 @@ public client class Client{
     # + connectionPool - The `sql:ConnectionPool` object to be used within 
     #         the jdbc client. If there is no connectionPool provided, 
     #         the global connection pool will be used
-    public function init(
+    public isolated function init(
         string user,
         string password,
         string host = "localhost",
@@ -61,7 +61,7 @@ public client class Client{
     # + rowType - The `typedesc` of the record that should be returned as a result. If this is not provided the default
     #             column names of the query result set be used for the record attributes.
     # + return - Stream of records in the type of `rowType`
-    remote function query(@untainted string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? rowType = ())
+    remote isolated function query(@untainted string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? rowType = ())
     returns @tainted stream <record {}, sql:Error> {
         if (self.clientActive) {
             return nativeQuery(self, sqlQuery, rowType);
@@ -77,7 +77,7 @@ public client class Client{
     #              when the query has params to be passed in
     # + return - Summary of the sql update query as `ExecutionResult` or returns `Error`
     #           if any error occurred when executing the query
-    remote function execute(@untainted string|sql:ParameterizedQuery sqlQuery) returns sql:ExecutionResult|sql:Error {
+    remote isolated function execute(@untainted string|sql:ParameterizedQuery sqlQuery) returns sql:ExecutionResult|sql:Error {
         if (self.clientActive) {
             return nativeExecute(self, sqlQuery);
         } else {
@@ -95,7 +95,7 @@ public client class Client{
     #            will return `BatchExecuteError`, however the JDBC driver may or may not continue to process the
     #            remaining commands in the batch after a failure. The summary of the executed queries in case of error
     #            can be accessed as `(<sql:BatchExecuteError> result).detail()?.executionResults`.
-    remote function batchExecute(@untainted sql:ParameterizedQuery[] sqlQueries) returns sql:ExecutionResult[]|sql:Error {
+    remote isolated function batchExecute(@untainted sql:ParameterizedQuery[] sqlQueries) returns sql:ExecutionResult[]|sql:Error {
         if (sqlQueries.length() == 0) {
             return error sql:ApplicationError(" Parameter 'sqlQueries' cannot be empty array");
         }
@@ -112,7 +112,7 @@ public client class Client{
     # + rowTypes - The array of `typedesc` of the records that should be returned as a result. If this is not provided
     #               the default column names of the query result set be used for the record attributes.
     # + return - Summary of the execution is returned in `ProcedureCallResult` or `sql:Error`
-    remote function call(@untainted string|sql:ParameterizedCallQuery sqlQuery, typedesc<record {}>[] rowTypes = [])
+    remote isolated function call(@untainted string|sql:ParameterizedCallQuery sqlQuery, typedesc<record {}>[] rowTypes = [])
     returns sql:ProcedureCallResult|sql:Error {
         if (self.clientActive) {
             return nativeCall(self, sqlQuery, rowTypes);
@@ -124,7 +124,7 @@ public client class Client{
     # Close the SQL client.
     #
     # + return - Possible error during closing the client
-    public function close() returns sql:Error? {
+    public isolated function close() returns sql:Error? {
         self.clientActive = false;
         return close(self);
     }
@@ -183,31 +183,31 @@ type ClientConfiguration record {|
 |};
 
 
-function createClient(Client 'client, ClientConfiguration clientConfig, sql:ConnectionPool globalConnPool) returns sql:Error? = @java:Method{
+isolated function createClient(Client 'client, ClientConfiguration clientConfig, sql:ConnectionPool globalConnPool) returns sql:Error? = @java:Method{
     'class: "org.ballerinalang.oracledb.nativeimpl.ClientProcessor"
 } external;
 
-function nativeQuery(Client sqlClient, string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? rowType)
+isolated function nativeQuery(Client sqlClient, string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? rowType)
 returns stream <record {}, sql:Error> = @java:Method {
     'class: "org.ballerinalang.oracledb.nativeimpl.QueryProcessor"
 } external;
 
-function nativeExecute(Client sqlClient, string|sql:ParameterizedQuery sqlQuery)
+isolated function nativeExecute(Client sqlClient, string|sql:ParameterizedQuery sqlQuery)
 returns sql:ExecutionResult|sql:Error = @java:Method {
     'class: "org.ballerinalang.oracledb.nativeimpl.ExecuteProcessor"
 } external;
 
-function nativeBatchExecute(Client sqlClient, sql:ParameterizedQuery[] sqlQueries)
+isolated function nativeBatchExecute(Client sqlClient, sql:ParameterizedQuery[] sqlQueries)
 returns sql:ExecutionResult[]|sql:Error = @java:Method {
     'class: "org.ballerinalang.oracledb.nativeimpl.ExecuteProcessor"
 } external;
 
-function nativeCall(Client sqlClient, string|sql:ParameterizedCallQuery sqlQuery, typedesc<record {}>[] rowTypes)
+isolated function nativeCall(Client sqlClient, string|sql:ParameterizedCallQuery sqlQuery, typedesc<record {}>[] rowTypes)
 returns sql:ProcedureCallResult|sql:Error = @java:Method {
     'class: "org.ballerinalang.oracledb.nativeimpl.CallProcessor"
 } external;
 
-function close(Client oracledbClient) returns sql:Error? = @java:Method {
+isolated function close(Client oracledbClient) returns sql:Error? = @java:Method {
     'class: "org.ballerinalang.oracledb.nativeimpl.ClientProcessor"
 } external;
 

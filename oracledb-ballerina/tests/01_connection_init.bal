@@ -59,32 +59,34 @@ function testWithAllParamsExceptOptions() {
     groups:["connection","connection-init"]
 
 }
-function testWithOptionsExceptSSL() {
-    Client | sql:Error oracledbClient = new(
-        user=user, 
-        password=password,
-        host=host,
-        port=port,
-        database=database,
-        options=options
-    );
-    test:assertTrue(oracledbClient is Client, "Initializing with options fail");
-}
 
-// with all params, options and connection Pool
-@test:Config{
-    enable: true,
-    groups:["connection","connection-init"]
-}
-function testWithConnectionPoolParam() {
-    Client | sql:Error oracledbClient = new(
-        user=user, 
-        password=password,
-        host=host,
-        port=port,
-        database=database,
-        connectionPool=connectionPool
-    );
-    test:assertTrue(oracledbClient is Client, "Initializing with connection pool param fail");
-}
+//function testWithOptionsExceptSSL() {
+//    Client | sql:Error oracledbClient = new(
+//        user=user,
+//        password=password,
+//        host=host,
+//        port=port,
+//        database=database,
+//        options=options
+//    );
+//    test:assertTrue(oracledbClient is Client, "Initializing with options fail");
+//}
+//
+//// with all params, options and connection Pool
+//@test:Config{
+//    enable: true,
+//    groups:["connection","connection-init"]
+//}
+//function testWithConnectionPoolParam() {
+//    Client | sql:Error oracledbClient = new(
+//        user=user,
+//        password=password,
+//        host=host,
+//        port=port,
+//        database=database,
+//        connectionPool=connectionPool
+//    );
+//    test:assertTrue(oracledbClient is Client, "Initializing with connection pool param fail");
+//}
+//
 

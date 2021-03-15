@@ -18,48 +18,48 @@ import ballerina/test;
 // import ballerina/io;
 
 @test:Config{
-    enable: true,
+    // enable: true,
     groups:["execute","execute-basic"]
 }
-function testCreateTable() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+// function testCreateTable() {
+    // Client oracledbClient = checkpanic new(user, password, host, port, database);
 
-    sql:ExecutionResult result = checkpanic dropTableIfExists("TestExecuteTable");
-    result = checkpanic oracledbClient->execute("CREATE TABLE TestExecuteTable(field NUMBER, field2 VARCHAR2(255))");
-    test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
-    test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
+    // sql:ExecutionResult result = checkpanic dropTableIfExists("TestExecuteTable");
+    // result = checkpanic oracledbClient->execute("CREATE TABLE TestExecuteTable(field NUMBER, field2 VARCHAR2(255))");
+    // test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
+    // test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
 
-    result = checkpanic dropTableIfExists("TestCharacterTable");
-    result = checkpanic oracledbClient->execute("CREATE TABLE TestCharacterTable("+
-        "id NUMBER, "+
-        "col_varchar2  VARCHAR2(4000), " +
-        "col_varchar  VARCHAR2(4000), " +
-        "col_nvarchar2 NVARCHAR2(2000), "+
-        "col_char CHAR(2000), "+
-        "col_nchar NCHAR(1000), "+
-        "PRIMARY KEY(id) "+
-        ")"
-    );
-    test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
-    test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
+    // result = checkpanic dropTableIfExists("TestCharacterTable");
+    // result = checkpanic oracledbClient->execute("CREATE TABLE TestCharacterTable("+
+    //     "id NUMBER, "+
+    //     "col_varchar2  VARCHAR2(4000), " +
+    //     "col_varchar  VARCHAR2(4000), " +
+    //     "col_nvarchar2 NVARCHAR2(2000), "+
+    //     "col_char CHAR(2000), "+
+    //     "col_nchar NCHAR(1000), "+
+    //     "PRIMARY KEY(id) "+
+    //     ")"
+    // );
+    // test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
+    // test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
 
-    result = checkpanic dropTableIfExists("TestNumericTable");
-    result = checkpanic oracledbClient->execute("CREATE TABLE TestNumericTable("+
-        "id NUMBER GENERATED ALWAYS AS IDENTITY, "+
-        "col_number  NUMBER, " +
-        "col_float  FLOAT, " +
-        "col_binary_float BINARY_FLOAT, "+
-        "col_binary_double BINARY_DOUBLE, "+
-        "PRIMARY KEY(id) "+
-        ")"
-    );
-    test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
-    test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
+    // result = checkpanic dropTableIfExists("TestNumericTable");
+    // result = checkpanic oracledbClient->execute("CREATE TABLE TestNumericTable("+
+    //     "id NUMBER GENERATED ALWAYS AS IDENTITY, "+
+    //     "col_number  NUMBER, " +
+    //     "col_float  FLOAT, " +
+    //     "col_binary_float BINARY_FLOAT, "+
+    //     "col_binary_double BINARY_DOUBLE, "+
+    //     "PRIMARY KEY(id) "+
+    //     ")"
+    // );
+    // test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
+    // test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
 
-    checkpanic oracledbClient.close();
+    // checkpanic oracledbClient.close();
 
 
-}
+// }
 
 @test:Config{
     enable: true,
@@ -67,7 +67,7 @@ function testCreateTable() {
     dependsOn: [testCreateTable]
 }
 function testAlterTable() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+    Client oracledbClient = checkpanic new(user, password, host, port, database);
     sql:ExecutionResult result = checkpanic oracledbClient->execute("ALTER TABLE TestExecuteTable RENAME COLUMN field TO field1");
     checkpanic oracledbClient.close();
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
@@ -80,7 +80,7 @@ function testAlterTable() {
     dependsOn: [testAlterTable]
 }
 function testInsertTable() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+    Client oracledbClient = checkpanic new(user, password, host, port, database);
     sql:ExecutionResult result = checkpanic oracledbClient->execute("INSERT INTO TestExecuteTable(field1, field2) VALUES (1, 'Hello, world')");
     checkpanic oracledbClient.close();
 
@@ -96,7 +96,7 @@ function testInsertTable() {
     dependsOn: [testInsertTable]
 }
 function testUpdateTable() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+    Client oracledbClient = checkpanic new(user, password, host, port, database);
     sql:ExecutionResult result = checkpanic oracledbClient->execute("UPDATE TestExecuteTable SET field2 = 'Hello, ballerina' WHERE field1 = 1");
     checkpanic oracledbClient.close();
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -108,7 +108,7 @@ function testUpdateTable() {
     dependsOn: [testInsertTable]
 }
 function testInsertTableWithoutGeneratedKeys() {
-    Client oracledbClient = checkpanic new (user, password, host, port, database, options);
+    Client oracledbClient = checkpanic new (user, password, host, port, database);
     sql:ExecutionResult result = checkpanic oracledbClient->execute("Insert into TestCharacterTable (id, col_varchar2)"
         + " values (20, 'test')");
     checkpanic oracledbClient.close();
@@ -122,7 +122,7 @@ function testInsertTableWithoutGeneratedKeys() {
     dependsOn: [testInsertTableWithoutGeneratedKeys]
 }
 function testInsertTableWithGeneratedKeys() {
-    Client oracledbClient = checkpanic new (user, password, host, port, database, options);
+    Client oracledbClient = checkpanic new (user, password, host, port, database);
     sql:ExecutionResult result = checkpanic oracledbClient->execute("insert into TestNumericTable (col_number) values (21)");
     checkpanic oracledbClient.close();
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -143,7 +143,7 @@ type NumericRecord record {|
    dependsOn: [testInsertTableWithGeneratedKeys]
 }
 function testInsertAndSelectTableWithGeneratedKeys() {
-   Client oracledbClient = checkpanic new (user, password, host, port, database, options);
+   Client oracledbClient = checkpanic new (user, password, host, port, database);
    sql:ExecutionResult result = checkpanic oracledbClient->execute("insert into TestNumericTable (col_number) values (31)");
 
    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -171,7 +171,7 @@ function testInsertAndSelectTableWithGeneratedKeys() {
    dependsOn: [testInsertAndSelectTableWithGeneratedKeys]
 }
 function testInsertWithAllNilAndSelectTableWithGeneratedKeys() {
-      Client oracledbClient = checkpanic new (user, password, host, port, database, options);
+      Client oracledbClient = checkpanic new (user, password, host, port, database);
    sql:ExecutionResult result = checkpanic oracledbClient->execute("insert into TestNumericTable (col_number, col_float, "+
         "col_binary_float, col_binary_double) values (null, null, null, null)");
 
@@ -212,7 +212,7 @@ function testInsertWithAllNilAndSelectTableWithGeneratedKeys() {
 //    dependsOn: [testInsertWithAllNilAndSelectTableWithGeneratedKeys]
 //}
 //function testInsertWithStringAndSelectTable() {
-//       Client oracledbClient = checkpanic new (user, password, host, port, database, options);
+//       Client oracledbClient = checkpanic new (user, password, host, port, database);
 //    string intIDVal = "25";
 //    string insertQuery = "Insert into TestCharacterTable (id, varchar_type, charmax_type, char_type, charactermax_type, "
 //        + "character_type, nvarcharmax_type, longvarchar_type, clob_type) values ("
@@ -248,7 +248,7 @@ function testInsertWithAllNilAndSelectTableWithGeneratedKeys() {
 //    dependsOn: [testInsertWithStringAndSelectTable]
 //}
 //function testInsertWithEmptyStringAndSelectTable() {
-//       Client oracledbClient = checkpanic new (user, password, host, port, database, options);
+//       Client oracledbClient = checkpanic new (user, password, host, port, database);
 //    string intIDVal = "35";
 //    string insertQuery = "Insert into TestCharacterTable (id, varchar_type, charmax_type, char_type, charactermax_type,"
 //        + " character_type, nvarcharmax_type, longvarchar_type, clob_type) values (" + intIDVal +
@@ -295,7 +295,7 @@ function testInsertWithAllNilAndSelectTableWithGeneratedKeys() {
 //    dependsOn: [testInsertWithEmptyStringAndSelectTable]
 //}
 //function testInsertWithNilStringAndSelectTable() {
-//       Client oracledbClient = checkpanic new (user, password, host, port, database, options);
+//       Client oracledbClient = checkpanic new (user, password, host, port, database);
 //    string intIDVal = "45";
 //    string insertQuery = "Insert into TestCharacterTable (id, varchar_type, charmax_type, char_type, charactermax_type,"
 //        + " character_type, nvarcharmax_type, longvarchar_type, clob_type) values ("
@@ -329,7 +329,7 @@ function testInsertWithAllNilAndSelectTableWithGeneratedKeys() {
 //    dependsOn: [testInsertWithNilStringAndSelectTable]
 //}
 //function testInsertTableWithDatabaseError() {
-//       Client oracledbClient = checkpanic new (user, password, host, port, database, options);
+//       Client oracledbClient = checkpanic new (user, password, host, port, database);
 //    sql:ExecutionResult|sql:Error result = oracledbClient->execute("Insert into NumericTypesNonExistTable (int_type) values (20)");
 //
 //    if (result is sql:DatabaseError) {
@@ -351,7 +351,7 @@ function testInsertWithAllNilAndSelectTableWithGeneratedKeys() {
 //    dependsOn: [testInsertTableWithDatabaseError]
 //}
 //function testInsertTableWithDataTypeError() {
-//       Client oracledbClient = checkpanic new (user, password, host, port, database, options);
+//       Client oracledbClient = checkpanic new (user, password, host, port, database);
 //    sql:ExecutionResult|sql:Error result = oracledbClient->execute("Insert into NumericTypes (int_type) values"
 //        + " ('This is wrong type')");
 //
@@ -378,7 +378,7 @@ function testInsertWithAllNilAndSelectTableWithGeneratedKeys() {
 //    dependsOn: [testInsertTableWithDataTypeError]
 //}
 //function testUpdateData() {
-//       Client oracledbClient = checkpanic new (user, password, host, port, database, options);
+//       Client oracledbClient = checkpanic new (user, password, host, port, database);
 //    sql:ExecutionResult result = checkpanic oracledbClient->execute("Update NumericTypes set int_type = 11 where int_type = 10");
 //    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
 //
@@ -397,7 +397,7 @@ function testInsertWithAllNilAndSelectTableWithGeneratedKeys() {
 //     groups:["execute","execute-basic"]
 // }
 // function testDropTable() {
-//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     Client oracledbClient = checkpanic new(user, password, host, port, database);
 //     sql:ExecutionResult result = checkpanic oracledbClient->execute("DROP TABLE TestExecuteTable");
 //     checkpanic oracledbClient.close();
 //     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");

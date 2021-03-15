@@ -17,32 +17,32 @@ import ballerina/sql;
 import ballerina/test;
 import ballerina/time;
 
-@test:BeforeGroups { value:["insert-time"] }
-function beforeGroupsFunc() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
-    sql:ExecutionResult result = checkpanic dropTableIfExists("TestDateTimeTable");
-    result = checkpanic oracledbClient->execute("ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-RR HH:MI:SS AM'");
-    result = checkpanic oracledbClient->execute("ALTER session set NLS_TIMESTAMP_TZ_FORMAT = 'DD-MON-RR HH:MI:SS AM TZR'");
-    result = checkpanic oracledbClient->execute("CREATE TABLE TestDateTimeTable(" +
-        "PK NUMBER GENERATED ALWAYS AS IDENTITY, "+
-        "COL_DATE  DATE, " +
-        "COL_TIMESTAMP_1  TIMESTAMP (9), " +
-        "COL_TIMESTAMP_2  TIMESTAMP (9) WITH TIME ZONE, " +
-        "COL_TIMESTAMP_3  TIMESTAMP (9) WITH LOCAL TIME ZONE, " +
-        "COL_INTERVAL_YEAR_TO_MONTH INTERVAL YEAR TO MONTH, "+
-        "COL_INTERVAL_DAY_TO_SECOND INTERVAL DAY(9) TO SECOND(9), "+
-        "PRIMARY KEY(PK) "+
-        ")"
-    );
-    _ = checkpanic oracledbClient.close();
-}
+// @test:BeforeGroups { value:["insert-time"] }
+// function beforeGroupsFunc() {
+//     Client oracledbClient = checkpanic new(user, password, host, port, database);
+//     sql:ExecutionResult result = checkpanic dropTableIfExists("TestDateTimeTable");
+//     result = checkpanic oracledbClient->execute("ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-RR HH:MI:SS AM'");
+//     result = checkpanic oracledbClient->execute("ALTER session set NLS_TIMESTAMP_TZ_FORMAT = 'DD-MON-RR HH:MI:SS AM TZR'");
+//     result = checkpanic oracledbClient->execute("CREATE TABLE TestDateTimeTable(" +
+//         "PK NUMBER GENERATED ALWAYS AS IDENTITY, "+
+//         "COL_DATE  DATE, " +
+//         "COL_TIMESTAMP_1  TIMESTAMP (9), " +
+//         "COL_TIMESTAMP_2  TIMESTAMP (9) WITH TIME ZONE, " +
+//         "COL_TIMESTAMP_3  TIMESTAMP (9) WITH LOCAL TIME ZONE, " +
+//         "COL_INTERVAL_YEAR_TO_MONTH INTERVAL YEAR TO MONTH, "+
+//         "COL_INTERVAL_DAY_TO_SECOND INTERVAL DAY(9) TO SECOND(9), "+
+//         "PRIMARY KEY(PK) "+
+//         ")"
+//     );
+//     _ = checkpanic oracledbClient.close();
+// }
 
 // @test:Config{
 //     enable: true,
 //     groups:["insert","insert-time"]
 // }
 // function insertIntervalYearToMonthWithString() {
-//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     Client oracledbClient = checkpanic new(user, password, host, port, database);
 //     string intervalYtoM = "15-11";
 //     string intervalDtoS = "200 5:12:45.89";
 
@@ -63,7 +63,7 @@ function beforeGroupsFunc() {
 //     dependsOn: [insertIntervalYearToMonthWithString]
 // }
 // function insertIntervalYearToMonthWithBalTypeString() {
-//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     Client oracledbClient = checkpanic new(user, password, host, port, database);
 //     IntervalYearToMonthValue intervalYtoM = new("15-11");
 //     IntervalDayToSecondValue intervalDtoS = new("13 5:34:23.45");
 
@@ -85,7 +85,7 @@ function beforeGroupsFunc() {
 //     dependsOn: [insertIntervalYearToMonthWithBalTypeString]
 // }
 // function insertIntervalYearToMonthWithBalType1() {
-//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     Client oracledbClient = checkpanic new(user, password, host, port, database);
 //     IntervalYearToMonthValue intervalYtoM = new({ year:15, month: 11 });
 //     IntervalDayToSecondValue intervalDtoS = new({ day:13, hour: 5, minute: 34, second: 23.45 });
 
@@ -107,7 +107,7 @@ function beforeGroupsFunc() {
 //     dependsOn: [insertIntervalYearToMonthWithBalType1]
 // }
 // function insertIntervalYearToMonthWithBalType2() {
-//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     Client oracledbClient = checkpanic new(user, password, host, port, database);
 //     IntervalYearToMonthValue intervalYtoM = new({year:"15", month: "11"});
 //     IntervalDayToSecondValue intervalDtoS = new({ day:"13", hour: "5", minute: "34", second: "23.45" });
 
@@ -129,7 +129,7 @@ function beforeGroupsFunc() {
 //     dependsOn: [insertIntervalYearToMonthWithBalType2]
 // }
 // function insertIntervalYearToMonthWithBalType3() {
-//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     Client oracledbClient = checkpanic new(user, password, host, port, database);
 //     IntervalYearToMonthValue intervalYtoM = new({year:15, month: "11"});
 //     IntervalDayToSecondValue intervalDtoS = new({ day:"13", hour: 5, minute: "34", second: 23.45 });
 
@@ -151,7 +151,7 @@ function beforeGroupsFunc() {
 //     dependsOn: [insertIntervalYearToMonthWithBalType3]
 // }
 // function insertIntervalYearToMonthWithNullBalType() {
-//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     Client oracledbClient = checkpanic new(user, password, host, port, database);
 //     IntervalYearToMonthValue intervalYtoM = new ();
 //     IntervalDayToSecondValue intervalDtoS = new();
 
@@ -173,7 +173,7 @@ function beforeGroupsFunc() {
 //     dependsOn: [insertIntervalYearToMonthWithNullBalType]
 // }
 // function insertIntervalYearToMonthWithEmptyBalType() {
-//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     Client oracledbClient = checkpanic new(user, password, host, port, database);
 //     IntervalYearToMonthValue intervalYtoM = new({year:"", month: ""});
 //     IntervalDayToSecondValue intervalDtoS = new({ day:"", hour: "", minute: "", second: "" });
 
@@ -198,7 +198,7 @@ function beforeGroupsFunc() {
 //     dependsOn: [insertIntervalYearToMonthWithEmptyBalType]
 // }
 // function insertIntervalYearToMonthWithInvalidBalType() {
-//     Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+//     Client oracledbClient = checkpanic new(user, password, host, port, database);
 //     IntervalYearToMonthValue intervalYtoM = new({year:"A", month: "1"});
 //     IntervalDayToSecondValue intervalDtoS = new({ day:"A", hour: "5", minute: "34", second: "23.45" });
 
@@ -223,7 +223,7 @@ function beforeGroupsFunc() {
     // dependsOn: [insertIntervalYearToMonthWithInvalidBalType]
 }
 function insertDateTime() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+    Client oracledbClient = checkpanic new(user, password, host, port, database);
 
     time:Time timeCreated = checkpanic time:createTime(2017, 3, 28, 23, 42, 45, 554, "America/Panama");
     sql:DateValue date = new(timeCreated);
