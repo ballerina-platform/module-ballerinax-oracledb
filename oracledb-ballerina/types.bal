@@ -17,7 +17,8 @@
 import ballerina/jballerina.java;
 import ballerina/sql;
 
-# Structure of  NTERVAL YEAR TO MONTH.
+
+# Structure of INTERVAL YEAR TO MONTH.
 # + year - Number of years
 # + month - Number of months
 type IntervalYearToMonthRecord record {|
@@ -25,7 +26,8 @@ type IntervalYearToMonthRecord record {|
     int|string month;
 |};
 
-# Structure of NTERVAL DAY TO SECOND.
+
+# Structure of INTERVAL DAY TO SECOND.
 # + day - Number of days
 # + hour - Number of hours
 # + minute - Number of minutes
@@ -37,12 +39,49 @@ type IntervalDayToSecondRecord record {|
     float|string second;
 |};
 
+
+# Structure of BFILE.
 # + directory - Directory of the file
 # + file - File name
 type BfileRecord record {|
     string directory;
     string file;
 |};
+
+
+# Structure of OBJECT TYPE.
+# + typeName - Name of the object type
+# + attributes - Attributes of the object
+type ObjectTypeRecord record {|
+    string typeName;
+    record {} attributes;
+|};
+
+
+# Structure of VARRAY.
+# + name - Name of the varray
+# + elements - Elements of the Varray
+type VarrayRecord record {|
+    string name;
+    anydata[] elements;
+|};
+
+
+# Structure of NESTED TABLE.
+# + name - Name of the varray
+# + attributes - Attributes of the nested table
+type NestedTableRecord record {|
+    string name;
+    anydata[] attributes;
+|};
+
+
+# Structure of NESTED TABLE.
+# + xml - Xml string
+type XmlRecord record {|
+    string xml;
+|};
+
 
 # Represents INTERVAL YEAR TO MONTH Oracle DB field.
 #
@@ -55,6 +94,7 @@ public class IntervalYearToMonthValue {
     }
 }
 
+
 # Represents INTERVAL DAY TO SECOND Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
@@ -66,6 +106,7 @@ public class IntervalDayToSecondValue {
     }
 }
 
+
 # Represents BFILE Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
@@ -76,6 +117,55 @@ public class BfileValue {
         self.value = value;
     }
 }
+
+
+# Represents OBJECT TYPE Oracle DB field.
+#
+# + value - Value of parameter passed into the SQL statement
+public class ObjectTypeValue {
+    public ObjectTypeRecord? value;
+
+    public isolated function init(ObjectTypeRecord? value = ()) {
+        self.value = value;
+    }
+}
+
+
+# Represents VARRAY Oracle DB field.
+#
+# + value - Value of parameter passed into the SQL statement
+public class VarrayValue {
+    public VarrayRecord? value;
+
+    public isolated function init(VarrayRecord? value = ()) {
+        self.value = value;
+    }
+}
+
+
+# Represents NESTED TABLE Oracle DB field.
+#
+# + value - Value of parameter passed into the SQL statement
+public class NestedTableValue {
+    public NestedTableRecord? value;
+
+    public isolated function init(NestedTableRecord? value = ()) {
+        self.value = value;
+    }
+}
+
+
+# Represents NESTED TABLE Oracle DB field.
+#
+# + value - Value of parameter passed into the SQL statement
+public class XmlValue {
+    public XmlRecord? value;
+
+    public isolated function init(XmlRecord? value = ()) {
+        self.value = value;
+    }
+}
+
 
 # The class with custom implementations for nextResult and getNextQueryResult in the connector modules.
 #
