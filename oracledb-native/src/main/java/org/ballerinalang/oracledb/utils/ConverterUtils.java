@@ -31,6 +31,7 @@ import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
 
 import oracle.jdbc.OracleStruct;
+import oracle.xdb.XMLType;
 import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
 
@@ -125,7 +126,7 @@ public class ConverterUtils {
              throws ApplicationError, SQLException {
          Type type = TypeUtils.getType(value);
          if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
-             throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.BFILE);
+             throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.OBJECT_TYPE);
          }
          Map<String, Object> fields = getRecordData(value);
 
@@ -138,15 +139,56 @@ public class ConverterUtils {
          return struct;
      }
 
-
+    /**
+     *
+     * @param connection
+     * @param value
+     * @return
+     * @throws ApplicationError
+     */
     public static Array convertVarray(Connection connection, Object value) throws ApplicationError {
         Type type = TypeUtils.getType(value);
         if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
-            throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.BFILE);
+            throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.VARRAY);
         }
         Map<String, Object> fields = getRecordData(value);
         return (Array) fields.get(Constants.Types.Varray.ELEMENTS);
     }
+
+    /**
+     *
+     * @param connection
+     * @param value
+     * @return
+     * @throws ApplicationError
+     */
+    public static Array convertNestedTable(Connection connection, Object value) throws ApplicationError {
+        Type type = TypeUtils.getType(value);
+        if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
+            throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.NESTED_TABLE);
+        }
+        Map<String, Object> fields = getRecordData(value);
+        return (Array) fields.get(Constants.Types.Varray.ELEMENTS);
+    }
+
+    /**
+     *
+     * @param connection
+     * @param value
+     * @return
+     * @throws ApplicationError
+     */
+    public static Array convertXml(Connection connection, Object value) throws ApplicationError {
+        Type type = TypeUtils.getType(value);
+        if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
+            throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.NESTED_TABLE);
+        }
+        Map<String, Object> fields = getRecordData(value);
+        String xml = fields.get(Constants.Types.Xml.Xml);
+        return XMLType.createXML(connection, xml);
+    }
+
+    public convertUri
 
     private static String getIntervalString(Object param, String typeName) throws ApplicationError {
         String value = null;

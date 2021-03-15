@@ -83,6 +83,11 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 setVarray(connection, preparedStatement, index, value);
             case Constants.Types.CustomTypes.NESTED_TABLE:
                 setNestedTable(connection, preparedStatement, index, value);
+
+            case Constants.Types.CustomTypes.XML:
+                setXml(connection, preparedStatement, index, value);
+            case Constants.Types.CustomTypes.URI:
+                setUri(connection, preparedStatement, index, value);
             default:
                 super.setCustomSqlTypedParam(connection, preparedStatement, index, typedValue);
         }
@@ -160,7 +165,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     }
 
     private void setVarray(Connection connection, PreparedStatement preparedStatement, int index, Object value)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setString(index, null);
         } else {
@@ -170,11 +175,31 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     }
 
     private void setNestedTable(Connection connection, PreparedStatement preparedStatement, int index, Object value)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setString(index, null);
         } else {
             Array nestedTable = ConverterUtils.convertNestedTable(connection, value);
+            (OraclePreparedStatement(preparedStatement)).setArray(index, nestedTable);
+        }
+    }
+
+    private void setXml(Connection connection, PreparedStatement preparedStatement, int index, Object value)
+            throws SQLException, ApplicationError {
+        if (value == null) {
+            preparedStatement.setString(index, null);
+        } else {
+            XMLType xml = ConverterUtils.convertXml(connection, value);
+            (OraclePreparedStatement(preparedStatement)).setObject(index, xml);
+        }
+    }
+
+    private void setUri(Connection connection, PreparedStatement preparedStatement, int index, Object value)
+            throws SQLException, ApplicationError {
+        if (value == null) {
+            preparedStatement.setString(index, null);
+        } else {
+            Array nestedTable = ConverterUtils.convertUri(connection, value);
             (OraclePreparedStatement(preparedStatement)).setArray(index, nestedTable);
         }
     }

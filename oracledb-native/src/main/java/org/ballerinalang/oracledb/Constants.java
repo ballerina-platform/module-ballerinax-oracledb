@@ -133,6 +133,9 @@ public final class Constants {
             public static final String INTERVAL_YEAR_TO_MONTH = "INTERVAL_YEAR_TO_MONTH";
             public static final String INTERVAL_DAY_TO_SECOND = "INTERVAL_DAY_TO_SECOND";
             public static final String BFILE = "BFILE";
+            public static final String OBJECT_TYPE = "OBJECT";
+            public static final String VARRAY = "VARRAY";
+            public static final String NESTED_TABLE = "NESTED_TABLE";
         }
 
         /**
@@ -145,6 +148,7 @@ public final class Constants {
             public static final String OBJECT = "ObjectValue";
             public static final String VARRAY = "VarrayValue";
             public static final String NESTED_TABLE = "CustomTableValue";
+            public static final String XML = "XmlValue";
         }
 
         /**
@@ -206,6 +210,9 @@ public final class Constants {
         }
 
 
+        public class Xml {
+            public static final String XML = "xml";
+        }
     }
 
     public static final String DRIVER = "jdbc:oracle:thin:@//";
