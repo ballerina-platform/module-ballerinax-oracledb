@@ -20,6 +20,8 @@ package org.ballerinalang.oracledb;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BString;
 
+import java.sql.Struct;
+
 import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
 /**
@@ -141,6 +143,8 @@ public final class Constants {
             public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondValue";
             public static final String BFILE = "BfileValue";
             public static final String OBJECT = "ObjectValue";
+            public static final String VARRAY = "VarrayValue";
+            public static final String NESTED_TABLE = "CustomTableValue";
         }
 
         /**
@@ -176,6 +180,31 @@ public final class Constants {
             public static final String DIRECTORY = "directory";
             public static final String FILE = "file";
         }
+
+        /**
+         * Constants related to the attributes of OBJECT Oracle DB type.
+         */
+        public static final class OracleObject {
+            public static final String TYPE_NAME = "typeName";
+            public static final String ATTRIBUTES = "attributes";
+        }
+
+        /**
+         * Constants related to the attributes of OBJECT Oracle DB type.
+         */
+        public static final class OracleObject {
+            public static final String TYPE_NAME = "typeName";
+            public static final String ATTRIBUTES = "attributes";
+        }
+
+        /**
+         *
+         */
+        public static final class Varray {
+            public static final String NAME = "name";
+            public static final String ELEMENTS = "elements";
+        }
+
 
     }
 

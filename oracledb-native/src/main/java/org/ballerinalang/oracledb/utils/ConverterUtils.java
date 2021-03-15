@@ -19,15 +19,25 @@
 package org.ballerinalang.oracledb.utils;
 
 import io.ballerina.runtime.api.TypeTags;
+import io.ballerina.runtime.api.types.ArrayType;
 import io.ballerina.runtime.api.types.Field;
 import io.ballerina.runtime.api.types.StructureType;
 import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.utils.TypeUtils;
+import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
 
+import oracle.jdbc.OracleStruct;
+import org.ballerinalang.oracledb.Constants;
+import org.ballerinalang.sql.exception.ApplicationError;
+
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Struct;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -106,25 +116,37 @@ public class ConverterUtils {
         return "bfilename('" + directory + "', '" + file + "')";
     }
 
-//     /**
-//      * Converts OracleObjectValue value to oracle.sql.STRUCT.
-//      * @param value Custom Bfile value
-//      * @return String of BFILE
-//      */
-//     public static STRUCT convertOracleObject(Connection connection, Object value) throws ApplicationError {
-//         Type type = TypeUtils.getType(value);
-//         if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
-//             throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.BFILE);
-//         }
-//
-////         StructDescriptor structdesc = StructDescriptor.createDescriptor("OBJECT_TYPE", connection);
-////         STRUCT mySTRUCT = new STRUCT(structdesc, connection, attributes);
-// //        Map<String, Object> fields = getRecordData(value);
-// //        String directory = ((BString) fields.get(Constants.Types.Bfile.DIRECTORY)).getValue();
-// //        String file = ((BString) fields.get(Constants.Types.Bfile.FILE)).getValue();
-// //
-// //        return "bfilename('" + directory + "', '" + file + "')";
-//     }
+     /**
+      * Converts OracleObjectValue value to oracle.sql.STRUCT.
+      * @param value Custom Bfile value
+      * @return String of BFILE
+      */
+     public static OracleStruct convertOracleObject(Connection connection, Object value)
+             throws ApplicationError, SQLException {
+         Type type = TypeUtils.getType(value);
+         if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
+             throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.BFILE);
+         }
+         Map<String, Object> fields = getRecordData(value);
+
+         String objectTypeName = ((BString) fields.get(Constants.Types.OracleObject.TYPE_NAME)).getValue();
+         Map<String, Object> attributesRecord = (Map<String, Object>) fields.get(Constants.Types.OracleObject.ATTRIBUTES);
+
+         Object[] attributes = attributesRecord.entrySet().toArray();
+
+         OracleStruct struct = connection.createStruct(objectTypeName, attributes);
+         return struct;
+     }
+
+
+    public static Array convertVarray(Connection connection, Object value) throws ApplicationError {
+        Type type = TypeUtils.getType(value);
+        if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
+            throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.BFILE);
+        }
+        Map<String, Object> fields = getRecordData(value);
+        return (Array) fields.get(Constants.Types.Varray.ELEMENTS);
+    }
 
     private static String getIntervalString(Object param, String typeName) throws ApplicationError {
         String value = null;
@@ -147,14 +169,43 @@ public class ConverterUtils {
         for (int i = 0; i < fieldCount; i++) {
             Field field = fieldIterator.next();
             Object bValue = ((BMap) value).get(fromString(field.getFieldName()));
-            // int typeTag = field.getFieldType().getTag();
-            structData.put(field.getFieldName(), bValue);
+            int typeTag = field.getFieldType().getTag();
+            switch (typeTag) {
+                case TypeTags.INT_TAG:
+                case TypeTags.FLOAT_TAG:
+                case TypeTags.STRING_TAG:
+                case TypeTags.BOOLEAN_TAG:
+                case TypeTags.DECIMAL_TAG:
+                    structData.put(field.getFieldName(), bValue);
+                    break;
+                case TypeTags.ARRAY_TAG:
+                    structData.put(field.getFieldName(), getArrayData(bValue));
+                    break;
+                case TypeTags.RECORD_TYPE_TAG:
+                    structData.put(field.getFieldName(), getRecordData(bValue));
+                    break;
+                default:
+                    break;
+            }
         }
         return structData;
+    }
+
+    private static Object getArrayData(Object bValue) {
+        Type elementType = ((ArrayType) field
+                .getFieldType()).getElementType();
+        if (elementType.getTag() == TypeTags.BYTE_TAG) {
+            structData[i] = ((BArray) bValue).getBytes();
+            // add other types
+        } else {
+            throw new ApplicationError("unsupported data type of " + structuredSQLType
+                    + " specified for struct parameter");
+        }
     }
 
     private static void throwApplicationErrorForInvalidTypes(String sqlTypeName) throws ApplicationError {
         throw new ApplicationError("Invalid data types for " + sqlTypeName);
     }
+
 }
 
