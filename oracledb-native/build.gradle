@@ -31,6 +31,8 @@ dependencies {
 
     checkstyle project(":build-config:checkstyle")
     checkstyle "com.puppycrawl.tools:checkstyle:${puppycrawlCheckstyleVersion}"
+//    compile files("lib/ojdbc8-${oracleDBDriverVersion}.jar")
+//    compile "com.oracle.database.jdbc:ojdbc8:12.2.0.1"
 }
 
 tasks.withType(JavaCompile) {
@@ -76,16 +78,16 @@ spotbugsTest {
 }
 
 //task validateSpotbugs() {
-//    doLast {
-//        if (spotbugsMain.reports.size() > 0 &&
-//                spotbugsMain.reports[0].destination.exists() &&
-//                spotbugsMain.reports[0].destination.text.readLines().size() > 0) {
-//            spotbugsMain.reports[0].destination?.eachLine {
-//                println 'Failure: ' + it
-//            }
-//            throw new GradleException("Spotbugs rule violations were found.");
-//        }
-//    }
+//   doLast {
+//       if (spotbugsMain.reports.size() > 0 &&
+//               spotbugsMain.reports[0].destination.exists() &&
+//               spotbugsMain.reports[0].destination.text.readLines().size() > 0) {
+//           spotbugsMain.reports[0].destination?.eachLine {
+//               println 'Failure: ' + it
+//           }
+//           throw new GradleException("Spotbugs rule violations were found.");
+//       }
+//   }
 //}
 
 checkstyle {
@@ -111,7 +113,13 @@ compileJava {
     }
 }
 
-task copyToLib(type: Copy) {
-    into "$project.projectDir/lib"
-    from configurations.externalJars
-}
+//task copyToLib(type: Copy) {
+//    into "$project.projectDir/lib"
+//    from configurations.externalJars
+//}
+//
+//task unpackJballerinaTools(type: Copy) {
+//    from zipTree("$project.projectDir/lib")
+//    into new File("${buildDir}/target")
+//}
+//

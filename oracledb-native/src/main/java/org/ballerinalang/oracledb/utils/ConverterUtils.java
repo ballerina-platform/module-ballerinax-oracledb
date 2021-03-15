@@ -7,9 +7,12 @@ import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
+//import oracle.sql.STRUCT;
+//import oracle.sql.TIMESTAMP;
 import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
 
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -46,7 +49,7 @@ public class ConverterUtils {
     }
 
     /**
-     * Converts IntervalDayToSecond value to String.
+     * Converts IntervalDayToSecondValue value to String.
      * @param value Custom IntervalDayToSecond value
      * @return String of INTERVAL_DAY_TO_SECOND
      * @throws ApplicationError error thrown if invalid types are passed
@@ -71,6 +74,43 @@ public class ConverterUtils {
         return day + " " + hour + ":" + minute + ":" + second;
     }
 
+    /**
+     * Converts BfileValue value to String.
+     * @param value Custom Bfile value
+     * @return String of BFILE
+     */
+    public static String convertBfile(Object value) throws ApplicationError {
+        Type type = TypeUtils.getType(value);
+        if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
+            throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.BFILE);
+        }
+        Map<String, Object> fields = getRecordData(value);
+        String directory = ((BString) fields.get(Constants.Types.Bfile.DIRECTORY)).getValue();
+        String file = ((BString) fields.get(Constants.Types.Bfile.FILE)).getValue();
+
+        return "bfilename('" + directory + "', '" + file + "')";
+    }
+
+//     /**
+//      * Converts OracleObjectValue value to oracle.sql.STRUCT.
+//      * @param value Custom Bfile value
+//      * @return String of BFILE
+//      */
+//     public static STRUCT convertOracleObject(Connection connection, Object value) throws ApplicationError {
+//         Type type = TypeUtils.getType(value);
+//         if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
+//             throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.BFILE);
+//         }
+//
+////         StructDescriptor structdesc = StructDescriptor.createDescriptor("OBJECT_TYPE", connection);
+////         STRUCT mySTRUCT = new STRUCT(structdesc, connection, attributes);
+// //        Map<String, Object> fields = getRecordData(value);
+// //        String directory = ((BString) fields.get(Constants.Types.Bfile.DIRECTORY)).getValue();
+// //        String file = ((BString) fields.get(Constants.Types.Bfile.FILE)).getValue();
+// //
+// //        return "bfilename('" + directory + "', '" + file + "')";
+//     }
+
     private static String getIntervalString(Object param, String typeName) throws ApplicationError {
         String value = null;
         if (param instanceof BString) {
@@ -92,7 +132,7 @@ public class ConverterUtils {
         for (int i = 0; i < fieldCount; i++) {
             Field field = fieldIterator.next();
             Object bValue = ((BMap) value).get(fromString(field.getFieldName()));
-            int typeTag = field.getFieldType().getTag();
+            // int typeTag = field.getFieldType().getTag();
             structData.put(field.getFieldName(), bValue);
         }
         return structData;

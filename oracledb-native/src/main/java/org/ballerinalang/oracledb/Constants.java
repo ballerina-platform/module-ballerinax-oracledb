@@ -130,6 +130,7 @@ public final class Constants {
         public static final class OracleDbTypes {
             public static final String INTERVAL_YEAR_TO_MONTH = "INTERVAL_YEAR_TO_MONTH";
             public static final String INTERVAL_DAY_TO_SECOND = "INTERVAL_DAY_TO_SECOND";
+            public static final String BFILE = "BFILE";
         }
 
         /**
@@ -138,6 +139,8 @@ public final class Constants {
         public static final class CustomTypes {
             public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthValue";
             public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondValue";
+            public static final String BFILE = "BfileValue";
+            public static final String OBJECT = "ObjectValue";
         }
 
         /**
@@ -159,12 +162,21 @@ public final class Constants {
         /**
          * Constants related to the attributes of INTERVAL_DAY_TO_SECOND Oracle DB type.
          */
-        public class IntervalDayToSecond {
+        public static final class IntervalDayToSecond {
             public static final String DAY = "day";
             public static final String HOUR = "hour";
             public static final String MINUTE = "minute";
             public static final String SECOND = "second";
         }
+
+        /**
+         * Constants related to the attributes of BFILE Oracle DB type.
+         */
+        public static final class Bfile {
+            public static final String DIRECTORY = "directory";
+            public static final String FILE = "file";
+        }
+
     }
 
     public static final String DRIVER = "jdbc:oracle:thin:@//";

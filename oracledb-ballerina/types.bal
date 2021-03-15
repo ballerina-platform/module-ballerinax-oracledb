@@ -37,13 +37,20 @@ type IntervalDayToSecondRecord record {|
     float|string second;
 |};
 
+# + directory - Directory of the file
+# + file - File name
+type BfileRecord record {|
+    string directory;
+    string file;
+|};
+
 # Represents INTERVAL YEAR TO MONTH Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
 public class IntervalYearToMonthValue {
-    public IntervalYearToMonthRecord|string? value;
+    public string|IntervalYearToMonthRecord? value;
 
-    public isolated function init(IntervalYearToMonthRecord|string? value = ()) {
+    public isolated function init(string|IntervalYearToMonthRecord? value = ()) {
         self.value = value;
     }
 }
@@ -52,15 +59,26 @@ public class IntervalYearToMonthValue {
 #
 # + value - Value of parameter passed into the SQL statement
 public class IntervalDayToSecondValue {
-    public IntervalDayToSecondRecord|string? value;
+    public string|IntervalDayToSecondRecord? value;
 
-    public isolated function init(IntervalDayToSecondRecord|string? value = ()) {
+    public isolated function init(string|IntervalDayToSecondRecord? value = ()) {
+        self.value = value;
+    }
+}
+
+# Represents BFILE Oracle DB field.
+#
+# + value - Value of parameter passed into the SQL statement
+public class BfileValue {
+    public BfileRecord? value;
+
+    public isolated function init(BfileRecord? value = ()) {
         self.value = value;
     }
 }
 
 # The class with custom implementations for nextResult and getNextQueryResult in the connector modules.
-# 
+#
 public class CustomResultIterator {
     isolated function nextResult(sql:ResultIterator iterator) returns record {}|sql:Error? = @java:Method {
         'class: "org.ballerinalang.oracledb.utils.RecordIteratorUtils"
