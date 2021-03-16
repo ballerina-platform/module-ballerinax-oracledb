@@ -21,7 +21,7 @@ import ballerina/test;
     enable: true,
     groups:["connection","connection-init"]
 }
-function testWithOnlyUserPasswordParams() {
+isolated function testWithOnlyUserPasswordParams() {
     Client | sql:Error oracledbClient = new(user=user, password=password);
     test:assertTrue(oracledbClient is sql:Error, "Initializing only with username and password params should fail");
 }
@@ -31,7 +31,7 @@ function testWithOnlyUserPasswordParams() {
     enable: true,
     groups:["connection","connection-init"]
 }
-function testWithUserPasswordDatabaseParams() {
+isolated function testWithUserPasswordDatabaseParams() {
     Client | sql:Error oracledbClient = new(user=user, password=password, database=database);
     test:assertTrue(oracledbClient is Client, "Initializing with username, password and database params fail");
 }
@@ -42,7 +42,7 @@ function testWithUserPasswordDatabaseParams() {
     groups:["connection","connection-init"]
 
 }
-function testWithAllParamsExceptOptions() {
+isolated function testWithAllParamsExceptOptions() {
     Client | sql:Error oracledbClient = new(
         user=user, 
         password=password,
@@ -54,13 +54,13 @@ function testWithAllParamsExceptOptions() {
 }
 
 // with all params and options minus SSL
-@test:Config{
-    enable: true,
-    groups:["connection","connection-init"]
+// @test:Config{
+//     enable: true,
+//     groups:["connection","connection-init"]
 
-}
+// }
 
-//function testWithOptionsExceptSSL() {
+//isolated function testWithOptionsExceptSSL() {
 //    Client | sql:Error oracledbClient = new(
 //        user=user,
 //        password=password,
@@ -77,7 +77,7 @@ function testWithAllParamsExceptOptions() {
 //    enable: true,
 //    groups:["connection","connection-init"]
 //}
-//function testWithConnectionPoolParam() {
+//isolated function testWithConnectionPoolParam() {
 //    Client | sql:Error oracledbClient = new(
 //        user=user,
 //        password=password,

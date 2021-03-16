@@ -47,7 +47,7 @@ isolated function getTextColumnChannel() returns @untainted io:ReadableCharacter
 }
 
 function dropTableIfExists(string tablename) returns sql:ExecutionResult|error {
-    Client oracledbClient = checkpanic new(user, password, host, port, database, options);
+    Client oracledbClient = checkpanic new(user, password, host, port, database);
     sql:ExecutionResult result = checkpanic oracledbClient->execute("BEGIN "+
         "EXECUTE IMMEDIATE 'DROP TABLE ' || '" + tablename + "'; "+
         "EXCEPTION "+
