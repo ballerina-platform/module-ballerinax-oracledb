@@ -79,7 +79,7 @@ type NestedTableRecord record {|
 # Structure of NESTED TABLE.
 # + xml - Xml string
 type XmlRecord record {|
-    string xml;
+    string 'xml;
 |};
 
 
