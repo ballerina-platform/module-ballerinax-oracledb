@@ -1,0 +1,6 @@
+fixes:
+  - "ballerinax/oracledb/*/::oracledb-ballerina/"
+
+ignore:
+  - "**/tests"
+

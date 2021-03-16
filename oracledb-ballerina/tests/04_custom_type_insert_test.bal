@@ -15,7 +15,6 @@
 
 import ballerina/sql;
 import ballerina/test;
-import ballerina/time;
 
 @test:BeforeGroups { value:["insert-time"] }
 function beforeGroupsFunc() {
@@ -217,22 +216,3 @@ isolated function insertIntervalYearToMonthWithInvalidBalType() {
     _ = checkpanic oracledbClient.close();
 }
 
-@test:Config{
-    enable: true,
-    groups:["insert","insert-time"],
-    dependsOn: [insertIntervalYearToMonthWithInvalidBalType]
-}
-isolated function insertDateTime() {
-    Client oracledbClient = checkpanic new(user, password, host, port, database);
-
-    time:Time timeCreated = checkpanic time:createTime(2017, 3, 28, 23, 42, 45, 554, "America/Panama");
-    sql:DateValue date = new(timeCreated);
-
-    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_DATE) VALUES (${date})`;
-    sql:ExecutionResult result = checkpanic oracledbClient->execute(insertQuery);
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
-    test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    _ = checkpanic oracledbClient.close();
-}

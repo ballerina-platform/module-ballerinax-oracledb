@@ -55,39 +55,10 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             case Constants.Types.CustomTypes.BFILE:
                 setBfile(connection, preparedStatement, index, value);
                 break;
-//             case Constants.Types.CustomTypes.OBJECT:
-//                 setOracleObject(connection, preparedStatement, index, value);
             default:
                 super.setCustomSqlTypedParam(connection, preparedStatement, index, typedValue);
         }
     }
-
-//     @Override
-//     protected int getCustomSQLType(BObject typedValue) throws ApplicationError {
-//         String sqlType = typedValue.getType().getName();
-//         int sqlTypeValue;
-//         switch (sqlType) {
-//             // set values according to the call type
-//             default:
-//                 sqlTypeValue = super.getCustomSQLType(typedValue);
-//         }
-//         return sqlTypeValue;
-//     }
-//
-//     @Override
-//     protected Object[] getCustomArrayData(Object value) throws ApplicationError {
-//         // custom type array logic
-//         return super.getCustomArrayData(value);
-//     }
-//
-//     @Override
-//     protected Object[] getCustomStructData(Connection conn, Object value)
-//             throws SQLException, ApplicationError {
-//         Type type = TypeUtils.getType(value);
-//         String structuredSQLType = type.getName().toUpperCase(Locale.getDefault());
-//         // custom type struct logic
-//         return super.getCustomStructData(conn, value);
-//     }
 
     private void setIntervalYearToMonth(Connection connection, PreparedStatement preparedStatement,
                                          int index, Object value) throws SQLException, ApplicationError {
@@ -123,13 +94,4 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         }
     }
 
-//     private void setOracleObject(Connection connection, PreparedStatement preparedStatement, int index, Object value)
-//             throws SQLException, ApplicationError {
-//         if (value == null) {
-//             preparedStatement.setString(index, null);
-//         } else {
-//             STRUCT oracleObject = ConverterUtils.convertOracleObject(connection, value);
-//             (OraclePreparedStatement(preparedStatement)).setOracleObject(index, oracleObject);
-//         }
-//     }
 }

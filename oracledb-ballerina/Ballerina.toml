@@ -10,10 +10,10 @@ artifactId = "oracledb-native"
 version = "@project.version@"
 
 [[platform.java11.dependency]]
-path = "@project.path@/repo/bala/ballerina/sql/@stdlib.sql.version@/platform/java11/sql-native-@stdlib.sql.native.version@.jar"
+path = "@project.path@/repo/bala/ballerina/sql/@stdlib.sql.version@/java11/platform/java11/sql-native-@stdlib.sql.native.version@.jar"
 groupId = "org.ballerinalang"
 artifactId = "ballerina-sql"
-version = "@stdlib.sql.native.version@"
+version = "@stdlib.sql.native.version@" 
 
 [[platform.java11.dependency]]
 path = "./lib/ojdbc8-12.2.0.1.jar"
@@ -21,3 +21,4 @@ artifactId = "ojdbc8"
 groupId = "com.oracle.database.jdbc"
 scope = "testOnly"
 version = "12.2.0.1"
+

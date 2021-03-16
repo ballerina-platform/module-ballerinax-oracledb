@@ -80,11 +80,6 @@ public class ClientProcessor {
         return org.ballerinalang.sql.nativeimpl.ClientProcessor.createClient(client, sqlDatasourceParams);
     }
 
-
-    // public static void nextResult(BObject result, BTypedesc typeDesc) {
-    //     return sqlDatasourceParams;
-    // }
-
     public static Object close(BObject client) {
         return org.ballerinalang.sql.nativeimpl.ClientProcessor.close(client);
     }

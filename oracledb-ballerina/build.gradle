@@ -103,7 +103,6 @@ task updateTomlFile {
     doLast {
         def stdlibDependentSqlVersion = project.stdlibSqlVersion.replace("${snapshotVersion}", "")
         def stdlibCryptoVersion = project.stdlibCryptoVersion.replace("${snapshotVersion}", "")
-        def stdlibTimeVersion = project.stdlibTimeVersion.replace("${snapshotVersion}", "")
 
         def newConfig = ballerinaConfigFile.text.replace("@project.version@", project.version.toString())
         newConfig = newConfig.replace("@toml.version@", tomlVersion)
@@ -115,7 +114,6 @@ task updateTomlFile {
 
         def newDependencyConfig = ballerinaDependencyFile.text.replace("@stdlib.sql.version@", stdlibDependentSqlVersion)
         newDependencyConfig = newDependencyConfig.replace("@stdlib.crypto.version@", stdlibCryptoVersion)
-        newDependencyConfig = newDependencyConfig.replace("@stdlib.time.version@", stdlibTimeVersion)
         ballerinaDependencyFile.text = newDependencyConfig
     }
 }
@@ -125,11 +123,6 @@ task revertTomlFile {
         ballerinaConfigFile.text = originalConfig
         ballerinaDependencyFile.text = originalDependencies
     }
-}
-
-assemble {
-    dependsOn(":oracledb-native:build")
-    dependsOn(copyStdlibs)
 }
 
 def groupParams = ""
