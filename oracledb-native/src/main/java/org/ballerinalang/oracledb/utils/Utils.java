@@ -29,6 +29,12 @@ import java.util.Properties;
  * This class contains utility functions required by the nativeimpl package.
  */
 public class Utils {
+
+    /**
+     * Generates the map of connection parameter options.
+     * @param clientOptions BMap of user provided options
+     * @return Structured connection parameter options
+     */
     public static BMap<BString, Object> generateOptionsMap(BMap clientOptions) {
         BMap<BString, Object> options = ValueCreator.createMapValue();
 
@@ -78,6 +84,11 @@ public class Utils {
         return connProperties;
     }
 
+    /**
+     * Generates a Properties object of pool properties.
+     * @param clientOptions pool options provided by the user
+     * @return Properties object of pool properties
+     */
     public static Properties generatePoolProperties(BMap clientOptions) {
         Properties poolProperties = new Properties();
         long connectTimeout = getTimeoutInMilliSeconds(clientOptions.get(Constants.Options.CONNECT_TIMEOUT_SECONDS));

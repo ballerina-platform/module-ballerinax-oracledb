@@ -7,12 +7,10 @@ import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
-//import oracle.sql.STRUCT;
-//import oracle.sql.TIMESTAMP;
 import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
 
-import java.sql.Connection;
+//import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;

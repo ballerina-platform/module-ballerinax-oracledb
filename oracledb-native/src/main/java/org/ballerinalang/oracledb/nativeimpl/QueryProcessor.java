@@ -28,11 +28,18 @@ import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcess
 /**
  * This class provides the methods for query processing which executes sql queries.
  * 
- * @since 1.2.0
+ * @since 0.1.0
  */
 public class QueryProcessor {
     private QueryProcessor() {}
 
+    /**
+     * Query the database and return results.
+     * @param client client object
+     * @param paramSQLString SQL string of the query
+     * @param recordType type description of the result record
+     * @return result stream or error
+     */
     public static BStream nativeQuery(BObject client, Object paramSQLString,
                                       Object recordType) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor

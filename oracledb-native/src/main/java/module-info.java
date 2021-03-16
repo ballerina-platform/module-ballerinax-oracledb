@@ -20,7 +20,7 @@ module io.ballerina.stdlib.oracledb {
     requires io.ballerina.runtime;
     requires io.ballerina.stdlib.sql;    
     requires java.sql;
-//    requires ojdbc;
+//    requires oracle.jdbc;
     exports org.ballerinalang.oracledb;
 }
 

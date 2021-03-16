@@ -26,12 +26,18 @@ import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcess
 /**
  * This class contains methods for executing SQL queries.
  *
- * @since .1.0
+ * @since 0.1.0
  */
 public class ExecuteProcessor {
 
     private ExecuteProcessor() {}
 
+    /**
+     * Execute an SQL statement.
+     * @param client client object
+     * @param paramSQLString array of SQL string for the execute statement
+     * @return execution result or error
+     */
     public static Object nativeExecute(BObject client, Object paramSQLString) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();
@@ -39,6 +45,12 @@ public class ExecuteProcessor {
                 statementParametersProcessor);
     }
 
+    /**
+     * Execute a batch of SQL statements.
+     * @param client client object
+     * @param paramSQLStrings array of SQL string for the execute statement
+     * @return execution result or error
+     */
     public static Object nativeBatchExecute(BObject client, BArray paramSQLStrings) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();

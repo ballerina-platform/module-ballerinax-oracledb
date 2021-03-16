@@ -34,6 +34,13 @@ public class CallProcessor {
 
     private CallProcessor() {}
 
+    /**
+     * Execute a call query and return the results.
+     * @param client Client BObject
+     * @param paramSQLString SQL string for the call statement
+     * @param recordTypes type description of the result record
+     * @return procedure call result or error
+     */
     public static Object nativeCall(BObject client, Object paramSQLString, BArray recordTypes) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();

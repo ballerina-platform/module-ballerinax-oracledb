@@ -11,6 +11,12 @@ import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
  */
 public class ProcedureCallResultUtils {
 
+    /**
+     * Calls sql:ProcedureCallResult` with a custom `ResultParameterProcessor` object.
+     * @param customResultIterator module specific resultIterator BObject
+     * @param callResult call result that needs to be iterated
+     * @return next query result
+     */
     public static Object getNextQueryResult(BObject customResultIterator, BObject callResult) {
         DefaultResultParameterProcessor resultParameterProcessor = OracleDBResultParameterProcessor.getInstance();
         return org.ballerinalang.sql.utils.ProcedureCallResultUtils.getNextQueryResult(

@@ -1,11 +1,8 @@
 package org.ballerinalang.oracledb.parameterprocessor;
-
-import io.ballerina.runtime.api.types.Type;
-import io.ballerina.runtime.api.utils.TypeUtils;
+//import io.ballerina.runtime.api.types.Type;
+//import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
-//import oracle.jdbc.*;
-//import oracle.sql.STRUCT;
 import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.oracledb.utils.ConverterUtils;
 import org.ballerinalang.sql.exception.ApplicationError;
@@ -15,7 +12,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Locale;
+//import java.util.Locale;
 
 /**
  * This class overrides DefaultStatementParameterProcessor to implement methods required to convert ballerina types
@@ -27,6 +24,10 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     private static final Object lock = new Object();
     private static volatile OracleDBStatementParameterProcessor instance;
 
+    /**
+     * Singleton static method that returns an instance of `OracleDBStatementParameterProcessor`.
+     * @return OracleDBStatementParameterProcessor
+     */
     public static OracleDBStatementParameterProcessor getInstance() {
         if (instance == null) {
             synchronized (lock) {

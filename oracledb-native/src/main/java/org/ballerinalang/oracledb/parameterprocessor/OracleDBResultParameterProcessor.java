@@ -12,6 +12,10 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
     private static final Object lock = new Object();
     private static volatile OracleDBResultParameterProcessor instance;
 
+    /**
+     * Singleton static method that returns an instance of `OracleDBResultParameterProcessor`.
+     * @return OracleDBResultParameterProcessor
+     */
     public static OracleDBResultParameterProcessor getInstance() {
         if (instance == null) {
             synchronized (lock) {

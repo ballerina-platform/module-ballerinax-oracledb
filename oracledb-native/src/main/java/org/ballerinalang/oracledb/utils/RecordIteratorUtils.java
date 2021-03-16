@@ -11,6 +11,12 @@ import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
  */
 public class RecordIteratorUtils {
 
+    /**
+     * Calls `sql:RecordIteratorUtils` with a custom `ResultParameterProcessor` object.
+     * @param customResultIterator module specific resultIterator BObject
+     * @param iterator the record that needs to be iterated
+     * @return next result of the iterator
+     */
     public static Object nextResult(BObject customResultIterator, BObject iterator) {
         DefaultResultParameterProcessor resultParameterProcessor = OracleDBResultParameterProcessor.getInstance();
         return org.ballerinalang.sql.utils.RecordIteratorUtils.nextResult(iterator, resultParameterProcessor);
