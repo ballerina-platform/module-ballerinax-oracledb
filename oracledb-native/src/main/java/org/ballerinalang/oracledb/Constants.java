@@ -194,21 +194,12 @@ public final class Constants {
         }
 
         /**
-         * Constants related to the attributes of OBJECT Oracle DB type.
-         */
-        public static final class OracleObject {
-            public static final String TYPE_NAME = "typeName";
-            public static final String ATTRIBUTES = "attributes";
-        }
-
-        /**
          *
          */
         public static final class Varray {
             public static final String NAME = "name";
             public static final String ELEMENTS = "elements";
         }
-
 
         public class Xml {
             public static final String XML = "xml";

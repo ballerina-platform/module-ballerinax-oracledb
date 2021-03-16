@@ -38,7 +38,6 @@ import org.ballerinalang.sql.exception.ApplicationError;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Struct;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -188,7 +187,14 @@ public class ConverterUtils {
         return XMLType.createXML(connection, xml);
     }
 
-    public convertUri
+     public Array convertUri(Connection connection, Object value) throws ApplicationError {
+         Type type = TypeUtils.getType(value);
+         if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
+             throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.NESTED_TABLE);
+         }
+         Map<String, Object> fields = getRecordData(value);
+         return (Array) fields.get(Constants.Types.Varray.ELEMENTS);
+     }
 
     private static String getIntervalString(Object param, String typeName) throws ApplicationError {
         String value = null;
