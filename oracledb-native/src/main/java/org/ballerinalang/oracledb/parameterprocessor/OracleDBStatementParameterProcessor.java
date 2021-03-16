@@ -17,24 +17,25 @@
  */
 
 package org.ballerinalang.oracledb.parameterprocessor;
-//import io.ballerina.runtime.api.types.Type;
-//import io.ballerina.runtime.api.utils.TypeUtils;
+import io.ballerina.runtime.api.types.Type;
+import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
-//import oracle.jdbc.*;
-import oracle.jdbc.OracleStruct;
-//import oracle.sql.STRUCT;
-import org.ballerinalang.oracledb.Constants;
-import org.ballerinalang.oracledb.utils.ConverterUtils;
-import org.ballerinalang.sql.exception.ApplicationError;
-import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
 
 import java.io.IOException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-//import java.util.Locale;
+import java.sql.Struct;
+import java.util.Locale;
+
+import oracle.jdbc.OraclePreparedStatement;
+import oracle.xdb.XMLType;
+import org.ballerinalang.oracledb.Constants;
+import org.ballerinalang.oracledb.utils.ConverterUtils;
+import org.ballerinalang.sql.exception.ApplicationError;
+import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
 
 /**
  * This class overrides DefaultStatementParameterProcessor to implement methods required to convert ballerina types
@@ -79,15 +80,19 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 break;
             case Constants.Types.CustomTypes.OBJECT:
                 setOracleObject(connection, preparedStatement, index, value);
+                break;
             case Constants.Types.CustomTypes.VARRAY:
                 setVarray(connection, preparedStatement, index, value);
+                break;
             case Constants.Types.CustomTypes.NESTED_TABLE:
                 setNestedTable(connection, preparedStatement, index, value);
-
+                break;
             case Constants.Types.CustomTypes.XML:
                 setXml(connection, preparedStatement, index, value);
-            case Constants.Types.CustomTypes.URI:
-                setUri(connection, preparedStatement, index, value);
+                break;
+//            case Constants.Types.CustomTypes.URI:
+//                setUri(connection, preparedStatement, index, value);
+//                break;
             default:
                 super.setCustomSqlTypedParam(connection, preparedStatement, index, typedValue);
         }
@@ -159,8 +164,8 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         if (value == null) {
             preparedStatement.setString(index, null);
         } else {
-            OracleStruct oracleObject = ConverterUtils.convertOracleObject(connection, value);
-            (OraclePreparedStatement(preparedStatement)).setOracleObject(index, oracleObject);
+            Struct oracleObject = ConverterUtils.convertOracleObject(connection, value);
+            preparedStatement.setObject(index, oracleObject);
         }
     }
 
@@ -170,7 +175,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             preparedStatement.setString(index, null);
         } else {
             Array varray = ConverterUtils.convertVarray(connection, value);
-            (OraclePreparedStatement(preparedStatement)).setArray(index, varray);
+            ((OraclePreparedStatement) preparedStatement).setArray(index, varray);
         }
     }
 
@@ -180,7 +185,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             preparedStatement.setString(index, null);
         } else {
             Array nestedTable = ConverterUtils.convertNestedTable(connection, value);
-            (OraclePreparedStatement(preparedStatement)).setArray(index, nestedTable);
+            ((OraclePreparedStatement) preparedStatement).setArray(index, nestedTable);
         }
     }
 
@@ -190,18 +195,18 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             preparedStatement.setString(index, null);
         } else {
             XMLType xml = ConverterUtils.convertXml(connection, value);
-            (OraclePreparedStatement(preparedStatement)).setObject(index, xml);
+            preparedStatement.setObject(index, xml);
         }
     }
 
-    private void setUri(Connection connection, PreparedStatement preparedStatement, int index, Object value)
-            throws SQLException, ApplicationError {
-        if (value == null) {
-            preparedStatement.setString(index, null);
-        } else {
-            Array nestedTable = ConverterUtils.convertUri(connection, value);
-            (OraclePreparedStatement(preparedStatement)).setArray(index, nestedTable);
-        }
-    }
+//    private void setUri(Connection connection, PreparedStatement preparedStatement, int index, Object value)
+//            throws SQLException, ApplicationError {
+//        if (value == null) {
+//            preparedStatement.setString(index, null);
+//        } else {
+//            Array nestedTable = ConverterUtils.convertUri(connection, value);
+//            ((OraclePreparedStatement)preparedStatement).setArray(index, nestedTable);
+//        }
+//    }
 }
 

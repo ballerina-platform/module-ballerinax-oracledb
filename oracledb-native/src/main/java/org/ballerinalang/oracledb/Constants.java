@@ -20,8 +20,6 @@ package org.ballerinalang.oracledb;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BString;
 
-import java.sql.Struct;
-
 import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
 /**
@@ -194,14 +192,17 @@ public final class Constants {
         }
 
         /**
-         *
+         * Constants related to the attributes of VARRAY Oracle DB type.
          */
         public static final class Varray {
             public static final String NAME = "name";
             public static final String ELEMENTS = "elements";
         }
 
-        public class Xml {
+        /**
+         * Constants related to the attributes of XML Oracle DB type.
+         */
+        public static class Xml {
             public static final String XML = "xml";
         }
     }
