@@ -82,7 +82,6 @@ public final class Constants {
      */
     public static final class DatabaseProps {
         public static final BString LOGIN_TIMEOUT = StringUtils.fromString("loginTimeout");
-        // public static final BString SET_CONN_PROPERTIES = StringUtils.fromString("setConnectionProperties");
         public static final BString CONN_PROPERTIES = StringUtils.fromString("connectionProperties");
 
         /**

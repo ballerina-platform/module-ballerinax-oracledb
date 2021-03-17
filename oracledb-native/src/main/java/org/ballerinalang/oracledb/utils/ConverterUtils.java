@@ -134,9 +134,9 @@ public class ConverterUtils {
      }
 
     /**
-     *
-     * @param value
-     * @return
+     * Converts VArray value to oracle.sql.Array.
+     * @param value Custom VArray Value
+     * @return sql Array
      * @throws ApplicationError
      */
     public static Array convertVarray(Object value) throws ApplicationError, SQLException {
@@ -149,9 +149,9 @@ public class ConverterUtils {
     }
 
     /**
-     *
-     * @param value
-     * @return
+     * Converts NestedTable value to oracle.sql.Array.
+     * @param value Custom NestedTable Value
+     * @return sql Array
      * @throws ApplicationError
      */
     public static Array convertNestedTable(Object value) throws ApplicationError, SQLException {
@@ -164,10 +164,10 @@ public class ConverterUtils {
     }
 
     /**
-     *
-     * @param connection
-     * @param value
-     * @return
+     * Converts XML value to oracle.xdb.XML.
+     * @param connection Connection instance
+     * @param value Custom XML Value
+     * @return XMLType
      * @throws ApplicationError
      */
     public static XMLType convertXml(Connection connection, Object value) throws ApplicationError, SQLException {
@@ -180,6 +180,12 @@ public class ConverterUtils {
         return XMLType.createXML(connection, xml, "oracle.xml.parser.XMLDocument.THIN");
     }
 
+    /**
+     * Converts URI value to string.
+     * @param value Custom URI Value
+     * @return java.sql.Array
+     * @throws ApplicationError
+     */
      public Array convertUri(Object value) throws ApplicationError, SQLException {
          Type type = TypeUtils.getType(value);
          if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
