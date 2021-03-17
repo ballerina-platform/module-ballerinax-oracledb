@@ -17,23 +17,16 @@
  */
 
 package org.ballerinalang.oracledb.parameterprocessor;
-import io.ballerina.runtime.api.types.Type;
-import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 
 import java.io.IOException;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Struct;
-import java.util.Locale;
 
-import oracle.jdbc.OracleBfile;
-import oracle.jdbc.OraclePreparedStatement;
-import oracle.sql.BFILE;
 import oracle.xdb.XMLType;
 import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.oracledb.utils.ConverterUtils;
@@ -97,39 +90,9 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             case Constants.Types.CustomTypes.XML:
                 setXml(connection, preparedStatement, index, value);
                 break;
-//            case Constants.Types.CustomTypes.URI:
-//                setUri(connection, preparedStatement, index, value);
-//                break;
             default:
                 super.setCustomSqlTypedParam(connection, preparedStatement, index, typedValue);
         }
-    }
-
-    @Override
-    protected int getCustomSQLType(BObject typedValue) throws ApplicationError {
-        String sqlType = typedValue.getType().getName();
-        int sqlTypeValue;
-        switch (sqlType) {
-            // set values according to the call type
-            default:
-                sqlTypeValue = super.getCustomSQLType(typedValue);
-        }
-        return sqlTypeValue;
-    }
-
-    @Override
-    protected Object[] getCustomArrayData(Object value) throws ApplicationError {
-        // custom type array logic
-        return super.getCustomArrayData(value);
-    }
-
-    @Override
-    protected Object[] getCustomStructData(Connection conn, Object value)
-            throws SQLException, ApplicationError {
-        Type type = TypeUtils.getType(value);
-        String structuredSQLType = type.getName().toUpperCase(Locale.getDefault());
-        // custom type struct logic
-        return super.getCustomStructData(conn, value);
     }
 
     private void setIntervalYearToMonth(Connection connection, PreparedStatement preparedStatement,
@@ -181,15 +144,5 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         XMLType xml = ConverterUtils.convertXml(connection, value);
         preparedStatement.setObject(index, xml);
     }
-
-//    private void setUri(Connection connection, PreparedStatement preparedStatement, int index, Object value)
-//            throws SQLException, ApplicationError {
-//        if (value == null) {
-//            preparedStatement.setString(index, null);
-//        } else {
-//            Array nestedTable = ConverterUtils.convertUri(connection, value);
-//            ((OraclePreparedStatement)preparedStatement).setArray(index, nestedTable);
-//        }
-//    }
 }
 

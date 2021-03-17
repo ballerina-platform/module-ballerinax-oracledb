@@ -29,14 +29,14 @@
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testGlobalConnectionPoolSingleDestination() {
+//function testGlobalConnectionPoolSingleDestination() {
 //   drainGlobalPool(database);
 //}
 //
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testGlobalConnectionPoolsMultipleDestinations() {
+//function testGlobalConnectionPoolsMultipleDestinations() {
 //   drainGlobalPool(poolDB_1);
 //   drainGlobalPool(poolDB_2);
 //}
@@ -44,7 +44,7 @@
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testGlobalConnectionPoolSingleDestinationConcurrent() {
+//function testGlobalConnectionPoolSingleDestinationConcurrent() {
 //   worker w1 returns [stream<record{}, error>, stream<record{}, error>]|error {
 //       return testGlobalConnectionPoolConcurrentHelper1(poolDB_1);
 //   }
@@ -71,7 +71,7 @@
 //   var result2 = testGlobalConnectionPoolConcurrentHelper2(poolDB_1);
 //
 //   (int|error)[][] returnArray = [];
-//   // Connections will be released here as we fully consume the data in the following conversion isolated function calls
+//   // Connections will be released here as we fully consume the data in the following conversion function calls
 //   returnArray[0] = checkpanic getCombinedReturnValue(results.w1);
 //   returnArray[1] = checkpanic getCombinedReturnValue(results.w2);
 //   returnArray[2] = checkpanic getCombinedReturnValue(results.w3);
@@ -101,7 +101,7 @@
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testLocalSharedConnectionPoolConfigSingleDestination() {
+//function testLocalSharedConnectionPoolConfigSingleDestination() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 5};
 //   Client dbClient1 = checkpanic new (user, password, host, port, poolDB_1, options, pool);
 //   Client dbClient2 = checkpanic new (user, password, host, port, poolDB_1, options, pool);
@@ -119,7 +119,7 @@
 //
 //   (int|error)[] returnArray = [];
 //   int i = 0;
-//   // Connections will be released here as we fully consume the data in the following conversion isolated function calls
+//   // Connections will be released here as we fully consume the data in the following conversion function calls
 //   foreach var x in resultArray {
 //       returnArray[i] = getReturnValue(x);
 //       i += 1;
@@ -145,7 +145,7 @@
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testLocalSharedConnectionPoolConfigDifferentDbOptions() {
+//function testLocalSharedConnectionPoolConfigDifferentDbOptions() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 3};
 //   Client dbClient1 = checkpanic new (user, password, host, port, poolDB_1,
 //       {connectTimeout: 2, socketTimeout: 10}, pool);
@@ -173,7 +173,7 @@
 //
 //   (int|error)[] returnArray = [];
 //   int i = 0;
-//   // Connections will be released here as we fully consume the data in the following conversion isolated function calls
+//   // Connections will be released here as we fully consume the data in the following conversion function calls
 //   foreach var x in resultArray {
 //       returnArray[i] = getReturnValue(x);
 //       i += 1;
@@ -186,7 +186,7 @@
 //   checkpanic dbClient5.close();
 //   checkpanic dbClient6.close();
 //
-//   // Since max pool size is 3, the last select isolated function call going through each pool should fail.
+//   // Since max pool size is 3, the last select function call going through each pool should fail.
 //   i = 0;
 //   while(i < 3) {
 //       test:assertEquals(returnArray[i], 1);
@@ -201,7 +201,7 @@
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testLocalSharedConnectionPoolConfigMultipleDestinations() {
+//function testLocalSharedConnectionPoolConfigMultipleDestinations() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 3};
 //   Client dbClient1 = checkpanic new (user, password, host, port, poolDB_1, options, pool);
 //   Client dbClient2 = checkpanic new (user, password, host, port, poolDB_1, options, pool);
@@ -223,7 +223,7 @@
 //
 //   (int|error)[] returnArray = [];
 //   int i = 0;
-//   // Connections will be released here as we fully consume the data in the following conversion isolated function calls
+//   // Connections will be released here as we fully consume the data in the following conversion function calls
 //   foreach var x in resultArray {
 //       returnArray[i] = getReturnValue(x);
 //       i += 1;
@@ -236,7 +236,7 @@
 //   checkpanic dbClient5.close();
 //   checkpanic dbClient6.close();
 //
-//   // Since max pool size is 3, the last select isolated function call going through each pool should fail.
+//   // Since max pool size is 3, the last select function call going through each pool should fail.
 //   i = 0;
 //   while(i < 3) {
 //       test:assertEquals(returnArray[i], 1);
@@ -250,7 +250,7 @@
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testLocalSharedConnectionPoolCreateClientAfterShutdown() {
+//function testLocalSharedConnectionPoolCreateClientAfterShutdown() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 2};
 //   Client dbClient1 = checkpanic new (user, password, host, port, poolDB_1, options, pool);
 //   Client dbClient2 = checkpanic new (user, password, host, port, poolDB_1, options, pool);
@@ -286,7 +286,7 @@
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testLocalSharedConnectionPoolStopInitInterleave() {
+//function testLocalSharedConnectionPoolStopInitInterleave() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 2};
 //
 //   worker w1 returns error? {
@@ -301,14 +301,14 @@
 //   test:assertEquals(result, 1);
 //}
 //
-//isolated function testLocalSharedConnectionPoolStopInitInterleaveHelper1(sql:ConnectionPool pool, string database)
+//function testLocalSharedConnectionPoolStopInitInterleaveHelper1(sql:ConnectionPool pool, string database)
 //returns error? {
 //   Client dbClient = checkpanic new (user, password, host, port, database, options, pool);
 //   runtime:sleep(10);
 //   checkpanic dbClient.close();
 //}
 //
-//isolated function testLocalSharedConnectionPoolStopInitInterleaveHelper2(sql:ConnectionPool pool, string database)
+//function testLocalSharedConnectionPoolStopInitInterleaveHelper2(sql:ConnectionPool pool, string database)
 //returns @tainted int|error {
 //   runtime:sleep(10);
 //   Client dbClient = checkpanic new (user, password, host, port, database, options, pool);
@@ -321,7 +321,7 @@
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testShutDownUnsharedLocalConnectionPool() {
+//function testShutDownUnsharedLocalConnectionPool() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 2};
 //   Client dbClient = checkpanic new (user, password, host, port, poolDB_1, options, pool);
 //
@@ -341,7 +341,7 @@
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testShutDownSharedConnectionPool() {
+//function testShutDownSharedConnectionPool() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 1};
 //   Client dbClient1 = checkpanic new (user, password, host, port, poolDB_1, options, pool);
 //   Client dbClient2 = checkpanic new (user, password, host, port, poolDB_1, options, pool);
@@ -380,7 +380,7 @@
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testShutDownPoolCorrespondingToASharedPoolConfig() {
+//function testShutDownPoolCorrespondingToASharedPoolConfig() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 1};
 //   Client dbClient1 = checkpanic new (user, password, host, port, poolDB_1, options, pool);
 //   Client dbClient2 = checkpanic new (user, password, host, port, poolDB_1, options, pool);
@@ -413,7 +413,7 @@
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testStopClientUsingGlobalPool() {
+//function testStopClientUsingGlobalPool() {
 //   // This client doesn't have pool config specified therefore, global pool will be used.
 //   Client dbClient = checkpanic new (user, password, host, port, poolDB_1, options);
 //
@@ -434,7 +434,7 @@
 //@test:Config {
 //   groups: ["pool"]
 //}
-//isolated function testLocalConnectionPoolShutDown() {
+//function testLocalConnectionPoolShutDown() {
 //   int|error count1 = getOpenConnectionCount(poolDB_1);
 //   int|error count2 = getOpenConnectionCount(poolDB_2);
 //   if (count1 is error) {
@@ -453,7 +453,7 @@
 //   string variable_name;
 //};
 //
-//isolated function getOpenConnectionCount(string database) returns @tainted (int|error) {
+//function getOpenConnectionCount(string database) returns @tainted (int|error) {
 //   Client dbClient = checkpanic new (user, password, host, port, database,options, {maxOpenConnections: 1});
 //   var dt = dbClient->query("show status where `variable_name` = 'Threads_connected'", Variable);
 //   int|error count = getIntVariableValue(dt);
@@ -461,7 +461,7 @@
 //   return count;
 //}
 //
-//isolated function testGlobalConnectionPoolConcurrentHelper1(string database) returns
+//function testGlobalConnectionPoolConcurrentHelper1(string database) returns
 //   @tainted [stream<record{}, error>, stream<record{}, error>]|error {
 //   Client dbClient = checkpanic new (user, password, host, port, database, options);
 //   var dt1 = dbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
@@ -469,13 +469,13 @@
 //   return [dt1, dt2];
 //}
 //
-//isolated function testGlobalConnectionPoolConcurrentHelper2(string database) returns @tainted (int|error)[] {
+//function testGlobalConnectionPoolConcurrentHelper2(string database) returns @tainted (int|error)[] {
 //   Client dbClient = checkpanic new (user, password, host, port,  database, options);
 //   (int|error)[] returnArray = [];
 //   var dt1 = dbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
 //   var dt2 = dbClient->query("select count(*) as val from Customers where registrationID = 2", Result);
 //   var dt3 = dbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   // Connections will be released here as we fully consume the data in the following conversion isolated function calls
+//   // Connections will be released here as we fully consume the data in the following conversion function calls
 //   returnArray[0] = getReturnValue(dt1);
 //   returnArray[1] = getReturnValue(dt2);
 //   returnArray[2] = getReturnValue(dt3);
@@ -483,7 +483,7 @@
 //   return returnArray;
 //}
 //
-//isolated isolated function getCombinedReturnValue([stream<record{}, error>, stream<record{}, error>]|error queryResult) returns
+//function getCombinedReturnValue([stream<record{}, error>, stream<record{}, error>]|error queryResult) returns
 //(int|error)[]|error {
 //   if (queryResult is error) {
 //       return queryResult;
@@ -498,7 +498,7 @@
 //   }
 //}
 //
-//isolated isolated function getIntVariableValue(stream<record{}, error> queryResult) returns int|error {
+//function getIntVariableValue(stream<record{}, error> queryResult) returns int|error {
 //   int count = -1;
 //   record {|record {} value;|}? data = checkpanic queryResult.next();
 //   if (data is record {|record {} value;|}) {
@@ -512,7 +512,7 @@
 //}
 //
 //
-//isolated function drainGlobalPool(string database) {
+//function drainGlobalPool(string database) {
 //   Client dbClient1 = checkpanic new (user, password, host, port, database, options);
 //   Client dbClient2 = checkpanic new (user, password, host, port, database, options);
 //   Client dbClient3 = checkpanic new (user, password, host, port, database, options);
@@ -540,7 +540,7 @@
 //
 //   (int|error)[] returnArray = [];
 //   int i = 0;
-//   // Connections will be released here as we fully consume the data in the following conversion isolated function calls
+//   // Connections will be released here as we fully consume the data in the following conversion function calls
 //   foreach var x in resultArray {
 //       returnArray[i] = getReturnValue(x);
 //       i += 1;
@@ -556,7 +556,7 @@
 //   validateConnectionTimeoutError(returnArray[10]);
 //}
 //
-//isolated isolated function getReturnValue(stream<record{}, error> queryResult) returns int|error {
+//function getReturnValue(stream<record{}, error> queryResult) returns int|error {
 //   int count = -1;
 //   record {|record {} value;|}? data = checkpanic queryResult.next();
 //   if (data is record {|record {} value;|}) {
@@ -569,13 +569,13 @@
 //   return count;
 //}
 //
-//isolated function validateApplicationError(int|error dbError) {
+//function validateApplicationError(int|error dbError) {
 //   test:assertTrue(dbError is error);
 //   sql:ApplicationError sqlError = <sql:ApplicationError> dbError;
 //   test:assertTrue(stringutils:includes(sqlError.message(), "Client is already closed"), sqlError.message());
 //}
 //
-//isolated function validateConnectionTimeoutError(int|error dbError) {
+//function validateConnectionTimeoutError(int|error dbError) {
 //   test:assertTrue(dbError is error);
 //   sql:DatabaseError sqlError = <sql:DatabaseError> dbError;
 //   test:assertTrue(stringutils:includes(sqlError.message(), "request timed out after"), sqlError.message());

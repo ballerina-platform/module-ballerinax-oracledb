@@ -15,9 +15,8 @@
 
  import ballerina/sql;
  import ballerina/test;
- import ballerina/io;
 
- @test:Config{
+ @test:Config {
      enable: true,
      groups:["execute","execute-basic"]
  }
@@ -59,7 +58,7 @@
      checkpanic oracledbClient.close();
  }
 
- @test:Config{
+ @test:Config {
      enable: true,
      groups:["execute","execute-basic"],
      dependsOn: [testCreateTable]
@@ -72,7 +71,7 @@
      test:assertExactEquals(result.lastInsertId, (), "Last Insert Id should be null.");
  }
 
- @test:Config{
+ @test:Config {
      enable: true,
      groups:["execute","execute-basic"],
      dependsOn: [testAlterTable]
@@ -88,7 +87,7 @@
      test:assertTrue(insertId is string, "Last Insert id should be string");
  }
 
- @test:Config{
+ @test:Config {
      enable: true,
      groups:["execute","execute-basic"],
      dependsOn: [testInsertTable]
@@ -230,10 +229,7 @@
         col_varchar:"str4",
         col_nvarchar2:"str5"
     };
-     test:assertEquals(data?.value, expectedInsertRow, "Incorrect record returned.");
-    //io:println(("Length DB:"+data?.value.col_char).length());
-    //io:println(("Length Record:"+expectedInsertRow.col_char).length());
-
+    test:assertEquals(data?.value, expectedInsertRow, "Incorrect record returned.");
     checkpanic oracledbClient.close();
  }
 
@@ -367,8 +363,6 @@ type StringNilData record {
 
     stream<record{}, error> queryResult = oracledbClient->query("SELECT count(*) as countval from TestNumericTable"
         + " where int_type = 11", ResultCount);
-    io:println("Count:");
-    io:println(queryResult);
     stream<ResultCount, sql:Error> streamData = <stream<ResultCount, sql:Error>>queryResult;
     record {|ResultCount value;|}? data = checkpanic streamData.next();
     checkpanic streamData.close();
@@ -377,7 +371,7 @@ type StringNilData record {
     checkpanic oracledbClient.close();
  }
 
- @test:Config{
+ @test:Config {
      enable: true,
      groups:["execute","execute-basic"],
      dependsOn:[testUpdateData]

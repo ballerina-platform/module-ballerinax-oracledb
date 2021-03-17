@@ -64,7 +64,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         if (iterator == null) {
             synchronized (iteratorLock) {
                 if (iterator == null) {
-                    ValueCreator.createObjectValue(
+                    iterator = ValueCreator.createObjectValue(
                             ModuleUtils.getModule(), Constants.CUSTOM_RESULT_ITERATOR_OBJECT, new Object[0]);
                 }
             }

@@ -18,11 +18,11 @@ import ballerina/io;
 import ballerina/test;
 
 @test:BeforeSuite
-isolated function beforeSuite() {
+function beforeSuite() {
     io:println("Test suite initiated");
 }
 
 @test:AfterSuite {}
-isolated function afterSuite() {
+function afterSuite() {
     io:println("Test suite finished");
 }
