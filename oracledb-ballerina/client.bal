@@ -1,4 +1,4 @@
-// Copyright (c) 2020 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2021 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -18,7 +18,7 @@ import ballerina/crypto;
 import ballerina/jballerina.java;
 import ballerina/sql;
 
-public client class Client{
+public client class Client {
     *sql:Client;
     private boolean clientActive = true;
 
@@ -66,7 +66,7 @@ public client class Client{
         if (self.clientActive) {
             return nativeQuery(self, sqlQuery, rowType);
         } else {
-            return sql:generateApplicationErrorStream("OracleDB Client is already closed,"
+            return sql:generateApplicationErrorStream("OracleDB client is already closed,"
                 + "hence further operations are not allowed");
         }
     }
@@ -81,7 +81,7 @@ public client class Client{
         if (self.clientActive) {
             return nativeExecute(self, sqlQuery);
         } else {
-            return error sql:ApplicationError("OracleDB Client is already closed, hence further operations are not allowed");
+            return error sql:ApplicationError("OracleDB client is already closed, hence further operations are not allowed");
         }
     }
 
@@ -102,7 +102,7 @@ public client class Client{
         if (self.clientActive) {
             return nativeBatchExecute(self, sqlQueries);
         } else {
-            return error sql:ApplicationError("OracleDB Client is already closed, hence further operations are not allowed");
+            return error sql:ApplicationError("OracleDB client is already closed, hence further operations are not allowed");
         }
     }
 
@@ -117,7 +117,7 @@ public client class Client{
         if (self.clientActive) {
             return nativeCall(self, sqlQuery, rowTypes);
         } else {
-            return error sql:ApplicationError("OracleDB Client is already closed, hence further operations are not allowed");
+            return error sql:ApplicationError("OracleDB client is already closed, hence further operations are not allowed");
         }
     }
 
@@ -147,18 +147,18 @@ public type SSLConfig record {|
 # Oracle database specific JDBC options
 #
 # + ssl - SSL Configuration to be used.
-# + loginTimeoutInSeconds - Specify how long to wait for establishment 
+# + loginTimeout - Specify how long to wait for establishment 
 # of a database connection in seconds.
 # + autoCommit - If true commits automatically when statement is 
 # complete.
-# + connectTimeoutInSeconds - Time duration for a connection.
-# + socketTimeoutInSeconds - Timeout duration for reading from a socket.
+# + connectTimeout - Time duration for a connection.
+# + socketTimeout - Timeout duration for reading from a socket.
 public type Options record {|
    SSLConfig ssl?;
-   decimal loginTimeoutInSeconds?;
+   decimal loginTimeout?;
    boolean autoCommit?;
-   decimal connectTimeoutInSeconds?;
-   decimal socketTimeoutInSeconds?;
+   decimal connectTimeout?;
+   decimal socketTimeout?;
 |};
 
 # Client Configuration record for connection initialization

@@ -1,4 +1,4 @@
-// Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -22,7 +22,7 @@ import ballerina/test;
     groups:["connection","connection-init"]
 }
 isolated function testWithOnlyUserPasswordParams() {
-    Client | sql:Error oracledbClient = new(user=user, password=password);
+    Client|sql:Error oracledbClient = new(user=user, password=password);
     test:assertTrue(oracledbClient is sql:Error, "Initializing only with username and password params should fail");
 }
 
@@ -32,7 +32,7 @@ isolated function testWithOnlyUserPasswordParams() {
     groups:["connection","connection-init"]
 }
 isolated function testWithUserPasswordDatabaseParams() {
-    Client | sql:Error oracledbClient = new(user=user, password=password, database=database);
+    Client|sql:Error oracledbClient = new(user=user, password=password, database=database);
     test:assertTrue(oracledbClient is Client, "Initializing with username, password and database params fail");
 }
 
@@ -43,7 +43,7 @@ isolated function testWithUserPasswordDatabaseParams() {
 
 }
 isolated function testWithAllParamsExceptOptions() {
-    Client | sql:Error oracledbClient = new(
+    Client|sql:Error oracledbClient = new(
         user=user, 
         password=password,
         host=host,
@@ -61,7 +61,7 @@ isolated function testWithAllParamsExceptOptions() {
 // }
 
 //isolated function testWithOptionsExceptSSL() {
-//    Client | sql:Error oracledbClient = new(
+//    Client|sql:Error oracledbClient = new(
 //        user=user,
 //        password=password,
 //        host=host,
@@ -78,7 +78,7 @@ isolated function testWithAllParamsExceptOptions() {
 //    groups:["connection","connection-init"]
 //}
 //isolated function testWithConnectionPoolParam() {
-//    Client | sql:Error oracledbClient = new(
+//    Client|sql:Error oracledbClient = new(
 //        user=user,
 //        password=password,
 //        host=host,

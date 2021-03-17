@@ -32,7 +32,7 @@ Ballerina.lock
 *.iws
 
 # generated files
-target
+target/
 .ballerina
 
 # gradle
@@ -41,6 +41,9 @@ build/
 gradle-app.setting
 !gradle-wrapper.jar
 .gradletasknamecache
+build-config/
+bin/
+lib/
 
 # mac
 .DS_Store

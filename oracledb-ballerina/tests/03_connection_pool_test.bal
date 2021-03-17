@@ -1,4 +1,4 @@
-// Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -148,17 +148,17 @@
 //isolated function testLocalSharedConnectionPoolConfigDifferentDbOptions() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 3};
 //   Client dbClient1 = checkpanic new (user, password, host, port, poolDB_1,
-//       {connectTimeoutInSeconds: 2, socketTimeoutInSeconds: 10}, pool);
+//       {connectTimeout: 2, socketTimeout: 10}, pool);
 //   Client dbClient2 = checkpanic new (user, password, host, port, poolDB_1,
-//       {socketTimeoutInSeconds: 10, connectTimeoutInSeconds: 2}, pool);
+//       {socketTimeoutInSeconds: 10, connectTimeout: 2}, pool);
 //   Client dbClient3 = checkpanic new (user, password, host, port, poolDB_1,
-//       {connectTimeoutInSeconds: 2, socketTimeoutInSeconds: 10}, pool);
+//       {connectTimeout: 2, socketTimeoutInSeconds: 10}, pool);
 //   Client dbClient4 = checkpanic new (user, password, host, port, poolDB_1,
-//       {connectTimeoutInSeconds: 1}, pool);
+//       {connectTimeout: 1}, pool);
 //   Client dbClient5 = checkpanic new (user, password, host, port, poolDB_1,
-//       {connectTimeoutInSeconds: 1}, pool);
+//       {connectTimeout: 1}, pool);
 //   Client dbClient6 = checkpanic new (user, password, host, port, poolDB_1,
-//       {connectTimeoutInSeconds: 1}, pool);
+//       {connectTimeout: 1}, pool);
 //
 //   stream<record {} , error>[] resultArray = [];
 //   resultArray[0] = dbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);

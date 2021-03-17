@@ -8,4 +8,3 @@ org = "ballerina"
 name = "crypto"
 version = "@stdlib.crypto.version@"
 
-

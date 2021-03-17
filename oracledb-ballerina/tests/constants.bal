@@ -15,10 +15,10 @@ const string database = "ORCLCDB.localdomain";
 string resourcePath = check file:getAbsolutePath("tests/resources");
 
 final Options options = {
-    loginTimeoutInSeconds: 1,
+    loginTimeout: 1,
     autoCommit: true,
-    connectTimeoutInSeconds: 1,
-    socketTimeoutInSeconds: 3
+    connectTimeout: 1,
+    socketTimeout: 3
 };
 
 final sql:ConnectionPool connectionPool = {
