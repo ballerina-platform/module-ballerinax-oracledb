@@ -13,8 +13,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/sql;
-import ballerina/test;
+// import ballerina/sql;
+// import ballerina/test;
 
 // with user and password only
 @test:Config{
@@ -36,10 +36,10 @@ isolated function testWithUserPasswordDatabaseParams() {
     test:assertTrue(oracledbClient is Client, "Initializing with username, password and database params fail");
 }
 
-// with all params except options
-@test:Config{
-    enable: true,
-    groups:["connection","connection-init"]
+// // with all params except options
+// @test:Config{
+//     enable: true,
+//     groups:["connection","connection-init"]
 
 }
 isolated function testWithAllParamsExceptOptions() {
@@ -53,7 +53,7 @@ isolated function testWithAllParamsExceptOptions() {
     test:assertTrue(oracledbClient is Client, "Initializing with all params except options fail");
 }
 
-// with all params and options minus SSL
+// // with all params and options minus SSL
 // @test:Config{
 //     enable: true,
 //     groups:["connection","connection-init"]
@@ -70,10 +70,10 @@ isolated function testWithAllParamsExceptOptions() {
 //        options=options
 //    );
 //    test:assertTrue(oracledbClient is Client, "Initializing with options fail");
-//}
-//
-//// with all params, options and connection Pool
-//@test:Config{
+// }
+
+// // with all params, options and connection Pool
+// @test:Config{
 //    enable: true,
 //    groups:["connection","connection-init"]
 //}
@@ -87,6 +87,6 @@ isolated function testWithAllParamsExceptOptions() {
 //        connectionPool=connectionPool
 //    );
 //    test:assertTrue(oracledbClient is Client, "Initializing with connection pool param fail");
-//}
-//
+// }
+
 

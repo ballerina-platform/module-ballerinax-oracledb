@@ -56,6 +56,20 @@ function dropTableIfExists(string tablename) returns sql:ExecutionResult|error {
                 "RAISE; "+
             "END IF; "+
         "END;");
-    _ = checkpanic oracledbClient.close();
+    checkpanic oracledbClient.close();
     return result;
 }
+
+// function dropTypeIfExists(string typename) returns sql:ExecutionResult|error {
+//     Client oracledbClient = checkpanic new(user, password, host, port, database);
+//     sql:ExecutionResult result = checkpanic oracledbClient->execute("BEGIN "+
+//         "EXECUTE IMMEDIATE 'DROP TYPE ' || '" + typename + " FORCE'; "+
+//         "EXCEPTION "+
+//         "WHEN OTHERS THEN "+
+//             "IF SQLCODE != 4043 THEN "+
+//                 "RAISE; "+
+//             "END IF; "+
+//         "END;");
+//     checkpanic oracledbClient.close();
+//     return result;
+// }

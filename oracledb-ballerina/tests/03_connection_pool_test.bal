@@ -290,7 +290,7 @@
 //   sql:ConnectionPool pool = {maxOpenConnections: 2};
 //
 //   worker w1 returns error? {
-//       check testLocalSharedConnectionPoolStopInitInterleaveHelper1(pool, poolDB_1);
+//       checkpanic testLocalSharedConnectionPoolStopInitInterleaveHelper1(pool, poolDB_1);
 //   }
 //   worker w2 returns int|error {
 //       return testLocalSharedConnectionPoolStopInitInterleaveHelper2(pool, poolDB_1);
@@ -303,18 +303,18 @@
 //
 //isolated function testLocalSharedConnectionPoolStopInitInterleaveHelper1(sql:ConnectionPool pool, string database)
 //returns error? {
-//   Client dbClient = check new (user, password, host, port, database, options, pool);
+//   Client dbClient = checkpanic new (user, password, host, port, database, options, pool);
 //   runtime:sleep(10);
-//   check dbClient.close();
+//   checkpanic dbClient.close();
 //}
 //
 //isolated function testLocalSharedConnectionPoolStopInitInterleaveHelper2(sql:ConnectionPool pool, string database)
 //returns @tainted int|error {
 //   runtime:sleep(10);
-//   Client dbClient = check new (user, password, host, port, database, options, pool);
+//   Client dbClient = checkpanic new (user, password, host, port, database, options, pool);
 //   var dt = dbClient->query("SELECT COUNT(*) as val from Customers where registrationID = 1", Result);
 //   int|error count = getReturnValue(dt);
-//   check dbClient.close();
+//   checkpanic dbClient.close();
 //   return count;
 //}
 //
@@ -454,16 +454,16 @@
 //};
 //
 //isolated function getOpenConnectionCount(string database) returns @tainted (int|error) {
-//   Client dbClient = check new (user, password, host, port, database,options, {maxOpenConnections: 1});
+//   Client dbClient = checkpanic new (user, password, host, port, database,options, {maxOpenConnections: 1});
 //   var dt = dbClient->query("show status where `variable_name` = 'Threads_connected'", Variable);
 //   int|error count = getIntVariableValue(dt);
-//   check dbClient.close();
+//   checkpanic dbClient.close();
 //   return count;
 //}
 //
 //isolated function testGlobalConnectionPoolConcurrentHelper1(string database) returns
 //   @tainted [stream<record{}, error>, stream<record{}, error>]|error {
-//   Client dbClient = check new (user, password, host, port, database, options);
+//   Client dbClient = checkpanic new (user, password, host, port, database, options);
 //   var dt1 = dbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
 //   var dt2 = dbClient->query("select count(*) as val from Customers where registrationID = 2", Result);
 //   return [dt1, dt2];
@@ -500,14 +500,14 @@
 //
 //isolated isolated function getIntVariableValue(stream<record{}, error> queryResult) returns int|error {
 //   int count = -1;
-//   record {|record {} value;|}? data = check queryResult.next();
+//   record {|record {} value;|}? data = checkpanic queryResult.next();
 //   if (data is record {|record {} value;|}) {
 //       record {} variable = data.value;
 //       if (variable is Variable) {
 //           return 'int:fromString(variable.value);
 //       }
 //   }
-//   check queryResult.close();
+//   checkpanic queryResult.close();
 //   return count;
 //}
 //
@@ -558,14 +558,14 @@
 //
 //isolated isolated function getReturnValue(stream<record{}, error> queryResult) returns int|error {
 //   int count = -1;
-//   record {|record {} value;|}? data = check queryResult.next();
+//   record {|record {} value;|}? data = checkpanic queryResult.next();
 //   if (data is record {|record {} value;|}) {
 //       record {} value = data.value;
 //       if (value is Result) {
 //           count = value.val;
 //       }
 //   }
-//   check queryResult.close();
+//   checkpanic queryResult.close();
 //   return count;
 //}
 //

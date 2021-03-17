@@ -143,7 +143,7 @@ public final class Constants {
             public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthValue";
             public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondValue";
             public static final String BFILE = "BfileValue";
-            public static final String OBJECT = "ObjectValue";
+            public static final String OBJECT = "ObjectTypeValue";
             public static final String VARRAY = "VarrayValue";
             public static final String NESTED_TABLE = "CustomTableValue";
             public static final String XML = "XmlValue";
@@ -209,5 +209,6 @@ public final class Constants {
 
     public static final String DRIVER = "jdbc:oracle:thin:@//";
     public static final String ORACLE_DATASOURCE_NAME = "oracle.jdbc.pool.OracleDataSource";
+    public static final String CUSTOM_RESULT_ITERATOR_OBJECT = "CustomResultIterator";
 }
 
