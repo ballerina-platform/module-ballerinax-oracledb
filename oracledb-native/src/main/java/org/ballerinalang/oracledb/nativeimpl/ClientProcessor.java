@@ -49,12 +49,9 @@ public class ClientProcessor {
         String host = clientConfig.getStringValue(Constants.ClientConfiguration.HOST).getValue();
         int port = clientConfig.getIntValue(Constants.ClientConfiguration.PORT).intValue();
         String database = clientConfig.getStringValue(Constants.ClientConfiguration.DATABASE).getValue();
-
         String url = Constants.DRIVER + host + ":" + Integer.toString(port) + "/" + database;
-
         String user = clientConfig.getStringValue(Constants.ClientConfiguration.USER).getValue();
         String password = clientConfig.getStringValue(Constants.ClientConfiguration.PASSWORD).getValue();
-
         BMap options = clientConfig.getMapValue(Constants.ClientConfiguration.OPTIONS);
         BMap<BString, Object> datasourceOptions = null;
         Properties poolProperties = null;
@@ -63,11 +60,8 @@ public class ClientProcessor {
             datasourceOptions = Utils.generateOptionsMap(options);
             poolProperties = Utils.generatePoolProperties(options);
         }
-
         BMap connectionPool = clientConfig.getMapValue(Constants.ClientConfiguration.CONNECTION_POOL_OPTIONS);
-
         String dataSourceName = Constants.ORACLE_DATASOURCE_NAME;
-
         SQLDatasource.SQLDatasourceParams sqlDatasourceParams = new SQLDatasource.SQLDatasourceParams()
                 .setUrl(url)
                 .setUser(user)
@@ -76,7 +70,6 @@ public class ClientProcessor {
                 .setOptions(datasourceOptions)
                 .setConnectionPool(connectionPool, globalConnPool)
                 .setPoolProperties(poolProperties);
-
         return org.ballerinalang.sql.nativeimpl.ClientProcessor.createClient(client, sqlDatasourceParams);
     }
 

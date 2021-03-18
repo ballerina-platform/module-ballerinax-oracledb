@@ -47,7 +47,6 @@ public class Utils {
         if (connProperties.size() > 0) {
             options.put(Constants.DatabaseProps.CONN_PROPERTIES, connProperties);
         }
-
         return options;
     }
 
@@ -80,7 +79,6 @@ public class Utils {
         }
 
         setSSLConProperties(clientOptions, connProperties);
-
         return connProperties;
     }
 
@@ -135,7 +133,6 @@ public class Utils {
             if (trustStoreType != null) {
                 connProperties.put(Constants.DatabaseProps.ConnProperties.TRUSTSTORE_TYPE, trustStoreType.getValue());
             }
-
         }
     }
 

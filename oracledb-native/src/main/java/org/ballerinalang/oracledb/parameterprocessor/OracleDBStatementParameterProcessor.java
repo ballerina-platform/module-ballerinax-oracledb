@@ -40,21 +40,13 @@ import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcess
  * @since 0.1.0
  */
 public class OracleDBStatementParameterProcessor extends DefaultStatementParameterProcessor {
-    private static final Object lock = new Object();
-    private static volatile OracleDBStatementParameterProcessor instance;
+    private static final OracleDBStatementParameterProcessor instance = new OracleDBStatementParameterProcessor();
 
     /**
      * Singleton static method that returns an instance of `OracleDBStatementParameterProcessor`.
      * @return OracleDBStatementParameterProcessor
      */
     public static OracleDBStatementParameterProcessor getInstance() {
-        if (instance == null) {
-            synchronized (lock) {
-                if (instance == null) {
-                    instance = new OracleDBStatementParameterProcessor();
-                }
-            }
-        }
         return instance;
     }
 
@@ -91,6 +83,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 setXml(connection, preparedStatement, index, value);
                 break;
             default:
+                // TODO
                 super.setCustomSqlTypedParam(connection, preparedStatement, index, typedValue);
         }
     }

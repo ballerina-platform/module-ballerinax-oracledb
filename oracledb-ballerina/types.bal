@@ -18,68 +18,77 @@ import ballerina/jballerina.java;
 import ballerina/sql;
 
 
-# Structure of INTERVAL YEAR TO MONTH.
+# IntervalYearToMonth stores a period of time in years and months.
+#
 # + year - Number of years
 # + month - Number of months
-type IntervalYearToMonthRecord record {|
-    int year;
-    int month;
+type IntervalYearToMonth record {|
+    int years;
+    int months;
 |};
 
 
-# Structure of INTERVAL DAY TO SECOND.
+# IntervalDayToSecond stores a period of time in days, hours, minutes, and seconds.
+#
 # + day - Number of days
 # + hour - Number of hours
 # + minute - Number of minutes
 # + second - Number of seconds
-type IntervalDayToSecondRecord record {|
-    int day;
-    int hour;
-    int minute;
-    float second;
+type IntervalDayToSecond record {|
+    int days;
+    int hours;
+    int minutes;
+    decimal seconds;
 |};
 
 
-# Structure of BFILE.
+# Bfile contains a locator to a large binary file stored outside the database. Enables byte stream I/O access to
+# external LOBs residing on the database server.
+#
 # + directory - Directory of the file
-# + file - File name
-type BfileRecord record {|
+# + filename - File name
+type Bfile record {|
     string directory;
-    string file;
+    string filename;
 |};
 
 
-# Structure of OBJECT TYPE.
+# ObjectType is an abstraction of the real-world entities, such as purchase orders, that application programs deal with.
+#
 # + typeName - Name of the object type
 # + attributes - Attributes of the object
-type ObjectTypeRecord record {|
-    string typeName;
+type ObjectType record {|
+    string typename;
     anydata[] attributes;
 |};
 
 
-# Structure of VARRAY.
+# Varray is an ordered set of data elements with a variable size. All elements of a given array are of the same data
+# type.
+#
 # + name - Name of the varray
 # + elements - Elements of the Varray
-type VarrayRecord record {|
+type Varray record {|
     string name;
     anydata[] elements;
 |};
 
 
-# Structure of NESTED TABLE.
+# NestedTable models an unordered set of elements. The elements may be built-in types or user-defined types.
+#
 # + name - Name of the varray
 # + attributes - Attributes of the nested table
-type NestedTableRecord record {|
+type NestedTable record {|
     string name;
     anydata[] attributes;
 |};
 
 
-# Structure of NESTED TABLE.
+# XML uses to store and query XML data in the database
+#
 # + xml - Xml string
-type XmlRecord record {|
-    string 'xml;
+type Xml record {|
+    string 'xml; // try xml type
 |};
 
 
@@ -87,9 +96,9 @@ type XmlRecord record {|
 #
 # + value - Value of parameter passed into the SQL statement
 public class IntervalYearToMonthValue {
-    public string|IntervalYearToMonthRecord? value;
+    public string|IntervalYearToMonth? value;
 
-    public isolated function init(string|IntervalYearToMonthRecord? value = ()) {
+    public isolated function init(string|IntervalYearToMonth? value = ()) {
         self.value = value;
     }
 }
@@ -99,9 +108,9 @@ public class IntervalYearToMonthValue {
 #
 # + value - Value of parameter passed into the SQL statement
 public class IntervalDayToSecondValue {
-    public string|IntervalDayToSecondRecord? value;
+    public string|IntervalDayToSecond? value;
 
-    public isolated function init(string|IntervalDayToSecondRecord? value = ()) {
+    public isolated function init(string|IntervalDayToSecond? value = ()) {
         self.value = value;
     }
 }
@@ -111,9 +120,9 @@ public class IntervalDayToSecondValue {
 #
 # + value - Value of parameter passed into the SQL statement
 public class BfileValue {
-    public BfileRecord? value;
+    public Bfile? value;
 
-    public isolated function init(BfileRecord? value = ()) {
+    public isolated function init(Bfile? value = ()) {
         self.value = value;
     }
 }
@@ -123,9 +132,9 @@ public class BfileValue {
 #
 # + value - Value of parameter passed into the SQL statement
 public class ObjectTypeValue {
-    public ObjectTypeRecord? value;
+    public ObjectType? value;
 
-    public isolated function init(ObjectTypeRecord? value = ()) {
+    public isolated function init(ObjectType? value = ()) {
         self.value = value;
     }
 }
@@ -135,9 +144,9 @@ public class ObjectTypeValue {
 #
 # + value - Value of parameter passed into the SQL statement
 public class VarrayValue {
-    public VarrayRecord? value;
+    public Varray? value;
 
-    public isolated function init(VarrayRecord? value = ()) {
+    public isolated function init(Varray? value = ()) {
         self.value = value;
     }
 }
@@ -147,9 +156,9 @@ public class VarrayValue {
 #
 # + value - Value of parameter passed into the SQL statement
 public class NestedTableValue {
-    public NestedTableRecord? value;
+    public NestedTable? value;
 
-    public isolated function init(NestedTableRecord? value = ()) {
+    public isolated function init(NestedTable? value = ()) {
         self.value = value;
     }
 }
@@ -159,9 +168,10 @@ public class NestedTableValue {
 #
 # + value - Value of parameter passed into the SQL statement
 public class XmlValue {
-    public XmlRecord? value;
+    // TODO - check xml bal type
+    public string|xml? value;
 
-    public isolated function init(XmlRecord? value = ()) {
+    public isolated function init(string|xml? value = ()) {
         self.value = value;
     }
 }

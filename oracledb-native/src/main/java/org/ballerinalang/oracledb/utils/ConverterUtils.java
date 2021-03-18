@@ -253,6 +253,5 @@ public class ConverterUtils {
     private static void throwApplicationErrorForInvalidTypes(String sqlTypeName) throws ApplicationError {
         throw new ApplicationError("Invalid data types for " + sqlTypeName);
     }
-
 }
 

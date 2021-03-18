@@ -19,16 +19,16 @@
  //@test:BeforeGroups { value:["insert-varray"] }
  //function beforeInsertVArrayFunc() {
  //
- //    Client oracledbClient = checkpanic new(user, password, host, port, database);
- //    sql:ExecutionResult result = checkpanic oracledbClient->execute(
+ //    Client oracledbClient = check new(user, password, host, port, database);
+ //    sql:ExecutionResult result = check oracledbClient->execute(
  //        " CREATE OR REPLACE TYPE CharArrayType AS VARRAY(6) OF VARCHAR(100);"
  //        );
  //
- //    result = checkpanic oracledbClient->execute(
+ //    result = check oracledbClient->execute(
  //        " CREATE OR REPLACE TYPE NumArrayType AS VARRAY(6) OF NUMBER;"
  //        );
  //
- //    result = checkpanic oracledbClient->execute(
+ //    result = check oracledbClient->execute(
  //        "CREATE OR REPLACE TYPE VarrayType OID '"+ OID +"' AS OBJECT(" +
  //        "ATTR1 VARCHAR(20), "+
  //        "ATTR2 VARCHAR(20), "+
@@ -37,7 +37,7 @@
  //        ") "
  //    );
  //
- //    result = checkpanic oracledbClient->execute(
+ //    result = check oracledbClient->execute(
  //        "CREATE OR REPLACE TYPE BODY VarrayType AS "+
  //            "MAP MEMBER FUNCTION GET_ATTR1 RETURN NUMBER IS "+
  //            "BEGIN "+
@@ -46,7 +46,7 @@
  //        "END; "
  //    );
  //
- //    result = checkpanic oracledbClient->execute("CREATE TABLE TestVarrayTable(" +
+ //    result = check oracledbClient->execute("CREATE TABLE TestVarrayTable(" +
  //        "PK NUMBER GENERATED ALWAYS AS IDENTITY, "+
  //        "COL_CHARARR CharArrayType, " +
  //        "COL_NUMARR NumArrayType, " +
@@ -54,7 +54,7 @@
  //        ")"
  //        );
  //
- //    checkpanic oracledbClient.close();
+ //    check oracledbClient.close();
  //}
  //
  //
@@ -64,7 +64,7 @@
  //    groups:["insert","insert-varray"]
  //}
  //function insertVarray() {
- //    Client oracledbClient = checkpanic new(user, password, host, port, database);
+ //    Client oracledbClient = check new(user, password, host, port, database);
  //    string[] charArray = ["Hello", "World"];
  //    int[] numArray = [3,4,5];
  //
@@ -72,13 +72,13 @@
  //    VarrayValue numVarray = new({ name:"NumArrayType", elements: numArray });
  //
  //    sql:ParameterizedQuery insertQuery = `insert into varraytable(COL_CHARARR, COL_NUMARR) values(${charVarray}, ${numVarray})`;
- //    sql:ExecutionResult| sql:Error result = checkpanic oracledbClient->execute(insertQuery);
+ //    sql:ExecutionResult| sql:Error result = check oracledbClient->execute(insertQuery);
  //
  //    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
  //    var insertId = result.lastInsertId;
  //    test:assertTrue(insertId is string, "Last Insert id should be string");
  //
- //    checkpanic oracledbClient.close();
+ //    check oracledbClient.close();
  //}
  //
  //@test:Config {
@@ -87,18 +87,18 @@
  //    dependsOn: [insertVarray]
  //}
  //function insertVarrayNull() {
- //    Client oracledbClient = checkpanic new(user, password, host, port, database);
+ //    Client oracledbClient = check new(user, password, host, port, database);
  //
  //    VarrayValue charVarray = new();
  //    VarrayValue numVarray = new();
  //
  //    sql:ParameterizedQuery insertQuery = `insert into varraytable(COL_CHARARR, COL_NUMARR) values(${charArray}, ${numArray})`;
- //    sql:ExecutionResult| sql:Error result = checkpanic oracledbClient->execute(insertQuery);
+ //    sql:ExecutionResult| sql:Error result = check oracledbClient->execute(insertQuery);
  //
  //    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
  //    var insertId = result.lastInsertId;
  //    test:assertTrue(insertId is string, "Last Insert id should be string");
  //
- //    checkpanic oracledbClient.close();
+ //    check oracledbClient.close();
  //}
  //

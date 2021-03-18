@@ -39,36 +39,20 @@ import java.sql.SQLXML;
  * @since 0.1.0
  */
 public class OracleDBResultParameterProcessor extends DefaultResultParameterProcessor {
-    private static final Object lock = new Object();
-    private static volatile OracleDBResultParameterProcessor instance;
-    private static final Object iteratorLock = new Object();
-    private static volatile BObject iterator;
+    private static final OracleDBResultParameterProcessor instance = new OracleDBResultParameterProcessor();
+    private static final BObject iterator = ValueCreator.createObjectValue(
+            ModuleUtils.getModule(), Constants.CUSTOM_RESULT_ITERATOR_OBJECT, new Object[0]);
 
     /**
      * Singleton static method that returns an instance of `OracleDBResultParameterProcessor`.
      * @return OracleDBResultParameterProcessor
      */
     public static OracleDBResultParameterProcessor getInstance() {
-        if (instance == null) {
-            synchronized (lock) {
-                if (instance == null) {
-                    instance = new OracleDBResultParameterProcessor();
-                }
-            }
-        }
         return instance;
     }
 
     @Override
     protected BObject getIteratorObject() {
-        if (iterator == null) {
-            synchronized (iteratorLock) {
-                if (iterator == null) {
-                    iterator = ValueCreator.createObjectValue(
-                            ModuleUtils.getModule(), Constants.CUSTOM_RESULT_ITERATOR_OBJECT, new Object[0]);
-                }
-            }
-        }
         return iterator;
     }
 

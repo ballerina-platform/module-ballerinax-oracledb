@@ -22,7 +22,7 @@ const string host = "localhost";
 const int port = 1521;
 const string database = "ORCLCDB.localdomain";
 
-string resourcePath = checkpanic file:getAbsolutePath("tests/resources");
+string resourcePath = check file:getAbsolutePath("tests/resources");
 
 final Options options = {
     loginTimeout: 1,

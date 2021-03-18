@@ -17,38 +17,38 @@
 import ballerina/io;
 import ballerina/sql;
 
-isolated function getUntaintedData(record {}|error? value, string fieldName) returns @untainted anydata {
+isolated function getUntaintedData(record {}|error? value, string fieldName) returns @untainted anydata|error? {
     if (value is record {}) {
         return value[fieldName];
     }
     return {};
 }
 
-isolated function getByteColumnChannel() returns @untainted io:ReadableByteChannel {
-    io:ReadableByteChannel byteChannel = checkpanic io:openReadableFile("./tests/resources/files/byteValue.txt");
+isolated function getByteColumnChannel() returns @untainted io:ReadableByteChannel|error?  {
+    io:ReadableByteChannel byteChannel = check io:openReadableFile("./tests/resources/files/byteValue.txt");
     return byteChannel;
 }
 
-isolated function getBlobColumnChannel() returns @untainted io:ReadableByteChannel {
-    io:ReadableByteChannel byteChannel = checkpanic io:openReadableFile("./tests/resources/files/blobValue.txt");
+isolated function getBlobColumnChannel() returns @untainted io:ReadableByteChannel|error? {
+    io:ReadableByteChannel byteChannel = check io:openReadableFile("./tests/resources/files/blobValue.txt");
     return byteChannel;
 }
 
-isolated function getClobColumnChannel() returns @untainted io:ReadableCharacterChannel {
-    io:ReadableByteChannel byteChannel = checkpanic io:openReadableFile("./tests/resources/files/clobValue.txt");
+isolated function getClobColumnChannel() returns @untainted io:ReadableCharacterChannel|error? {
+    io:ReadableByteChannel byteChannel = check io:openReadableFile("./tests/resources/files/clobValue.txt");
     io:ReadableCharacterChannel sourceChannel = new (byteChannel, "UTF-8");
     return sourceChannel;
 }
 
-isolated function getTextColumnChannel() returns @untainted io:ReadableCharacterChannel {
-    io:ReadableByteChannel byteChannel = checkpanic io:openReadableFile("./tests/resources/files/clobValue.txt");
+isolated function getTextColumnChannel() returns @untainted io:ReadableCharacterChannel|error? {
+    io:ReadableByteChannel byteChannel = check io:openReadableFile("./tests/resources/files/clobValue.txt");
     io:ReadableCharacterChannel sourceChannel = new (byteChannel, "UTF-8");
     return sourceChannel;
 }
 
-function dropTableIfExists(string tablename) returns sql:ExecutionResult|error {
-    Client oracledbClient = checkpanic new(user, password, host, port, database);
-    sql:ExecutionResult result = checkpanic oracledbClient->execute("BEGIN "+
+function dropTableIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
+    Client oracledbClient = check new(user, password, host, port, database);
+    sql:ExecutionResult result = check oracledbClient->execute("BEGIN "+
         "EXECUTE IMMEDIATE 'DROP TABLE ' || '" + tablename + "'; "+
         "EXCEPTION "+
         "WHEN OTHERS THEN "+
@@ -56,7 +56,7 @@ function dropTableIfExists(string tablename) returns sql:ExecutionResult|error {
                 "RAISE; "+
             "END IF; "+
         "END;");
-    checkpanic oracledbClient.close();
+    check oracledbClient.close();
     return result;
 }
 

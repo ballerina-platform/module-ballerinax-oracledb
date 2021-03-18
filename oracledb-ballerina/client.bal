@@ -30,9 +30,8 @@ public client class Client {
     # + host - Hostname of the oracle server to be connected
     # + port - Port number of the oracle server to be connected
     # + options - Oracle database specific JDBC options
-    # + connectionPool - The `sql:ConnectionPool` object to be used within 
-    #         the jdbc client. If there is no connectionPool provided, 
-    #         the global connection pool will be used
+    # + connectionPool - The `sql:ConnectionPool` object to be used within the jdbc client. If there is no
+    #                    connectionPool provided, the global connection pool will be used
     public isolated function init(
         string user,
         string password,
@@ -76,12 +75,14 @@ public client class Client {
     # + sqlQuery - The DDL or DML query such as INSERT, DELETE, UPDATE, etc as `string` or `ParameterizedQuery`
     #              when the query has params to be passed in
     # + return - Summary of the sql update query as `ExecutionResult` or returns `Error`
-    #           if any error occurred when executing the query
-    remote isolated function execute(@untainted string|sql:ParameterizedQuery sqlQuery) returns sql:ExecutionResult|sql:Error {
+    #            if any error occurred when executing the query
+    remote isolated function execute(@untainted string|sql:ParameterizedQuery sqlQuery)
+    returns sql:ExecutionResult|sql:Error {
         if (self.clientActive) {
             return nativeExecute(self, sqlQuery);
         } else {
-            return error sql:ApplicationError("OracleDB client is already closed, hence further operations are not allowed");
+            return error sql:ApplicationError(
+            "OracleDB client is already closed, hence further operations are not allowed");
         }
     }
 
@@ -94,15 +95,17 @@ public client class Client {
     #            `affectedRowCount` and `lastInsertId`. If one of the commands in the batch fails, this function
     #            will return `BatchExecuteError`, however the JDBC driver may or may not continue to process the
     #            remaining commands in the batch after a failure. The summary of the executed queries in case of error
-    #            can be accessed as `(<sql:BatchExecuteError> result).detail()?.executionResults`.
-    remote isolated function batchExecute(@untainted sql:ParameterizedQuery[] sqlQueries) returns sql:ExecutionResult[]|sql:Error {
+    #            can be accessed as `(<sql:BatchExecuteError> result).detail()?.executionResults`
+    remote isolated function batchExecute(@untainted sql:ParameterizedQuery[] sqlQueries)
+    returns sql:ExecutionResult[]|sql:Error {
         if (sqlQueries.length() == 0) {
             return error sql:ApplicationError(" Parameter 'sqlQueries' cannot be empty array");
         }
         if (self.clientActive) {
             return nativeBatchExecute(self, sqlQueries);
         } else {
-            return error sql:ApplicationError("OracleDB client is already closed, hence further operations are not allowed");
+            return error sql:ApplicationError(
+                "OracleDB client is already closed, hence further operations are not allowed");
         }
     }
 
@@ -110,7 +113,7 @@ public client class Client {
     #
     # + sqlQuery - The query to execute the SQL stored procedure
     # + rowTypes - The array of `typedesc` of the records that should be returned as a result. If this is not provided
-    #               the default column names of the query result set be used for the record attributes.
+    #              the default column names of the query result set be used for the record attributes
     # + return - Summary of the execution is returned in `ProcedureCallResult` or `sql:Error`
     remote isolated function call(@untainted string|sql:ParameterizedCallQuery sqlQuery, typedesc<record {}>[] rowTypes = [])
     returns sql:ProcedureCallResult|sql:Error {
@@ -144,15 +147,13 @@ public type SSLConfig record {|
   string trustStoreType?;
 |};
 
-# Oracle database specific JDBC options
+# Oracle database specific JDBC options.
 #
-# + ssl - SSL Configuration to be used.
-# + loginTimeout - Specify how long to wait for establishment 
-# of a database connection in seconds.
-# + autoCommit - If true commits automatically when statement is 
-# complete.
-# + connectTimeout - Time duration for a connection.
-# + socketTimeout - Timeout duration for reading from a socket.
+# + ssl - SSL Configuration to be used
+# + loginTimeout - Specify how long to wait for establishment of a database connection in seconds
+# + autoCommit - If true commits automatically when statement is complete
+# + connectTimeout - Time duration for a connection
+# + socketTimeout - Timeout duration for reading from a socket
 public type Options record {|
    SSLConfig ssl?;
    decimal loginTimeout?;
@@ -161,7 +162,7 @@ public type Options record {|
    decimal socketTimeout?;
 |};
 
-# Client Configuration record for connection initialization
+# Client Configuration record for connection initialization.
 #
 # + host - Hostname of the oracle server to be connected
 # + port - Port number of the oracle server to be connected
@@ -169,9 +170,8 @@ public type Options record {|
 # + user - Name of a user of the database
 # + password - Password for the user
 # + options - Oracle database specific JDBC options
-# + connectionPool - The `sql:ConnectionPool` object to be used within 
-#         the jdbc client. If there is no connectionPool provided, 
-#         the global connection pool will be used
+# + connectionPool - The `sql:ConnectionPool` object to be used within the jdbc client. If there is no
+#                    connectionPool provided, the global connection pool will be used
 type ClientConfiguration record {|
     string user;
     string password;
@@ -182,8 +182,8 @@ type ClientConfiguration record {|
     sql:ConnectionPool?  connectionPool;
 |};
 
-
-isolated function createClient(Client 'client, ClientConfiguration clientConfig, sql:ConnectionPool globalConnPool) returns sql:Error? = @java:Method{
+isolated function createClient(Client 'client, ClientConfiguration clientConfig, sql:ConnectionPool globalConnPool)
+returns sql:Error? = @java:Method{
     'class: "org.ballerinalang.oracledb.nativeimpl.ClientProcessor"
 } external;
 
@@ -202,8 +202,8 @@ returns sql:ExecutionResult[]|sql:Error = @java:Method {
     'class: "org.ballerinalang.oracledb.nativeimpl.ExecuteProcessor"
 } external;
 
-isolated function nativeCall(Client sqlClient, string|sql:ParameterizedCallQuery sqlQuery, typedesc<record {}>[] rowTypes)
-returns sql:ProcedureCallResult|sql:Error = @java:Method {
+isolated function nativeCall(Client sqlClient, string|sql:ParameterizedCallQuery sqlQuery,
+typedesc<record {}>[] rowTypes) returns sql:ProcedureCallResult|sql:Error = @java:Method {
     'class: "org.ballerinalang.oracledb.nativeimpl.CallProcessor"
 } external;
 
