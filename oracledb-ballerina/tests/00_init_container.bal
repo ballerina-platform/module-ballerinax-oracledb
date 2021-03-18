@@ -26,3 +26,4 @@ function beforeSuite() {
 function afterSuite() {
     io:println("Test suite finished");
 }
+
