@@ -19,18 +19,10 @@
 package org.ballerinalang.oracledb.parameterprocessor;
 
 import io.ballerina.runtime.api.creators.ValueCreator;
-import io.ballerina.runtime.api.types.Type;
-import io.ballerina.runtime.api.utils.XmlUtils;
 import io.ballerina.runtime.api.values.BObject;
-import io.ballerina.runtime.api.values.BXml;
 import org.ballerinalang.oracledb.Constants;
-import org.ballerinalang.sql.exception.ApplicationError;
-import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
 import org.ballerinalang.oracledb.utils.ModuleUtils;
-import org.ballerinalang.sql.utils.Utils;
-
-import java.sql.SQLException;
-import java.sql.SQLXML;
+import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
 
 /**
  * This class overrides DefaultResultParameterProcessor to implement methods required convert SQL types into
@@ -54,21 +46,6 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
     @Override
     protected BObject getIteratorObject() {
         return iterator;
-    }
-
-    @Override
-    public Object convertXml(SQLXML value, int sqlType, Type type) throws ApplicationError, SQLException {
-        Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL XML");
-        if (value != null) {
-            if (type instanceof BXml) {
-                return XmlUtils.parse(value.getBinaryStream());
-            } else {
-                throw new ApplicationError("The ballerina type that can be used for SQL struct should be record type," +
-                        " but found " + type.getName() + " .");
-            }
-        } else {
-            return null;
-        }
     }
 }
 

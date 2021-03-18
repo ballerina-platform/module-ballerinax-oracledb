@@ -22,8 +22,6 @@ For more information on the operations supported by the `oracledb:Client`, which
 - Executing stored procedures
 - Closing the client
 
-For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/oracledb-init-options.html).
-
 ## Issues and Projects 
 
 Issues and Projects tabs are disabled for this repository as this is part of the Ballerina Standard Library. To report bugs, request new features, start new discussions, view project boards, etc. please visit Ballerina Standard Library [parent repository](https://github.com/ballerina-platform/ballerina-standard-library). 
@@ -68,13 +66,10 @@ Execute the commands below to build from the source.
    **Tip:** The following groups of test cases are available.<br>
    Groups | Test Cases
    ---| ---
-   connection | connection-init<br> ssl
+   connection | connection-init
    pool | pool
-   transaction | local-transaction <br> xa-transaction
-   execute | execute-basic <br> execute-params
-   batch-execute | batch-execute 
+   execute | execute-basic<br>insert-time<br>insert-object<br>insert-varray
    query | query-simple-params<br>query-numeric-params<br>query-complex-params
-   procedures | procedures
 
 5. To disable some specific groups during test,
 
@@ -103,3 +98,4 @@ All contributors are encouraged to read the [Ballerina Code of Conduct](https://
 * Discuss about code changes of the Ballerina project in [ballerina-dev@googlegroups.com](mailto:ballerina-dev@googlegroups.com).
 * Chat live with us via our [Slack channel](https://ballerina.io/community/slack/).
 * Post all technical questions on Stack Overflow with the [#ballerina](https://stackoverflow.com/questions/tagged/ballerina) tag.
+

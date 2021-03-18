@@ -25,6 +25,7 @@ import io.ballerina.runtime.api.types.StructureType;
 import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BArray;
+import io.ballerina.runtime.api.values.BDecimal;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 
@@ -62,8 +63,8 @@ public class ConverterUtils {
         }
 
         Map<String, Object> fields = getRecordData(value);
-        Object yearObject = fields.get(Constants.Types.IntervalYearToMonth.YEAR);
-        Object monthObject = fields.get(Constants.Types.IntervalYearToMonth.MONTH);
+        Object yearObject = fields.get(Constants.Types.IntervalYearToMonth.YEARS);
+        Object monthObject = fields.get(Constants.Types.IntervalYearToMonth.MONTHS);
 
         String year = getIntervalString(yearObject, Constants.Types.OracleDbTypes.INTERVAL_YEAR_TO_MONTH);
         String month = getIntervalString(monthObject, Constants.Types.OracleDbTypes.INTERVAL_YEAR_TO_MONTH);
@@ -84,10 +85,10 @@ public class ConverterUtils {
         }
 
         Map<String, Object> fields = getRecordData(value);
-        Object dayObject = fields.get(Constants.Types.IntervalDayToSecond.DAY);
-        Object hourObject = fields.get(Constants.Types.IntervalDayToSecond.HOUR);
-        Object minuteObject = fields.get(Constants.Types.IntervalDayToSecond.MINUTE);
-        Object secondObject = fields.get(Constants.Types.IntervalDayToSecond.SECOND);
+        Object dayObject = fields.get(Constants.Types.IntervalDayToSecond.DAYS);
+        Object hourObject = fields.get(Constants.Types.IntervalDayToSecond.HOURS);
+        Object minuteObject = fields.get(Constants.Types.IntervalDayToSecond.MINUTES);
+        Object secondObject = fields.get(Constants.Types.IntervalDayToSecond.SECONDS);
 
         String day = getIntervalString(dayObject, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
         String hour = getIntervalString(hourObject, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
@@ -180,27 +181,14 @@ public class ConverterUtils {
         return XMLType.createXML(connection, xml, "oracle.xml.parser.XMLDocument.THIN");
     }
 
-    /**
-     * Converts URI value to string.
-     * @param value Custom URI Value
-     * @return java.sql.Array
-     * @throws ApplicationError
-     */
-     public Array convertUri(Object value) throws ApplicationError, SQLException {
-         Type type = TypeUtils.getType(value);
-         if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
-             throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.NESTED_TABLE);
-         }
-         Map<String, Object> fields = getRecordData(value);
-         return (Array) fields.get(Constants.Types.Varray.ELEMENTS);
-     }
-
     private static String getIntervalString(Object param, String typeName) throws ApplicationError {
         String value = null;
         if (param instanceof BString) {
             value = ((BString) param).getValue();
         } else if (param instanceof Long || param instanceof Double) {
             value = param.toString();
+        } else if (param instanceof BDecimal) {
+            value = Double.toString(((BDecimal) param).floatValue());
         } else {
             throwApplicationErrorForInvalidTypes(typeName);
         }
@@ -217,7 +205,6 @@ public class ConverterUtils {
             Field field = fieldIterator.next();
             Object bValue = ((BMap) value).get(fromString(field.getFieldName()));
             int typeTag = field.getFieldType().getTag();
-            // need to expand to cover all ballerina/SQL types
             switch (typeTag) {
                 case TypeTags.INT_TAG:
                 case TypeTags.FLOAT_TAG:
@@ -241,7 +228,6 @@ public class ConverterUtils {
 
     protected static Object getArrayData(Field field, Object bValue)
             throws ApplicationError {
-        // need to expand to cover all ballerina/SQL types
         Type elementType = ((ArrayType) field.getFieldType()).getElementType();
         if (elementType.getTag() == TypeTags.BYTE_TAG) {
             return ((BArray) bValue).getBytes();

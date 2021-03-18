@@ -21,7 +21,9 @@ import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.values.BDecimal;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
+import io.ballerina.runtime.api.values.BValue;
 import org.ballerinalang.oracledb.Constants;
+import org.ballerinalang.sql.exception.ApplicationError;
 
 import java.util.Properties;
 
@@ -134,6 +136,23 @@ public class Utils {
                 connProperties.put(Constants.DatabaseProps.ConnProperties.TRUSTSTORE_TYPE, trustStoreType.getValue());
             }
         }
+    }
+
+    /**
+     * Throws an error if the sql type of the provided value is invalid.
+     * @param value The parameter of invalid type
+     * @param sqlType The SQL type of the parameter
+     * @return sql:ApplicationError
+     */
+    public static ApplicationError throwInvalidParameterError(Object value, String sqlType) {
+        String valueName;
+        if (value instanceof BValue) {
+            valueName = ((BValue) value).getType().getName();
+        } else {
+            valueName = value.getClass().getName();
+        }
+
+        return new ApplicationError("Invalid parameter: " + valueName + " is passed as value for SQL type: " + sqlType);
     }
 
 }

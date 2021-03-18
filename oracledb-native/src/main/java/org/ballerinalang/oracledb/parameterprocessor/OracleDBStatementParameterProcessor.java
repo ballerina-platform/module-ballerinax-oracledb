@@ -20,7 +20,6 @@ package org.ballerinalang.oracledb.parameterprocessor;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 
-import java.io.IOException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,6 +29,7 @@ import java.sql.Struct;
 import oracle.xdb.XMLType;
 import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.oracledb.utils.ConverterUtils;
+import org.ballerinalang.oracledb.utils.Utils;
 import org.ballerinalang.sql.exception.ApplicationError;
 import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
 
@@ -52,7 +52,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
 
     @Override
     protected void setCustomSqlTypedParam(Connection connection, PreparedStatement preparedStatement, int index,
-                                          BObject typedValue) throws SQLException, ApplicationError, IOException {
+                                          BObject typedValue) throws SQLException, ApplicationError {
         String sqlType = typedValue.getType().getName();
         Object value = typedValue.get(Constants.TypedValueFields.VALUE);
         if (value == null) {
@@ -83,8 +83,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 setXml(connection, preparedStatement, index, value);
                 break;
             default:
-                // TODO
-                super.setCustomSqlTypedParam(connection, preparedStatement, index, typedValue);
+                throw Utils.throwInvalidParameterError(value, sqlType);
         }
     }
 

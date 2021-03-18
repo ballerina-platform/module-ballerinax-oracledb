@@ -269,7 +269,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             artifact source: createArtifactZip, extension: 'zip'
-//            artifact source: artifactCodeCoverageReport, classifier: 'jacoco'
+            artifact source: artifactCodeCoverageReport, classifier: 'jacoco'
         }
     }
     repositories {
@@ -358,7 +358,6 @@ def initializeDatabase() {
 task startTestDockerContainer(type: Exec) {
     if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
         def standardOutput = new ByteArrayOutputStream()
-//        commandLine 'sh', '-c', "docker run --rm -d --name ballerina-oracledb -e ORACLE_PWD=password -p 1521:1521 -t ballerina-oracledb"
         commandLine 'sh', '-c', "docker run --rm -d --name ballerina-oracledb -p 1521:1521 -t ballerina-oracledb"
 
         def healthCheck = 1;

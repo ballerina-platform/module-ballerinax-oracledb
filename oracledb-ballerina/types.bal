@@ -20,8 +20,8 @@ import ballerina/sql;
 
 # IntervalYearToMonth stores a period of time in years and months.
 #
-# + year - Number of years
-# + month - Number of months
+# + years - Number of years
+# + months - Number of months
 type IntervalYearToMonth record {|
     int years;
     int months;
@@ -30,10 +30,10 @@ type IntervalYearToMonth record {|
 
 # IntervalDayToSecond stores a period of time in days, hours, minutes, and seconds.
 #
-# + day - Number of days
-# + hour - Number of hours
-# + minute - Number of minutes
-# + second - Number of seconds
+# + days - Number of days
+# + hours - Number of hours
+# + minutes - Number of minutes
+# + seconds - Number of seconds
 type IntervalDayToSecond record {|
     int days;
     int hours;
@@ -55,7 +55,7 @@ type Bfile record {|
 
 # ObjectType is an abstraction of the real-world entities, such as purchase orders, that application programs deal with.
 #
-# + typeName - Name of the object type
+# + typename - Name of the object type
 # + attributes - Attributes of the object
 type ObjectType record {|
     string typename;
@@ -180,12 +180,13 @@ public class XmlValue {
 # The class with custom implementations for nextResult and getNextQueryResult in the connector modules.
 #
 public class CustomResultIterator {
-    isolated function nextResult(sql:ResultIterator iterator) returns record {}|sql:Error? = @java:Method {
+    public isolated function nextResult(sql:ResultIterator iterator) returns record {}|sql:Error? = @java:Method {
         'class: "org.ballerinalang.oracledb.utils.RecordIteratorUtils",
         paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
     } external;
 
-    isolated function getNextQueryResult(sql:ProcedureCallResult callResult) returns boolean|sql:Error? = @java:Method {
+    public isolated function getNextQueryResult(sql:ProcedureCallResult callResult)
+    returns boolean|sql:Error = @java:Method {
         'class: "org.ballerinalang.oracledb.utils.ProcedureCallResultUtils",
         paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
     } external;

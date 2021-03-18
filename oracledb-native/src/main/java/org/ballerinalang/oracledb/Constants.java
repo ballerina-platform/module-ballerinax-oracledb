@@ -159,8 +159,8 @@ public final class Constants {
          * Constants related to the attributes of INTERVAL_YEAR_TO_MONTH Oracle DB type.
          */
         public static final class IntervalYearToMonth {
-            public static final String YEAR = "years";
-            public static final String MONTH = "months";
+            public static final String YEARS = "years";
+            public static final String MONTHS = "months";
 
         }
 
@@ -168,10 +168,10 @@ public final class Constants {
          * Constants related to the attributes of INTERVAL_DAY_TO_SECOND Oracle DB type.
          */
         public static final class IntervalDayToSecond {
-            public static final String DAY = "days";
-            public static final String HOUR = "hours";
-            public static final String MINUTE = "minutes";
-            public static final String SECOND = "seconds";
+            public static final String DAYS = "days";
+            public static final String HOURS = "hours";
+            public static final String MINUTES = "minutes";
+            public static final String SECONDS = "seconds";
         }
 
         /**
