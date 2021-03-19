@@ -29,6 +29,7 @@ import io.ballerina.runtime.api.values.BDecimal;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 
+import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -146,7 +147,9 @@ public class ConverterUtils {
             throwApplicationErrorForInvalidTypes(Constants.Types.OracleDbTypes.VARRAY);
         }
         Map<String, Object> fields = getRecordData(value);
-        return (Array) fields.get(Constants.Types.Varray.ELEMENTS);
+        Array arr = (Array) fields.get(Constants.Types.Varray.ELEMENTS);
+        System.out.println("Casted Array:"+ arr);
+        return arr;
     }
 
     /**
@@ -205,6 +208,7 @@ public class ConverterUtils {
             Field field = fieldIterator.next();
             Object bValue = ((BMap) value).get(fromString(field.getFieldName()));
             int typeTag = field.getFieldType().getTag();
+            System.out.println("Record element type:"+ typeTag);
             switch (typeTag) {
                 case TypeTags.INT_TAG:
                 case TypeTags.FLOAT_TAG:
@@ -214,7 +218,9 @@ public class ConverterUtils {
                     structData.put(field.getFieldName(), bValue);
                     break;
                 case TypeTags.ARRAY_TAG:
-                    structData.put(field.getFieldName(), getArrayData(field, bValue));
+                    Object arrdata = getArrayData(field, bValue);
+                    System.out.println("ArrayData: "+arrdata);
+                    structData.put(field.getFieldName(), arrdata);
                     break;
                 case TypeTags.RECORD_TYPE_TAG:
                     structData.put(field.getFieldName(), getRecordData(bValue));
@@ -226,14 +232,77 @@ public class ConverterUtils {
         return structData;
     }
 
-    protected static Object getArrayData(Field field, Object bValue)
-            throws ApplicationError {
+    protected static Object getArrayData(Field field, Object bValue) throws ApplicationError {
         Type elementType = ((ArrayType) field.getFieldType()).getElementType();
-        if (elementType.getTag() == TypeTags.BYTE_TAG) {
-            return ((BArray) bValue).getBytes();
-        } else {
-            throw new ApplicationError("unsupported data type for array specified for struct parameter");
+        int tag = elementType.getTag();
+        System.out.println(tag);
+        switch (tag) {
+            case TypeTags.BYTE_TAG:
+                return getByteArrayData(bValue);
+            case TypeTags.INT_TAG:
+                return getIntArrayData(bValue);
+            case TypeTags.BOOLEAN_TAG:
+                return getBooleanArrayData(bValue);
+            case TypeTags.FLOAT_TAG:
+                return getFloatArrayData(bValue);
+            case TypeTags.DECIMAL_TAG:
+                return getDecimalArrayData(bValue);
+            case TypeTags.STRING_TAG:
+                return getStringArrayData(bValue);
+            default:
+                throw new ApplicationError("Unsupported data type for array specified for struct parameter");
         }
+    }
+
+    protected static Object getByteArrayData(Object value) throws ApplicationError {
+        return ((BArray) value).getBytes();
+    }
+
+    protected static Object getIntArrayData(Object value) throws ApplicationError {
+        int arrayLength = ((BArray) value).size();
+        Object[] arrayData = new Long[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            arrayData[i] = ((BArray) value).getInt(i);
+        }
+        System.out.println("Int arr:"+ arrayData[0]);
+        return  arrayData;
+    }
+
+    protected static Object getFloatArrayData(Object value) throws ApplicationError {
+        int arrayLength = ((BArray) value).size();
+        Object[] arrayData = new Double[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            arrayData[i] = ((BArray) value).getFloat(i);
+        }
+        return  arrayData;
+    }
+
+    protected static Object getStringArrayData(Object value) throws ApplicationError {
+        int arrayLength = ((BArray) value).size();
+        Object[] arrayData = new String[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            arrayData[i] = ((BArray) value).getBString(i).getValue();
+        }
+        System.out.println("STR arr:"+ arrayData[0]);
+        return arrayData;
+    }
+
+    protected static Object getBooleanArrayData(Object value) throws ApplicationError {
+        int arrayLength = ((BArray) value).size();
+        Object[] arrayData = new Boolean[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            arrayData[i] = ((BArray) value).getBoolean(i);
+        }
+        return arrayData;
+    }
+
+    protected static Object getDecimalArrayData(Object value) throws ApplicationError {
+        int arrayLength = ((BArray) value).size();
+        Object[] arrayData = new BigDecimal[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            arrayData[i] = ((BDecimal) ((BArray) value).getRefValue(i)).value();
+        }
+        return arrayData;
     }
 
     private static void throwApplicationErrorForInvalidTypes(String sqlTypeName) throws ApplicationError {

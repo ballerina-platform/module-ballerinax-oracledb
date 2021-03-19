@@ -122,6 +122,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     private void setVarray(Connection connection, PreparedStatement preparedStatement, int index, Object value)
             throws SQLException, ApplicationError {
         Array varray = ConverterUtils.convertVarray(value);
+        System.out.println(varray);
         preparedStatement.setArray(index, varray);
     }
 

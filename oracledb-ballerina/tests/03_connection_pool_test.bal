@@ -103,19 +103,19 @@
 //}
 //function testLocalSharedConnectionPoolConfigSingleDestination() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 5};
-//   Client dbClient1 = check new (user, password, host, port, poolDB_1, options, pool);
-//   Client dbClient2 = check new (user, password, host, port, poolDB_1, options, pool);
-//   Client dbClient3 = check new (user, password, host, port, poolDB_1, options, pool);
-//   Client dbClient4 = check new (user, password, host, port, poolDB_1, options, pool);
-//   Client dbClient5 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient1 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient2 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient3 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient4 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient5 = check new (user, password, host, port, poolDB_1, options, pool);
 //
 //   (stream<record{}, error>)[] resultArray = [];
-//   resultArray[0] = dbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[1] = dbClient2->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[2] = dbClient3->query("select count(*) as val from Customers where registrationID = 2", Result);
-//   resultArray[3] = dbClient4->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[4] = dbClient5->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[5] = dbClient5->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   resultArray[0] = oracleDbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[1] = oracleDbClient2->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[2] = oracleDbClient3->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   resultArray[3] = oracleDbClient4->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[4] = oracleDbClient5->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[5] = oracleDbClient5->query("select count(*) as val from Customers where registrationID = 2", Result);
 //
 //   (int|error)[] returnArray = [];
 //   int i = 0;
@@ -125,11 +125,11 @@
 //       i += 1;
 //   }
 //
-//   check dbClient1.close();
-//   check dbClient2.close();
-//   check dbClient3.close();
-//   check dbClient4.close();
-//   check dbClient5.close();
+//   check oracleDbClient1.close();
+//   check oracleDbClient2.close();
+//   check oracleDbClient3.close();
+//   check oracleDbClient4.close();
+//   check oracleDbClient5.close();
 //
 //   // All 5 clients are supposed to use the same pool created with the configurations given by the
 //   // custom pool options. Since each select operation holds up one connection each, the last select
@@ -147,29 +147,29 @@
 //}
 //function testLocalSharedConnectionPoolConfigDifferentDbOptions() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 3};
-//   Client dbClient1 = check new (user, password, host, port, poolDB_1,
+//   Client oracleDbClient1 = check new (user, password, host, port, poolDB_1,
 //       {connectTimeout: 2, socketTimeout: 10}, pool);
-//   Client dbClient2 = check new (user, password, host, port, poolDB_1,
+//   Client oracleDbClient2 = check new (user, password, host, port, poolDB_1,
 //       {socketTimeoutInSeconds: 10, connectTimeout: 2}, pool);
-//   Client dbClient3 = check new (user, password, host, port, poolDB_1,
+//   Client oracleDbClient3 = check new (user, password, host, port, poolDB_1,
 //       {connectTimeout: 2, socketTimeoutInSeconds: 10}, pool);
-//   Client dbClient4 = check new (user, password, host, port, poolDB_1,
+//   Client oracleDbClient4 = check new (user, password, host, port, poolDB_1,
 //       {connectTimeout: 1}, pool);
-//   Client dbClient5 = check new (user, password, host, port, poolDB_1,
+//   Client oracleDbClient5 = check new (user, password, host, port, poolDB_1,
 //       {connectTimeout: 1}, pool);
-//   Client dbClient6 = check new (user, password, host, port, poolDB_1,
+//   Client oracleDbClient6 = check new (user, password, host, port, poolDB_1,
 //       {connectTimeout: 1}, pool);
 //
 //   stream<record {} , error>[] resultArray = [];
-//   resultArray[0] = dbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[1] = dbClient2->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[2] = dbClient3->query("select count(*) as val from Customers where registrationID = 2", Result);
-//   resultArray[3] = dbClient3->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[0] = oracleDbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[1] = oracleDbClient2->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[2] = oracleDbClient3->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   resultArray[3] = oracleDbClient3->query("select count(*) as val from Customers where registrationID = 1", Result);
 //
-//   resultArray[4] = dbClient4->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[5] = dbClient5->query("select count(*) as val from Customers where registrationID = 2", Result);
-//   resultArray[6] = dbClient6->query("select count(*) as val from Customers where registrationID = 2", Result);
-//   resultArray[7] = dbClient6->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[4] = oracleDbClient4->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[5] = oracleDbClient5->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   resultArray[6] = oracleDbClient6->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   resultArray[7] = oracleDbClient6->query("select count(*) as val from Customers where registrationID = 1", Result);
 //
 //   (int|error)[] returnArray = [];
 //   int i = 0;
@@ -179,12 +179,12 @@
 //       i += 1;
 //   }
 //
-//   check dbClient1.close();
-//   check dbClient2.close();
-//   check dbClient3.close();
-//   check dbClient4.close();
-//   check dbClient5.close();
-//   check dbClient6.close();
+//   check oracleDbClient1.close();
+//   check oracleDbClient2.close();
+//   check oracleDbClient3.close();
+//   check oracleDbClient4.close();
+//   check oracleDbClient5.close();
+//   check oracleDbClient6.close();
 //
 //   // Since max pool size is 3, the last select function call going through each pool should fail.
 //   i = 0;
@@ -203,23 +203,23 @@
 //}
 //function testLocalSharedConnectionPoolConfigMultipleDestinations() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 3};
-//   Client dbClient1 = check new (user, password, host, port, poolDB_1, options, pool);
-//   Client dbClient2 = check new (user, password, host, port, poolDB_1, options, pool);
-//   Client dbClient3 = check new (user, password, host, port, poolDB_1, options, pool);
-//   Client dbClient4 = check new (user, password, host, port, poolDB_2, options, pool);
-//   Client dbClient5 = check new (user, password, host, port, poolDB_2, options, pool);
-//   Client dbClient6 = check new (user, password, host, port, poolDB_2, options, pool);
+//   Client oracleDbClient1 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient2 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient3 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient4 = check new (user, password, host, port, poolDB_2, options, pool);
+//   Client oracleDbClient5 = check new (user, password, host, port, poolDB_2, options, pool);
+//   Client oracleDbClient6 = check new (user, password, host, port, poolDB_2, options, pool);
 //
 //   stream<record {} , error>[] resultArray = [];
-//   resultArray[0] = dbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[1] = dbClient2->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[2] = dbClient3->query("select count(*) as val from Customers where registrationID = 2", Result);
-//   resultArray[3] = dbClient3->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[0] = oracleDbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[1] = oracleDbClient2->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[2] = oracleDbClient3->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   resultArray[3] = oracleDbClient3->query("select count(*) as val from Customers where registrationID = 1", Result);
 //
-//   resultArray[4] = dbClient4->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[5] = dbClient5->query("select count(*) as val from Customers where registrationID = 2", Result);
-//   resultArray[6] = dbClient6->query("select count(*) as val from Customers where registrationID = 2", Result);
-//   resultArray[7] = dbClient6->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[4] = oracleDbClient4->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[5] = oracleDbClient5->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   resultArray[6] = oracleDbClient6->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   resultArray[7] = oracleDbClient6->query("select count(*) as val from Customers where registrationID = 1", Result);
 //
 //   (int|error)[] returnArray = [];
 //   int i = 0;
@@ -229,12 +229,12 @@
 //       i += 1;
 //   }
 //
-//   check dbClient1.close();
-//   check dbClient2.close();
-//   check dbClient3.close();
-//   check dbClient4.close();
-//   check dbClient5.close();
-//   check dbClient6.close();
+//   check oracleDbClient1.close();
+//   check oracleDbClient2.close();
+//   check oracleDbClient3.close();
+//   check oracleDbClient4.close();
+//   check oracleDbClient5.close();
+//   check oracleDbClient6.close();
 //
 //   // Since max pool size is 3, the last select function call going through each pool should fail.
 //   i = 0;
@@ -252,30 +252,30 @@
 //}
 //function testLocalSharedConnectionPoolCreateClientAfterShutdown() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 2};
-//   Client dbClient1 = check new (user, password, host, port, poolDB_1, options, pool);
-//   Client dbClient2 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient1 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient2 = check new (user, password, host, port, poolDB_1, options, pool);
 //
-//   var dt1 = dbClient1->query("SELECT count(*) as val from Customers where registrationID = 1", Result);
-//   var dt2 = dbClient2->query("SELECT count(*) as val from Customers where registrationID = 1", Result);
+//   var dt1 = oracleDbClient1->query("SELECT count(*) as val from Customers where registrationID = 1", Result);
+//   var dt2 = oracleDbClient2->query("SELECT count(*) as val from Customers where registrationID = 1", Result);
 //   int|error result1 = getReturnValue(dt1);
 //   int|error result2 = getReturnValue(dt2);
 //
 //   // Since both clients are stopped the pool is supposed to shutdown.
-//   check dbClient1.close();
-//   check dbClient2.close();
+//   check oracleDbClient1.close();
+//   check oracleDbClient2.close();
 //
 //   // This call should return an error as pool is shutdown
-//   var dt3 = dbClient1->query("SELECT count(*) as val from Customers where registrationID = 1", Result);
+//   var dt3 = oracleDbClient1->query("SELECT count(*) as val from Customers where registrationID = 1", Result);
 //   int|error result3 = getReturnValue(dt3);
 //
 //   // Now a new pool should be created
-//   Client dbClient3 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient3 = check new (user, password, host, port, poolDB_1, options, pool);
 //
 //   // This call should be successful
-//   var dt4 = dbClient3->query("SELECT count(*) as val from Customers where registrationID = 1", Result);
+//   var dt4 = oracleDbClient3->query("SELECT count(*) as val from Customers where registrationID = 1", Result);
 //   int|error result4 = getReturnValue(dt4);
 //
-//   check dbClient3.close();
+//   check oracleDbClient3.close();
 //
 //   test:assertEquals(result1, 1);
 //   test:assertEquals(result2, 1);
@@ -303,18 +303,18 @@
 //
 //function testLocalSharedConnectionPoolStopInitInterleaveHelper1(sql:ConnectionPool pool, string database)
 //returns error? {
-//   Client dbClient = check new (user, password, host, port, database, options, pool);
+//   Client oracleDbClient = check new (user, password, host, port, database, options, pool);
 //   runtime:sleep(10);
-//   check dbClient.close();
+//   check oracleDbClient.close();
 //}
 //
 //function testLocalSharedConnectionPoolStopInitInterleaveHelper2(sql:ConnectionPool pool, string database)
 //returns @tainted int|error {
 //   runtime:sleep(10);
-//   Client dbClient = check new (user, password, host, port, database, options, pool);
-//   var dt = dbClient->query("SELECT COUNT(*) as val from Customers where registrationID = 1", Result);
+//   Client oracleDbClient = check new (user, password, host, port, database, options, pool);
+//   var dt = oracleDbClient->query("SELECT COUNT(*) as val from Customers where registrationID = 1", Result);
 //   int|error count = getReturnValue(dt);
-//   check dbClient.close();
+//   check oracleDbClient.close();
 //   return count;
 //}
 //
@@ -323,14 +323,14 @@
 //}
 //function testShutDownUnsharedLocalConnectionPool() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 2};
-//   Client dbClient = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient = check new (user, password, host, port, poolDB_1, options, pool);
 //
-//   var result = dbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   var result = oracleDbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
 //   int|error retVal1 = getReturnValue(result);
 //   // Pool should be shutdown as the only client using it is stopped.
-//   check dbClient.close();
+//   check oracleDbClient.close();
 //   // This should result in an error return.
-//   var resultAfterPoolShutDown = dbClient->query("select count(*) as val from Customers where registrationID = 1",
+//   var resultAfterPoolShutDown = oracleDbClient->query("select count(*) as val from Customers where registrationID = 1",
 //       Result);
 //   int|error retVal2 = getReturnValue(resultAfterPoolShutDown);
 //
@@ -343,31 +343,31 @@
 //}
 //function testShutDownSharedConnectionPool() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 1};
-//   Client dbClient1 = check new (user, password, host, port, poolDB_1, options, pool);
-//   Client dbClient2 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient1 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient2 = check new (user, password, host, port, poolDB_1, options, pool);
 //
-//   var result1 = dbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   var result1 = oracleDbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);
 //   int|error retVal1 = getReturnValue(result1);
 //
-//   var result2 = dbClient2->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   var result2 = oracleDbClient2->query("select count(*) as val from Customers where registrationID = 2", Result);
 //   int|error retVal2 = getReturnValue(result2);
 //
 //   // Only one client is closed so pool should not shutdown.
-//   check dbClient1.close();
+//   check oracleDbClient1.close();
 //
 //   // This should be successful as pool is still up.
-//   var result3 = dbClient2->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   var result3 = oracleDbClient2->query("select count(*) as val from Customers where registrationID = 2", Result);
 //   int|error retVal3 = getReturnValue(result3);
 //
 //   // This should fail because, even though the pool is up, this client was stopped
-//   var result4 = dbClient1->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   var result4 = oracleDbClient1->query("select count(*) as val from Customers where registrationID = 2", Result);
 //   int|error retVal4 = getReturnValue(result4);
 //
 //   // Now pool should be shutdown as the only remaining client is stopped.
-//   check dbClient2.close();
+//   check oracleDbClient2.close();
 //
 //   // This should fail because this client is stopped.
-//   var result5 = dbClient2->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   var result5 = oracleDbClient2->query("select count(*) as val from Customers where registrationID = 2", Result);
 //   int|error retVal5 = getReturnValue(result4);
 //
 //   test:assertEquals(retVal1, 1);
@@ -382,27 +382,27 @@
 //}
 //function testShutDownPoolCorrespondingToASharedPoolConfig() {
 //   sql:ConnectionPool pool = {maxOpenConnections: 1};
-//   Client dbClient1 = check new (user, password, host, port, poolDB_1, options, pool);
-//   Client dbClient2 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient1 = check new (user, password, host, port, poolDB_1, options, pool);
+//   Client oracleDbClient2 = check new (user, password, host, port, poolDB_1, options, pool);
 //
-//   var result1 = dbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   var result1 = oracleDbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);
 //   int|error retVal1 = getReturnValue(result1);
 //
-//   var result2 = dbClient2->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   var result2 = oracleDbClient2->query("select count(*) as val from Customers where registrationID = 2", Result);
 //   int|error retVal2 = getReturnValue(result2);
 //
 //   // This should result in stopping the pool used by this client as it was the only client using that pool.
-//   check dbClient1.close();
+//   check oracleDbClient1.close();
 //
 //   // This should be successful as the pool belonging to this client is up.
-//   var result3 = dbClient2->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   var result3 = oracleDbClient2->query("select count(*) as val from Customers where registrationID = 2", Result);
 //   int|error retVal3 = getReturnValue(result3);
 //
 //   // This should fail because this client was stopped.
-//   var result4 = dbClient1->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   var result4 = oracleDbClient1->query("select count(*) as val from Customers where registrationID = 2", Result);
 //   int|error retVal4 = getReturnValue(result4);
 //
-//   check dbClient2.close();
+//   check oracleDbClient2.close();
 //
 //   test:assertEquals(retVal1, 1);
 //   test:assertEquals(retVal2, 1);
@@ -415,16 +415,16 @@
 //}
 //function testStopClientUsingGlobalPool() {
 //   // This client doesn't have pool config specified therefore, global pool will be used.
-//   Client dbClient = check new (user, password, host, port, poolDB_1, options);
+//   Client oracleDbClient = check new (user, password, host, port, poolDB_1, options);
 //
-//   var result1 = dbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   var result1 = oracleDbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
 //   int|error retVal1 = getReturnValue(result1);
 //
 //   // This will merely stop this client and will not have any effect on the pool because it is the global pool.
-//   check dbClient.close();
+//   check oracleDbClient.close();
 //
 //   // This should fail because this client was stopped, even though the pool is up.
-//   var result2 = dbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   var result2 = oracleDbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
 //   int|error retVal2 = getReturnValue(result2);
 //
 //   test:assertEquals(retVal1, 1);
@@ -454,27 +454,27 @@
 //};
 //
 //function getOpenConnectionCount(string database) returns @tainted (int|error) {
-//   Client dbClient = check new (user, password, host, port, database,options, {maxOpenConnections: 1});
-//   var dt = dbClient->query("show status where `variable_name` = 'Threads_connected'", Variable);
+//   Client oracleDbClient = check new (user, password, host, port, database,options, {maxOpenConnections: 1});
+//   var dt = oracleDbClient->query("show status where `variable_name` = 'Threads_connected'", Variable);
 //   int|error count = getIntVariableValue(dt);
-//   check dbClient.close();
+//   check oracleDbClient.close();
 //   return count;
 //}
 //
 //function testGlobalConnectionPoolConcurrentHelper1(string database) returns
 //   @tainted [stream<record{}, error>, stream<record{}, error>]|error {
-//   Client dbClient = check new (user, password, host, port, database, options);
-//   var dt1 = dbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   var dt2 = dbClient->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   Client oracleDbClient = check new (user, password, host, port, database, options);
+//   var dt1 = oracleDbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   var dt2 = oracleDbClient->query("select count(*) as val from Customers where registrationID = 2", Result);
 //   return [dt1, dt2];
 //}
 //
 //function testGlobalConnectionPoolConcurrentHelper2(string database) returns @tainted (int|error)[] {
-//   Client dbClient = check new (user, password, host, port,  database, options);
+//   Client oracleDbClient = check new (user, password, host, port,  database, options);
 //   (int|error)[] returnArray = [];
-//   var dt1 = dbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   var dt2 = dbClient->query("select count(*) as val from Customers where registrationID = 2", Result);
-//   var dt3 = dbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   var dt1 = oracleDbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   var dt2 = oracleDbClient->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   var dt3 = oracleDbClient->query("select count(*) as val from Customers where registrationID = 1", Result);
 //   // Connections will be released here as we fully consume the data in the following conversion function calls
 //   returnArray[0] = getReturnValue(dt1);
 //   returnArray[1] = getReturnValue(dt2);
@@ -513,30 +513,30 @@
 //
 //
 //function drainGlobalPool(string database) {
-//   Client dbClient1 = check new (user, password, host, port, database, options);
-//   Client dbClient2 = check new (user, password, host, port, database, options);
-//   Client dbClient3 = check new (user, password, host, port, database, options);
-//   Client dbClient4 = check new (user, password, host, port, database, options);
-//   Client dbClient5 = check new (user, password, host, port, database, options);
+//   Client oracleDbClient1 = check new (user, password, host, port, database, options);
+//   Client oracleDbClient2 = check new (user, password, host, port, database, options);
+//   Client oracleDbClient3 = check new (user, password, host, port, database, options);
+//   Client oracleDbClient4 = check new (user, password, host, port, database, options);
+//   Client oracleDbClient5 = check new (user, password, host, port, database, options);
 //
 //   stream<record{}, error>[] resultArray = [];
 //
-//   resultArray[0] = dbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[1] = dbClient1->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   resultArray[0] = oracleDbClient1->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[1] = oracleDbClient1->query("select count(*) as val from Customers where registrationID = 2", Result);
 //
-//   resultArray[2] = dbClient2->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[3] = dbClient2->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[2] = oracleDbClient2->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[3] = oracleDbClient2->query("select count(*) as val from Customers where registrationID = 1", Result);
 //
-//   resultArray[4] = dbClient3->query("select count(*) as val from Customers where registrationID = 2", Result);
-//   resultArray[5] = dbClient3->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   resultArray[4] = oracleDbClient3->query("select count(*) as val from Customers where registrationID = 2", Result);
+//   resultArray[5] = oracleDbClient3->query("select count(*) as val from Customers where registrationID = 2", Result);
 //
-//   resultArray[6] = dbClient4->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[7] = dbClient4->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[6] = oracleDbClient4->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[7] = oracleDbClient4->query("select count(*) as val from Customers where registrationID = 1", Result);
 //
-//   resultArray[8] = dbClient5->query("select count(*) as val from Customers where registrationID = 1", Result);
-//   resultArray[9] = dbClient5->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[8] = oracleDbClient5->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[9] = oracleDbClient5->query("select count(*) as val from Customers where registrationID = 1", Result);
 //
-//   resultArray[10] = dbClient5->query("select count(*) as val from Customers where registrationID = 1", Result);
+//   resultArray[10] = oracleDbClient5->query("select count(*) as val from Customers where registrationID = 1", Result);
 //
 //   (int|error)[] returnArray = [];
 //   int i = 0;
