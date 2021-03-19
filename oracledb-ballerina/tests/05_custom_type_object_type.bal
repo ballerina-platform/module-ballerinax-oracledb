@@ -22,7 +22,6 @@ function beforeInsertObjectFunc() returns sql:Error? {
 
     Client oracledbClient = check new(user, password, host, port, database);
     sql:ExecutionResult result = check dropTableIfExists("TestObjectTypeTable");
-    // result = check dropTypeIfExists("OBJECT_TYPE");
 
     result = check oracledbClient->execute(
         "CREATE OR REPLACE TYPE OBJECT_TYPE OID '"+ OID +"' AS OBJECT(" +
@@ -56,7 +55,7 @@ function beforeInsertObjectFunc() returns sql:Error? {
 
 @test:Config {
     enable: true,
-    groups:["insert","insert-object"]
+    groups:["execute","insert-object"]
 }
 function insertObjectTypeWithString() returns sql:Error? {
     Client oracledbClient = check new(user, password, host, port, database);
@@ -78,7 +77,7 @@ function insertObjectTypeWithString() returns sql:Error? {
 
 @test:Config {
     enable: true,
-    groups:["insert","insert-object"]
+    groups:["execute","insert-object"]
     // dependsOn: [insertObjectTypeWithString]
 }
 function insertObjectTypeWithCustomType() returns sql:Error? {
@@ -88,7 +87,7 @@ function insertObjectTypeWithCustomType() returns sql:Error? {
     string attr2 = "Hello2";
     string attr3 = "Hello3";
 
-    ObjectTypeValue objectType = new({typeName: "OBJECT_TYPE", attributes: [ attr1, attr2, attr3 ]});
+    ObjectTypeValue objectType = new({typename: "OBJECT_TYPE", attributes: [ attr1, attr2, attr3 ]});
 
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType}))`;
     sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
@@ -103,7 +102,7 @@ function insertObjectTypeWithCustomType() returns sql:Error? {
 
 @test:Config {
     enable: true,
-    groups:["insert","insert-object"],
+    groups:["execute","insert-object"],
     dependsOn: [insertObjectTypeWithCustomType]
 }
 function insertObjectTypeNull() returns sql:Error? {

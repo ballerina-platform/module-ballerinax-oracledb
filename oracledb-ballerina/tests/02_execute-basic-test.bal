@@ -192,127 +192,12 @@
     check oracledbClient.close();
  }
 
- type StringData record {
-    int id;
-    string col_char;
-    string col_nchar;
-    string col_varchar2;
-    string col_varchar;
-    string col_nvarchar2;
- };
-
- @test:Config {
+@test:Config {
     groups: ["execute", "execute-basic"],
     dependsOn: [testInsertWithAllNilAndSelectTableWithGeneratedKeys]
- }
- isolated function testInsertWithStringAndSelectTable() returns sql:Error? {
-       Client oracledbClient = check new (user, password, host, port, database);
-    int intIDVal = 25;
-    string insertQuery = string `Insert into TestCharacterTable (
-        id, col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2) values (
-        ${intIDVal} ,'str1','str2','str3','str4','str5')`;
-    sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-
-    string query = string `SELECT * from TestCharacterTable where id = ${intIDVal}`;
-    stream<record{}, error> queryResult = oracledbClient->query(query, StringData);
-    stream<StringData, sql:Error> streamData = <stream<StringData, sql:Error>>queryResult;
-    record {|StringData value;|}? data = check streamData.next();
-    check streamData.close();
-
-    StringData expectedInsertRow = {
-        id: 25,
-        col_char:"str1",
-        col_nchar:"str2",
-        col_varchar2:"str3",
-        col_varchar:"str4",
-        col_nvarchar2:"str5"
-    };
-    test:assertEquals(data?.value, expectedInsertRow, "Incorrect record returned.");
-    check oracledbClient.close();
- }
-
-type StringNilData record {
-    int id;
-    string? col_char;
-    string? col_nchar;
-    string? col_varchar2;
-    string? col_varchar;
-    string? col_nvarchar2;
- };
-
- @test:Config {
-    groups: ["execute", "execute-basic"],
-    dependsOn: [testInsertWithAllNilAndSelectTableWithGeneratedKeys]
-    //dependsOn: [testInsertWithStringAndSelectTable]
- }
- isolated function testInsertWithEmptyStringAndSelectTable() returns sql:Error? {
-       Client oracledbClient = check new (user, password, host, port, database);
-    int intIDVal = 35;
-    string insertQuery = string `Insert into TestCharacterTable (
-        id, col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2) values (
-        ${intIDVal} ,'','','','','')`;
-    sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-
-    string query = string `SELECT * from TestCharacterTable where id = ${intIDVal}`;
-    stream<record{}, error> queryResult = oracledbClient->query(query, StringNilData);
-    stream<StringNilData, sql:Error> streamData = <stream<StringNilData, sql:Error>>queryResult;
-    record {|StringNilData value;|}? data = check streamData.next();
-    check streamData.close();
-
-    StringNilData expectedInsertRow = {
-        id: 35,
-        col_char:(),
-        col_nchar:(),
-        col_varchar2:(),
-        col_varchar:(),
-        col_nvarchar2:()
-    };
-    test:assertEquals(data?.value, expectedInsertRow, "Incorrect record returned.");
-
-    check oracledbClient.close();
- }
-
- @test:Config {
-    groups: ["execute", "execute-basic"],
-    dependsOn: [testInsertWithAllNilAndSelectTableWithGeneratedKeys]
-    //dependsOn: [testInsertWithEmptyStringAndSelectTable]
- }
- isolated function testInsertWithNilStringAndSelectTable() returns sql:Error? {
-       Client oracledbClient = check new (user, password, host, port, database);
-    int intIDVal = 45;
-    string insertQuery = string `Insert into TestCharacterTable (id, col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2) values (
-        ${intIDVal} ,null,null,null,null,null)`;
-    sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-
-    string query = string `SELECT * from TestCharacterTable where id = ${intIDVal}`;
-    stream<record{}, error> queryResult = oracledbClient->query(query, StringNilData);
-    stream<StringNilData, sql:Error> streamData = <stream<StringNilData, sql:Error>>queryResult;
-    record {|StringNilData value;|}? data = check streamData.next();
-    check streamData.close();
-
-    StringNilData expectedInsertRow = {
-        id: 45,
-        col_char:(),
-        col_nchar:(),
-        col_varchar2:(), 
-        col_varchar:(),
-        col_nvarchar2:()
-    };
-    test:assertEquals(data?.value, expectedInsertRow, "Incorrect record returned.");
-    check oracledbClient.close();
- }
-
- @test:Config {
-    groups: ["execute", "execute-basic"],
-    dependsOn: [testInsertWithAllNilAndSelectTableWithGeneratedKeys]
-    //dependsOn: [testInsertWithNilStringAndSelectTable]
- }
- isolated function testInsertTableWithDatabaseError() returns sql:Error? {
-       Client oracledbClient = check new (user, password, host, port, database);
+}
+isolated function testInsertTableWithDatabaseError() returns sql:Error? {
+    Client oracledbClient = check new (user, password, host, port, database);
     sql:ExecutionResult|sql:Error result = oracledbClient->execute("Insert into NumericTypesNonExistTable (int_type) values (20)");
 
     if (result is sql:DatabaseError) {
@@ -324,12 +209,11 @@ type StringNilData record {
     }
 
     check oracledbClient.close();
- }
+}
 
  @test:Config {
     groups: ["execute", "execute-basic"],
-    dependsOn: [testInsertWithAllNilAndSelectTableWithGeneratedKeys]
-    //dependsOn: [testInsertTableWithDatabaseError]
+    dependsOn: [testInsertTableWithDatabaseError]
  }
  isolated function testInsertTableWithDataTypeError() returns sql:Error? {
        Client oracledbClient = check new (user, password, host, port, database);
@@ -347,26 +231,14 @@ type StringNilData record {
     check oracledbClient.close();
  }
 
- type ResultCount record {
-    int countVal;
- };
-
  @test:Config {
     groups: ["execute", "execute-basic"],
-    dependsOn: [testInsertWithAllNilAndSelectTableWithGeneratedKeys]
-    //dependsOn: [testInsertTableWithDataTypeError]
+    dependsOn: [testInsertTableWithDataTypeError]
  }
  isolated function testUpdateData() returns sql:Error? {
     Client oracledbClient = check new (user, password, host, port, database);
     sql:ExecutionResult result = check oracledbClient->execute("Update TestNumericTable set col_number = 11 where col_number = 31");
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-
-    stream<record{}, error> queryResult = oracledbClient->query("SELECT count(*) as countval from TestNumericTable"
-        + " where int_type = 11", ResultCount);
-    stream<ResultCount, sql:Error> streamData = <stream<ResultCount, sql:Error>>queryResult;
-    record {|ResultCount value;|}? data = check streamData.next();
-    check streamData.close();
-    test:assertEquals(data?.value?.countVal, 1, "Update command was not successful.");
 
     check oracledbClient.close();
  }
