@@ -51,8 +51,6 @@ function beforeInsertObjectFunc() returns sql:Error? {
     check oracledbClient.close();
 }
 
-
-
 @test:Config {
     enable: true,
     groups:["execute","insert-object"]
@@ -65,52 +63,6 @@ function insertObjectTypeWithString() returns sql:Error? {
     string attr3 = "Hello3";
 
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(OBJECT_TYPE(${attr1}, ${attr2}, ${attr3}))`;
-    sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-    result = check oracledbClient->execute(insertQuery);
-
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
-    test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    check oracledbClient.close();
-}
-
-@test:Config {
-    enable: true,
-    groups:["execute","insert-object"]
-    // dependsOn: [insertObjectTypeWithString]
-}
-function insertObjectTypeWithCustomType() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
-
-    string attr1 = "Hello1";
-    string attr2 = "Hello2";
-    string attr3 = "Hello3";
-
-    ObjectTypeValue objectType = new({typename: "OBJECT_TYPE", attributes: [ attr1, attr2, attr3 ]});
-
-    sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType}))`;
-    sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-    result = check oracledbClient->execute(insertQuery);
-
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
-    test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    check oracledbClient.close();
-}
-
-@test:Config {
-    enable: true,
-    groups:["execute","insert-object"],
-    dependsOn: [insertObjectTypeWithCustomType]
-}
-function insertObjectTypeNull() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
-
-    ObjectTypeValue objectType = new();
-
-    sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType}))`;
     sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
     result = check oracledbClient->execute(insertQuery);
 
