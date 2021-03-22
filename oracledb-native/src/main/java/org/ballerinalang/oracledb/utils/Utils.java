@@ -22,9 +22,12 @@ import io.ballerina.runtime.api.values.BDecimal;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BValue;
+import oracle.jdbc.OracleConnection;
 import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -146,7 +149,9 @@ public class Utils {
      */
     public static ApplicationError throwInvalidParameterError(Object value, String sqlType) {
         String valueName;
-        if (value instanceof BValue) {
+        if (value == null) {
+            valueName = "null";
+        } else if (value instanceof BValue) {
             valueName = ((BValue) value).getType().getName();
         } else {
             valueName = value.getClass().getName();
@@ -155,5 +160,17 @@ public class Utils {
         return new ApplicationError("Invalid parameter: " + valueName + " is passed as value for SQL type: " + sqlType);
     }
 
+    /**
+     * Returns an OracleConnection instance from Hikari connection.
+     * @param connection Hikari connection
+     * @return OracleConnection instance
+     * @throws SQLException if hikari connection is not a wrapper of oracle connection
+     */
+    public static OracleConnection getOracleConnection(Connection connection) throws SQLException {
+        if (connection.isWrapperFor(OracleConnection.class)) {
+            return connection.unwrap(OracleConnection.class);
+        }
+        throw new SQLException("Cannot cast connection to oracle connection");
+    }
 }
 

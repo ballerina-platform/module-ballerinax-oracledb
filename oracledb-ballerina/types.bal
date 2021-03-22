@@ -70,7 +70,7 @@ type ObjectType record {|
 # + elements - Elements of the Varray
 type Varray record {|
     string name;
-    anydata[] elements;
+    byte[]|int[]|boolean[]|float[]|decimal[]|string[]? elements;
 |};
 
 
