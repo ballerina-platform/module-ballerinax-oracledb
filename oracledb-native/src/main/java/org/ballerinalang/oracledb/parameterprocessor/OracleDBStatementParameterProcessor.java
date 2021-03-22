@@ -19,19 +19,21 @@
 package org.ballerinalang.oracledb.parameterprocessor;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
-
-import java.sql.Array;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Struct;
-
 import oracle.xdb.XMLType;
 import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.oracledb.utils.ConverterUtils;
 import org.ballerinalang.oracledb.utils.Utils;
 import org.ballerinalang.sql.exception.ApplicationError;
 import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
+
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Struct;
+import java.sql.Types;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * This class overrides DefaultStatementParameterProcessor to implement methods required to convert ballerina types
@@ -55,20 +57,15 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                                           BObject typedValue) throws SQLException, ApplicationError {
         String sqlType = typedValue.getType().getName();
         Object value = typedValue.get(Constants.TypedValueFields.VALUE);
-        if (value == null) {
-            preparedStatement.setString(index, null);
-            return;
-        }
-
         switch (sqlType) {
             case Constants.Types.CustomTypes.INTERVAL_YEAR_TO_MONTH:
-                setIntervalYearToMonth(connection, preparedStatement, index, value);
+                setIntervalYearToMonth(preparedStatement, index, value);
                 break;
             case Constants.Types.CustomTypes.INTERVAL_DAY_TO_SECOND:
-                setIntervalDayToSecond(connection, preparedStatement, index, value);
+                setIntervalDayToSecond(preparedStatement, index, value);
                 break;
             case Constants.Types.CustomTypes.BFILE:
-                setBfile(connection, preparedStatement, index, value);
+                setBfile(preparedStatement, index, value);
                 break;
             case Constants.Types.CustomTypes.OBJECT:
                 setOracleObject(connection, preparedStatement, index, value);
@@ -77,7 +74,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 setVarray(connection, preparedStatement, index, value);
                 break;
             case Constants.Types.CustomTypes.NESTED_TABLE:
-                setNestedTable(connection, preparedStatement, index, value);
+                setNestedTable(preparedStatement, index, value);
                 break;
             case Constants.Types.CustomTypes.XML:
                 setXml(connection, preparedStatement, index, value);
@@ -87,9 +84,11 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         }
     }
 
-    private void setIntervalYearToMonth(Connection connection, PreparedStatement preparedStatement,
+    private void setIntervalYearToMonth(PreparedStatement preparedStatement,
                                          int index, Object value) throws SQLException, ApplicationError {
-        if (value instanceof BString) {
+        if (value == null) {
+            preparedStatement.setNull(index, Types.NULL);
+        } else if (value instanceof BString) {
             preparedStatement.setString(index, value.toString());
         } else {
             String intervalYToM = ConverterUtils.convertIntervalYearToMonth(value);
@@ -97,9 +96,11 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         }
     }
 
-    private void setIntervalDayToSecond(Connection connection, PreparedStatement preparedStatement,
+    private void setIntervalDayToSecond(PreparedStatement preparedStatement,
                                         int index, Object value) throws SQLException, ApplicationError {
-        if (value instanceof BString) {
+        if (value == null) {
+            preparedStatement.setNull(index, Types.NULL);
+        } else if (value instanceof BString) {
             preparedStatement.setString(index, value.toString());
         } else {
             String intervalYToM = ConverterUtils.convertIntervalDayToSecond(value);
@@ -107,33 +108,54 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         }
     }
 
-    private void setBfile(Connection connection, PreparedStatement preparedStatement, int index, Object value)
+    private void setBfile(PreparedStatement preparedStatement, int index, Object value)
             throws SQLException, ApplicationError {
+        if (value == null) {
+            preparedStatement.setNull(index, Types.NULL);
+            return;
+        }
         String bfile = ConverterUtils.convertBfile(value);
         preparedStatement.setString(index, bfile);
     }
 
     private void setOracleObject(Connection connection, PreparedStatement preparedStatement, int index, Object value)
             throws SQLException, ApplicationError {
+        if (value == null) {
+            preparedStatement.setNull(index, Types.NULL);
+            return;
+        }
         Struct oracleObject = ConverterUtils.convertOracleObject(connection, value);
         preparedStatement.setObject(index, oracleObject);
     }
 
     private void setVarray(Connection connection, PreparedStatement preparedStatement, int index, Object value)
             throws SQLException, ApplicationError {
-        Array varray = ConverterUtils.convertVarray(value);
-        System.out.println(varray);
-        preparedStatement.setArray(index, varray);
+        if (value == null) {
+            throw Utils.throwInvalidParameterError(null, "varray");
+        }
+        Map<String, Object> fields = ConverterUtils.convertVarray(value);
+        String name = ((BString) fields.get(Constants.Types.Varray.NAME)).getValue().toUpperCase(Locale.ENGLISH);
+        Object varray = fields.get(Constants.Types.Varray.ELEMENTS);
+        Array oracleArray = Utils.getOracleConnection(connection).createARRAY(name, varray);
+        preparedStatement.setArray(index, oracleArray);
     }
 
-    private void setNestedTable(Connection connection, PreparedStatement preparedStatement, int index, Object value)
+    private void setNestedTable(PreparedStatement preparedStatement, int index, Object value)
             throws SQLException, ApplicationError {
+        if (value == null) {
+            preparedStatement.setNull(index, Types.NULL);
+            return;
+        }
         Array nestedTable = ConverterUtils.convertNestedTable(value);
         preparedStatement.setArray(index, nestedTable);
     }
 
     private void setXml(Connection connection, PreparedStatement preparedStatement, int index, Object value)
             throws SQLException, ApplicationError {
+        if (value == null) {
+            preparedStatement.setNull(index, Types.NULL);
+            return;
+        }
         XMLType xml = ConverterUtils.convertXml(connection, value);
         preparedStatement.setObject(index, xml);
     }

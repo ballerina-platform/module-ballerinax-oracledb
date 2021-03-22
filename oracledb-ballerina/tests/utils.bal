@@ -60,3 +60,10 @@ function dropTableIfExists(string tablename) returns sql:ExecutionResult|sql:Err
     return result;
 }
 
+function executeParamQuery(sql:ParameterizedQuery|string query) returns sql:ExecutionResult|sql:Error {
+    Client oracledbClient = check new(user, password, host, port, database);
+    sql:ExecutionResult result = check oracledbClient->execute(query);
+    check oracledbClient.close();
+    return result;
+}
+
