@@ -18,7 +18,7 @@ import ballerina/sql;
 import ballerina/test;
 
 @test:BeforeGroups { value:["batch-execute"] }
-function beforeInsertTimeFunc() returns sql:Error? {
+function beforeBatchExecTimeFunc() returns sql:Error? {
     Client oracledbClient = check new(user, password, host, port, database);
     sql:ExecutionResult result = check dropTableIfExists("DataTable");
     result = check oracledbClient->execute("CREATE TABLE DataTable("+
