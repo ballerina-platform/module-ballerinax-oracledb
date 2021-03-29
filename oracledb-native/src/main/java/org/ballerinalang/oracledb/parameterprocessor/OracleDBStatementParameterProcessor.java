@@ -32,8 +32,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Struct;
 import java.sql.Types;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * This class overrides DefaultStatementParameterProcessor to implement methods required to convert ballerina types

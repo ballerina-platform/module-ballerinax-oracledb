@@ -19,7 +19,6 @@
 package org.ballerinalang.oracledb.utils;
 
 import io.ballerina.runtime.api.TypeTags;
-import io.ballerina.runtime.api.types.AnyType;
 import io.ballerina.runtime.api.types.Field;
 import io.ballerina.runtime.api.types.StructureType;
 import io.ballerina.runtime.api.types.Type;
@@ -98,7 +97,7 @@ public class ConverterUtils {
              throws ApplicationError, SQLException {
          Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.OBJECT_TYPE);
          String objectTypeName = ((BString) fields.get(Constants.Types.OracleObject.TYPE_NAME))
-                 .getValue().toUpperCase(Locale.ENGLISH);;
+                 .getValue().toUpperCase(Locale.ENGLISH);
          Object[] attributes = (Object[]) fields.get(Constants.Types.OracleObject.ATTRIBUTES);
          try {
              return connection.createStruct(objectTypeName, attributes);
@@ -287,12 +286,12 @@ public class ConverterUtils {
             if (element instanceof Double || element instanceof Long || element == null) {
                 arrayData[i] = element;
             } else if (element instanceof BString) {
-                arrayData[i] = ((BString)element).getValue();
+                arrayData[i] = ((BString) element).getValue();
             } else if (element instanceof BDecimal) {
-                arrayData[i] = ((BDecimal)element).decimalValue();
+                arrayData[i] = ((BDecimal) element).decimalValue();
             } else if (element instanceof BArray) {
                 arrayData[i] = getAnydataArrayData(element);
-            }else {
+            } else {
                 // TODO: find out how to handle after doing xml
                 throw new ApplicationError("The array contains elements of unmappable types.");
             }
