@@ -42,24 +42,13 @@ type IntervalDayToSecond record {|
 |};
 
 
-# Bfile contains a locator to a large binary file stored outside the database. Enables byte stream I/O access to
-# external LOBs residing on the database server.
-#
-# + directory - Directory of the file
-# + filename - File name
-type Bfile record {|
-    string directory;
-    string filename;
-|};
-
-
 # ObjectType is an abstraction of the real-world entities, such as purchase orders, that application programs deal with.
 #
 # + typename - Name of the object type
 # + attributes - Attributes of the object
 type ObjectType record {|
     string typename;
-    anydata[] attributes;
+    anydata[]? attributes;
 |};
 
 
@@ -111,18 +100,6 @@ public class IntervalDayToSecondValue {
     public string|IntervalDayToSecond? value;
 
     public isolated function init(string|IntervalDayToSecond? value = ()) {
-        self.value = value;
-    }
-}
-
-
-# Represents BFILE Oracle DB field.
-#
-# + value - Value of parameter passed into the SQL statement
-public class BfileValue {
-    public Bfile? value;
-
-    public isolated function init(Bfile? value = ()) {
         self.value = value;
     }
 }

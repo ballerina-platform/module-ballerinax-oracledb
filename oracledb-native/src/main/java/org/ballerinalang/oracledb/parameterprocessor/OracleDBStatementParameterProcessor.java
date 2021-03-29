@@ -64,9 +64,6 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             case Constants.Types.CustomTypes.INTERVAL_DAY_TO_SECOND:
                 setIntervalDayToSecond(preparedStatement, index, value);
                 break;
-            case Constants.Types.CustomTypes.BFILE:
-                setBfile(preparedStatement, index, value);
-                break;
             case Constants.Types.CustomTypes.OBJECT:
                 setOracleObject(connection, preparedStatement, index, value);
                 break;
@@ -108,21 +105,10 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         }
     }
 
-    private void setBfile(PreparedStatement preparedStatement, int index, Object value)
-            throws SQLException, ApplicationError {
-        if (value == null) {
-            preparedStatement.setNull(index, Types.NULL);
-            return;
-        }
-        String bfile = ConverterUtils.convertBfile(value);
-        preparedStatement.setString(index, bfile);
-    }
-
     private void setOracleObject(Connection connection, PreparedStatement preparedStatement, int index, Object value)
             throws SQLException, ApplicationError {
         if (value == null) {
-            preparedStatement.setNull(index, Types.NULL);
-            return;
+            throw Utils.throwInvalidParameterError(null, "object");
         }
         Struct oracleObject = ConverterUtils.convertOracleObject(connection, value);
         preparedStatement.setObject(index, oracleObject);
@@ -133,10 +119,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         if (value == null) {
             throw Utils.throwInvalidParameterError(null, "varray");
         }
-        Map<String, Object> fields = ConverterUtils.convertVarray(value);
-        String name = ((BString) fields.get(Constants.Types.Varray.NAME)).getValue().toUpperCase(Locale.ENGLISH);
-        Object varray = fields.get(Constants.Types.Varray.ELEMENTS);
-        Array oracleArray = Utils.getOracleConnection(connection).createARRAY(name, varray);
+        Array oracleArray = ConverterUtils.convertVarray(connection, value);
         preparedStatement.setArray(index, oracleArray);
     }
 

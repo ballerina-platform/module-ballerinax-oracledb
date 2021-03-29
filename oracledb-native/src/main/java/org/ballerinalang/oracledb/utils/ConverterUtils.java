@@ -19,6 +19,7 @@
 package org.ballerinalang.oracledb.utils;
 
 import io.ballerina.runtime.api.TypeTags;
+import io.ballerina.runtime.api.types.AnyType;
 import io.ballerina.runtime.api.types.Field;
 import io.ballerina.runtime.api.types.StructureType;
 import io.ballerina.runtime.api.types.Type;
@@ -38,6 +39,7 @@ import java.sql.SQLException;
 import java.sql.Struct;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -87,19 +89,6 @@ public class ConverterUtils {
         return day + " " + hour + ":" + minute + ":" + second;
     }
 
-    /**
-     * Converts BfileValue value to String.
-     * @param value Custom Bfile value
-     * @return String of BFILE
-     */
-    public static String convertBfile(Object value) throws ApplicationError {
-        Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.BFILE);
-        String directory = ((BString) fields.get(Constants.Types.Bfile.DIRECTORY)).getValue();
-        String file = ((BString) fields.get(Constants.Types.Bfile.FILE)).getValue();
-
-        return "bfilename('" + directory + "', '" + file + "')";
-    }
-
      /**
       * Converts OracleObjectValue value to oracle.sql.STRUCT.
       * @param value Custom Bfile value
@@ -108,10 +97,16 @@ public class ConverterUtils {
      public static Struct convertOracleObject(Connection connection, Object value)
              throws ApplicationError, SQLException {
          Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.OBJECT_TYPE);
-         String objectTypeName = ((BString) fields.get(Constants.Types.OracleObject.TYPE_NAME)).getValue();
-         Object[] attributes = (Object[]) fields.get(
-                 Constants.Types.OracleObject.ATTRIBUTES);
-         return connection.createStruct(objectTypeName, attributes);
+         String objectTypeName = ((BString) fields.get(Constants.Types.OracleObject.TYPE_NAME))
+                 .getValue().toUpperCase(Locale.ENGLISH);;
+         Object[] attributes = (Object[]) fields.get(Constants.Types.OracleObject.ATTRIBUTES);
+         try {
+             return connection.createStruct(objectTypeName, attributes);
+         } catch (SQLException e) {
+             throw(e);
+         } catch (Exception e) {
+             throw new ApplicationError("The array contains elements of unmappable types.");
+         }
      }
 
     /**
@@ -120,9 +115,12 @@ public class ConverterUtils {
      * @return sql Array
      * @throws ApplicationError throws error if the parameter types are incorrect
      */
-    public static Map<String, Object> convertVarray(Object value)
-            throws ApplicationError {
-        return getRecordData(value, Constants.Types.OracleDbTypes.VARRAY);
+    public static Array convertVarray(Connection connection, Object value)
+            throws ApplicationError, SQLException {
+        Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.VARRAY);
+        String name = ((BString) fields.get(Constants.Types.Varray.NAME)).getValue().toUpperCase(Locale.ENGLISH);
+        Object varray = fields.get(Constants.Types.Varray.ELEMENTS);
+        return Utils.getOracleConnection(connection).createARRAY(name, varray);
     }
 
     /**
@@ -225,6 +223,8 @@ public class ConverterUtils {
                 return getDecimalArrayData(bValue);
             case TypeTags.STRING_TAG:
                 return getStringArrayData(bValue);
+            case TypeTags.ANYDATA_TAG:
+                return getAnydataArrayData(bValue);
             default:
                 throw new ApplicationError("Unsupported data type for array specified for struct parameter");
         }
@@ -275,6 +275,27 @@ public class ConverterUtils {
         Object[] arrayData = new BigDecimal[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
             arrayData[i] = ((BDecimal) ((BArray) value).getRefValue(i)).value();
+        }
+        return arrayData;
+    }
+
+    protected static Object[] getAnydataArrayData(Object value) throws ApplicationError {
+        int arrayLength = ((BArray) value).size();
+        Object[] arrayData = new Object[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            Object element = ((BArray) value).getRefValue(i);
+            if (element instanceof Double || element instanceof Long || element == null) {
+                arrayData[i] = element;
+            } else if (element instanceof BString) {
+                arrayData[i] = ((BString)element).getValue();
+            } else if (element instanceof BDecimal) {
+                arrayData[i] = ((BDecimal)element).decimalValue();
+            } else if (element instanceof BArray) {
+                arrayData[i] = getAnydataArrayData(element);
+            }else {
+                // TODO: find out how to handle after doing xml
+                throw new ApplicationError("The array contains elements of unmappable types.");
+            }
         }
         return arrayData;
     }

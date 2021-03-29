@@ -60,6 +60,20 @@ function dropTableIfExists(string tablename) returns sql:ExecutionResult|sql:Err
     return result;
 }
 
+function dropTypeIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
+    Client oracledbClient = check new(user, password, host, port, database);
+    sql:ExecutionResult result = check oracledbClient->execute("BEGIN "+
+        "EXECUTE IMMEDIATE 'DROP TYPE ' || '" + tablename + " FORCE'; "+
+        "EXCEPTION "+
+        "WHEN OTHERS THEN "+
+            "IF SQLCODE != -4043 THEN "+
+                "RAISE; "+
+            "END IF; "+
+        "END;");
+    check oracledbClient.close();
+    return result;
+}
+
 function executeParamQuery(sql:ParameterizedQuery|string query) returns sql:ExecutionResult|sql:Error {
     Client oracledbClient = check new(user, password, host, port, database);
     sql:ExecutionResult result = check oracledbClient->execute(query);
