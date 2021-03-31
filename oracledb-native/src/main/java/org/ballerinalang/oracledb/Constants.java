@@ -54,7 +54,7 @@ public final class Constants {
     /**
      * Constants for configuring database SSL options.
      */
-    public static final class SSLConfig {
+    public static final class SecureSocket {
         public static final BString KEYSTORE = StringUtils.fromString("keyStore");
         public static final BString TRUSTSTORE = StringUtils.fromString("trustStore");
         public static final BString KEYSTORE_TYPE = StringUtils.fromString("keyStoreType");

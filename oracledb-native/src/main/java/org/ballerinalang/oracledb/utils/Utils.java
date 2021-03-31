@@ -110,31 +110,31 @@ public class Utils {
         return poolProperties;
     }
 
-    private static void setSSLConProperties(BMap sslConfig, Properties connProperties) {
-        if (sslConfig != null) {
+    private static void setSSLConProperties(BMap secureSocket, Properties connProperties) {
+        if (secureSocket != null) {
 
-            BMap keyStore = sslConfig.getMapValue(Constants.SSLConfig.KEYSTORE);
+            BMap keyStore = secureSocket.getMapValue(Constants.SecureSocket.KEYSTORE);
             if (keyStore != null) {
                 connProperties.put(Constants.DatabaseProps.ConnProperties.KEYSTORE, keyStore
-                        .getStringValue(Constants.SSLConfig.CryptoKeyStoreRecord.PATH_FIELD));
+                        .getStringValue(Constants.SecureSocket.CryptoKeyStoreRecord.PATH_FIELD));
                 connProperties.put(Constants.DatabaseProps.ConnProperties.KEYSTORE_PASSWORD, keyStore
-                        .getStringValue(Constants.SSLConfig.CryptoKeyStoreRecord.PASSWORD_FIELD));
+                        .getStringValue(Constants.SecureSocket.CryptoKeyStoreRecord.PASSWORD_FIELD));
             }
 
-            BString keyStoreType = sslConfig.getStringValue(Constants.SSLConfig.KEYSTORE_TYPE);
+            BString keyStoreType = secureSocket.getStringValue(Constants.SecureSocket.KEYSTORE_TYPE);
             if (keyStoreType != null) {
                 connProperties.put(Constants.DatabaseProps.ConnProperties.KEYSTORE_TYPE, keyStoreType.getValue());
             }
 
-            BMap trustStore = sslConfig.getMapValue(Constants.SSLConfig.TRUSTSTORE);
+            BMap trustStore = secureSocket.getMapValue(Constants.SecureSocket.TRUSTSTORE);
             if (trustStore != null) {
                 connProperties.put(Constants.DatabaseProps.ConnProperties.TRUSTSTORE, trustStore
-                        .getStringValue(Constants.SSLConfig.CryptoTrustStoreRecord.PATH_FIELD));
+                        .getStringValue(Constants.SecureSocket.CryptoTrustStoreRecord.PATH_FIELD));
                 connProperties.put(Constants.DatabaseProps.ConnProperties.TRUSTSTORE_PASSWORD, trustStore
-                        .getStringValue(Constants.SSLConfig.CryptoTrustStoreRecord.PASSWORD_FIELD));
+                        .getStringValue(Constants.SecureSocket.CryptoTrustStoreRecord.PASSWORD_FIELD));
             }
 
-            BString trustStoreType = sslConfig.getStringValue(Constants.SSLConfig.TRUSTSTORE_TYPE);
+            BString trustStoreType = secureSocket.getStringValue(Constants.SecureSocket.TRUSTSTORE_TYPE);
             if (trustStoreType != null) {
                 connProperties.put(Constants.DatabaseProps.ConnProperties.TRUSTSTORE_TYPE, trustStoreType.getValue());
             }

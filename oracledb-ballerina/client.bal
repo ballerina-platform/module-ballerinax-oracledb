@@ -140,7 +140,7 @@ public client class Client {
 # + trustStore - Truststore configuration of the trust certificates
 # + keyStoreType - The type of the keystore - "JKS" / "PKCS12" / "SSO"
 # + trustStoreType - The type of the keystore - "JKS" / "PKCS12" / "SSO"
-public type SSLConfig record {|
+public type SecureSocket record {|
   crypto:KeyStore keyStore?;
   crypto:TrustStore trustStore?;
   string keyStoreType?;
@@ -155,7 +155,7 @@ public type SSLConfig record {|
 # + connectTimeout - Time duration for a connection
 # + socketTimeout - Timeout duration for reading from a socket
 public type Options record {|
-   SSLConfig ssl?;
+   SecureSocket ssl?;
    decimal loginTimeout?;
    boolean autoCommit?;
    decimal connectTimeout?;
