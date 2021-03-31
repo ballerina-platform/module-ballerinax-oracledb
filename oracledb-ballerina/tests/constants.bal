@@ -20,6 +20,7 @@ const string user="admin";
 const string password="password";
 const string host = "localhost";
 const int port = 1521;
+const int poolPort = 1522;
 const string database = "ORCLCDB.localdomain";
 
 string resourcePath = check file:getAbsolutePath("tests/resources");

@@ -16,6 +16,7 @@
  */
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import groovyx.gpars.GParsPool
 
 description = 'Ballerina - Oracle DB Ballerina Generator'
 
@@ -49,7 +50,16 @@ dependencies {
         transitive = false
     }
     compile project(":${packageName}-native")
- }
+}
+
+buildscript { 
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.codehaus.gpars:gpars:1.1.0"
+    }
+}
 
 clean {
     delete "$project.projectDir/target"
@@ -130,13 +140,20 @@ def disableGroups = ""
 def debugParams = ""
 def balJavaDebugParam = ""
 def testParams = ""
+def poolTests = true
 
 task initializeVariables {
     if (project.hasProperty("groups")) {
         groupParams = "--groups ${project.findProperty("groups")}"
+        if(!project.findProperty("groups").contains("pool")) {
+            poolTests = false
+        }
     }
     if (project.hasProperty("disable-groups")) {
         disableGroups = "--disable-groups ${project.findProperty("disable-groups")}"
+        if(project.findProperty("disable-groups").contains("pool")) {
+            poolTests = false
+        }
     }
     if (project.hasProperty("debug")) {
         debugParams = "--debug ${project.findProperty("debug")}"
@@ -146,13 +163,9 @@ task initializeVariables {
     }
 
     gradle.taskGraph.whenReady { graph ->
-        if (graph.hasTask(":${packageName}-ballerina:build") ||
+        ballerinaTest.enabled = !(graph.hasTask(":${packageName}-ballerina:build") ||
                 graph.hasTask(":${packageName}-ballerina:publish") ||
-                graph.hasTask(":${packageName}-ballerina:publishToMavenLocal")) {
-            ballerinaTest.enabled = false
-        } else {
-            ballerinaTest.enabled = true
-        }
+                graph.hasTask(":${packageName}-ballerina:publishToMavenLocal"))
 
         if (graph.hasTask(":${packageName}-ballerina:test")) {
             testParams = "${testCoverageParam}"
@@ -261,10 +274,6 @@ task createArtifactZip(type: Zip) {
     from ballerinaBuild
 }
 
-def getCheckedOutGitCommitHash() {
-    'git rev-parse --verify --short HEAD'.execute().text.trim()
-}
-
 publishing {
     publications {
         maven(MavenPublication) {
@@ -309,87 +318,102 @@ task createTestDockerImage(type: Exec) {
     }
 }
 
-def waitForContainerHealth() {
-    def containerName = "ballerina-oracledb";
+def waitForContainerHealth(containerName) {
     if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-        def HEALTH_STATUS = ""
-        def counter = 0;
-        while (counter < 60 && !HEALTH_STATUS.toString().contains("healthy")) {
-            sleep(10000);
-            def output = new ByteArrayOutputStream();
+        def HEALTH_STATUS;
+        def counter = 0
+        while (counter < 60) {
+            sleep(10000)
+            def output = new ByteArrayOutputStream()
             try {
                 exec {
                     commandLine 'sh', '-c',
                             "docker inspect --format='{{json .State.Health.Status}}' ${containerName}"
                     standardOutput = output
                 }
-                HEALTH_STATUS = output.toString().trim();
-                if (HEALTH_STATUS.toString().contains("unhealthy")) {
-                    return 1;
+                HEALTH_STATUS = output.toString().trim()
+                if (HEALTH_STATUS.toString().contains("healthy")) {
+                    return 0
                 }
                 if (counter % 6 == 0) {
-                    println("${counter/6}: Waiting for container to be healthy");
-                    println("   HEALTH_STATUS: $HEALTH_STATUS \n");
+                    println("${counter/6}: Waiting for container ${containerName} to be healthy")
+                    println("   HEALTH_STATUS: $HEALTH_STATUS \n")
                 }
-                counter = counter + 1;
+                counter = counter + 1
             } catch (err) {
-                println(err);
-                return 1;
+                println(err)
+                return 1
             }
         }
-        return 0;
+        return 1
     }
 }
 
-def initializeDatabase() {
+def initializeDatabase(containerName) {
     if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+        println("Waiting for ${containerName} database to open.")
+        sleep(3*60*1000)
         try {
-            return exec {
+            def temp = exec {
                 commandLine 'sh', '-c',
-                        "docker exec ballerina-oracledb  /bin/bash -c 'cd home/oracle && source .bashrc; sqlplus /nolog <<< @create-schema.sql'"
+                        "docker exec ${containerName} /bin/bash -c 'cd home/oracle && source .bashrc; sqlplus /nolog <<< @create-schema.sql'"
             }.exitValue
+            return temp
         } catch (all) {
-            println(all);
-            return 1;
+            println(all)
+            return 1
         }
     }
 }
 
-task startTestDockerContainer(type: Exec) {
+def startDockerContainer(containerName, port) {
     if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-        def standardOutput = new ByteArrayOutputStream()
-        commandLine 'sh', '-c', "docker run --rm -d --name ballerina-oracledb -p 1521:1521 -t ballerina-oracledb"
+        exec {
+            commandLine 'sh', '-c', "docker run --rm -d --name ${containerName} -p ${port}:1521 -t ballerina-oracledb"
+        }
+        def healthCheck = waitForContainerHealth(containerName)
+        if (healthCheck != 0) {
+            throw new GradleException("Docker container '${containerName}' health test failed!")
+        }
+        println("Docker container '${containerName}' health test passed!")
 
-        def healthCheck = 1;
-        def counter = 0;
-        doLast {
-            healthCheck = waitForContainerHealth();
-            if (healthCheck != 0) {
-                throw new GradleException("Docker container 'ballerina-oracledb' health test failed!")
-            }
-            println("Docker container 'ballerina-oracledb' health test passed!");
+        def initializeCheck = initializeDatabase(containerName)
+        if(initializeCheck != 0) {
+            throw new GradleException("Failed to initialize the database!")
+        }
+        println("Database initialized!")
 
-            def initializeCheck = initializeDatabase()
-            if(initializeCheck != 0) {
-                throw new GradleException("Failed to initialize the database!")
-            }
-            println("Database initialized!");
+    }
+}
 
+task startTestDockerContainers() {
+    doLast {
+        if (poolTests) {
+            GParsPool.withPool { GParsPool.executeAsyncAndWait(
+                    {startDockerContainer("ballerina-oracledb", 1521)},
+                    {startDockerContainer("ballerina-oracledb-pool", 1522)}
+            )}
+        } else {
+            startDockerContainer("ballerina-oracledb", 1521)
         }
     }
 }
 
-task stopTestDockerContainer() {
+task stopTestDockerContainers() {
     doLast {
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+            def containers = "ballerina-oracledb"
+            if (poolTests) {
+                containers = "ballerina-oracledb ballerina-oracledb-pool"
+            }
             try {
                 def stdOut = new ByteArrayOutputStream()
                 exec {
-                    commandLine 'sh', '-c', "docker stop ballerina-oracledb"
+                    commandLine 'sh', '-c', "docker stop ${containers}"
                     standardOutput = stdOut
                 }
             } catch (ignore) {
-                println("Process can safely ignore stopTestDockerContainer task")
+                println("Process can safely ignore stopTestDockerContainers task")
             }
         }
     }
@@ -399,14 +423,14 @@ unpackJballerinaTools.dependsOn copyToLib
 unpackStdLibs.dependsOn unpackJballerinaTools
 copyStdlibs.dependsOn unpackStdLibs
 updateTomlFile.dependsOn copyStdlibs
-startTestDockerContainer.dependsOn createTestDockerImage
+startTestDockerContainers.dependsOn createTestDockerImage
 
 ballerinaTest.dependsOn updateTomlFile
 ballerinaTest.dependsOn initializeVariables
 ballerinaTest.dependsOn ":${packageName}-native:build"
-ballerinaTest.dependsOn startTestDockerContainer
+ballerinaTest.dependsOn startTestDockerContainers
 ballerinaTest.finalizedBy revertTomlFile
-ballerinaTest.finalizedBy stopTestDockerContainer
+ballerinaTest.finalizedBy stopTestDockerContainers
 test.dependsOn ballerinaTest
 
 ballerinaBuild.dependsOn test
@@ -414,7 +438,7 @@ ballerinaBuild.dependsOn updateTomlFile
 ballerinaBuild.dependsOn initializeVariables
 ballerinaBuild.dependsOn ":${packageName}-native:build"
 ballerinaBuild.finalizedBy revertTomlFile
-ballerinaBuild.finalizedBy stopTestDockerContainer
+ballerinaBuild.finalizedBy stopTestDockerContainers
 build.dependsOn ballerinaBuild
 
 ballerinaPublish.finalizedBy revertTomlFile
@@ -423,3 +447,4 @@ ballerinaPublish.dependsOn updateTomlFile
 ballerinaPublish.dependsOn ":${packageName}-native:build"
 ballerinaPublish.dependsOn ballerinaBuild
 publish.dependsOn ballerinaPublish
+

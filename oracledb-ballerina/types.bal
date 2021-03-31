@@ -84,7 +84,8 @@ type Xml record {|
 # Represents INTERVAL YEAR TO MONTH Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public class IntervalYearToMonthValue {
+public distinct class IntervalYearToMonthValue {
+    *sql:TypedValue;
     public string|IntervalYearToMonth? value;
 
     public isolated function init(string|IntervalYearToMonth? value = ()) {
@@ -96,7 +97,8 @@ public class IntervalYearToMonthValue {
 # Represents INTERVAL DAY TO SECOND Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public class IntervalDayToSecondValue {
+public distinct class IntervalDayToSecondValue {
+    *sql:TypedValue;
     public string|IntervalDayToSecond? value;
 
     public isolated function init(string|IntervalDayToSecond? value = ()) {
@@ -108,7 +110,8 @@ public class IntervalDayToSecondValue {
 # Represents OBJECT TYPE Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public class ObjectTypeValue {
+public distinct class ObjectTypeValue {
+    *sql:TypedValue;
     public ObjectType? value;
 
     public isolated function init(ObjectType? value = ()) {
@@ -120,7 +123,8 @@ public class ObjectTypeValue {
 # Represents VARRAY Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public class VarrayValue {
+public distinct class VarrayValue {
+    *sql:TypedValue;
     public Varray? value;
 
     public isolated function init(Varray? value = ()) {
@@ -132,7 +136,8 @@ public class VarrayValue {
 # Represents NESTED TABLE Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public class NestedTableValue {
+public distinct class NestedTableValue {
+    *sql:TypedValue;
     public NestedTable? value;
 
     public isolated function init(NestedTable? value = ()) {
@@ -144,7 +149,8 @@ public class NestedTableValue {
 # Represents NESTED TABLE Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public class XmlValue {
+public distinct class XmlValue {
+    *sql:TypedValue;
     // TODO - check xml bal type
     public string|xml? value;
 
