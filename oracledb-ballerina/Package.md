@@ -46,32 +46,111 @@ For more details about connection pooling, see the [SQL Package](https://balleri
 
 ```ballerina
 oracledb:Client|sql:Error dbClient1 = new ();
-oracledb:Client|sql:Error dbClient2 = new ("localhost", "rootUser", "rooPass", 
-                              "information_schema", 3306);
+oracledb:Client|sql:Error dbClient2 = new ("localhost", "rootUser", "rooPass", "information_schema", 1521);
                               
 oracledb:Options oracledbOptions = {
   autoCommit: true,
   connectTimeout: 10
 };
-oracldb:Client|sql:Error dbClient3 = new (user = "rootUser", password = "rootPass",
-                              options = oracledbOptions);
-oracldb:Client|sql:Error dbClient4 = new (user = "rootUser", password = "rootPass",
-                              connectionPool = {maxOpenConnections: 5});
+oracldb:Client|sql:Error dbClient3 = new (user = "rootUser", password = "rootPass", options = oracledbOptions);
+oracldb:Client|sql:Error dbClient4 = new (user = "rootUser", password = "rootPass", connectionPool = {maxOpenConnections: 5});
 ```
 You can find more details about each property in the
-[oracledb:Client](https://ballerina.io/learn/api-docs/ballerina/#/oracledb/clients/Client) constructor. 
+[oracledb:Client](https://ballerina.io/learn/api-docs/ballerina/#/oracledb/clients/Client) constructor.
 
-The [oracle:Client](https://ballerina.io/learn/api-docs/ballerina/#/oracledb/clients/Client) references 
-[sql:Client](https://ballerina.io/learn/api-docs/ballerina/#/sql/abstractObjects/Client) and all the operations 
-defined by the `sql:Client` will be supported by the `oracledb:Client` as well. 
+The [oracle:Client](https://ballerina.io/learn/api-docs/ballerina/#/oracledb/clients/Client) references [sql:Client](https://ballerina.io/learn/api-docs/ballerina/#/sql/abstractObjects/Client) and all the operations defined by the `sql:Client` will be supported by the `oracledb:Client` as well.
 
 # For more information on all the operations supported by the `oracledb``````:Client`, which include the below, see the [SQL Package](https://ballerina.io/learn/api-docs/ballerina/#/sql).
 
-1. Connection Pooling
-2. Querying data
-3. Inserting data
-4. Updating data
-5. Deleting data
-6. Batch insert and update data
-7. Execute stored procedures
-8. Closing client
+1.Connection Pooling
+
+``` ballerina
+oracledb:Client|sql:Error oracledbClient = new (user = "rootUser", password = "rootPass", database = "School", connectionPool = {maxOpenConnections: 5});
+```
+
+2.Creating tables
+
+``` ballerina
+sql:ExecutionResult result = check oracledbClient->execute("CREATE TABLE Students(id NUMBER, name  VARCHAR2(200), PRIMARY KEY(id))");
+```
+
+3.Inserting data
+
+``` ballerina
+sql:ExecutionResult result = check oracledbClient->execute("INSERT INTO Students(id, name) VALUES (1, 'John')");
+
+int id = 2;
+string name = "Mike";
+sql:ParameterizedQuery insertQuery = `insert into Students(id, name)values(${id}, ${name})`;
+result = check oracledbClient->execute(insertQuery);
+
+```
+
+3.Querying data
+
+``` ballerina
+int id = 1;
+sql:ParameterizedQuery selectQuery = `SELECT * from Students WHERE id = ${id}`;
+stream<record{}, error> resultStream = oracledbClient->query("Select count(*) as Total from Customers");
+
+record {|record {} value;|}? result = check resultStream.next();
+check resultStream.close();
+record {}|sql:Error? value = result?.value;
+
+if (value is record {}) {
+    io:println("Name of the student with id 1 : ", value["name"]);
+} else if (value is error) {
+    io:println("Next operation on the stream failed!", result);
+} else {
+    io:println("Students table is empty");
+}
+```
+
+4.Updating data
+
+``` ballerina
+int id = 1;
+sql:ParameterizedQuery updateQuery = `Update Students set name = "Max" where id = ${id}`;
+sql:ExecutionResult result = check oracledbClient->execute(updateQuery);
+```
+
+5.Deleting data
+
+``` ballerina
+int id = 1;
+sql:ParameterizedQuery deleteQuery = `Delete from Students where id = ${id}`;
+sql:ExecutionResult result = check oracledbClient->execute(deleteQuery);
+```
+
+6.Batch insert and update data
+
+``` ballerina
+var insertRecords = [
+    {id: 3, name: "Peter"},
+    {id: 4, name: "Stephanie"},
+    {id: 5, name: "Edward"}
+];
+
+sql:ParameterizedQuery[] insertQueries =
+        from var data in insertRecords
+            select  `INSERT INTO Students (id, name)
+                VALUES (${data.id}, ${data.name})`;
+
+sql:ExecutionResult[] result = check oracledbClient->batchExecute(insertQueries);
+```
+
+7.Execute stored procedures
+
+``` ballerina
+int id = 6;
+string name = "Anne";
+sql:ParameterizedCallQuery sqlQuery = `CALL InsertStudent(${id}, ${name})`;
+
+sql:ProcedureCallResult callResult = check oracledbClient->call(sqlQuery);
+```
+
+8.Closing client
+
+``` ballerina
+check oracledbClient.close();
+```
