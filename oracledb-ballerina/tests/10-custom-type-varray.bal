@@ -17,11 +17,18 @@
  import ballerina/test;
  
 @test:BeforeGroups { value:["insert-varray"] }
-function beforeInsertVArrayFunc() returns sql:Error? {
+isolated function beforeInsertVArrayFunc() returns sql:Error? {
    string OID = "19A57209ECB73F91E03400400B40BB25";
  
-   Client oracledbClient = check new(user, password, host, port, database);
-   sql:ExecutionResult result = check oracledbClient->execute(
+   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+   sql:ExecutionResult result = check dropTypeIfExists("CharArrayType");
+   result = check dropTypeIfExists("ByteArrayType");
+   result = check dropTypeIfExists("IntArrayType");
+   result = check dropTypeIfExists("BoolArrayType");
+   result = check dropTypeIfExists("FloatArrayType");
+   result = check dropTypeIfExists("DecimalArrayType");
+
+   result = check oracledbClient->execute(
       "CREATE OR REPLACE TYPE CharArrayType AS VARRAY(6) OF VARCHAR(100);");
    result = check oracledbClient->execute(
       "CREATE OR REPLACE TYPE ByteArrayType AS VARRAY(6) OF RAW(100);");
@@ -33,7 +40,8 @@ function beforeInsertVArrayFunc() returns sql:Error? {
       "CREATE OR REPLACE TYPE FloatArrayType AS VARRAY(6) OF FLOAT;");
    result = check oracledbClient->execute(
       "CREATE OR REPLACE TYPE DecimalArrayType AS VARRAY(6) OF NUMBER;");
-
+      
+   result = check dropTableIfExists("TestVarrayTable");
    result = check oracledbClient->execute("CREATE TABLE TestVarrayTable(" +
       "PK NUMBER GENERATED ALWAYS AS IDENTITY, "+
       "COL_CHARARR CharArrayType, " +
@@ -53,7 +61,7 @@ function beforeInsertVArrayFunc() returns sql:Error? {
    enable: true,
    groups:["execute","insert-varray"]
 }
-function insertVarray() returns sql:Error? {
+isolated function insertVarray() returns sql:Error? {
 
    string[] charArray = ["Hello", "World"];
    byte[] byteArray = [4, 23, 12];
@@ -84,7 +92,7 @@ function insertVarray() returns sql:Error? {
    groups:["execute","insert-varray"],
    dependsOn: [insertVarray]
 }
-function insertVarrayNull() returns sql:Error? {
+isolated function insertVarrayNull() returns sql:Error? {
    VarrayValue charVarray = new();
    VarrayValue byteVarray = new();
    VarrayValue intVarray = new();
@@ -110,7 +118,7 @@ function insertVarrayNull() returns sql:Error? {
    groups:["execute","insert-varray"],
    dependsOn: [insertVarrayNull]
 }
-function insertVarrayWithNullArray() returns sql:Error? {
+isolated function insertVarrayWithNullArray() returns sql:Error? {
    VarrayValue charVarray = new({ name:"CharArrayType", elements: () });
    VarrayValue byteVarray = new({ name:"ByteArrayType", elements: () });
    VarrayValue intVarray = new({ name:"IntArrayType", elements: () });
@@ -133,7 +141,7 @@ function insertVarrayWithNullArray() returns sql:Error? {
     groups:["execute","insert-varray"],
     dependsOn: [insertVarrayWithNullArray]
 }
-function insertVarrayWithEmptyArray() returns sql:Error? {
+isolated function insertVarrayWithEmptyArray() returns sql:Error? {
    string[] charArray = [];
    byte[] byteArray = [];
    int[] intArray = [];

@@ -16,11 +16,12 @@
 import ballerina/file;
 import ballerina/sql;
 
-const string user="admin";
-const string password="password";
-const string host = "localhost";
-const int port = 1521;
-const string database = "ORCLCDB.localdomain";
+const string USER = "admin";
+const string PASSWORD = "password";
+const string HOST = "localhost";
+const int PORT = 1521;
+const int POOLPORT = 1522;
+const string DATABASE = "ORCLCDB.localdomain";
 
 string resourcePath = check file:getAbsolutePath("tests/resources");
 
@@ -31,9 +32,13 @@ final Options options = {
     socketTimeout: 3
 };
 
+final configurable int maxOpenConnections = 10;
+final configurable decimal maxConnectionLifeTime = 2000.0;
+final configurable int minIdleConnections = 5;
+
 final sql:ConnectionPool connectionPool = {
-   maxOpenConnections: 5,
-   maxConnectionLifeTime: 2000.0,
-   minIdleConnections: 5
+   maxOpenConnections: maxOpenConnections,
+   maxConnectionLifeTime: maxConnectionLifeTime,
+   minIdleConnections: minIdleConnections
 };
 

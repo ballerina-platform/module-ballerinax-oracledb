@@ -48,10 +48,13 @@ public class ClientProcessor {
 
         String host = clientConfig.getStringValue(Constants.ClientConfiguration.HOST).getValue();
         int port = clientConfig.getIntValue(Constants.ClientConfiguration.PORT).intValue();
-        String database = clientConfig.getStringValue(Constants.ClientConfiguration.DATABASE).getValue();
+        BString databaseVal = clientConfig.getStringValue(Constants.ClientConfiguration.DATABASE);
+        String database = databaseVal == null ? null : databaseVal.getValue();
         String url = Constants.DRIVER + host + ":" + Integer.toString(port) + "/" + database;
-        String user = clientConfig.getStringValue(Constants.ClientConfiguration.USER).getValue();
-        String password = clientConfig.getStringValue(Constants.ClientConfiguration.PASSWORD).getValue();
+        BString userVal = clientConfig.getStringValue(Constants.ClientConfiguration.USER);
+        String user = userVal == null ? null : userVal.getValue();
+        BString passwordVal = clientConfig.getStringValue(Constants.ClientConfiguration.PASSWORD);
+        String password = passwordVal == null ? null : passwordVal.getValue();
         BMap options = clientConfig.getMapValue(Constants.ClientConfiguration.OPTIONS);
         BMap<BString, Object> datasourceOptions = null;
         Properties poolProperties = null;

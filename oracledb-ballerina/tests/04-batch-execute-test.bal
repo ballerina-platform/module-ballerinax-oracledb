@@ -18,8 +18,8 @@ import ballerina/sql;
 import ballerina/test;
 
 @test:BeforeGroups { value:["batch-execute"] }
-function beforeBatchExecTimeFunc() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function beforeBatchExecFunc() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("DataTable");
     result = check oracledbClient->execute("CREATE TABLE DataTable("+
         "id NUMBER GENERATED ALWAYS AS IDENTITY, "+
@@ -42,7 +42,7 @@ function beforeBatchExecTimeFunc() returns sql:Error? {
 @test:Config {
     groups: ["batch-execute"]
 }
-function batchInsertIntoDataTable() returns error? {
+isolated function batchInsertIntoDataTable() returns error? {
     var data = [
         {col_number:3, col_float:922.337, col_binary_float:123.34, col_binary_double:123.34},
         {col_number:4, col_float:922.337, col_binary_float:123.34, col_binary_double:123.34},
@@ -60,7 +60,7 @@ function batchInsertIntoDataTable() returns error? {
     groups: ["batch-execute"],
     dependsOn: [batchInsertIntoDataTable]
 }
-function batchInsertIntoDataTable2() returns error? {
+isolated function batchInsertIntoDataTable2() returns error? {
     int col_number = 6;
     sql:ParameterizedQuery sqlQuery = `INSERT INTO DataTable (col_number) VALUES(${col_number})`;
     sql:ParameterizedQuery[] sqlQueries = [sqlQuery];
@@ -71,7 +71,7 @@ function batchInsertIntoDataTable2() returns error? {
     groups: ["batch-execute"],
     dependsOn: [batchInsertIntoDataTable2]
 }
-function batchInsertIntoDataTableFailure() {
+isolated function batchInsertIntoDataTableFailure() {
     var data = [
         {col_number:7, col_float:922.337, col_binary_float:123.34, col_binary_double:123.34},
         {col_number:8, col_float:922.337, col_binary_float:123.34, col_binary_double:123.34},
@@ -111,8 +111,8 @@ isolated function validateBatchExecutionResult(sql:ExecutionResult[] results, in
     }
 }
 
-function batchExecuteQuery(sql:ParameterizedQuery[] sqlQueries) returns sql:ExecutionResult[]|sql:Error {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function batchExecuteQuery(sql:ParameterizedQuery[] sqlQueries) returns sql:ExecutionResult[]|sql:Error {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult[] result = check oracledbClient->batchExecute(sqlQueries);
     check oracledbClient.close();
     return result;

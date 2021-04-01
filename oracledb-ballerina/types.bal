@@ -63,28 +63,11 @@ type Varray record {|
 |};
 
 
-# NestedTable models an unordered set of elements. The elements may be built-in types or user-defined types.
-#
-# + name - Name of the varray
-# + attributes - Attributes of the nested table
-type NestedTable record {|
-    string name;
-    anydata[] attributes;
-|};
-
-
-# XML uses to store and query XML data in the database
-#
-# + xml - Xml string
-type Xml record {|
-    string 'xml; // try xml type
-|};
-
-
 # Represents INTERVAL YEAR TO MONTH Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public class IntervalYearToMonthValue {
+public distinct class IntervalYearToMonthValue {
+    *sql:TypedValue;
     public string|IntervalYearToMonth? value;
 
     public isolated function init(string|IntervalYearToMonth? value = ()) {
@@ -96,7 +79,8 @@ public class IntervalYearToMonthValue {
 # Represents INTERVAL DAY TO SECOND Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public class IntervalDayToSecondValue {
+public distinct class IntervalDayToSecondValue {
+    *sql:TypedValue;
     public string|IntervalDayToSecond? value;
 
     public isolated function init(string|IntervalDayToSecond? value = ()) {
@@ -108,7 +92,8 @@ public class IntervalDayToSecondValue {
 # Represents OBJECT TYPE Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public class ObjectTypeValue {
+public distinct class ObjectTypeValue {
+    *sql:TypedValue;
     public ObjectType? value;
 
     public isolated function init(ObjectType? value = ()) {
@@ -120,7 +105,8 @@ public class ObjectTypeValue {
 # Represents VARRAY Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public class VarrayValue {
+public distinct class VarrayValue {
+    *sql:TypedValue;
     public Varray? value;
 
     public isolated function init(Varray? value = ()) {
@@ -132,20 +118,8 @@ public class VarrayValue {
 # Represents NESTED TABLE Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public class NestedTableValue {
-    public NestedTable? value;
-
-    public isolated function init(NestedTable? value = ()) {
-        self.value = value;
-    }
-}
-
-
-# Represents NESTED TABLE Oracle DB field.
-#
-# + value - Value of parameter passed into the SQL statement
-public class XmlValue {
-    // TODO - check xml bal type
+public distinct class XmlValue {
+    *sql:TypedValue;
     public string|xml? value;
 
     public isolated function init(string|xml? value = ()) {

@@ -17,8 +17,8 @@ import ballerina/sql;
 import ballerina/test;
 
 @test:BeforeGroups { value:["insert-time"] }
-function beforeInsertTimeFunc() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function beforeInsertTimeFunc() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("TestDateTimeTable");
     result = check oracledbClient->execute("ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-RR HH:MI:SS AM'");
     result = check oracledbClient->execute("ALTER session set NLS_TIMESTAMP_TZ_FORMAT = 'DD-MON-RR HH:MI:SS AM TZR'");
@@ -37,8 +37,8 @@ function beforeInsertTimeFunc() returns sql:Error? {
     enable: true,
     groups:["execute","insert-time"]
 }
-function insertIntervalWithString() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertIntervalWithString() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     string intervalYtoM = "15-11";
     string intervalDtoS = "200 5:12:45.89";
 
@@ -58,8 +58,8 @@ function insertIntervalWithString() returns sql:Error? {
     groups:["execute","insert-time"],
     dependsOn: [insertIntervalWithString]
 }
-function insertIntervalWithBalTypeString() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertIntervalWithBalTypeString() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     IntervalYearToMonthValue intervalYtoM = new("15-11");
     IntervalDayToSecondValue intervalDtoS = new("13 5:34:23.45");
 
@@ -79,8 +79,8 @@ function insertIntervalWithBalTypeString() returns sql:Error? {
     groups:["execute","insert-time"],
     dependsOn: [insertIntervalWithBalTypeString]
 }
-function insertIntervalWithBalType() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertIntervalWithBalType() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     IntervalYearToMonthValue intervalYtoM = new({ years:15, months: 11 });
     IntervalDayToSecondValue intervalDtoS = new({ days:13, hours: 5, minutes: 34, seconds: 23.45 });
 
@@ -95,13 +95,13 @@ function insertIntervalWithBalType() returns sql:Error? {
     check oracledbClient.close();
 }
 
- @test:Config {
+@test:Config {
     enable: true,
     groups:["execute","insert-time"],
     dependsOn: [insertIntervalWithBalType]
- }
- function insertIntervalNull() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+}
+isolated function insertIntervalNull() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     IntervalYearToMonthValue intervalYtoM = new ();
     IntervalDayToSecondValue intervalDtoS = new();
 
@@ -122,8 +122,8 @@ function insertIntervalWithBalType() returns sql:Error? {
     groups:["execute","insert-time"],
     dependsOn: [insertIntervalNull]
 }
-function insertIntervalWithInvalidBalType1() returns sql:Error? {
-Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertIntervalWithInvalidBalType1() returns sql:Error? {
+Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     IntervalYearToMonthValue intervalYtoM = new({years:12, months: 340});
     IntervalDayToSecondValue intervalDtoS = new({ days:1, hours: 555, minutes: 34, seconds: 23.45 });
 
@@ -147,8 +147,8 @@ Client oracledbClient = check new(user, password, host, port, database);
     groups:["execute","insert-time"],
     dependsOn: [insertIntervalWithInvalidBalType1]
 }
-function insertIntervalWithInvalidBalType2() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertIntervalWithInvalidBalType2() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     IntervalYearToMonthValue intervalYtoM = new({years:12, months: 34});
     IntervalDayToSecondValue intervalDtoS = new({ days:1, hours: -55, minutes: 34, seconds: 23.45 });
 

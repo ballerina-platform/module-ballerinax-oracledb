@@ -22,3 +22,4 @@ jobs:
           --data '{
             "event_type": "dependency-update"
           }'
+

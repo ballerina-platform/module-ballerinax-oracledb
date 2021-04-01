@@ -21,4 +21,3 @@ artifactId = "ojdbc8"
 groupId = "com.oracle.database.jdbc"
 scope = "testOnly"
 version = "12.2.0.1"
-

@@ -17,11 +17,11 @@ import ballerina/sql;
 import ballerina/test;
 
 @test:BeforeGroups { value:["insert-object"] }
-function beforeInsertObjectFunc() returns sql:Error? {
+isolated function beforeInsertObjectFunc() returns sql:Error? {
    string OID = "19A57209ECB73F91E03400400B40BB23";
    string OID2 = "19A57209ECB73F91E03400400B40BB25";
 
-   Client oracledbClient = check new(user, password, host, port, database);
+   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
    sql:ExecutionResult result = check dropTableIfExists("TestObjectTypeTable");
    result = check dropTableIfExists("TestNestedObjectTypeTable");
    result = check dropTypeIfExists("OBJECT_TYPE");
@@ -62,8 +62,8 @@ function beforeInsertObjectFunc() returns sql:Error? {
    enable: true,
    groups:["execute","insert-object"]
 }
-function insertObjectTypeWithString() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertObjectTypeWithString() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     string string_attr = "Hello world";
     int int_attr = 34;
@@ -86,8 +86,8 @@ function insertObjectTypeWithString() returns sql:Error? {
    groups:["execute","insert-object"],
    dependsOn: [insertObjectTypeWithString]
 }
-function insertObjectTypeWithCustomType() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertObjectTypeWithCustomType() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     string string_attr = "Hello world";
     int int_attr = 34;
@@ -112,8 +112,8 @@ function insertObjectTypeWithCustomType() returns sql:Error? {
    groups:["execute","insert-object"],
    dependsOn: [insertObjectTypeWithCustomType]
 }
-function insertObjectTypeNull() returns sql:Error? {
-   Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertObjectTypeNull() returns sql:Error? {
+   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
    ObjectTypeValue objectType = new();
 
@@ -133,8 +133,8 @@ function insertObjectTypeNull() returns sql:Error? {
    groups:["execute","insert-object"],
    dependsOn: [insertObjectTypeNull]
 }
-function insertObjectTypeWithNullArray() returns sql:Error? {
-   Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertObjectTypeWithNullArray() returns sql:Error? {
+   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
    ObjectTypeValue objectType = new({typename: "object_type", attributes: ()});
 
    sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
@@ -152,8 +152,8 @@ function insertObjectTypeWithNullArray() returns sql:Error? {
    groups:["execute","insert-object"],
    dependsOn: [insertObjectTypeWithNullArray]
 }
-function insertObjectTypeWithEmptyArray() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     ObjectTypeValue objectType = new({typename: "object_type", attributes: []});
 
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
@@ -173,8 +173,8 @@ function insertObjectTypeWithEmptyArray() returns sql:Error? {
    groups:["execute","insert-object"],
    dependsOn: [insertObjectTypeWithEmptyArray]
 }
-function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     string string_attr = "Hello world";
     int int_attr = 34;
     float float_attr = 34.23;
@@ -198,8 +198,8 @@ function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
    groups:["execute","insert-object"],
    dependsOn: [insertObjectTypeWithInvalidTypes1]
 }
-function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     boolean invalid_attr = true;
 
     ObjectTypeValue objectType = new({typename: "object_type", 
@@ -221,8 +221,8 @@ function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
    groups:["execute","insert-object"],
    dependsOn: [insertObjectTypeWithInvalidTypes2]
 }
-function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     map<string> invalid_attr = { key1: "value1", key2: "value2"};
 
     ObjectTypeValue objectType = new({typename: "object_type", 
@@ -244,8 +244,8 @@ function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
    groups:["execute","insert-object"],
    dependsOn: [insertObjectTypeWithInvalidTypes3]
 }
-function insertObjectTypeWithStringArray() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertObjectTypeWithStringArray() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     string string_attr = "Hello world";
     string int_attr = "34";
@@ -271,8 +271,8 @@ function insertObjectTypeWithStringArray() returns sql:Error? {
    groups:["execute","insert-object"],
    dependsOn: [insertObjectTypeWithStringArray]
 }
-function insertObjectTypeWithNestedType() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function insertObjectTypeWithNestedType() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     string string_attr = "Hello world";
     int int_attr = 34;

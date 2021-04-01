@@ -18,8 +18,8 @@ import ballerina/sql;
 import ballerina/test;
 
 @test:BeforeGroups { value:["query-simple-params"] }
-function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     sql:ExecutionResult result = check dropTableIfExists("GeneralQueryTable");
     result = check oracledbClient->execute("CREATE TABLE GeneralQueryTable("+
@@ -118,7 +118,7 @@ function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function querySingleNumber() returns error? {
+isolated function querySingleNumber() returns error? {
     float col_number = -23.4;
     sql:ParameterizedQuery sqlQuery = `SELECT * from GeneralQueryTable WHERE col_number = ${col_number}`;
     validateGeneralQueryTableResult(check queryClient(sqlQuery));
@@ -127,7 +127,7 @@ function querySingleNumber() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function querySingleString() returns error? {
+isolated function querySingleString() returns error? {
     string col_varchar2 = "Hello world";
     sql:ParameterizedQuery sqlQuery = `SELECT * from GeneralQueryTable WHERE col_varchar2 = ${col_varchar2}`;
     validateGeneralQueryTableResult(check queryClient(sqlQuery));
@@ -146,7 +146,7 @@ isolated function validateGeneralQueryTableResult(record{}? returnData) {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function querySingleNumberParam() returns error? {
+isolated function querySingleNumberParam() returns error? {
     int id = 1;
     sql:ParameterizedQuery sqlQuery = `SELECT * from NumericSimpleQueryTable WHERE id = ${id}`;
     validateNumericSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -155,7 +155,7 @@ function querySingleNumberParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryDoubleNumberParam() returns error? {
+isolated function queryDoubleNumberParam() returns error? {
     int id = 1;
     sql:DecimalValue col_number = new(1);
     sql:ParameterizedQuery sqlQuery = `SELECT * from NumericSimpleQueryTable WHERE id = ${id}`;
@@ -165,7 +165,7 @@ function queryDoubleNumberParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryFloatParam() returns error? {
+isolated function queryFloatParam() returns error? {
     int id = 1;
     sql:FloatValue col_float = new(922.337);
     sql:ParameterizedQuery sqlQuery = `SELECT * from NumericSimpleQueryTable WHERE id = ${id} AND col_float =  ${col_float}`;
@@ -175,7 +175,7 @@ function queryFloatParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryBinaryFloatParam() returns error? {
+isolated function queryBinaryFloatParam() returns error? {
     int id = 1;
     sql:FloatValue col_binary_float = new(123.34);
     sql:ParameterizedQuery sqlQuery = `SELECT * from NumericSimpleQueryTable WHERE id = ${id} AND col_binary_float =  ${col_binary_float}`;
@@ -185,7 +185,7 @@ function queryBinaryFloatParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryBinaryDoubleParam() returns error? {
+isolated function queryBinaryDoubleParam() returns error? {
     int id = 1;
     sql:FloatValue col_binary_double = new(123.34);
     sql:ParameterizedQuery sqlQuery = `SELECT * from NumericSimpleQueryTable WHERE id = ${id} AND col_binary_double =  ${col_binary_double}`;
@@ -208,7 +208,7 @@ isolated function validateNumericSimpleQueryTableResult(record{}? returnData) {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryVarchar2Param() returns error? {
+isolated function queryVarchar2Param() returns error? {
     int id = 1;
     sql:VarcharValue col_varchar2 = new("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from CharSimpleQueryTable WHERE id = ${id} AND col_varchar2 =  ${col_varchar2}`;
@@ -218,7 +218,7 @@ function queryVarchar2Param() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryVarcharParam() returns error? {
+isolated function queryVarcharParam() returns error? {
     int id = 1;
     sql:VarcharValue col_varchar = new("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from CharSimpleQueryTable WHERE id = ${id} AND col_varchar =  ${col_varchar}`;
@@ -228,7 +228,7 @@ function queryVarcharParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryNVarchar2Param() returns error? {
+isolated function queryNVarchar2Param() returns error? {
     int id = 1;
     sql:NVarcharValue col_nvarchar2 = new("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from CharSimpleQueryTable WHERE id = ${id} AND col_nvarchar2 =  ${col_nvarchar2}`;
@@ -252,7 +252,7 @@ isolated function validateCharacterSimpleQueryTableResult(record{}? returnData) 
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryAnsiCharacterVarParam() returns error? {
+isolated function queryAnsiCharacterVarParam() returns error? {
     int id = 1;
     sql:VarcharValue col_character_var = new("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_character_var =  ${col_character_var}`;
@@ -262,7 +262,7 @@ function queryAnsiCharacterVarParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryAnsiNationalCharacterVarParam() returns error? {
+isolated function queryAnsiNationalCharacterVarParam() returns error? {
     int id = 1;
     sql:NVarcharValue col_national_character_var = new("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_national_character_var =  ${col_national_character_var}`;
@@ -272,7 +272,7 @@ function queryAnsiNationalCharacterVarParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryAnsiNationalCharVarParam() returns error? {
+isolated function queryAnsiNationalCharVarParam() returns error? {
     int id = 1;
     sql:NVarcharValue col_national_char_var = new("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_national_char_var =  ${col_national_char_var}`;
@@ -282,7 +282,7 @@ function queryAnsiNationalCharVarParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryAnsiNCharVarParam() returns error? {
+isolated function queryAnsiNCharVarParam() returns error? {
     int id = 1;
     sql:NVarcharValue col_nchar_var = new("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_nchar_var =  ${col_nchar_var}`;
@@ -292,7 +292,7 @@ function queryAnsiNCharVarParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryAnsiNumericParam() returns error? {
+isolated function queryAnsiNumericParam() returns error? {
     int id = 1;
     sql:NumericValue col_numeric = new(1234134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_numeric =  ${col_numeric}`;
@@ -302,7 +302,7 @@ function queryAnsiNumericParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryAnsiDecimalParam() returns error? {
+isolated function queryAnsiDecimalParam() returns error? {
     int id = 1;
     sql:DecimalValue col_decimal = new(1234134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_decimal =  ${col_decimal}`;
@@ -312,7 +312,7 @@ function queryAnsiDecimalParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryAnsiIntegerParam() returns error? {
+isolated function queryAnsiIntegerParam() returns error? {
     int id = 1;
     sql:IntegerValue col_integer = new(1234134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_integer =  ${col_integer}`;
@@ -322,7 +322,7 @@ function queryAnsiIntegerParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryAnsiIntParam() returns error? {
+isolated function queryAnsiIntParam() returns error? {
     int id = 1;
     sql:IntegerValue col_int = new(1234134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_int =  ${col_int}`;
@@ -332,7 +332,7 @@ function queryAnsiIntParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryAnsiSmallIntParam() returns error? {
+isolated function queryAnsiSmallIntParam() returns error? {
     int id = 1;
     sql:IntegerValue col_smallint = new(1234134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_smallint =  ${col_smallint}`;
@@ -342,7 +342,7 @@ function queryAnsiSmallIntParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryAnsiFloatParam() returns error? {
+isolated function queryAnsiFloatParam() returns error? {
     int id = 1;
     sql:FloatValue col_float = new(1234.134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_float =  ${col_float}`;
@@ -352,7 +352,7 @@ function queryAnsiFloatParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryAnsiDoublePrecisionParam() returns error? {
+isolated function queryAnsiDoublePrecisionParam() returns error? {
     int id = 1;
     sql:DoubleValue col_double_precision = new(1234.134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_double_precision =  ${col_double_precision}`;
@@ -362,7 +362,7 @@ function queryAnsiDoublePrecisionParam() returns error? {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryAnsiRealParam() returns error? {
+isolated function queryAnsiRealParam() returns error? {
     int id = 1;
     sql:RealValue col_real = new(1234.134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_real =  ${col_real}`;
@@ -395,7 +395,7 @@ isolated function validateAnsiSimpleQueryTableResult(record{}? returnData) {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function queryClobParam() returns error? {
+isolated function queryClobParam() returns error? {
     int id = 1;
     sql:ParameterizedQuery sqlQuery = `SELECT * from LobSimpleQueryTable WHERE id = ${id}`;
     validateLobSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -415,7 +415,7 @@ isolated function validateLobSimpleQueryTableResult(record{}? returnData) {
 @test:Config {
     groups: ["query","query-simple-params"]
 }
-function querySqlDsVarcharParam() returns error? {
+isolated function querySqlDsVarcharParam() returns error? {
     int id = 1;
     sql:ParameterizedQuery sqlQuery = `SELECT * from SqlDsSimpleQueryTable WHERE id = ${id}`;
     validateSqlDsSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -431,9 +431,9 @@ isolated function validateSqlDsSimpleQueryTableResult(record{}? returnData) {
     } 
 }
 
-function queryClient(@untainted string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? resultType = ())
+isolated function queryClient(@untainted string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? resultType = ())
 returns record {}|error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<record {}, error> streamData = oracledbClient->query(sqlQuery, resultType);
     record {|record {} value;|}? data = check streamData.next();
     check streamData.close();

@@ -19,8 +19,8 @@ import ballerina/test;
 import ballerina/io;
 
 @test:BeforeGroups { value:["execute-params"] }
-function beforeExecuteWithParamsFunc() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("NumericTypesTable");
     result = check oracledbClient->execute("CREATE TABLE NumericTypesTable("+
         "id NUMBER, "+
@@ -37,6 +37,7 @@ function beforeExecuteWithParamsFunc() returns sql:Error? {
     result = check oracledbClient->execute("INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)"+
         "VALUES(2, 2, 922.337, 123.34, 123.34)");
 
+    result = check dropTableIfExists("CharTypesTable");
     result = check oracledbClient->execute("CREATE TABLE CharTypesTable(" +
         "id NUMBER, "+
         "col_varchar2  VARCHAR2(4000), " +
@@ -48,6 +49,7 @@ function beforeExecuteWithParamsFunc() returns sql:Error? {
         ")"
         );
 
+    result = check dropTableIfExists("AnsiTypesTable");
     result = check oracledbClient->execute("CREATE TABLE AnsiTypesTable(" +
         "id NUMBER, "+
         "col_character  CHARACTER(256), " +
@@ -75,6 +77,7 @@ function beforeExecuteWithParamsFunc() returns sql:Error? {
         ")"
     );
 
+    result = check dropTableIfExists("SqlDsTypesTable");
     result = check oracledbClient->execute("CREATE TABLE SqlDsTypesTable(" +
         "id NUMBER, "+
         "col_character  CHARACTER(255), " +
@@ -83,6 +86,7 @@ function beforeExecuteWithParamsFunc() returns sql:Error? {
         ")"
     );
 
+    result = check dropTableIfExists("LobTypesTable");
     result = check oracledbClient->execute("CREATE TABLE LobTypesTable(" +
         "id NUMBER, "+
         "col_clob  CLOB, " +
@@ -98,7 +102,7 @@ function beforeExecuteWithParamsFunc() returns sql:Error? {
 @test:Config {
     groups: ["execute", "execute-params"]
 }
-function insertIntoNumericTable1() returns sql:Error? {
+isolated function insertIntoNumericTable1() returns sql:Error? {
     int id = 3;
     int col_number = 3;
     float col_float =  922.337;
@@ -115,7 +119,7 @@ function insertIntoNumericTable1() returns sql:Error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoNumericTable1]
 }
-function insertIntoNumericTable2() returns sql:Error? {
+isolated function insertIntoNumericTable2() returns sql:Error? {
     int id = 4;
     int col_number = 4;
     sql:ParameterizedQuery sqlQuery = `INSERT INTO NumericTypesTable (id) VALUES(${id})`;
@@ -127,7 +131,7 @@ function insertIntoNumericTable2() returns sql:Error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoNumericTable2]
 }
-function insertIntoNumericTable3() returns sql:Error? {
+isolated function insertIntoNumericTable3() returns sql:Error? {
     int id = 5;
     int col_number = 5;
     float col_float =  -922.337;
@@ -144,7 +148,7 @@ function insertIntoNumericTable3() returns sql:Error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoNumericTable3]
 }
-function insertIntoNumericTable4() returns sql:Error? {
+isolated function insertIntoNumericTable4() returns sql:Error? {
     int id = 6;
     sql:IntegerValue col_number = new (6);
     sql:FloatValue col_float = new (124.34);
@@ -161,7 +165,7 @@ function insertIntoNumericTable4() returns sql:Error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoNumericTable4]
 }
-function deleteNumericTable1() returns sql:Error? {
+isolated function deleteNumericTable1() returns sql:Error? {
     int id = 1;
     int col_number = 1;
     float col_float =  922.337;
@@ -179,7 +183,7 @@ function deleteNumericTable1() returns sql:Error? {
     groups: ["execute", "execute-params"],
     dependsOn: [deleteNumericTable1]
 }
-function deleteNumericTable2() returns sql:Error? {
+isolated function deleteNumericTable2() returns sql:Error? {
     int id = 2;
     sql:ParameterizedQuery sqlQuery = `DELETE FROM NumericTypesTable where id = ${id}`;
     validateResult(check executeQuery(sqlQuery), 1);
@@ -189,7 +193,7 @@ function deleteNumericTable2() returns sql:Error? {
     groups: ["execute", "execute-params"],
     dependsOn: [deleteNumericTable2]
 }
-function deleteNumericTable3() returns sql:Error? {
+isolated function deleteNumericTable3() returns sql:Error? {
     int id = 3;
     sql:IntegerValue col_number = new (3);
     sql:FloatValue col_float = new (922.337);
@@ -206,7 +210,7 @@ function deleteNumericTable3() returns sql:Error? {
     groups: ["execute", "execute-params"],
     dependsOn: [deleteNumericTable3]
 }
-function insertIntoCharacterTable1() returns error? {
+isolated function insertIntoCharacterTable1() returns error? {
     int id = 1;
     string col_varchar2 = "very long text";
     string col_varchar = "very long text";
@@ -224,7 +228,7 @@ function insertIntoCharacterTable1() returns error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoCharacterTable1]
 }
-function insertIntoCharacterTable2() returns error? {
+isolated function insertIntoCharacterTable2() returns error? {
     int id = 2;
     string? col_varchar2 = ();
     string? col_varchar = ();
@@ -242,7 +246,7 @@ function insertIntoCharacterTable2() returns error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoCharacterTable2]
 }
-function insertIntoCharacterTable3() returns error? {
+isolated function insertIntoCharacterTable3() returns error? {
     int id = 3;
     sql:VarcharValue col_varchar2 = new();
     sql:VarcharValue col_varchar = new();
@@ -260,7 +264,7 @@ function insertIntoCharacterTable3() returns error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoCharacterTable3]
 }
-function insertIntoCharacterTable4() returns error? {
+isolated function insertIntoCharacterTable4() returns error? {
     int id = 4;
     sql:VarcharValue col_varchar2 = new("very long text");
     sql:VarcharValue col_varchar = new("very long text");
@@ -278,7 +282,7 @@ function insertIntoCharacterTable4() returns error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoCharacterTable4]
 }
-function deleteCharacterTable() returns sql:Error? {
+isolated function deleteCharacterTable() returns sql:Error? {
     int id = 2;
     sql:ParameterizedQuery sqlQuery = `DELETE FROM CharTypesTable where id = ${id}`;
     validateResult(check executeQuery(sqlQuery), 1);
@@ -288,7 +292,7 @@ function deleteCharacterTable() returns sql:Error? {
     groups: ["execute", "execute-params"],
     dependsOn: [deleteCharacterTable]
 }
-function insertIntoAnsiTable1() returns error? {
+isolated function insertIntoAnsiTable1() returns error? {
     int id = 1;
     string col_character = "Hello, world!";
     string col_character_var = "Hello, world!";
@@ -321,7 +325,7 @@ function insertIntoAnsiTable1() returns error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoAnsiTable1]
 }
-function insertIntoAnsiTable2() returns error? {
+isolated function insertIntoAnsiTable2() returns error? {
     int id = 2;
     string? col_character = ();
     string? col_character_var = ();
@@ -354,7 +358,7 @@ function insertIntoAnsiTable2() returns error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoAnsiTable2]
 }
-function insertIntoAnsiTable3() returns error? {
+isolated function insertIntoAnsiTable3() returns error? {
     int id = 3;
     sql:CharValue col_character = new("Hello, world!");
     sql:VarcharValue col_character_var = new("Hello, world!");
@@ -387,7 +391,7 @@ function insertIntoAnsiTable3() returns error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoAnsiTable3]
 }
-function insertIntoAnsiTable4() returns error? {
+isolated function insertIntoAnsiTable4() returns error? {
     int id = 4;
     sql:CharValue col_character = new();
     sql:VarcharValue col_character_var = new();
@@ -420,7 +424,7 @@ function insertIntoAnsiTable4() returns error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoAnsiTable4]
 }
-function deleteAnsiTable() returns sql:Error? {
+isolated function deleteAnsiTable() returns sql:Error? {
     int id = 1;
     sql:ParameterizedQuery sqlQuery = `DELETE FROM AnsiTypesTable where id = ${id}`;
     validateResult(check executeQuery(sqlQuery), 1);
@@ -430,7 +434,7 @@ function deleteAnsiTable() returns sql:Error? {
     groups: ["execute", "execute-params"],
     dependsOn: [deleteAnsiTable]
 }
-function insertIntoSqlDsTable1() returns error? {
+isolated function insertIntoSqlDsTable1() returns error? {
     int id = 1;
     string col_character = "Hello, world!";
     string col_long_varchar = "Hello, world!";
@@ -445,7 +449,7 @@ function insertIntoSqlDsTable1() returns error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoSqlDsTable1]
 }
-function insertIntoSqlDsTable2() returns error? {
+isolated function insertIntoSqlDsTable2() returns error? {
     int id = 2;
     string? col_character = ();
     string? col_long_varchar = ();
@@ -460,7 +464,7 @@ function insertIntoSqlDsTable2() returns error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoSqlDsTable2]
 }
-function deleteSqlDsTable() returns sql:Error? {
+isolated function deleteSqlDsTable() returns sql:Error? {
     int id = 1;
     sql:ParameterizedQuery sqlQuery = `DELETE FROM SqlDsTypesTable where id = ${id}`;
     validateResult(check executeQuery(sqlQuery), 1);
@@ -470,7 +474,7 @@ function deleteSqlDsTable() returns sql:Error? {
     groups: ["execute", "execute-params"],
     dependsOn: [deleteSqlDsTable]
 }
-function insertIntoLobTable1() returns error? {
+isolated function insertIntoLobTable1() returns error? {
     int id = 1;
     io:ReadableByteChannel blobChannel = check getBlobColumnChannel();
     io:ReadableCharacterChannel clobChannel = check getClobColumnChannel();
@@ -489,14 +493,14 @@ function insertIntoLobTable1() returns error? {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoLobTable1]
 }
-function deleteLobTable() returns sql:Error? {
+isolated function deleteLobTable() returns sql:Error? {
     int id = 1;
     sql:ParameterizedQuery sqlQuery = `DELETE FROM LobTypesTable where id = ${id}`;
     validateResult(check executeQuery(sqlQuery), 1);
 }
 
-function executeQuery(sql:ParameterizedQuery sqlQuery) returns sql:ExecutionResult|sql:Error {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function executeQuery(sql:ParameterizedQuery sqlQuery) returns sql:ExecutionResult|sql:Error {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute(sqlQuery);
     check oracledbClient.close();
     return result;
