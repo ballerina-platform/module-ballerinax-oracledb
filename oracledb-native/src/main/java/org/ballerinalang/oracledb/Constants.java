@@ -83,23 +83,6 @@ public final class Constants {
     public static final class DatabaseProps {
         public static final BString LOGIN_TIMEOUT = StringUtils.fromString("loginTimeout");
         public static final BString CONN_PROPERTIES = StringUtils.fromString("connectionProperties");
-
-        /**
-         * Constants for oracle driver properties.
-         */
-        public static final class ConnProperties {
-            public static final BString CONNECT_TIMEOUT = StringUtils.fromString("oracle.net.CONNECT_TIMEOUT");
-            public static final BString SOCKET_TIMEOUT = StringUtils.fromString("oracle.jdbc.ReadTimeout");
-            public static final BString AUTO_COMMIT = StringUtils.fromString("autoCommit");
-            public static final BString KEYSTORE = StringUtils.fromString("javax.net.ssl.keyStore");
-            public static final BString KEYSTORE_PASSWORD = StringUtils.fromString("javax.net.ssl.keyStorePassword");
-            public static final BString KEYSTORE_TYPE = StringUtils.fromString("javax.net.ssl.keyStoreType");
-            public static final BString TRUSTSTORE = StringUtils.fromString("javax.net.ssl.trustStore");
-            public static final BString TRUSTSTORE_PASSWORD =
-                    StringUtils.fromString("javax.net.ssl.trustStorePassword");
-            public static final BString TRUSTSTORE_TYPE = StringUtils.fromString("javax.net.ssl.trustStoreType");
-        }
-
     }
 
     /**
@@ -129,7 +112,6 @@ public final class Constants {
         public static final class OracleDbTypes {
             public static final String INTERVAL_YEAR_TO_MONTH = "INTERVAL_YEAR_TO_MONTH";
             public static final String INTERVAL_DAY_TO_SECOND = "INTERVAL_DAY_TO_SECOND";
-            public static final String BFILE = "BFILE";
             public static final String OBJECT_TYPE = "OBJECT";
             public static final String VARRAY = "VARRAY";
             public static final String NESTED_TABLE = "NESTED_TABLE";
@@ -141,18 +123,10 @@ public final class Constants {
         public static final class CustomTypes {
             public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthValue";
             public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondValue";
-            public static final String BFILE = "BfileValue";
             public static final String OBJECT = "ObjectTypeValue";
             public static final String VARRAY = "VarrayValue";
             public static final String NESTED_TABLE = "CustomTableValue";
             public static final String XML = "XmlValue";
-        }
-
-        /**
-         * Constants related to ballerina type names.
-         */
-        public static final class BallerinaTypes {
-            public static final String STRING = "string";
         }
 
         /**
@@ -172,14 +146,6 @@ public final class Constants {
             public static final String HOURS = "hours";
             public static final String MINUTES = "minutes";
             public static final String SECONDS = "seconds";
-        }
-
-        /**
-         * Constants related to the attributes of BFILE Oracle DB type.
-         */
-        public static final class Bfile {
-            public static final String DIRECTORY = "directory";
-            public static final String FILE = "filename";
         }
 
         /**

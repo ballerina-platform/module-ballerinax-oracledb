@@ -10,7 +10,7 @@ jobs:
   ubuntu-build:
     runs-on: ubuntu-latest
     steps:
-      - name: clear space for docker containers
+      - name: Clear space for docker containers
         run: |
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
@@ -61,3 +61,4 @@ jobs:
           name: Ballerina Internal Log Windows
           path: oracledb-ballerina/ballerina-internal.log
           if-no-files-found: ignore
+

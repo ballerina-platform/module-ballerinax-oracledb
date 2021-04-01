@@ -42,12 +42,10 @@ public class Utils {
      */
     public static BMap<BString, Object> generateOptionsMap(BMap clientOptions) {
         BMap<BString, Object> options = ValueCreator.createMapValue();
-
         long loginTimeout = getTimeoutInMilliSeconds(clientOptions.get(Constants.Options.LOGIN_TIMEOUT_SECONDS));
         if (loginTimeout > 0) {
             options.put(Constants.DatabaseProps.LOGIN_TIMEOUT, loginTimeout);
         }
-
         Properties connProperties = setConnectionProperties(clientOptions);
         if (connProperties.size() > 0) {
             options.put(Constants.DatabaseProps.CONN_PROPERTIES, connProperties);
@@ -67,23 +65,22 @@ public class Utils {
 
     private static Properties setConnectionProperties(BMap clientOptions) {
         Properties connProperties = new Properties();
-
         long connectTimeout = getTimeoutInMilliSeconds(clientOptions.get(Constants.Options.CONNECT_TIMEOUT_SECONDS));
         if (connectTimeout > 0) {
-            connProperties.put(Constants.DatabaseProps.ConnProperties.CONNECT_TIMEOUT, connectTimeout);
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_NET_CONNECT_TIMEOUT, connectTimeout);
         }
-
         long socketTimeout = getTimeoutInMilliSeconds(clientOptions.get(Constants.Options.SOCKET_TIMEOUT_SECONDS));
         if (socketTimeout > 0) {
-            connProperties.put(Constants.DatabaseProps.ConnProperties.SOCKET_TIMEOUT, socketTimeout);
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_READ_TIMEOUT, socketTimeout);
         }
-
         Boolean autocommit = clientOptions.getBooleanValue(Constants.Options.AUTOCOMMIT);
         if (autocommit != null) {
-            connProperties.put(Constants.DatabaseProps.ConnProperties.AUTO_COMMIT, autocommit);
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_AUTOCOMMIT, autocommit);
         }
-
-        setSSLConProperties(clientOptions, connProperties);
+        BMap secureSocket = clientOptions.getMapValue(Constants.Options.SSL);
+        if (secureSocket != null) {
+            setSSLConProperties(secureSocket, connProperties);
+        }
         return connProperties;
     }
 
@@ -98,46 +95,40 @@ public class Utils {
         if (connectTimeout > 0) {
             poolProperties.put(Constants.Pool.CONNECT_TIMEOUT, connectTimeout);
         }
-
         Boolean autocommit = clientOptions.getBooleanValue(Constants.Options.AUTOCOMMIT);
         if (autocommit != null) {
             poolProperties.put(Constants.Pool.AUTO_COMMIT, autocommit);
         }
-
         if (poolProperties.size() > 0) {
-            return null;
+            return poolProperties;
         }
-        return poolProperties;
+        return null;
     }
 
     private static void setSSLConProperties(BMap secureSocket, Properties connProperties) {
-        if (secureSocket != null) {
-
-            BMap keyStore = secureSocket.getMapValue(Constants.SecureSocket.KEYSTORE);
-            if (keyStore != null) {
-                connProperties.put(Constants.DatabaseProps.ConnProperties.KEYSTORE, keyStore
-                        .getStringValue(Constants.SecureSocket.CryptoKeyStoreRecord.PATH_FIELD));
-                connProperties.put(Constants.DatabaseProps.ConnProperties.KEYSTORE_PASSWORD, keyStore
-                        .getStringValue(Constants.SecureSocket.CryptoKeyStoreRecord.PASSWORD_FIELD));
-            }
-
-            BString keyStoreType = secureSocket.getStringValue(Constants.SecureSocket.KEYSTORE_TYPE);
-            if (keyStoreType != null) {
-                connProperties.put(Constants.DatabaseProps.ConnProperties.KEYSTORE_TYPE, keyStoreType.getValue());
-            }
-
-            BMap trustStore = secureSocket.getMapValue(Constants.SecureSocket.TRUSTSTORE);
-            if (trustStore != null) {
-                connProperties.put(Constants.DatabaseProps.ConnProperties.TRUSTSTORE, trustStore
-                        .getStringValue(Constants.SecureSocket.CryptoTrustStoreRecord.PATH_FIELD));
-                connProperties.put(Constants.DatabaseProps.ConnProperties.TRUSTSTORE_PASSWORD, trustStore
-                        .getStringValue(Constants.SecureSocket.CryptoTrustStoreRecord.PASSWORD_FIELD));
-            }
-
-            BString trustStoreType = secureSocket.getStringValue(Constants.SecureSocket.TRUSTSTORE_TYPE);
-            if (trustStoreType != null) {
-                connProperties.put(Constants.DatabaseProps.ConnProperties.TRUSTSTORE_TYPE, trustStoreType.getValue());
-            }
+        BMap keyStore = secureSocket.getMapValue(Constants.SecureSocket.KEYSTORE);
+        if (keyStore != null) {
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_KEYSTORE,
+                    keyStore.getStringValue(Constants.SecureSocket.CryptoKeyStoreRecord.PATH_FIELD));
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_KEYSTOREPASSWORD,
+                    keyStore.getStringValue(Constants.SecureSocket.CryptoKeyStoreRecord.PASSWORD_FIELD));
+        }
+        BString keyStoreType = secureSocket.getStringValue(Constants.SecureSocket.KEYSTORE_TYPE);
+        if (keyStoreType != null) {
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_KEYSTORETYPE,
+                    keyStoreType.getValue());
+        }
+        BMap trustStore = secureSocket.getMapValue(Constants.SecureSocket.TRUSTSTORE);
+        if (trustStore != null) {
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_TRUSTSTORE,
+                    trustStore.getStringValue(Constants.SecureSocket.CryptoTrustStoreRecord.PATH_FIELD));
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_TRUSTSTOREPASSWORD,
+                    trustStore.getStringValue(Constants.SecureSocket.CryptoTrustStoreRecord.PASSWORD_FIELD));
+        }
+        BString trustStoreType = secureSocket.getStringValue(Constants.SecureSocket.TRUSTSTORE_TYPE);
+        if (trustStoreType != null) {
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_TRUSTSTORETYPE,
+                    trustStoreType.getValue());
         }
     }
 
@@ -156,7 +147,6 @@ public class Utils {
         } else {
             valueName = value.getClass().getName();
         }
-
         return new ApplicationError("Invalid parameter: " + valueName + " is passed as value for SQL type: " + sqlType);
     }
 

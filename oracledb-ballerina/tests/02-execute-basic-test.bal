@@ -20,8 +20,8 @@ import ballerina/test;
     enable: true,
     groups:["execute","execute-basic"]
 }
-function testCreateTable() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function testCreateTable() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     sql:ExecutionResult result = check dropTableIfExists("TestExecuteTable");
     result = check oracledbClient->execute("CREATE TABLE TestExecuteTable(field NUMBER, field2 VARCHAR2(255))");
@@ -64,7 +64,7 @@ function testCreateTable() returns sql:Error? {
     dependsOn: [testCreateTable]
 }
 isolated function testAlterTable() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute("ALTER TABLE TestExecuteTable RENAME COLUMN field TO field1");
     check oracledbClient.close();
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
@@ -77,7 +77,7 @@ isolated function testAlterTable() returns sql:Error? {
     dependsOn: [testAlterTable]
 }
 isolated function testInsertTable() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute("INSERT INTO TestExecuteTable(field1, field2) VALUES (1, 'Hello, world')");
     check oracledbClient.close();
 
@@ -93,7 +93,7 @@ isolated function testInsertTable() returns sql:Error? {
     dependsOn: [testInsertTable]
 }
 isolated function testUpdateTable() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute("UPDATE TestExecuteTable SET field2 = 'Hello, ballerina' WHERE field1 = 1");
     check oracledbClient.close();
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -105,7 +105,7 @@ isolated function testUpdateTable() returns sql:Error? {
     dependsOn: [testInsertTable]
 }
 isolated function testInsertTableWithoutGeneratedKeys() returns sql:Error? {
-    Client oracledbClient = check new (user, password, host, port, database);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute("Insert into TestCharacterTable (id, col_varchar2)"
         + " values (20, 'test')");
     check oracledbClient.close();
@@ -119,7 +119,7 @@ isolated function testInsertTableWithoutGeneratedKeys() returns sql:Error? {
     dependsOn: [testInsertTableWithoutGeneratedKeys]
 }
 isolated function testInsertTableWithGeneratedKeys() returns sql:Error? {
-    Client oracledbClient = check new (user, password, host, port, database);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute("insert into TestNumericTable (col_number) values (21)");
     check oracledbClient.close();
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -140,7 +140,7 @@ type NumericRecord record {|
     dependsOn: [testInsertTableWithGeneratedKeys]
 }
 isolated function testInsertAndSelectTableWithGeneratedKeys() returns sql:Error? {
-    Client oracledbClient = check new (user, password, host, port, database);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute("insert into TestNumericTable (col_number) values (31)");
 
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -168,7 +168,7 @@ isolated function testInsertAndSelectTableWithGeneratedKeys() returns sql:Error?
     dependsOn: [testInsertAndSelectTableWithGeneratedKeys]
 }
 isolated function testInsertWithAllNilAndSelectTableWithGeneratedKeys() returns sql:Error? {
-    Client oracledbClient = check new (user, password, host, port, database);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute("insert into TestNumericTable (col_number, col_float, "+
         "col_binary_float, col_binary_double) values (null, null, null, null)");
 
@@ -197,7 +197,7 @@ isolated function testInsertWithAllNilAndSelectTableWithGeneratedKeys() returns 
     dependsOn: [testInsertWithAllNilAndSelectTableWithGeneratedKeys]
 }
 isolated function testInsertTableWithDatabaseError() returns sql:Error? {
-    Client oracledbClient = check new (user, password, host, port, database);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult|sql:Error result = oracledbClient->execute("Insert into NumericTypesNonExistTable (int_type) values (20)");
 
     if (result is sql:DatabaseError) {
@@ -216,7 +216,7 @@ isolated function testInsertTableWithDatabaseError() returns sql:Error? {
     dependsOn: [testInsertTableWithDatabaseError]
 }
 isolated function testInsertTableWithDataTypeError() returns sql:Error? {
-    Client oracledbClient = check new (user, password, host, port, database);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult|sql:Error result = oracledbClient->execute("Insert into TestNumericTable (col_number) values"
         + " ('This is wrong type')");
 
@@ -236,7 +236,7 @@ isolated function testInsertTableWithDataTypeError() returns sql:Error? {
     dependsOn: [testInsertTableWithDataTypeError]
 }
 isolated function testUpdateData() returns sql:Error? {
-    Client oracledbClient = check new (user, password, host, port, database);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute("Update TestNumericTable set col_number = 11 where col_number = 31");
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
 
@@ -249,7 +249,7 @@ isolated function testUpdateData() returns sql:Error? {
     dependsOn:[testUpdateData]
 }
 isolated function testDropTable() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, port, database);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute("DROP TABLE TestNumericTable");
     check oracledbClient.close();
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");

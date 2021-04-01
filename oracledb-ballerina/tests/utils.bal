@@ -46,8 +46,8 @@ isolated function getTextColumnChannel() returns @untainted io:ReadableCharacter
     return sourceChannel;
 }
 
-function dropTableIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function dropTableIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute("BEGIN "+
         "EXECUTE IMMEDIATE 'DROP TABLE ' || '" + tablename + "'; "+
         "EXCEPTION "+
@@ -60,8 +60,8 @@ function dropTableIfExists(string tablename) returns sql:ExecutionResult|sql:Err
     return result;
 }
 
-function dropTypeIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function dropTypeIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute("BEGIN "+
         "EXECUTE IMMEDIATE 'DROP TYPE ' || '" + tablename + " FORCE'; "+
         "EXCEPTION "+
@@ -74,8 +74,8 @@ function dropTypeIfExists(string tablename) returns sql:ExecutionResult|sql:Erro
     return result;
 }
 
-function executeParamQuery(sql:ParameterizedQuery|string query) returns sql:ExecutionResult|sql:Error {
-    Client oracledbClient = check new(user, password, host, port, database);
+isolated function executeParamQuery(sql:ParameterizedQuery|string query) returns sql:ExecutionResult|sql:Error {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute(query);
     check oracledbClient.close();
     return result;

@@ -16,12 +16,12 @@
 import ballerina/file;
 import ballerina/sql;
 
-const string user="admin";
-const string password="password";
-const string host = "localhost";
-const int port = 1521;
-const int poolPort = 1522;
-const string database = "ORCLCDB.localdomain";
+const string USER = "admin";
+const string PASSWORD = "password";
+const string HOST = "localhost";
+const int PORT = 1521;
+const int POOLPORT = 1522;
+const string DATABASE = "ORCLCDB.localdomain";
 
 string resourcePath = check file:getAbsolutePath("tests/resources");
 

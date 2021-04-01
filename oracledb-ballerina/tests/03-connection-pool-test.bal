@@ -18,19 +18,18 @@ import ballerina/sql;
 import ballerina/lang.'string as stringutils;
 import ballerina/test;
 
-string poolDB = database;
-string poolDB_2 = database;
+const string POOLDB = DATABASE;
 
 public type Result record {
   int val;
 };
 
 @test:BeforeGroups { value:["pool"] }
-function beforePoolTestFunc() returns sql:Error? {
-    Client oracledbClient = check new(user, password, host, poolPort, poolDB);
+isolated function beforePoolTestFunc() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, POOLDB, POOLPORT);
 
-    sql:ExecutionResult result = check dropTableIfExists("PoolCustomers");
-    result = check oracledbClient->execute("CREATE TABLE PoolCustomers("+
+    sql:ExecutionResult result = check dropPoolTableIfExists("PoolCustomers");
+    result = check oracledbClient->execute("CREATE TABLE PoolCustomers ("+
         "customerId NUMBER GENERATED ALWAYS AS IDENTITY, "+
         "firstName  VARCHAR2(300), "+
         "lastName  VARCHAR2(300), "+
@@ -54,35 +53,27 @@ function beforePoolTestFunc() returns sql:Error? {
   groups: ["pool"]
 }
 function testGlobalConnectionPoolSingleDestination() returns sql:Error? {
-  check drainGlobalPool(poolDB);
+  check drainGlobalPool();
 }
-
-// @test:Config {
-//   groups: ["pool"]
-// }
-// function testGlobalConnectionPoolsMultipleDestinations() {
-//   drainGlobalPool(poolDB);
-//   drainGlobalPool(poolDB_2);
-// }
 
 @test:Config {
   groups: ["pool"]
 }
 function testGlobalConnectionPoolSingleDestinationConcurrent() returns error? {
   worker w1 returns [stream<record{}, error>, stream<record{}, error>]|error {
-      return testGlobalConnectionPoolConcurrentHelper1(poolDB);
+      return testGlobalConnectionPoolConcurrentHelper1();
   }
 
   worker w2 returns [stream<record{}, error>, stream<record{}, error>]|error {
-      return testGlobalConnectionPoolConcurrentHelper1(poolDB);
+      return testGlobalConnectionPoolConcurrentHelper1();
   }
 
   worker w3 returns [stream<record{}, error>, stream<record{}, error>]|error {
-      return testGlobalConnectionPoolConcurrentHelper1(poolDB);
+      return testGlobalConnectionPoolConcurrentHelper1();
   }
 
   worker w4 returns [stream<record{}, error>, stream<record{}, error>]|error {
-      return testGlobalConnectionPoolConcurrentHelper1(poolDB);
+      return testGlobalConnectionPoolConcurrentHelper1();
   }
 
   record {
@@ -92,7 +83,7 @@ function testGlobalConnectionPoolSingleDestinationConcurrent() returns error? {
       [stream<record{}, error>, stream<record{}, error>]|error w4;
   } results = wait {w1, w2, w3, w4};
 
-  var result2 = check testGlobalConnectionPoolConcurrentHelper2(poolDB);
+  var result2 = check testGlobalConnectionPoolConcurrentHelper2();
 
   (int|error)[][] returnArray = [];
   // Connections will be released here as we fully consume the data in the following conversion function calls
@@ -127,11 +118,11 @@ function testGlobalConnectionPoolSingleDestinationConcurrent() returns error? {
 }
 function testLocalSharedConnectionPoolConfigSingleDestination() returns sql:Error? {
   sql:ConnectionPool pool = {maxOpenConnections: 5};
-  Client oracleDbClient1 = check new (user, password, host, poolPort, poolDB, options, pool);
-  Client oracleDbClient2 = check new (user, password, host, poolPort, poolDB, options, pool);
-  Client oracleDbClient3 = check new (user, password, host, poolPort, poolDB, options, pool);
-  Client oracleDbClient4 = check new (user, password, host, poolPort, poolDB, options, pool);
-  Client oracleDbClient5 = check new (user, password, host, poolPort, poolDB, options, pool);
+  Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
+  Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
+  Client oracleDbClient3 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
+  Client oracleDbClient4 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
+  Client oracleDbClient5 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
   (stream<record{}, error>)[] resultArray = [];
   resultArray[0] = oracleDbClient1->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
@@ -169,19 +160,19 @@ function testLocalSharedConnectionPoolConfigSingleDestination() returns sql:Erro
 @test:Config {
   groups: ["pool"]
 }
-function testLocalSharedConnectionPoolConfigDifferentDbOptions() returns sql:Error? {
+isolated function testLocalSharedConnectionPoolConfigDifferentDbOptions() returns sql:Error? {
   sql:ConnectionPool pool = {maxOpenConnections: 3};
-  Client oracleDbClient1 = check new (user, password, host, poolPort, poolDB,
+  Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT,
       {connectTimeout: 2, socketTimeout: 10}, pool);
-  Client oracleDbClient2 = check new (user, password, host, poolPort, poolDB,
+  Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT,
       {socketTimeout: 10, connectTimeout: 2}, pool);
-  Client oracleDbClient3 = check new (user, password, host, poolPort, poolDB,
+  Client oracleDbClient3 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT,
       {connectTimeout: 2, socketTimeout: 10}, pool);
-  Client oracleDbClient4 = check new (user, password, host, poolPort, poolDB,
+  Client oracleDbClient4 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT,
       {connectTimeout: 1}, pool);
-  Client oracleDbClient5 = check new (user, password, host, poolPort, poolDB,
+  Client oracleDbClient5 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT,
       {connectTimeout: 1}, pool);
-    Client oracleDbClient6 = check new (user, password, host, poolPort, poolDB,
+    Client oracleDbClient6 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT,
         {connectTimeout: 1}, pool);
 
     stream<record {} , error>[] resultArray = [];
@@ -228,13 +219,13 @@ function testLocalSharedConnectionPoolConfigDifferentDbOptions() returns sql:Err
 function testLocalSharedConnectionPoolConfigMultipleDestinations() returns sql:Error? {
     sql:ConnectionPool pool1 = {maxOpenConnections: 3};
     sql:ConnectionPool pool2 = {maxOpenConnections: 4};
-    Client oracleDbClient1 = check new (user, password, host, poolPort, poolDB, options, pool1);
-    Client oracleDbClient2 = check new (user, password, host, poolPort, poolDB, options, pool1);
-    Client oracleDbClient3 = check new (user, password, host, poolPort, poolDB, options, pool1);
-    Client oracleDbClient4 = check new (user, password, host, poolPort, poolDB, options, pool2);
-    Client oracleDbClient5 = check new (user, password, host, poolPort, poolDB, options, pool2);
-    Client oracleDbClient6 = check new (user, password, host, poolPort, poolDB, options, pool2);
-    Client oracleDbClient7 = check new (user, password, host, poolPort, poolDB, options, pool2);
+    Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool1);
+    Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool1);
+    Client oracleDbClient3 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool1);
+    Client oracleDbClient4 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool2);
+    Client oracleDbClient5 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool2);
+    Client oracleDbClient6 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool2);
+    Client oracleDbClient7 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool2);
 
     stream<record {} , error>[] resultArray = [];
     resultArray[0] = oracleDbClient1->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
@@ -281,8 +272,8 @@ function testLocalSharedConnectionPoolConfigMultipleDestinations() returns sql:E
 }
 function testLocalSharedConnectionPoolCreateClientAfterShutdown() returns sql:Error? {
   sql:ConnectionPool pool = {maxOpenConnections: 2};
-  Client oracleDbClient1 = check new (user, password, host, poolPort, poolDB, options, pool);
-  Client oracleDbClient2 = check new (user, password, host, poolPort, poolDB, options, pool);
+  Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
+  Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
   var dt1 = oracleDbClient1->query("SELECT count(*) as val from PoolCustomers where registrationID = 1", Result);
   var dt2 = oracleDbClient2->query("SELECT count(*) as val from PoolCustomers where registrationID = 1", Result);
@@ -298,7 +289,7 @@ function testLocalSharedConnectionPoolCreateClientAfterShutdown() returns sql:Er
   int|error result3 = getReturnValue(dt3);
 
   // Now a new pool should be created
-  Client oracleDbClient3 = check new (user, password, host, poolPort, poolDB, options, pool);
+  Client oracleDbClient3 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
   // This call should be successful
   var dt4 = oracleDbClient3->query("SELECT count(*) as val from PoolCustomers where registrationID = 1", Result);
@@ -319,10 +310,10 @@ function testLocalSharedConnectionPoolStopInitInterleave() returns error? {
   sql:ConnectionPool pool = {maxOpenConnections: 2};
 
   worker w1 returns error? {
-      check testLocalSharedConnectionPoolStopInitInterleaveHelper1(pool, poolDB);
+      check testLocalSharedConnectionPoolStopInitInterleaveHelper1(pool);
   }
   worker w2 returns int|error {
-      return testLocalSharedConnectionPoolStopInitInterleaveHelper2(pool, poolDB);
+      return testLocalSharedConnectionPoolStopInitInterleaveHelper2(pool);
   }
 
   check wait w1;
@@ -330,17 +321,17 @@ function testLocalSharedConnectionPoolStopInitInterleave() returns error? {
   test:assertEquals(result, 1);
 }
 
-function testLocalSharedConnectionPoolStopInitInterleaveHelper1(sql:ConnectionPool pool, string database)
+function testLocalSharedConnectionPoolStopInitInterleaveHelper1(sql:ConnectionPool pool)
 returns error? {
-  Client oracleDbClient = check new (user, password, host, poolPort, poolDB, options, pool);
+  Client oracleDbClient = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   runtime:sleep(10);
   check oracleDbClient.close();
 }
 
-function testLocalSharedConnectionPoolStopInitInterleaveHelper2(sql:ConnectionPool pool, string database)
+function testLocalSharedConnectionPoolStopInitInterleaveHelper2(sql:ConnectionPool pool)
 returns @tainted int|error {
   runtime:sleep(10);
-  Client oracleDbClient = check new (user, password, host, poolPort, poolDB, options, pool);
+  Client oracleDbClient = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   var dt = oracleDbClient->query("SELECT COUNT(*) as val from PoolCustomers where registrationID = 1", Result);
   int|error count = getReturnValue(dt);
   check oracleDbClient.close();
@@ -352,7 +343,7 @@ returns @tainted int|error {
 }
 function testShutDownUnsharedLocalConnectionPool() returns sql:Error? {
   sql:ConnectionPool pool = {maxOpenConnections: 2};
-  Client oracleDbClient = check new (user, password, host, poolPort, poolDB, options, pool);
+  Client oracleDbClient = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
   var result = oracleDbClient->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
   int|error retVal1 = getReturnValue(result);
@@ -372,8 +363,8 @@ function testShutDownUnsharedLocalConnectionPool() returns sql:Error? {
 }
 function testShutDownSharedConnectionPool() returns sql:Error? {
   sql:ConnectionPool pool = {maxOpenConnections: 1};
-  Client oracleDbClient1 = check new (user, password, host, poolPort, poolDB, options, pool);
-  Client oracleDbClient2 = check new (user, password, host, poolPort, poolDB, options, pool);
+  Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
+  Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
   var result1 = oracleDbClient1->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
   int|error retVal1 = getReturnValue(result1);
@@ -411,8 +402,8 @@ function testShutDownSharedConnectionPool() returns sql:Error? {
 }
 function testShutDownPoolCorrespondingToASharedPoolConfig() returns sql:Error? {
   sql:ConnectionPool pool = {maxOpenConnections: 1};
-  Client oracleDbClient1 = check new (user, password, host, poolPort, poolDB, options, pool);
-  Client oracleDbClient2 = check new (user, password, host, poolPort, poolDB, options, pool);
+  Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
+  Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
   var result1 = oracleDbClient1->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
   int|error retVal1 = getReturnValue(result1);
@@ -444,7 +435,7 @@ function testShutDownPoolCorrespondingToASharedPoolConfig() returns sql:Error? {
 }
 function testStopClientUsingGlobalPool() returns sql:Error? {
   // This client doesn't have pool config specified therefore, global pool will be used.
-  Client oracleDbClient = check new (user, password, host, poolPort, poolDB, options);
+  Client oracleDbClient = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options);
 
   var result1 = oracleDbClient->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
   int|error retVal1 = getReturnValue(result1);
@@ -460,16 +451,16 @@ function testStopClientUsingGlobalPool() returns sql:Error? {
   validateApplicationError(retVal2);
 }
 
-function testGlobalConnectionPoolConcurrentHelper1(string database) returns
+function testGlobalConnectionPoolConcurrentHelper1() returns
   @tainted [stream<record{}, error>, stream<record{}, error>]|error {
-  Client oracleDbClient = check new (user, password, host, poolPort, database, options);
+  Client oracleDbClient = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options);
   var dt1 = oracleDbClient->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
   var dt2 = oracleDbClient->query("select count(*) as val from PoolCustomers where registrationID = 2", Result);
   return [dt1, dt2];
 }
 
-function testGlobalConnectionPoolConcurrentHelper2(string database) returns @tainted (int|error)[]|error {
-  Client oracleDbClient = check new (user, password, host, poolPort,  database, options);
+function testGlobalConnectionPoolConcurrentHelper2() returns @tainted (int|error)[]|error {
+  Client oracleDbClient = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options);
   (int|error)[] returnArray = [];
   var dt1 = oracleDbClient->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
   var dt2 = oracleDbClient->query("select count(*) as val from PoolCustomers where registrationID = 2", Result);
@@ -482,7 +473,7 @@ function testGlobalConnectionPoolConcurrentHelper2(string database) returns @tai
   return returnArray;
 }
 
-function getCombinedReturnValue([stream<record{}, error>, stream<record{}, error>]|error queryResult) returns
+isolated function getCombinedReturnValue([stream<record{}, error>, stream<record{}, error>]|error queryResult) returns
     (int|error)[]|error {
   if (queryResult is error) {
       return queryResult;
@@ -497,12 +488,12 @@ function getCombinedReturnValue([stream<record{}, error>, stream<record{}, error
   }
 }
 
-function drainGlobalPool(string database) returns sql:Error?{
-  Client oracleDbClient1 = check new (user, password, host, poolPort, database, options);
-  Client oracleDbClient2 = check new (user, password, host, poolPort, database, options);
-  Client oracleDbClient3 = check new (user, password, host, poolPort, database, options);
-  Client oracleDbClient4 = check new (user, password, host, poolPort, database, options);
-  Client oracleDbClient5 = check new (user, password, host, poolPort, database, options);
+function drainGlobalPool() returns sql:Error?{
+  Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options);
+  Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options);
+  Client oracleDbClient3 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options);
+  Client oracleDbClient4 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options);
+  Client oracleDbClient5 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options);
 
   stream<record{}, error>[] resultArray = [];
 
@@ -541,7 +532,7 @@ function drainGlobalPool(string database) returns sql:Error?{
   validateConnectionTimeoutError(returnArray[10]);
 }
 
-function getReturnValue(stream<record{}, error> queryResult) returns int|error {
+isolated function getReturnValue(stream<record{}, error> queryResult) returns int|error {
   int count = -1;
   record {|record {} value;|}? data = check queryResult.next();
   if (data is record {|record {} value;|}) {
@@ -554,15 +545,29 @@ function getReturnValue(stream<record{}, error> queryResult) returns int|error {
   return count;
 }
 
-function validateApplicationError(int|error dbError) {
+isolated function validateApplicationError(int|error dbError) {
   test:assertTrue(dbError is error);
   sql:ApplicationError sqlError = <sql:ApplicationError> dbError;
   test:assertTrue(stringutils:includes(sqlError.message(), "client is already closed"), sqlError.message());
 }
 
-function validateConnectionTimeoutError(int|error dbError) {
+isolated function validateConnectionTimeoutError(int|error dbError) {
   test:assertTrue(dbError is error);
   sql:DatabaseError sqlError = <sql:DatabaseError> dbError;
   test:assertTrue(stringutils:includes(sqlError.message(), "request timed out after"), sqlError.message());
+}
+
+isolated function dropPoolTableIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, POOLDB, POOLPORT);
+    sql:ExecutionResult result = check oracledbClient->execute("BEGIN "+
+        "EXECUTE IMMEDIATE 'DROP TABLE ' || '" + tablename + "'; "+
+        "EXCEPTION "+
+        "WHEN OTHERS THEN "+
+            "IF SQLCODE != -942 THEN "+
+                "RAISE; "+
+            "END IF; "+
+        "END;");
+    check oracledbClient.close();
+    return result;
 }
 
