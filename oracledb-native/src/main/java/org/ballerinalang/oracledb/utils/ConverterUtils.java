@@ -292,7 +292,6 @@ public class ConverterUtils {
             } else if (element instanceof BArray) {
                 arrayData[i] = getAnydataArrayData(element);
             } else {
-                // TODO: find out how to handle after doing xml
                 throw new ApplicationError("The array contains elements of unmappable types.");
             }
         }

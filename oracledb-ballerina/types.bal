@@ -63,24 +63,6 @@ type Varray record {|
 |};
 
 
-# NestedTable models an unordered set of elements. The elements may be built-in types or user-defined types.
-#
-# + name - Name of the varray
-# + attributes - Attributes of the nested table
-type NestedTable record {|
-    string name;
-    anydata[] attributes;
-|};
-
-
-# XML uses to store and query XML data in the database
-#
-# + xml - Xml string
-type Xml record {|
-    string 'xml; // try xml type
-|};
-
-
 # Represents INTERVAL YEAR TO MONTH Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
@@ -136,22 +118,8 @@ public distinct class VarrayValue {
 # Represents NESTED TABLE Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
-public distinct class NestedTableValue {
-    *sql:TypedValue;
-    public NestedTable? value;
-
-    public isolated function init(NestedTable? value = ()) {
-        self.value = value;
-    }
-}
-
-
-# Represents NESTED TABLE Oracle DB field.
-#
-# + value - Value of parameter passed into the SQL statement
 public distinct class XmlValue {
     *sql:TypedValue;
-    // TODO - check xml bal type
     public string|xml? value;
 
     public isolated function init(string|xml? value = ()) {

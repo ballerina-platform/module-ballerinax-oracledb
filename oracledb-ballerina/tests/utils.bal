@@ -80,4 +80,3 @@ isolated function executeParamQuery(sql:ParameterizedQuery|string query) returns
     check oracledbClient.close();
     return result;
 }
-
