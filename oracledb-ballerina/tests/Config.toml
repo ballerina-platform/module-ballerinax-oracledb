@@ -16,7 +16,6 @@
 # under the License.
 #
 
-[sql]
-maxOpenConnections=10
-maxConnectionLifeTimeInSeconds=2000.5
+maxOpenConnections=5
+maxConnectionLifeTimeInSeconds=2000.0
 minIdleConnections=5
