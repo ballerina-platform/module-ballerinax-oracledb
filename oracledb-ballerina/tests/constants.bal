@@ -32,7 +32,7 @@ final Options options = {
     socketTimeout: 3
 };
 
-final configurable int maxOpenConnections = 5;
+final configurable int maxOpenConnections = 10;
 final configurable decimal maxConnectionLifeTime = 2000.0;
 final configurable int minIdleConnections = 5;
 

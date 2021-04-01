@@ -16,6 +16,6 @@
 # under the License.
 #
 
-maxOpenConnections=5
+maxOpenConnections=10
 maxConnectionLifeTimeInSeconds=2000.0
 minIdleConnections=5
