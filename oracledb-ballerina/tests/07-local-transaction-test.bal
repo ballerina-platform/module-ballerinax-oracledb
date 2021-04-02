@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerina/lang.'transaction as transactions;
-import ballerina/io;
+// import ballerina/io;
 import ballerina/sql;
 import ballerina/test;
 
@@ -38,15 +38,17 @@ public class SQLDefaultRetryManager {
     }
 }
 
-@test:BeforeGroups { value:["execute-params"] }
+@test:BeforeGroups { value:["local-transaction"] }
 isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("LocalTransCustomers");
     result = check oracledbClient->execute("CREATE TABLE LocalTransCustomers("+
-        "firstName NUMBER, " +
-        "lastName FLOAT, " +
-        "col_binary_float BINARY_FLOAT, " +
-        "col_binary_double BINARY_DOUBLE, " +
+        "id NUMBER GENERATED ALWAYS AS IDENTITY, "+
+        "firstName VARCHAR2(100), " +
+        "lastName VARCHAR2(100), " +
+        "registrationID NUMBER, " +
+        "creditLimit VARCHAR2(100), " +
+        "country VARCHAR2(100), " +
         "PRIMARY KEY (id) " +
         ")"
     );
@@ -61,10 +63,10 @@ function testLocalTransaction() returns error? {
     boolean committedBlockExecuted = false;
     transactions:Info transInfo;
     retry<SQLDefaultRetryManager>(1) transaction {
-        var res = check oracledbClient->execute("Insert into Customers (firstName,lastName,registrationID,creditLimit,country) " +
-            "values ('James', 'Clerk', 200, 5000.75, 'USA')");
-        res = check oracledbClient->execute("Insert into Customers (firstName, lastName, registrationID, creditLimit, country) " +
-            "values ('James', 'Clerk', 200, 5000.75, 'USA')");
+        var res = check oracledbClient->execute("Insert into LocalTransCustomers (firstName, lastName, registrationID," + 
+            "creditLimit, country) values ('James', 'Clerk', 200, 5000.75, 'USA')");
+        res = check oracledbClient->execute("Insert into LocalTransCustomers (firstName, lastName, registrationID," + 
+            "creditLimit, country) values ('James', 'Clerk', 200, 5000.75, 'USA')");
         transInfo = transactions:info();
         var commitResult = commit;
         if(commitResult is ()){
@@ -79,4 +81,16 @@ function testLocalTransaction() returns error? {
     test:assertEquals(retryVal, 0);
     test:assertEquals(count, 2);
     test:assertEquals(committedBlockExecuted, true);
+}
+
+function getCount(Client dbClient, string id) returns @tainted int|error {
+    stream<TransactionResultCount, sql:Error> streamData = <stream<TransactionResultCount, sql:Error>> dbClient->query("Select COUNT(*) as " +
+        "countval from LocalTransCustomers where registrationID = "+ id, TransactionResultCount);
+        record {|TransactionResultCount value;|}? data = check streamData.next();
+        check streamData.close();
+        TransactionResultCount? value = data?.value;
+        if(value is TransactionResultCount){
+           return value["COUNTVAL"];
+        }
+        return 0;
 }
