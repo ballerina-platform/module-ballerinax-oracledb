@@ -31,10 +31,12 @@ isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
         "PRIMARY KEY (id) " +
         ")"
     );
-    result = check oracledbClient->execute("INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)"+
+    result = check oracledbClient->execute(
+        "INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)"+
         "VALUES(1, 1, 922.337, 123.34, 123.34)");
 
-    result = check oracledbClient->execute("INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)"+
+    result = check oracledbClient->execute(
+        "INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)"+
         "VALUES(2, 2, 922.337, 123.34, 123.34)");
 
     result = check dropTableIfExists("CharTypesTable");
@@ -201,8 +203,9 @@ isolated function deleteNumericTable3() returns sql:Error? {
     sql:DoubleValue col_binary_double = new (123.34);
 
     sql:ParameterizedQuery sqlQuery =
-            `DELETE FROM NumericTypesTable where id=${id} AND col_number=${col_number} AND col_float=${col_float} AND col_binary_float=${col_binary_float}
-              AND col_binary_float=${col_binary_float} AND col_binary_double=${col_binary_double}`;
+            `DELETE FROM NumericTypesTable where id=${id} AND col_number=${col_number} AND
+            col_float=${col_float} AND col_binary_float=${col_binary_float}
+            AND col_binary_float=${col_binary_float} AND col_binary_double=${col_binary_double}`;
     validateResult(check executeQuery(sqlQuery), 1);
 }
 
@@ -312,11 +315,12 @@ isolated function insertIntoAnsiTable1() returns error? {
     decimal col_real = 1.234134;
 
     sql:ParameterizedQuery sqlQuery = 
-        `INSERT INTO AnsiTypesTable(id, col_character, col_character_var, col_national_character, col_national_char, col_national_character_var, 
-        col_national_char_var, col_nchar_var, col_numeric, col_decimal, col_integer, col_int, col_smallint, col_float, col_double_precision, 
-        col_real) VALUES (${id}, ${col_character}, ${col_character_var}, ${col_national_character}, ${col_national_char}, ${col_national_character_var}, 
-        ${col_national_char_var}, ${col_nchar_var}, ${col_numeric}, ${col_decimal}, ${col_integer}, ${col_int}, ${col_smallint}, ${col_float}, 
-        ${col_double_precision}, ${col_real})`;
+        `INSERT INTO AnsiTypesTable(id, col_character, col_character_var, col_national_character, col_national_char,
+        col_national_character_var, col_national_char_var, col_nchar_var, col_numeric, col_decimal, col_integer,
+        col_int, col_smallint, col_float, col_double_precision, col_real) VALUES (
+        ${id}, ${col_character}, ${col_character_var}, ${col_national_character}, ${col_national_char},
+        ${col_national_character_var}, ${col_national_char_var}, ${col_nchar_var}, ${col_numeric}, ${col_decimal},
+        ${col_integer}, ${col_int}, ${col_smallint}, ${col_float}, ${col_double_precision}, ${col_real})`;
 
     validateResult(check executeQuery(sqlQuery), 1, 1);
 }
@@ -345,11 +349,12 @@ isolated function insertIntoAnsiTable2() returns error? {
     decimal? col_real = ();
 
     sql:ParameterizedQuery sqlQuery = 
-        `INSERT INTO AnsiTypesTable(id, col_character, col_character_var, col_national_character, col_national_char, col_national_character_var, 
-        col_national_char_var, col_nchar_var, col_numeric, col_decimal, col_integer, col_int, col_smallint, col_float, col_double_precision, 
-        col_real) VALUES (${id}, ${col_character}, ${col_character_var}, ${col_national_character}, ${col_national_char}, ${col_national_character_var}, 
-        ${col_national_char_var}, ${col_nchar_var}, ${col_numeric}, ${col_decimal}, ${col_integer}, ${col_int}, ${col_smallint}, ${col_float}, 
-        ${col_double_precision}, ${col_real})`;
+        `INSERT INTO AnsiTypesTable(id, col_character, col_character_var, col_national_character, col_national_char,
+        col_national_character_var, col_national_char_var, col_nchar_var, col_numeric, col_decimal, col_integer,
+        col_int, col_smallint, col_float, col_double_precision, col_real) VALUES (
+        ${id}, ${col_character}, ${col_character_var}, ${col_national_character}, ${col_national_char},
+        ${col_national_character_var}, ${col_national_char_var}, ${col_nchar_var}, ${col_numeric}, ${col_decimal},
+        ${col_integer}, ${col_int}, ${col_smallint}, ${col_float}, ${col_double_precision}, ${col_real})`;
 
     validateResult(check executeQuery(sqlQuery), 1, 1);
 }
@@ -378,11 +383,12 @@ isolated function insertIntoAnsiTable3() returns error? {
     sql:RealValue col_real = new(1.234134);
 
     sql:ParameterizedQuery sqlQuery = 
-        `INSERT INTO AnsiTypesTable(id, col_character, col_character_var, col_national_character, col_national_char, col_national_character_var, 
-        col_national_char_var, col_nchar_var, col_numeric, col_decimal, col_integer, col_int, col_smallint, col_float, col_double_precision, 
-        col_real) VALUES (${id}, ${col_character}, ${col_character_var}, ${col_national_character}, ${col_national_char}, ${col_national_character_var}, 
-        ${col_national_char_var}, ${col_nchar_var}, ${col_numeric}, ${col_decimal}, ${col_integer}, ${col_int}, ${col_smallint}, ${col_float}, 
-        ${col_double_precision}, ${col_real})`;
+        `INSERT INTO AnsiTypesTable(id, col_character, col_character_var, col_national_character, col_national_char,
+        col_national_character_var, col_national_char_var, col_nchar_var, col_numeric, col_decimal, col_integer,
+        col_int, col_smallint, col_float, col_double_precision,col_real) VALUES (
+        ${id}, ${col_character}, ${col_character_var}, ${col_national_character}, ${col_national_char},
+        ${col_national_character_var}, ${col_national_char_var}, ${col_nchar_var}, ${col_numeric}, ${col_decimal},
+        ${col_integer}, ${col_int}, ${col_smallint}, ${col_float}, ${col_double_precision}, ${col_real})`;
 
     validateResult(check executeQuery(sqlQuery), 1, 1);
 }
@@ -411,11 +417,12 @@ isolated function insertIntoAnsiTable4() returns error? {
     sql:RealValue col_real = new();
 
     sql:ParameterizedQuery sqlQuery = 
-        `INSERT INTO AnsiTypesTable(id, col_character, col_character_var, col_national_character, col_national_char, col_national_character_var, 
-        col_national_char_var, col_nchar_var, col_numeric, col_decimal, col_integer, col_int, col_smallint, col_float, col_double_precision, 
-        col_real) VALUES (${id}, ${col_character}, ${col_character_var}, ${col_national_character}, ${col_national_char}, ${col_national_character_var}, 
-        ${col_national_char_var}, ${col_nchar_var}, ${col_numeric}, ${col_decimal}, ${col_integer}, ${col_int}, ${col_smallint}, ${col_float}, 
-        ${col_double_precision}, ${col_real})`;
+        `INSERT INTO AnsiTypesTable(id, col_character, col_character_var, col_national_character, col_national_char,
+        col_national_character_var, col_national_char_var, col_nchar_var, col_numeric, col_decimal, col_integer,
+        col_int, col_smallint, col_float, col_double_precision, col_real) VALUES (
+        ${id}, ${col_character}, ${col_character_var}, ${col_national_character}, ${col_national_char},
+        ${col_national_character_var}, ${col_national_char_var}, ${col_nchar_var}, ${col_numeric}, ${col_decimal},
+        ${col_integer}, ${col_int}, ${col_smallint}, ${col_float}, ${col_double_precision}, ${col_real})`;
 
     validateResult(check executeQuery(sqlQuery), 1, 1);
 }
@@ -440,7 +447,8 @@ isolated function insertIntoSqlDsTable1() returns error? {
     string col_long_varchar = "Hello, world!";
 
     sql:ParameterizedQuery sqlQuery = 
-             `INSERT INTO SqlDsTypesTable(id, col_character, col_long_varchar) VALUES (${id}, ${col_character}, ${col_long_varchar})`;
+         `INSERT INTO SqlDsTypesTable(id, col_character, col_long_varchar) VALUES (${id}, ${col_character},
+         ${col_long_varchar})`;
 
     validateResult(check executeQuery(sqlQuery), 1, 1);
 }
@@ -454,8 +462,8 @@ isolated function insertIntoSqlDsTable2() returns error? {
     string? col_character = ();
     string? col_long_varchar = ();
 
-    sql:ParameterizedQuery sqlQuery = 
-             `INSERT INTO SqlDsTypesTable(id, col_character, col_long_varchar) VALUES (${id}, ${col_character}, ${col_long_varchar})`;
+    sql:ParameterizedQuery sqlQuery = `INSERT INTO SqlDsTypesTable(id, col_character, col_long_varchar) VALUES (
+    ${id}, ${col_character}, ${col_long_varchar})`;
 
     validateResult(check executeQuery(sqlQuery), 1, 1);
 }
@@ -483,8 +491,9 @@ isolated function insertIntoLobTable1() returns error? {
     sql:ClobValue col_nclob = new (clobChannel);
     sql:BlobValue col_blob = new (blobChannel);
 
-    sql:ParameterizedQuery sqlQuery = 
-             `INSERT INTO LobTypesTable(id, col_clob, col_nclob, col_blob) VALUES (${id}, ${col_clob},  ${col_nclob}, ${col_blob})`;
+    sql:ParameterizedQuery sqlQuery =
+        `INSERT INTO LobTypesTable(id, col_clob, col_nclob, col_blob) VALUES (
+        ${id}, ${col_clob},  ${col_nclob}, ${col_blob})`;
 
     validateResult(check executeQuery(sqlQuery), 1, 1);
 }

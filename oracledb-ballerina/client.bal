@@ -24,16 +24,18 @@ public client class Client {
 
     # Initialize Oracle Client.
     #
-    # + host - Hostname of the oracle server to be connected
+    # + host - Hostname of the Oracle database server to be connected
     # + user - Name of a user of the database
     # + password - Password for the user
     # + database - System Identifier or the Service Name of the database
-    # + port - Port number of the oracle server to be connected
-    # + options - Oracle database specific JDBC options
-    # + connectionPool - The `sql:ConnectionPool` object to be used within the jdbc client. If there is no
+    # + port - Port number of the Oracle database server to be connected
+    # + options - Oracle database connection parameters
+    # + connectionPool - The `sql:ConnectionPool` object to be used within the database client. If there is no
     #                    connectionPool provided, the global connection pool will be used
-    public isolated function init(string host = "localhost", string? user = (), string? password = (), string? database = (),
-        int port = 1521, Options? options = (), sql:ConnectionPool? connectionPool = ()) returns sql:Error? {
+    # + return - sql error if the client creation failed 
+    public isolated function init(string host = "localhost", string? user = (), string? password = (),
+    string? database = (), int port = 1521, Options? options = (), sql:ConnectionPool? connectionPool = ())
+    returns sql:Error? {
         ClientConfiguration clientConfig = {
             host: host,
             port: port,
@@ -86,7 +88,7 @@ public client class Client {
     #                of values passed in
     # + return - Summary of the executed SQL queries as `ExecutionResult[]` which includes details such as
     #            `affectedRowCount` and `lastInsertId`. If one of the commands in the batch fails, this function
-    #            will return `BatchExecuteError`, however the JDBC driver may or may not continue to process the
+    #            will return `BatchExecuteError`, however the database driver may or may not continue to process the
     #            remaining commands in the batch after a failure. The summary of the executed queries in case of error
     #            can be accessed as `(<sql:BatchExecuteError> result).detail()?.executionResults`
     remote isolated function batchExecute(@untainted sql:ParameterizedQuery[] sqlQueries)
@@ -108,12 +110,13 @@ public client class Client {
     # + rowTypes - The array of `typedesc` of the records that should be returned as a result. If this is not provided
     #              the default column names of the query result set be used for the record attributes
     # + return - Summary of the execution is returned in `ProcedureCallResult` or `sql:Error`
-    remote isolated function call(@untainted string|sql:ParameterizedCallQuery sqlQuery, typedesc<record {}>[] rowTypes = [])
-    returns sql:ProcedureCallResult|sql:Error {
+    remote isolated function call(@untainted string|sql:ParameterizedCallQuery sqlQuery,
+    typedesc<record {}>[] rowTypes = []) returns sql:ProcedureCallResult|sql:Error {
         if (self.clientActive) {
             return nativeCall(self, sqlQuery, rowTypes);
         } else {
-            return error sql:ApplicationError("OracleDB client is already closed, hence further operations are not allowed");
+            return error sql:ApplicationError(
+                "OracleDB client is already closed, hence further operations are not allowed");
         }
     }
 
@@ -127,7 +130,7 @@ public client class Client {
 
 }
 
-# SSL Configuration to be used when connecting to oracle server.
+# SSL Configuration to be used when connecting to Oracle database server.
 #
 # + keyStore - Keystore configuration of the client certificates
 # + trustStore - Truststore configuration of the trust certificates
@@ -140,13 +143,13 @@ public type SecureSocket record {|
   string trustStoreType?;
 |};
 
-# Oracle database specific JDBC options.
+# Oracle database connection parameters.
 #
 # + ssl - SSL Configuration to be used
 # + loginTimeout - Specify how long to wait for establishment of a database connection in seconds
 # + autoCommit - If true commits automatically when statement is complete
-# + connectTimeout - Time duration for a connection
-# + socketTimeout - Timeout duration for reading from a socket
+# + connectTimeout - Time duration for a connection in seconds
+# + socketTimeout - Timeout duration for reading from a socket in seconds
 public type Options record {|
    SecureSocket ssl?;
    decimal loginTimeout = 0;
@@ -157,13 +160,13 @@ public type Options record {|
 
 # Client Configuration record for connection initialization.
 #
-# + host - Hostname of the oracle server to be connected
-# + port - Port number of the oracle server to be connected
+# + host - Hostname of the Oracle server to be connected
+# + port - Port number of the Oracle server to be connected
 # + user - Name of a user of the database
 # + database - System Identifier or the Service Name of the database
 # + password - Password for the user
-# + options - Oracle database specific JDBC options
-# + connectionPool - The `sql:ConnectionPool` object to be used within the jdbc client. If there is no
+# + options - Oracle database connection parameters
+# + connectionPool - The `sql:ConnectionPool` record to be used within the database client. If there is no
 #                    connectionPool provided, the global connection pool will be used
 type ClientConfiguration record {|
     string host;

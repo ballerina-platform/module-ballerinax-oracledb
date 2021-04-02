@@ -154,12 +154,12 @@ public class Utils {
      * Return an OracleConnection instance from Hikari connection.
      * @param connection Hikari connection
      * @return OracleConnection instance
-     * @throws SQLException if hikari connection is not a wrapper of oracle connection
+     * @throws SQLException if hikari connection is not a wrapper of Oracle connection
      */
     public static OracleConnection getOracleConnection(Connection connection) throws SQLException {
         if (connection.isWrapperFor(OracleConnection.class)) {
             return connection.unwrap(OracleConnection.class);
         }
-        throw new SQLException("Cannot cast connection to oracle connection");
+        throw new SQLException("Cannot cast connection to Oracle connection");
     }
 }

@@ -282,7 +282,8 @@ isolated function insertObjectTypeWithNestedType() returns sql:Error? {
     anydata[] attributes = [ string_attr,[string_attr, int_attr, float_attr, decimal_attr]];
     ObjectTypeValue objectType = new({typename: "nested_type", attributes: attributes});
 
-    sql:ParameterizedQuery insertQuery = `INSERT INTO TestNestedObjectTypeTable(COL_NESTED_OBJECT) VALUES(${objectType})`;
+    sql:ParameterizedQuery insertQuery = `INSERT INTO TestNestedObjectTypeTable(COL_NESTED_OBJECT)
+        VALUES(${objectType})`;
     sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
 
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");

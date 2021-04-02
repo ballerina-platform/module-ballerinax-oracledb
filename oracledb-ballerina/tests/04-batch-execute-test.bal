@@ -30,10 +30,12 @@ isolated function beforeBatchExecFunc() returns sql:Error? {
         "PRIMARY KEY (id) "+
         ")"
     );
-    result = check oracledbClient->execute("INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double)"+
+    result = check oracledbClient->execute(
+        "INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double)"+
         "VALUES(1, 922.337, 123.34, 123.34) ");
 
-    result = check oracledbClient->execute("INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double)"+
+    result = check oracledbClient->execute(
+        "INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double)"+
         "VALUES(2, 922.337, 123.34, 123.34) ");
 
     check oracledbClient.close();
@@ -95,7 +97,8 @@ isolated function batchInsertIntoDataTableFailure() {
     }
 }
 
-isolated function validateBatchExecutionResult(sql:ExecutionResult[] results, int[] rowCount, int[] lastId) returns error? {
+isolated function validateBatchExecutionResult(sql:ExecutionResult[] results, int[] rowCount, int[] lastId)
+returns error? {
     test:assertEquals(results.length(), rowCount.length());
 
     int i =0;

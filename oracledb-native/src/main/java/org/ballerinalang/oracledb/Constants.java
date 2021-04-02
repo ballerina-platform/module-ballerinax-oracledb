@@ -23,7 +23,7 @@ import io.ballerina.runtime.api.values.BString;
 import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
 /**
- * Constants for oracle database client.
+ * Constants for Oracle database client.
  */
 public final class Constants {
 
