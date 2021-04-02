@@ -447,4 +447,3 @@ ballerinaPublish.dependsOn updateTomlFile
 ballerinaPublish.dependsOn ":${packageName}-native:build"
 ballerinaPublish.dependsOn ballerinaBuild
 publish.dependsOn ballerinaPublish
-

@@ -26,4 +26,3 @@ isolated function beforeSuite() {
 isolated function afterSuite() {
     io:println("Test suite finished");
 }
-

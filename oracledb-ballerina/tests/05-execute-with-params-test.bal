@@ -516,4 +516,3 @@ isolated function validateResult(sql:ExecutionResult result, int rowCount, int? 
         test:assertTrue(lastInsertIdVal is string , "Last Insert Id should be string.");
     }
 }
-

@@ -441,4 +441,3 @@ returns record {}|error? {
     check oracledbClient.close();
     return value;
 }
-

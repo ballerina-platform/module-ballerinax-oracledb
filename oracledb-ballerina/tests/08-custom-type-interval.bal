@@ -166,4 +166,3 @@ isolated function insertIntervalWithInvalidBalType2() returns sql:Error? {
 
     check oracledbClient.close();
 }
-

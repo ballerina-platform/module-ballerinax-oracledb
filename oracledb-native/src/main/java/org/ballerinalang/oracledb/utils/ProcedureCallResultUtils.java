@@ -41,4 +41,3 @@ public class ProcedureCallResultUtils {
                 callResult, resultParameterProcessor);
     }
 }
-

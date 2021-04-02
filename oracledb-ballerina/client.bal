@@ -203,4 +203,3 @@ typedesc<record {}>[] rowTypes) returns sql:ProcedureCallResult|sql:Error = @jav
 isolated function close(Client oracledbClient) returns sql:Error? = @java:Method {
     'class: "org.ballerinalang.oracledb.nativeimpl.ClientProcessor"
 } external;
-

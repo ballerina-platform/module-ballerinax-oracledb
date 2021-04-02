@@ -291,4 +291,3 @@ isolated function insertObjectTypeWithNestedType() returns sql:Error? {
 
     check oracledbClient.close();
 }
-

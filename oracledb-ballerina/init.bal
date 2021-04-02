@@ -23,4 +23,3 @@ isolated function init() {
 isolated function setModule() = @java:Method {
     'class: "org.ballerinalang.oracledb.utils.ModuleUtils"
 } external;
-

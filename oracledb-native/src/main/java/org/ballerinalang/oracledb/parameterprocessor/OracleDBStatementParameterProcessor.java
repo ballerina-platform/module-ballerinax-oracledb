@@ -141,4 +141,3 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         preparedStatement.setObject(index, xml);
     }
 }
-

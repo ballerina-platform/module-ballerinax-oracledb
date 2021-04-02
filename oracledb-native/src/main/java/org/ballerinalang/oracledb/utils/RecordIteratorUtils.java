@@ -40,4 +40,3 @@ public class RecordIteratorUtils {
         return org.ballerinalang.sql.utils.RecordIteratorUtils.nextResult(iterator, resultParameterProcessor);
     }
 }
-

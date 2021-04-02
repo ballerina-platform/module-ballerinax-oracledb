@@ -117,4 +117,3 @@ isolated function batchExecuteQuery(sql:ParameterizedQuery[] sqlQueries) returns
     check oracledbClient.close();
     return result;
 }
-

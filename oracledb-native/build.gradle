@@ -110,4 +110,3 @@ compileJava {
         classpath = files()
     }
 }
-

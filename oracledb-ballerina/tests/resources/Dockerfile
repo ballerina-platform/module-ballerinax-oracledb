@@ -19,4 +19,3 @@ FROM ${REPO_LOCATION}:${BASE_VERSION}
 
 # Setup database using sqlplus script
 COPY sql-scripts/schema/create-schema.sql /home/oracle
-

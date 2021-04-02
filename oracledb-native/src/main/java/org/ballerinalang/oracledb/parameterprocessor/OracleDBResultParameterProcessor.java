@@ -48,4 +48,3 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         return iterator;
     }
 }
-

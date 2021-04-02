@@ -164,4 +164,3 @@ isolated function insertVarrayWithEmptyArray() returns sql:Error? {
    var insertId = result.lastInsertId;
    test:assertTrue(insertId is string, "Last Insert id should be string");
 }
-

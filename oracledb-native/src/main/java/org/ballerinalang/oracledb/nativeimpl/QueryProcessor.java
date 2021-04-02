@@ -50,4 +50,3 @@ public class QueryProcessor {
                 statementParametersProcessor, resultParametersProcessor);
     }
 }
-

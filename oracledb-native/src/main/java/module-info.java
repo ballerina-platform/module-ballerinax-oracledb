@@ -25,4 +25,3 @@ module io.ballerina.stdlib.oracledb {
     exports org.ballerinalang.oracledb;
     exports org.ballerinalang.oracledb.parameterprocessor;
 }
-

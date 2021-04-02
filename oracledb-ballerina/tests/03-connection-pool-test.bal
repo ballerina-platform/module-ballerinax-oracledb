@@ -425,4 +425,3 @@ isolated function dropPoolTableIfExists(string tablename) returns sql:ExecutionR
     check oracledbClient.close();
     return result;
 }
-

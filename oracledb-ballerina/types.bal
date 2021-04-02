@@ -142,4 +142,3 @@ public class CustomResultIterator {
         paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
     } external;
 }
-

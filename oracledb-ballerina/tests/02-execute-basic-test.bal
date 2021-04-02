@@ -255,4 +255,3 @@ isolated function testDropTable() returns sql:Error? {
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
     test:assertExactEquals(result.lastInsertId, (), "Last Insert Id should be null.");
 }
-

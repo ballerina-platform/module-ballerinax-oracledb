@@ -176,4 +176,3 @@ public final class Constants {
     public static final String ORACLE_DATASOURCE_NAME = "oracle.jdbc.pool.OracleDataSource";
     public static final String CUSTOM_RESULT_ITERATOR_OBJECT = "CustomResultIterator";
 }
-

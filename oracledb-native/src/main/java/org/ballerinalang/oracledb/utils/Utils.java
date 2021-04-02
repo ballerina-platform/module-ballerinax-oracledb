@@ -163,4 +163,3 @@ public class Utils {
         throw new SQLException("Cannot cast connection to oracle connection");
     }
 }
-
