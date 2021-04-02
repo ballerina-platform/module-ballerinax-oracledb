@@ -52,7 +52,7 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 public class ConverterUtils {
 
     /**
-     * Converts IntervalYearToMonthValue value to String.
+     * Convert IntervalYearToMonthValue value to String.
      * @param value Custom IntervalYearToMonthValue value
      * @return String of INTERVAL_YEAR_TO_MONTH
      * @throws ApplicationError error thrown if invalid types are passed
@@ -68,7 +68,7 @@ public class ConverterUtils {
     }
 
     /**
-     * Converts IntervalDayToSecondValue value to String.
+     * Convert IntervalDayToSecondValue value to String.
      * @param value Custom IntervalDayToSecond value
      * @return String of INTERVAL_DAY_TO_SECOND
      * @throws ApplicationError error thrown if invalid types are passed
@@ -89,7 +89,7 @@ public class ConverterUtils {
     }
 
      /**
-      * Converts OracleObjectValue value to oracle.sql.STRUCT.
+      * Convert OracleObjectValue value to oracle.sql.STRUCT.
       * @param value Custom Bfile value
       * @return String of BFILE
       */
@@ -97,7 +97,7 @@ public class ConverterUtils {
              throws ApplicationError, SQLException {
          Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.OBJECT_TYPE);
          String objectTypeName = ((BString) fields.get(Constants.Types.OracleObject.TYPE_NAME))
-                 .getValue().toUpperCase(Locale.ENGLISH);;
+                 .getValue().toUpperCase(Locale.ENGLISH);
          Object[] attributes = (Object[]) fields.get(Constants.Types.OracleObject.ATTRIBUTES);
          try {
              return connection.createStruct(objectTypeName, attributes);
@@ -109,7 +109,7 @@ public class ConverterUtils {
      }
 
     /**
-     * Converts VArray value to oracle.sql.Array.
+     * Convert VArray value to oracle.sql.Array.
      * @param value Custom VArray Value
      * @return sql Array
      * @throws ApplicationError throws error if the parameter types are incorrect
@@ -123,7 +123,7 @@ public class ConverterUtils {
     }
 
     /**
-     * Converts NestedTable value to oracle.sql.Array.
+     * Convert NestedTable value to oracle.sql.Array.
      * @param value Custom NestedTable Value
      * @return sql Array
      * @throws ApplicationError throws error if the parameter types are incorrect
@@ -135,7 +135,7 @@ public class ConverterUtils {
     }
 
     /**
-     * Converts XML value to oracle.xdb.XML.
+     * Convert XML value to oracle.xdb.XML.
      * @param connection Connection instance
      * @param value Custom XML Value
      * @return XMLType

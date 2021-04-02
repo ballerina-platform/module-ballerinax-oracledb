@@ -149,9 +149,9 @@ public type SecureSocket record {|
 # + socketTimeout - Timeout duration for reading from a socket
 public type Options record {|
    SecureSocket ssl?;
-   decimal loginTimeout?;
+   decimal loginTimeout = 0;
    boolean autoCommit = true;
-   decimal connectTimeout?;
+   decimal connectTimeout = 0;
    decimal socketTimeout?;
 |};
 

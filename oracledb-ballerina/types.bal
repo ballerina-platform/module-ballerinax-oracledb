@@ -18,7 +18,7 @@ import ballerina/jballerina.java;
 import ballerina/sql;
 
 
-# IntervalYearToMonth stores a period of time in years and months.
+# Stores a period of time in years and months.
 #
 # + years - Number of years
 # + months - Number of months
@@ -28,7 +28,7 @@ type IntervalYearToMonth record {|
 |};
 
 
-# IntervalDayToSecond stores a period of time in days, hours, minutes, and seconds.
+# Stores a period of time in days, hours, minutes, and seconds.
 #
 # + days - Number of days
 # + hours - Number of hours
@@ -42,7 +42,7 @@ type IntervalDayToSecond record {|
 |};
 
 
-# ObjectType is an abstraction of the real-world entities, such as purchase orders, that application programs deal with.
+# An abstraction of the real-world entities, such as purchase orders, that application programs deal with.
 #
 # + typename - Name of the object type
 # + attributes - Attributes of the object
@@ -52,7 +52,7 @@ type ObjectType record {|
 |};
 
 
-# Varray is an ordered set of data elements with a variable size. All elements of a given array are of the same data
+# An ordered set of data elements with a variable size. All elements of a given array are of the same data
 # type.
 #
 # + name - Name of the varray
@@ -115,7 +115,7 @@ public distinct class VarrayValue {
 }
 
 
-# Represents NESTED TABLE Oracle DB field.
+# Represents XML Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
 public distinct class XmlValue {

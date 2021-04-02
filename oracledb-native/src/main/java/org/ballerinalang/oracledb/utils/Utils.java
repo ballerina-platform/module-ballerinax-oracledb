@@ -36,14 +36,14 @@ import java.util.Properties;
 public class Utils {
 
     /**
-     * Generates the map of connection parameter options.
+     * Generate the map of connection parameter options.
      * @param clientOptions BMap of user provided options
      * @return Structured connection parameter options
      */
     public static BMap<BString, Object> generateOptionsMap(BMap clientOptions) {
         BMap<BString, Object> options = ValueCreator.createMapValue();
         long loginTimeout = getTimeoutInMilliSeconds(clientOptions.get(Constants.Options.LOGIN_TIMEOUT_SECONDS));
-        if (loginTimeout > 0) {
+        if (loginTimeout >= 0) {
             options.put(Constants.DatabaseProps.LOGIN_TIMEOUT, loginTimeout);
         }
         Properties connProperties = setConnectionProperties(clientOptions);
@@ -66,11 +66,11 @@ public class Utils {
     private static Properties setConnectionProperties(BMap clientOptions) {
         Properties connProperties = new Properties();
         long connectTimeout = getTimeoutInMilliSeconds(clientOptions.get(Constants.Options.CONNECT_TIMEOUT_SECONDS));
-        if (connectTimeout > 0) {
+        if (connectTimeout >= 0) {
             connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_NET_CONNECT_TIMEOUT, connectTimeout);
         }
         long socketTimeout = getTimeoutInMilliSeconds(clientOptions.get(Constants.Options.SOCKET_TIMEOUT_SECONDS));
-        if (socketTimeout > 0) {
+        if (socketTimeout >= 0) {
             connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_READ_TIMEOUT, socketTimeout);
         }
         Boolean autocommit = clientOptions.getBooleanValue(Constants.Options.AUTOCOMMIT);
@@ -85,7 +85,7 @@ public class Utils {
     }
 
     /**
-     * Generates a Properties object of pool properties.
+     * Generate a Properties object of pool properties.
      * @param clientOptions pool options provided by the user
      * @return Properties object of pool properties
      */
@@ -133,7 +133,7 @@ public class Utils {
     }
 
     /**
-     * Throws an error if the sql type of the provided value is invalid.
+     * Throw an error if the sql type of the provided value is invalid.
      * @param value The parameter of invalid type
      * @param sqlType The SQL type of the parameter
      * @return sql:ApplicationError
@@ -151,7 +151,7 @@ public class Utils {
     }
 
     /**
-     * Returns an OracleConnection instance from Hikari connection.
+     * Return an OracleConnection instance from Hikari connection.
      * @param connection Hikari connection
      * @return OracleConnection instance
      * @throws SQLException if hikari connection is not a wrapper of oracle connection

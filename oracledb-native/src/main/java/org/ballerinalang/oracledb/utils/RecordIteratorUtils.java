@@ -30,7 +30,7 @@ import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
 public class RecordIteratorUtils {
 
     /**
-     * Calls `sql:RecordIteratorUtils` with a custom `ResultParameterProcessor` object.
+     * Call `sql:RecordIteratorUtils` with a custom `ResultParameterProcessor` object.
      * @param customResultIterator module specific resultIterator BObject
      * @param iterator the record that needs to be iterated
      * @return next result of the iterator

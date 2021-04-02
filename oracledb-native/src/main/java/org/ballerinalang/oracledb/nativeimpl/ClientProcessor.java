@@ -37,7 +37,7 @@ public class ClientProcessor {
     private ClientProcessor() {}
 
     /**
-     * Creates the database client.
+     * Create the database client.
      * @param client ballerina client instance
      * @param clientConfig connection configurations from client
      * @param globalConnPool global connection pool
