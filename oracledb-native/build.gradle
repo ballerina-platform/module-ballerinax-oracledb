@@ -31,7 +31,12 @@ dependencies {
 
     checkstyle project(":build-config:checkstyle")
     checkstyle "com.puppycrawl.tools:checkstyle:${puppycrawlCheckstyleVersion}"
-    compile files(configurations.externalJars)
+    compile (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
+        transitive = false
+    }
+    compile (group: 'com.oracle.database.xml', name: 'xdb', version: "${oracleXDBDriverVersion}") {
+        transitive = false
+    }
 }
 
 tasks.withType(JavaCompile) {
