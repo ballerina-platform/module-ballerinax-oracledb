@@ -26,7 +26,7 @@ import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
 import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
 
 /**
- * This class holds the utility methods for executing call statements.
+ * This class holds the methods required to execute call statements.
  *
  * @since 0.1.0
  */
