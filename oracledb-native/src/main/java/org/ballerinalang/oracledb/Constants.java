@@ -55,10 +55,8 @@ public final class Constants {
      * Constants for configuring database SSL options.
      */
     public static final class SecureSocket {
-        public static final BString KEYSTORE = StringUtils.fromString("keyStore");
-        public static final BString TRUSTSTORE = StringUtils.fromString("trustStore");
-        public static final BString KEYSTORE_TYPE = StringUtils.fromString("keyStoreType");
-        public static final BString TRUSTSTORE_TYPE = StringUtils.fromString("trustStoreType");
+        public static final BString KEYSTORE = StringUtils.fromString("key");
+        public static final BString TRUSTSTORE = StringUtils.fromString("cert");
 
         /**
          * Constants for setting crypto keystore.
@@ -74,6 +72,25 @@ public final class Constants {
         public static final class CryptoTrustStoreRecord {
             public static final BString PATH_FIELD = StringUtils.fromString("path");
             public static final BString PASSWORD_FIELD = StringUtils.fromString("password");
+        }
+
+        /**
+         * Constants for available Keystore/ Truststore file types.
+         */
+        public static final class StoreTypes {
+            public static final String JKS = "JKS";
+            public static final String PKCS12 = "PKCS12";
+            public static final String SSO = "SSO";
+        }
+
+        /**
+         * Constants for available Keystore/ Truststore extensions.
+         */
+        public static final class StoreExtensions {
+            public static final String P12 = ".p12";
+            public static final String PFX = ".pfx";
+            public static final String JKS = ".jks";
+            public static final String SSO = ".sso";
         }
     }
 

@@ -56,7 +56,7 @@ public class Utils {
     private static long getTimeoutInMilliSeconds(Object secondsDecimal) {
         if (secondsDecimal instanceof BDecimal) {
             BDecimal timeoutSec = (BDecimal) secondsDecimal;
-            if (timeoutSec.floatValue() > 0) {
+            if (timeoutSec.floatValue() >= 0) {
                 return Double.valueOf(timeoutSec.floatValue() * 1000).longValue();
             }
         }
@@ -67,15 +67,16 @@ public class Utils {
         Properties connProperties = new Properties();
         long connectTimeout = getTimeoutInMilliSeconds(clientOptions.get(Constants.Options.CONNECT_TIMEOUT_SECONDS));
         if (connectTimeout >= 0) {
-            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_NET_CONNECT_TIMEOUT, connectTimeout);
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_NET_CONNECT_TIMEOUT,
+                    String.valueOf(connectTimeout));
         }
         long socketTimeout = getTimeoutInMilliSeconds(clientOptions.get(Constants.Options.SOCKET_TIMEOUT_SECONDS));
         if (socketTimeout >= 0) {
-            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_READ_TIMEOUT, socketTimeout);
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_READ_TIMEOUT, String.valueOf(socketTimeout));
         }
         Boolean autocommit = clientOptions.getBooleanValue(Constants.Options.AUTOCOMMIT);
         if (autocommit != null) {
-            connProperties.put(OracleConnection.CONNECTION_PROPERTY_AUTOCOMMIT, autocommit);
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_AUTOCOMMIT, String.valueOf(autocommit));
         }
         BMap secureSocket = clientOptions.getMapValue(Constants.Options.SSL);
         if (secureSocket != null) {
@@ -108,28 +109,46 @@ public class Utils {
     private static void setSSLConProperties(BMap secureSocket, Properties connProperties) {
         BMap keyStore = secureSocket.getMapValue(Constants.SecureSocket.KEYSTORE);
         if (keyStore != null) {
-            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_KEYSTORE,
-                    keyStore.getStringValue(Constants.SecureSocket.CryptoKeyStoreRecord.PATH_FIELD));
+            String keyStorePath = keyStore.getStringValue(
+                    Constants.SecureSocket.CryptoKeyStoreRecord.PATH_FIELD).getValue();
+            String keyStorePassword = keyStore.getStringValue(
+                    Constants.SecureSocket.CryptoKeyStoreRecord.PASSWORD_FIELD).getValue();
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_KEYSTORE, keyStorePath);
             connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_KEYSTOREPASSWORD,
-                    keyStore.getStringValue(Constants.SecureSocket.CryptoKeyStoreRecord.PASSWORD_FIELD));
-        }
-        BString keyStoreType = secureSocket.getStringValue(Constants.SecureSocket.KEYSTORE_TYPE);
-        if (keyStoreType != null) {
-            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_KEYSTORETYPE,
-                    keyStoreType.getValue());
+                    keyStorePassword);
+            String keyStoreType = setSSLStoreType(keyStorePath);
+            if (keyStoreType != null) {
+                connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_KEYSTORETYPE, keyStoreType);
+            }
         }
         BMap trustStore = secureSocket.getMapValue(Constants.SecureSocket.TRUSTSTORE);
         if (trustStore != null) {
-            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_TRUSTSTORE,
-                    trustStore.getStringValue(Constants.SecureSocket.CryptoTrustStoreRecord.PATH_FIELD));
+            String trustStorePath = trustStore.getStringValue(
+                    Constants.SecureSocket.CryptoTrustStoreRecord.PATH_FIELD).getValue();
+            String trustStorePassword = trustStore.getStringValue(
+                    Constants.SecureSocket.CryptoTrustStoreRecord.PASSWORD_FIELD).getValue();
+            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_TRUSTSTORE, trustStorePath);
             connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_TRUSTSTOREPASSWORD,
-                    trustStore.getStringValue(Constants.SecureSocket.CryptoTrustStoreRecord.PASSWORD_FIELD));
+                    trustStorePassword);
+            String trustStoreType = setSSLStoreType(trustStorePath);
+            if (trustStoreType != null) {
+                connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_KEYSTORETYPE,
+                        trustStoreType);
+            }
         }
-        BString trustStoreType = secureSocket.getStringValue(Constants.SecureSocket.TRUSTSTORE_TYPE);
-        if (trustStoreType != null) {
-            connProperties.put(OracleConnection.CONNECTION_PROPERTY_THIN_JAVAX_NET_SSL_TRUSTSTORETYPE,
-                    trustStoreType.getValue());
+    }
+
+    private static String setSSLStoreType(String storePath) {
+        String storeType = null;
+        if (storePath.endsWith(Constants.SecureSocket.StoreExtensions.P12) ||
+                storePath.endsWith(Constants.SecureSocket.StoreExtensions.PFX)) {
+            storeType = Constants.SecureSocket.StoreTypes.PKCS12;
+        } else if (storePath.endsWith(Constants.SecureSocket.StoreExtensions.JKS)) {
+            storeType = Constants.SecureSocket.StoreTypes.JKS;
+        } else if (storePath.endsWith(Constants.SecureSocket.StoreExtensions.SSO)) {
+            storeType = Constants.SecureSocket.StoreTypes.SSO;
         }
+        return storeType;
     }
 
     /**
