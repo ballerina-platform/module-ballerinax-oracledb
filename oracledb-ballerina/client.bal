@@ -132,15 +132,11 @@ public client class Client {
 
 # SSL Configuration to be used when connecting to Oracle database server.
 #
-# + keyStore - Keystore configuration of the client certificates
-# + trustStore - Truststore configuration of the trust certificates
-# + keyStoreType - The type of the keystore - "JKS" / "PKCS12" / "SSO"
-# + trustStoreType - The type of the keystore - "JKS" / "PKCS12" / "SSO"
+# + key - Keystore configuration of the client certificates
+# + cert - Truststore configuration of the trust certificates
 public type SecureSocket record {|
-  crypto:KeyStore keyStore?;
-  crypto:TrustStore trustStore?;
-  string keyStoreType?;
-  string trustStoreType?;
+  crypto:KeyStore key?;
+  crypto:TrustStore cert?;
 |};
 
 # Oracle database connection parameters.
