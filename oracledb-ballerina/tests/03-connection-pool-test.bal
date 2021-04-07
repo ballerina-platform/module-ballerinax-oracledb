@@ -14,8 +14,8 @@
 // under the License.
 
 import ballerina/lang.runtime as runtime;
-import ballerina/sql;
 import ballerina/lang.'string as stringutils;
+import ballerina/sql;
 import ballerina/test;
 
 const string POOLDB = DATABASE;

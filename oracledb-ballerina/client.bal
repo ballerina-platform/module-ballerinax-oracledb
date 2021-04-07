@@ -94,7 +94,7 @@ public client class Client {
     remote isolated function batchExecute(@untainted sql:ParameterizedQuery[] sqlQueries)
     returns sql:ExecutionResult[]|sql:Error {
         if (sqlQueries.length() == 0) {
-            return error sql:ApplicationError(" Parameter 'sqlQueries' cannot be empty array");
+            return error sql:ApplicationError("'sqlQueries' parameter cannot be an empty array");
         }
         if (self.clientActive) {
             return nativeBatchExecute(self, sqlQueries);
