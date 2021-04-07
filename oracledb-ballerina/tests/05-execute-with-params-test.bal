@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/io;
 import ballerina/sql;
 import ballerina/test;
-import ballerina/io;
 
 @test:BeforeGroups { value:["execute-params"] }
 isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
