@@ -117,7 +117,7 @@ isolated function beforeProcCallFunc() returns sql:Error? {
 @test:Config {
     groups: ["procedures"]
 }
-function testCallWithStringTypes() returns @tainted record {}|error? {
+isolated function testCallWithStringTypes() returns @tainted record {}|error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ProcedureCallResult ret = check oracledbClient->call("{call InsertStringData(2,'test0', 'test1', 'test2', " +
         "'test3', 'test4')}");
@@ -139,7 +139,7 @@ function testCallWithStringTypes() returns @tainted record {}|error? {
     groups: ["procedures"],
     dependsOn: [testCallWithStringTypes]
 }
-function testCallWithStringTypesInParams() returns error? {
+isolated function testCallWithStringTypesInParams() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     string col_char = "test0";
     string col_nchar = "test1";
@@ -147,7 +147,7 @@ function testCallWithStringTypesInParams() returns error? {
     string col_varchar = "test3";
     string col_nvarchar2 = "test4";
 
-    var ret = checkpanic oracledbClient->call(`{call InsertStringData(3, ${col_char}, ${col_nchar}, 
+    var ret = check oracledbClient->call(`{call InsertStringData(3, ${col_char}, ${col_nchar}, 
         ${col_varchar2}, ${col_varchar}, ${col_nvarchar2})}`);
 
     string sqlQuery = "SELECT col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2 " +
@@ -168,7 +168,7 @@ function testCallWithStringTypesInParams() returns error? {
     groups: ["procedures"],
     dependsOn: [testCallWithStringTypesInParams]
 }
-function testCallWithStringTypesOutParams() returns sql:Error? {
+isolated function testCallWithStringTypesOutParams() returns sql:Error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:CharOutParameter col_char = new();
     sql:NCharOutParameter col_nchar = new();
@@ -193,14 +193,14 @@ function testCallWithStringTypesOutParams() returns sql:Error? {
     test:assertEquals((check col_varchar.get(string)).trim(), expectedDataRow.COL_VARCHAR);
     test:assertEquals((check col_nvarchar2.get(string)).trim(), expectedDataRow.COL_NVARCHAR2);
 
-    checkpanic oracledbClient.close();
+    check oracledbClient.close();
 }
 
 @test:Config {
     groups: ["procedures"],
     dependsOn: [testCallWithStringTypesOutParams]
 }
-function testCallWithStringTypesInOutParams() returns error? {
+isolated function testCallWithStringTypesInOutParams() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     int id = 4;
     sql:InOutParameter col_varchar2 = new("test7");
@@ -229,29 +229,29 @@ function testCallWithStringTypesInOutParams() returns error? {
     test:assertEquals(check callQueryClient(oracledbClient, sqlQuery), expectedDataRow,
         "Call procedure insert and query did not match.");
 
-    checkpanic oracledbClient.close();
+    check oracledbClient.close();
 }
 
 @test:Config {
     groups: ["procedures"],
     dependsOn: [testCallWithStringTypesInOutParams]
 }
-function testCallWithNumericTypesOutParams() {
-    Client dbClient = checkpanic new (HOST, USER, PASSWORD, DATABASE, PORT);
+isolated function testCallWithNumericTypesOutParams() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:IntegerValue paraID = new(1);
     sql:NumericOutParameter paraNumber = new;
     sql:FloatOutParameter paraFloat = new;
     sql:FloatOutParameter paraBinFloat = new;
     sql:DoubleOutParameter paraBinDouble = new;
 
-    var ret = checkpanic dbClient->call(
+    var ret = check oracledbClient->call(
         `{call SelectNumericDataWithOutParams(${paraID}, ${paraNumber}, ${paraFloat}, ${paraBinFloat},
         ${paraBinDouble})}`);
-    checkpanic dbClient.close();
+    check oracledbClient.close();
 
     test:assertEquals(paraNumber.get(decimal), <decimal>2147483647, "1st out parameter of procedure did not match.");
-    test:assertTrue((checkpanic paraFloat.get(float)) < 21474.83647, "2nd out parameter of procedure did not match.");
-    test:assertTrue((checkpanic paraBinFloat.get(float)) < 21.47483647,
+    test:assertTrue((check paraFloat.get(float)) < 21474.83647, "2nd out parameter of procedure did not match.");
+    test:assertTrue((check paraBinFloat.get(float)) < 21.47483647,
         "3rd out parameter of procedure did not match.");
     test:assertEquals(paraBinDouble.get(float), 21474836.47, "4th out parameter of procedure did not match.");
 }
