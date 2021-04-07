@@ -29,23 +29,23 @@ isolated function beforePoolTestFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, POOLDB, POOLPORT);
 
     sql:ExecutionResult result = check dropPoolTableIfExists("PoolCustomers");
-    result = check oracledbClient->execute("CREATE TABLE PoolCustomers ("+
-        "customerId NUMBER GENERATED ALWAYS AS IDENTITY, "+
-        "firstName  VARCHAR2(300), "+
-        "lastName  VARCHAR2(300), "+
-        "registrationID NUMBER, "+
-        "creditLimit FLOAT, "+
-        "country  VARCHAR2(300), "+
+    result = check oracledbClient->execute("CREATE TABLE PoolCustomers (" +
+        "customerId NUMBER GENERATED ALWAYS AS IDENTITY, " +
+        "firstName  VARCHAR2(300), " +
+        "lastName  VARCHAR2(300), " +
+        "registrationID NUMBER, " +
+        "creditLimit FLOAT, " +
+        "country  VARCHAR2(300), " +
         "PRIMARY KEY (customerId))"
     );
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
     test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
     result = check oracledbClient->execute(
-        "INSERT INTO PoolCustomers (firstName,lastName,registrationID,creditLimit,country)"+
+        "INSERT INTO PoolCustomers (firstName,lastName,registrationID,creditLimit,country)" +
         "VALUES ('Peter', 'Stuart', 1, 5000.75, 'USA')");
 
     result = check oracledbClient->execute(
-        "INSERT INTO PoolCustomers (firstName,lastName,registrationID,creditLimit,country)"+
+        "INSERT INTO PoolCustomers (firstName,lastName,registrationID,creditLimit,country)" +
         "VALUES ('Dan', 'Brown', 2, 10000, 'UK')");
 
     check oracledbClient.close();
@@ -434,12 +434,12 @@ isolated function validateConnectionTimeoutError(int|error dbError) {
 isolated function dropPoolTableIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
     Client oracledbClient = check new(HOST, USER, PASSWORD, POOLDB, POOLPORT);
     sql:ExecutionResult result = check oracledbClient->execute("BEGIN "+
-        "EXECUTE IMMEDIATE 'DROP TABLE ' || '" + tablename + "'; "+
-        "EXCEPTION "+
-        "WHEN OTHERS THEN "+
-            "IF SQLCODE != -942 THEN "+
-                "RAISE; "+
-            "END IF; "+
+        "EXECUTE IMMEDIATE 'DROP TABLE ' || '" + tablename + "'; " +
+        "EXCEPTION " +
+        "WHEN OTHERS THEN " +
+            "IF SQLCODE != -942 THEN " +
+                "RAISE; " +
+            "END IF; " +
         "END;");
     check oracledbClient.close();
     return result;

@@ -29,27 +29,27 @@ isolated function testCreateTable() returns sql:Error? {
     test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
 
     result = check dropTableIfExists("TestCharacterTable");
-    result = check oracledbClient->execute("CREATE TABLE TestCharacterTable("+
-        "id NUMBER, "+
-        "col_char CHAR(4), "+
-        "col_nchar NCHAR(4), "+
+    result = check oracledbClient->execute("CREATE TABLE TestCharacterTable(" +
+        "id NUMBER, " +
+        "col_char CHAR(4), " +
+        "col_nchar NCHAR(4), " +
         "col_varchar2  VARCHAR2(4000), " +
         "col_varchar  VARCHAR2(4000), " +
-        "col_nvarchar2 NVARCHAR2(2000), "+
-        "PRIMARY KEY(id) "+
+        "col_nvarchar2 NVARCHAR2(2000), " +
+        "PRIMARY KEY(id) " +
         ")"
     );
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
     test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
 
     result = check dropTableIfExists("TestNumericTable");
-    result = check oracledbClient->execute("CREATE TABLE TestNumericTable("+
-        "id NUMBER GENERATED ALWAYS AS IDENTITY, "+
+    result = check oracledbClient->execute("CREATE TABLE TestNumericTable(" +
+        "id NUMBER GENERATED ALWAYS AS IDENTITY, " +
         "col_number  NUMBER, " +
         "col_float  FLOAT, " +
-        "col_binary_float BINARY_FLOAT, "+
-        "col_binary_double BINARY_DOUBLE, "+
-        "PRIMARY KEY(id) "+
+        "col_binary_float BINARY_FLOAT, " +
+        "col_binary_double BINARY_DOUBLE, " +
+        "PRIMARY KEY(id) " +
         ")"
     );
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
@@ -172,7 +172,7 @@ isolated function testInsertAndSelectTableWithGeneratedKeys() returns sql:Error?
 }
 isolated function testInsertWithAllNilAndSelectTableWithGeneratedKeys() returns sql:Error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute("insert into TestNumericTable (col_number, col_float, "+
+    sql:ExecutionResult result = check oracledbClient->execute("insert into TestNumericTable (col_number, col_float, " +
         "col_binary_float, col_binary_double) values (null, null, null, null)");
 
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");

@@ -43,14 +43,14 @@ isolated function beforeInsertVArrayFunc() returns sql:Error? {
       
    result = check dropTableIfExists("TestVarrayTable");
    result = check oracledbClient->execute("CREATE TABLE TestVarrayTable(" +
-      "PK NUMBER GENERATED ALWAYS AS IDENTITY, "+
+      "PK NUMBER GENERATED ALWAYS AS IDENTITY, " +
       "COL_CHARARR CharArrayType, " +
       "COL_BYTEARR ByteArrayType, " +
       "COL_INTARR IntArrayType, " +
       "COL_BOOLARR BoolArrayType, " +
       "COL_FLOATARR FloatArrayType, " +
       "COL_DECIMALARR DecimalArrayType, " +
-      "PRIMARY KEY(PK) "+
+      "PRIMARY KEY(PK) " +
       ")"
    );
    check oracledbClient.close();

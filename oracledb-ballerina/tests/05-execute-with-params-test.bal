@@ -22,8 +22,8 @@ import ballerina/io;
 isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("NumericTypesTable");
-    result = check oracledbClient->execute("CREATE TABLE NumericTypesTable("+
-        "id NUMBER, "+
+    result = check oracledbClient->execute("CREATE TABLE NumericTypesTable(" +
+        "id NUMBER, " +
         "col_number NUMBER, " +
         "col_float FLOAT, " +
         "col_binary_float BINARY_FLOAT, " +
@@ -32,28 +32,28 @@ isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
         ")"
     );
     result = check oracledbClient->execute(
-        "INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)"+
+        "INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)" +
         "VALUES(1, 1, 922.337, 123.34, 123.34)");
 
     result = check oracledbClient->execute(
-        "INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)"+
+        "INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)" +
         "VALUES(2, 2, 922.337, 123.34, 123.34)");
 
     result = check dropTableIfExists("CharTypesTable");
     result = check oracledbClient->execute("CREATE TABLE CharTypesTable(" +
-        "id NUMBER, "+
+        "id NUMBER, " +
         "col_varchar2  VARCHAR2(4000), " +
         "col_varchar  VARCHAR2(4000), " +
-        "col_nvarchar2 NVARCHAR2(2000), "+
-        "col_char CHAR(2000), "+
-        "col_nchar NCHAR(1000), "+
-        "PRIMARY KEY(id) "+
+        "col_nvarchar2 NVARCHAR2(2000), " +
+        "col_char CHAR(2000), " +
+        "col_nchar NCHAR(1000), " +
+        "PRIMARY KEY(id) " +
         ")"
         );
 
     result = check dropTableIfExists("AnsiTypesTable");
     result = check oracledbClient->execute("CREATE TABLE AnsiTypesTable(" +
-        "id NUMBER, "+
+        "id NUMBER, " +
         "col_character  CHARACTER(256), " +
         "col_character_var  CHARACTER VARYING(256), " +
 
@@ -75,26 +75,26 @@ isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
         "col_double_precision DOUBLE PRECISION, " +
         "col_real REAL, " +
         
-        "PRIMARY KEY(id) "+
+        "PRIMARY KEY(id) " +
         ")"
     );
 
     result = check dropTableIfExists("SqlDsTypesTable");
     result = check oracledbClient->execute("CREATE TABLE SqlDsTypesTable(" +
-        "id NUMBER, "+
+        "id NUMBER, " +
         "col_character  CHARACTER(255), " +
         "col_long_varchar  LONG VARCHAR, " +
-        "PRIMARY KEY(id) "+
+        "PRIMARY KEY(id) " +
         ")"
     );
 
     result = check dropTableIfExists("LobTypesTable");
     result = check oracledbClient->execute("CREATE TABLE LobTypesTable(" +
-        "id NUMBER, "+
+        "id NUMBER, " +
         "col_clob  CLOB, " +
         "col_nclob  NCLOB, " +
         "col_blob BLOB, " +
-        "PRIMARY KEY(id) "+
+        "PRIMARY KEY(id) " +
         ")"
     );
 

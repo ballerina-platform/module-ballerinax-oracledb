@@ -22,8 +22,8 @@ isolated function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     sql:ExecutionResult result = check dropTableIfExists("GeneralQueryTable");
-    result = check oracledbClient->execute("CREATE TABLE GeneralQueryTable("+
-        "id NUMBER, "+
+    result = check oracledbClient->execute("CREATE TABLE GeneralQueryTable(" +
+        "id NUMBER, " +
         "col_number NUMBER, " +
         "col_varchar2 VARCHAR2(4000), " +
         "PRIMARY KEY (id) " +
@@ -34,7 +34,7 @@ isolated function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
 
     result = check dropTableIfExists("NumericSimpleQueryTable");
     result = check oracledbClient->execute("CREATE TABLE NumericSimpleQueryTable("+
-        "id NUMBER, "+
+        "id NUMBER, " +
         "col_number NUMBER, " +
         "col_float FLOAT, " +
         "col_binary_float BINARY_FLOAT, " +
@@ -43,18 +43,18 @@ isolated function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
         ")"
     );
     result = check oracledbClient->execute(
-        "INSERT INTO NumericSimpleQueryTable (id, col_number, col_float, col_binary_float, col_binary_double)"+
+        "INSERT INTO NumericSimpleQueryTable (id, col_number, col_float, col_binary_float, col_binary_double)" +
         "VALUES(1, 1, 922.337, 123.34, 123.34)");
 
     result = check dropTableIfExists("CharSimpleQueryTable");
     result = check oracledbClient->execute("CREATE TABLE CharSimpleQueryTable(" +
-        "id NUMBER, "+
+        "id NUMBER, " +
         "col_varchar2  VARCHAR2(4000), " +
         "col_varchar  VARCHAR(4000), " +
-        "col_nvarchar2 NVARCHAR2(2000), "+
-        "col_char CHAR(2000), "+
-        "col_nchar NCHAR(1000), "+
-        "PRIMARY KEY(id) "+
+        "col_nvarchar2 NVARCHAR2(2000), " +
+        "col_char CHAR(2000), " +
+        "col_nchar NCHAR(1000), " +
+        "PRIMARY KEY(id) " +
         ")"
     );
     result = check oracledbClient->execute(
@@ -64,7 +64,7 @@ isolated function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
 
     result = check dropTableIfExists("AnsiSimpleQueryTable");
     result = check oracledbClient->execute("CREATE TABLE AnsiSimpleQueryTable(" +
-        "id NUMBER, "+
+        "id NUMBER, " +
         "col_character  CHARACTER(256), " +
         "col_character_var  CHARACTER VARYING(256), " +
 
@@ -86,7 +86,7 @@ isolated function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
         "col_double_precision DOUBLE PRECISION, " +
         "col_real REAL, " +
         
-        "PRIMARY KEY(id) "+
+        "PRIMARY KEY(id) " +
         ")"
     );
     result = check oracledbClient->execute(
@@ -98,10 +98,10 @@ isolated function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
 
     result = check dropTableIfExists("SqlDsSimpleQueryTable");
     result = check oracledbClient->execute("CREATE TABLE SqlDsSimpleQueryTable(" +
-        "id NUMBER, "+
+        "id NUMBER, " +
         "col_character  CHARACTER(255), " +
         "col_long_varchar  LONG VARCHAR, " +
-        "PRIMARY KEY(id) "+
+        "PRIMARY KEY(id) " +
         ")"
     );
     result = check oracledbClient->execute("INSERT INTO SqlDsSimpleQueryTable(id, col_character, col_long_varchar)" +

@@ -42,8 +42,8 @@ public class SQLDefaultRetryManager {
 isolated function beforeTransactionFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("LocalTranCustomers");
-    result = check oracledbClient->execute("CREATE TABLE LocalTranCustomers("+
-        "id NUMBER GENERATED ALWAYS AS IDENTITY, "+
+    result = check oracledbClient->execute("CREATE TABLE LocalTranCustomers(" +
+        "id NUMBER GENERATED ALWAYS AS IDENTITY, " +
         "firstName VARCHAR2(100), " +
         "lastName VARCHAR2(100), " +
         "registrationID NUMBER, " +
@@ -337,7 +337,7 @@ isolated function testTwoTransactions() returns error? {
         transInfo1 = transactions:info();
         var e1 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
                                     "creditLimit,country) values ('James', 'Clerk', 400, 5000.75, 'USA')");
-        var e2 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID,"+
+        var e2 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
                                     "creditLimit,country) values ('James', 'Clerk', 400, 5000.75, 'USA')");
         check commit;
     }
@@ -421,9 +421,9 @@ function testLocalTransactionFailedHelper(Client oracledbClient) returns string|
         }
         transInfo = transactions:info();
         transactions:onRollback(onRollbackFunc);
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID,"+
+        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
                         "creditLimit,country) values ('James', 'Clerk', 111, 5000.75, 'USA')");
-        var e2 = oracledbClient->execute("Insert into LocalTranCustomers2 (firstName,lastName,registrationID,"+
+        var e2 = oracledbClient->execute("Insert into LocalTranCustomers2 (firstName,lastName,registrationID," +
                         "creditLimit,country) values ('Anne', 'Clerk', 111, 5000.75, 'USA')");
         if(e2 is error) {
            check getError();
@@ -469,7 +469,7 @@ returns string|error {
     retry<SQLDefaultRetryManager>(3) transaction {
         i = i + 1;
         a = a + " inTrx";
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers(firstName,lastName,registrationID,"+
+        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers(firstName,lastName,registrationID," +
                         "creditLimit,country) values ('James', 'Clerk', 222, 5000.75, 'USA')");
         if (i == 3) {
             var e2 = check oracledbClient->execute("Insert into LocalTranCustomers(firstName,lastName,registrationID," +
@@ -487,7 +487,7 @@ returns string|error {
 isolated function getCount(Client oracledbClient, string id) returns @tainted int|error {
     stream<TransactionResultCount, sql:Error> streamData = 
         <stream<TransactionResultCount, sql:Error>> oracledbClient->query("Select COUNT(*) as " +
-        "countval from LocalTranCustomers where registrationID = "+ id, TransactionResultCount);
+        "countval from LocalTranCustomers where registrationID = " + id, TransactionResultCount);
         record {|TransactionResultCount value;|}? data = check streamData.next();
         check streamData.close();
         TransactionResultCount? value = data?.value;
