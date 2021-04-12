@@ -19,7 +19,6 @@
 package org.ballerinalang.oracledb.parameterprocessor;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
-import oracle.xdb.XMLType;
 import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.oracledb.utils.ConverterUtils;
 import org.ballerinalang.oracledb.utils.Utils;
@@ -52,7 +51,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
 
     @Override
     protected void setCustomSqlTypedParam(Connection connection, PreparedStatement preparedStatement, int index,
-                                          BObject typedValue) throws SQLException, ApplicationError {
+        BObject typedValue) throws SQLException, ApplicationError {
         String sqlType = typedValue.getType().getName();
         Object value = typedValue.get(Constants.TypedValueFields.VALUE);
         switch (sqlType) {
@@ -67,12 +66,6 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 break;
             case Constants.Types.CustomTypes.VARRAY:
                 setVarray(connection, preparedStatement, index, value);
-                break;
-            case Constants.Types.CustomTypes.NESTED_TABLE:
-                setNestedTable(preparedStatement, index, value);
-                break;
-            case Constants.Types.CustomTypes.XML:
-                setXml(connection, preparedStatement, index, value);
                 break;
             default:
                 throw Utils.throwInvalidParameterError(value, sqlType);
@@ -119,25 +112,5 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         }
         Array oracleArray = ConverterUtils.convertVarray(connection, value);
         preparedStatement.setArray(index, oracleArray);
-    }
-
-    private void setNestedTable(PreparedStatement preparedStatement, int index, Object value)
-            throws SQLException, ApplicationError {
-        if (value == null) {
-            preparedStatement.setNull(index, Types.NULL);
-            return;
-        }
-        Array nestedTable = ConverterUtils.convertNestedTable(value);
-        preparedStatement.setArray(index, nestedTable);
-    }
-
-    private void setXml(Connection connection, PreparedStatement preparedStatement, int index, Object value)
-            throws SQLException, ApplicationError {
-        if (value == null) {
-            preparedStatement.setNull(index, Types.NULL);
-            return;
-        }
-        XMLType xml = ConverterUtils.convertXml(connection, value);
-        preparedStatement.setObject(index, xml);
     }
 }

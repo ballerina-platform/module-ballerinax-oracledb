@@ -27,7 +27,6 @@ import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BDecimal;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
-import oracle.xdb.XMLType;
 import org.ballerinalang.oracledb.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
 
@@ -134,19 +133,6 @@ public class ConverterUtils {
         return (Array) fields.get(Constants.Types.Varray.ELEMENTS);
     }
 
-    /**
-     * Convert XML value to oracle.xdb.XML.
-     * @param connection Connection instance
-     * @param value Custom XML Value
-     * @return XMLType
-     * @throws ApplicationError throws error if the parameter types are incorrect
-     */
-    public static XMLType convertXml(Connection connection, Object value) throws ApplicationError, SQLException {
-        Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.NESTED_TABLE);
-        String xml = (String) fields.get(Constants.Types.Xml.XML);
-        return XMLType.createXML(connection, xml, "oracle.xml.parser.XMLDocument.THIN");
-    }
-
     private static String getIntervalString(Object param, String typeName) throws ApplicationError {
         String value;
         if (param instanceof BString) {
@@ -195,6 +181,8 @@ public class ConverterUtils {
                         structData.put(field.getFieldName(), null);
                     } else if (bValue instanceof BArray) {
                         structData.put(field.getFieldName(), getArrayData(bValue));
+                    } else if (bValue instanceof BString) {
+                        structData.put(field.getFieldName(), bValue);
                     } else {
                         throw Utils.throwInvalidParameterError(value, sqlType);
                     }
