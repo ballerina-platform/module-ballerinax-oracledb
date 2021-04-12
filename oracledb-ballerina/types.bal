@@ -115,19 +115,6 @@ public distinct class VarrayValue {
 }
 
 
-# Represents XML Oracle DB field.
-#
-# + value - Value of parameter passed into the SQL statement
-public distinct class XmlValue {
-    *sql:TypedValue;
-    public string|xml? value;
-
-    public isolated function init(string|xml? value = ()) {
-        self.value = value;
-    }
-}
-
-
 # The class with custom implementations for nextResult and getNextQueryResult in the connector modules.
 #
 public class CustomResultIterator {

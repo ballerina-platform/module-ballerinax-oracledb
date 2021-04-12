@@ -142,8 +142,6 @@ public final class Constants {
             public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondValue";
             public static final String OBJECT = "ObjectTypeValue";
             public static final String VARRAY = "VarrayValue";
-            public static final String NESTED_TABLE = "CustomTableValue";
-            public static final String XML = "XmlValue";
         }
 
         /**
@@ -179,13 +177,6 @@ public final class Constants {
         public static final class Varray {
             public static final String NAME = "name";
             public static final String ELEMENTS = "elements";
-        }
-
-        /**
-         * Constants related to the attributes of XML Oracle DB type.
-         */
-        public static class Xml {
-            public static final String XML = "xml";
         }
     }
 
