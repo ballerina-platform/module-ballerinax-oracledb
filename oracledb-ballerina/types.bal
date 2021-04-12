@@ -41,18 +41,29 @@ type IntervalDayToSecond record {|
     decimal seconds;
 |};
 
+# ObjectResultType is used as the type format for retrieving ObjectType.
+#
+# + attributes - Attributes of the object
+type ObjectResultType record {|
+    anydata[]? attributes;
+|};
 
-# An abstraction of the real-world entities, such as purchase orders, that application programs deal with.
+# ObjectStatementType is used as the type format for inserting ObjectType.
 #
 # + typename - Name of the object type
 # + attributes - Attributes of the object
-type ObjectType record {|
+type ObjectStatementType record {|
     string typename;
     anydata[]? attributes;
 |};
 
 
-# An ordered set of data elements with a variable size. All elements of a given array are of the same data
+# ObjectType is an abstraction of the real-world entities, such as purchase orders, that application programs deal with.
+#
+type ObjectType ObjectResultType|ObjectStatementType;
+
+
+# Varray is an ordered set of data elements with a variable size. All elements of a given array are of the same data
 # type.
 #
 # + name - Name of the varray
