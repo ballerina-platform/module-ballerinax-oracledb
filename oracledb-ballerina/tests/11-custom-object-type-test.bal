@@ -15,7 +15,6 @@
 
 import ballerina/sql;
 import ballerina/test;
-import ballerina/io;
 
 @test:BeforeGroups { value:["insert-object"] }
 isolated function beforeInsertObjectFunc() returns sql:Error? {
@@ -39,7 +38,7 @@ isolated function beforeInsertObjectFunc() returns sql:Error? {
        "PK NUMBER GENERATED ALWAYS AS IDENTITY, " +
        "COL_OBJECT OBJECT_TYPE, " +
        "PRIMARY KEY(PK) " +
-       ")"
+       ")" 
    );
 
    result = check oracledbClient->execute(
@@ -49,7 +48,7 @@ isolated function beforeInsertObjectFunc() returns sql:Error? {
         "MAP MEMBER FUNCTION GET_ATTR1 RETURN NUMBER " +
        ") "
    );
-    result = check oracledbClient->execute("CREATE TABLE TestNestedObjectTypeTable(" +
+   result = check oracledbClient->execute("CREATE TABLE TestNestedObjectTypeTable(" +
        "PK NUMBER GENERATED ALWAYS AS IDENTITY, " +
        "COL_NESTED_OBJECT NESTED_TYPE, " +
        "PRIMARY KEY(PK) " +
@@ -71,8 +70,8 @@ isolated function insertObjectTypeWithString() returns sql:Error? {
     float float_attr = 34.23;
     decimal decimal_attr = 34.23;
 
-    sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(id, COL_OBJECT) 
-        VALUES(1, OBJECT_TYPE(${string_attr}, ${int_attr}, ${float_attr}, ${decimal_attr}))`;
+    sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) 
+        VALUES(OBJECT_TYPE(${string_attr}, ${int_attr}, ${float_attr}, ${decimal_attr}))`;
     sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
 
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -98,7 +97,7 @@ isolated function insertObjectTypeWithCustomType() returns sql:Error? {
     ObjectTypeValue objectType = new({typename: "object_type", 
         attributes: [ string_attr, int_attr, float_attr, decimal_attr]});
 
-    sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(id, COL_OBJECT) VALUES(2, ${objectType})`;
+    sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
 
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -151,7 +150,7 @@ isolated function insertObjectTypeWithNullArray() returns sql:Error? {
 @test:Config {
    enable: true,
    groups:["execute","insert-object"],
-   dependsOn: [insertObjectTypeWithStringArray]
+   dependsOn: [insertObjectTypeWithNullArray]
 }
 isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
@@ -257,7 +256,7 @@ isolated function insertObjectTypeWithStringArray() returns sql:Error? {
 
     ObjectTypeValue objectType = new({typename: "object_type", attributes: attributes});
 
-    sql:ParameterizedQuery insertQuery = `INSERT INTO TestNestedObjectTypeTable(id, COL_NESTED_OBJECT) VALUES(11, ${objectType})`;
+    sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
 
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -267,38 +266,10 @@ isolated function insertObjectTypeWithStringArray() returns sql:Error? {
     check oracledbClient.close();
 }
 
-type ObjectRecordType record {
-    int id;
-    ObjectType col_object;
-};
-
-// @test:Config {
-//     groups: ["execute", "execute-params"],
-//     dependsOn: [insertObjectTypeWithCustomType]
-// }
-// function selectObjectTypeWithoutParams() returns error? {
-//     Client oracledbClient = check new (user, password, host, port, database);
-//     stream<record{}, error> streamData = oracledbClient->query("SELECT col_object FROM TestObjectTypeTable WHERE id = 1");
-//     record {|record {} value;|}? data = check streamData.next();
-//     check streamData.close();
-//     record {}? value = data?.value;
-//     io:println(value);
-//     check oracledbClient.close();
-// }
-
 @test:Config {
-    groups: ["execute", "execute-params"],
-    dependsOn: [insertObjectTypeWithCustomType]
-}
-function selectObjectType() returns error? {
-    Client oracledbClient = check new (user, password, host, port, database);
-    stream<record{}, error> streamResult = oracledbClient->query("SELECT col_object FROM TestObjectTypeTable WHERE id = 1", ObjectRecordType);
-    stream<ObjectRecordType, sql:Error> streamData = <stream<ObjectRecordType, sql:Error>>streamResult;
-    record {|ObjectRecordType value;|}? data = check streamData.next();
-    check streamData.close();
-    ObjectRecordType? value = data?.value;
-    validateSelectObjectType(value);
-    check oracledbClient.close();
+   enable: true,
+   groups:["execute","insert-object"],
+   dependsOn: [insertObjectTypeWithStringArray]
 }
 isolated function insertObjectTypeWithNestedType() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
@@ -315,14 +286,54 @@ isolated function insertObjectTypeWithNestedType() returns sql:Error? {
         VALUES(${objectType})`;
     sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
 
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    var insertId = result.lastInsertId;
+    test:assertTrue(insertId is string, "Last Insert id should be string");
+
+    check oracledbClient.close();
+}
+
+type ObjectRecord record {
+    string string_attr;
+    int int_attr;
+    float float_attr;
+    decimal decimal_attr;
+};
+
+type ObjectRecordType record {
+    int pk;
+    ObjectRecord col_object;
+};
+
+@test:Config {
+    groups: ["execute", "execute-params"],
+    dependsOn: [insertObjectTypeWithNestedType]
+}
+isolated function selectObjectType() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<record{}, error> streamResult = oracledbClient->query("SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1", ObjectRecordType);
+    stream<ObjectRecordType, sql:Error> streamData = <stream<ObjectRecordType, sql:Error>>streamResult;
+    record {|ObjectRecordType value;|}? data = check streamData.next();
+    check streamData.close();
+    ObjectRecordType? value = data?.value;
+    validateSelectObjectType(value);
+    check oracledbClient.close();
+}
+
 isolated function validateSelectObjectType(ObjectRecordType? returnData) {
     if (returnData is ()) {
         test:assertFail("Returned data is nil");
     } else {
-        io:println(returnData);
-        test:assertEquals(returnData.length(), 4);
+        test:assertEquals(returnData.length(), 2);
+        test:assertEquals(returnData["pk"], 1);
 
-        // test:assertEquals(returnData["row_id"], 1);
-        // test:assertEquals(returnData["text_type"], "very long text");
+        ObjectRecord data = returnData["col_object"];
+        decimal delta = 0.01;
+
+        test:assertEquals(data["string_attr"], "Hello world");
+        test:assertEquals(data["int_attr"], 34);
+        test:assertEquals(data["float_attr"], 34.23);
+        test:assertTrue(data["decimal_attr"] - <decimal>34.23 < delta);
+        test:assertTrue(data["decimal_attr"] - <decimal>34.23 > -delta);
     }
 }

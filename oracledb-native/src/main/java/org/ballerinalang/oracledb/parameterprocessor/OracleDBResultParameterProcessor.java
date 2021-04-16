@@ -18,13 +18,11 @@
 
 package org.ballerinalang.oracledb.parameterprocessor;
 
-import io.ballerina.runtime.api.PredefinedTypes;
-import io.ballerina.runtime.api.creators.TypeCreator;
-import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.TypeTags;
 import io.ballerina.runtime.api.creators.ValueCreator;
-import io.ballerina.runtime.api.types.*;
-import io.ballerina.runtime.api.values.BArray;
+import io.ballerina.runtime.api.types.Field;
+import io.ballerina.runtime.api.types.StructureType;
+import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
@@ -33,11 +31,11 @@ import org.ballerinalang.oracledb.utils.ModuleUtils;
 import org.ballerinalang.sql.exception.ApplicationError;
 import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
 
-import static io.ballerina.runtime.api.utils.StringUtils.fromString;
-
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Struct;
+
+import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
 /**
  * This class overrides DefaultResultParameterProcessor to implement methods required convert SQL types into
@@ -46,8 +44,6 @@ import java.sql.Struct;
  * @since 0.1.0
  */
 public class OracleDBResultParameterProcessor extends DefaultResultParameterProcessor {
-    private static final ArrayType anydataArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_ANYDATA);
-
     private static final OracleDBResultParameterProcessor instance = new OracleDBResultParameterProcessor();
     private static final BObject iterator = ValueCreator.createObjectValue(
             ModuleUtils.getModule(), Constants.CUSTOM_RESULT_ITERATOR_OBJECT, new Object[0]);
@@ -73,53 +69,48 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             return null;
         }
         Field[] internalStructFields = structType.getFields().values().toArray(new Field[0]);
-        BMap<BString, Object> struct = ValueCreator.createMapValue();
-        BArray attributes = ValueCreator.createArrayValue(anydataArrayType);
+        BMap<BString, Object> struct = ValueCreator.createMapValue(structType);
         try {
-            if (!structType.getName().equals("ObjectType") && internalStructFields.length !=1) {
-                throw new ApplicationError("specified record is not compatible with the ObjectType.");
-            }
-            Field internalField = internalStructFields[0];
             Object[] dataArray = structValue.getAttributes();
             if (dataArray != null) {
-
-//                int index = 0;
-                for (Object value : dataArray) {
-//                    int type = ((BObject) attribute).getType().getTag();
-//                    int type = internalField.getFieldType().getTag();
-//                    BString fieldName = fromString(internalField.getFieldName());
-//                    Object value = dataArray[index];
+                if (dataArray.length != internalStructFields.length) {
+                    throw new ApplicationError("specified record and the returned SQL Struct field counts " +
+                            "are different, and hence not compatible");
+                }
+                int index = 0;
+                for (Field internalField : internalStructFields) {
+                    int type = internalField.getFieldType().getTag();
+                    BString fieldName = fromString(internalField.getFieldName());
+                    Object value = dataArray[index];
                     switch (type) {
                         case TypeTags.INT_TAG:
                             if (value instanceof BigDecimal) {
-                                attributes.append(((BigDecimal) value).intValue());
+                                struct.put(fieldName, ((BigDecimal) value).intValue());
                             } else {
-                                attributes.append(value);
+                                struct.put(fieldName, value);
                             }
                             break;
                         case TypeTags.FLOAT_TAG:
                             if (value instanceof BigDecimal) {
-                                attributes.append(((BigDecimal) value).doubleValue());
+                                struct.put(fieldName, ((BigDecimal) value).doubleValue());
                             } else {
-                                attributes.append(value);
+                                struct.put(fieldName, value);
                             }
                             break;
                         case TypeTags.DECIMAL_TAG:
-                            if (value instanceof BigDecimal) {
-                                attributes.append(value);
-                            } else {
-                                attributes.append(ValueCreator.createDecimalValue((BigDecimal) value));
-                            }
+                            struct.put(fieldName, ValueCreator.createDecimalValue((BigDecimal) value));
                             break;
                         case TypeTags.STRING_TAG:
-                            attributes.append(value);
+                            struct.put(fieldName, StringUtils.fromString((String) value));
                             break;
                         case TypeTags.BOOLEAN_TAG:
-                            attributes.append(((int) value) == 1);
+                            struct.put(fieldName, ((int) value) == 1);
                             break;
                         case TypeTags.OBJECT_TYPE_TAG:
                         case TypeTags.RECORD_TYPE_TAG:
-                            attributes.append(createUserDefinedType((Struct) value, structType));
+                            struct.put(fieldName,
+                                    createUserDefinedType((Struct) value,
+                                            (StructureType) internalField.getFieldType()));
                             break;
                         default:
                             createUserDefinedTypeSubtype(internalField, structType);
@@ -127,7 +118,6 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                     ++index;
                 }
             }
-            struct.put(StringUtils.fromString(internalField.getFieldName()), attributes);
         } catch (SQLException e) {
             throw new ApplicationError("Error while retrieving data to create " + structType.getName()
                     + " record. ", e);
