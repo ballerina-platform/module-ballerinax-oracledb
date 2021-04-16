@@ -90,7 +90,7 @@ isolated function insertObjectTypeWithCustomType() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     string string_attr = "Hello world";
-    int int_attr = 34;
+    int int_attr = 1;
     float float_attr = 34.23;
     decimal decimal_attr = 34.23;
 
@@ -311,29 +311,185 @@ type ObjectRecordType record {
 }
 isolated function selectObjectType() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query("SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1", ObjectRecordType);
+    stream<record{}, error> streamResult = oracledbClient->query(
+        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1", ObjectRecordType);
     stream<ObjectRecordType, sql:Error> streamData = <stream<ObjectRecordType, sql:Error>>streamResult;
     record {|ObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
     ObjectRecordType? value = data?.value;
-    validateSelectObjectType(value);
+    if (value is ()) {
+        test:assertFail("Returned data is nil");
+    } else {
+        test:assertEquals(value.length(), 2);
+        test:assertEquals(value["pk"], 1);
+
+        ObjectRecord objRecord = value["col_object"];
+        decimal delta = 0.01;
+
+        test:assertEquals(objRecord["string_attr"], "Hello world");
+        test:assertEquals(objRecord["int_attr"], 34);
+        test:assertEquals(objRecord["float_attr"], 34.23);
+        test:assertTrue(objRecord["decimal_attr"] - <decimal>34.23 < delta);
+        test:assertTrue(objRecord["decimal_attr"] - <decimal>34.23 > -delta);
+    }
     check oracledbClient.close();
 }
 
-isolated function validateSelectObjectType(ObjectRecordType? returnData) {
-    if (returnData is ()) {
+@test:Config {
+    groups: ["execute", "execute-params"],
+    dependsOn: [selectObjectType]
+}
+isolated function selectObjectTypeNull() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<record{}, error> streamResult = oracledbClient->query(
+        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 15", ObjectRecordType);
+    stream<ObjectRecordType, sql:Error> streamData = <stream<ObjectRecordType, sql:Error>>streamResult;
+    record {|ObjectRecordType value;|}? data = check streamData.next();
+    check streamData.close();
+    ObjectRecordType? value = data?.value;
+    test:assertEquals(value, (), "Returned data should be nil");
+    check oracledbClient.close();
+}
+
+type MismatchObjectRecord record {
+    string string_attr;
+    int int_attr;
+    float float_attr;
+};
+
+type MismatchObjectRecordType record {
+    int pk;
+    MismatchObjectRecord col_object;
+};
+
+@test:Config {
+    groups: ["execute", "execute-params"],
+    dependsOn: [selectObjectTypeNull]
+}
+isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<record{}, error> streamResult = oracledbClient->query(
+        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1", MismatchObjectRecordType);
+    stream<MismatchObjectRecordType, sql:Error> streamData = <stream<MismatchObjectRecordType, sql:Error>>streamResult;
+    record {}|error returnData = streamData.next();
+    if (returnData is sql:ApplicationError) {
+        test:assertTrue(returnData.message().includes("specified record and the returned SQL Struct field counts " +
+                            "are different, and hence not compatible"), "Incorrect error message");
+    } else {
+        test:assertFail("Querying custom type with rowType mismatching field count should fail with " +
+                            "sql:ApplicationError");
+    }
+    check streamData.close();
+    check oracledbClient.close();
+}
+
+type BoolObjectRecord record {
+    string string_attr;
+    boolean int_attr;
+    float float_attr;
+    decimal decimal_attr;
+};
+
+type BoolObjectRecordType record {
+    int pk;
+    BoolObjectRecord col_object;
+};
+
+@test:Config {
+    groups: ["execute", "execute-params"],
+    dependsOn: [selectObjectTypeWithMisMatchingFieldCount]
+}
+isolated function selectObjectTypeWithBoolean() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<record{}, error> streamResult = oracledbClient->query(
+        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 2", BoolObjectRecordType);
+    stream<BoolObjectRecordType, sql:Error> streamData = <stream<BoolObjectRecordType, sql:Error>>streamResult;
+    record {|BoolObjectRecordType value;|}? data = check streamData.next();
+    check streamData.close();
+    BoolObjectRecordType? value = data?.value;
+    if (value is ()) {
         test:assertFail("Returned data is nil");
     } else {
-        test:assertEquals(returnData.length(), 2);
-        test:assertEquals(returnData["pk"], 1);
+        test:assertEquals(value.length(), 2);
+        test:assertEquals(value["pk"], 2);
 
-        ObjectRecord data = returnData["col_object"];
-        decimal delta = 0.01;
-
-        test:assertEquals(data["string_attr"], "Hello world");
-        test:assertEquals(data["int_attr"], 34);
-        test:assertEquals(data["float_attr"], 34.23);
-        test:assertTrue(data["decimal_attr"] - <decimal>34.23 < delta);
-        test:assertTrue(data["decimal_attr"] - <decimal>34.23 > -delta);
+        BoolObjectRecord objRecord = value["col_object"];
+        test:assertEquals(objRecord["int_attr"], true);
     }
+    check oracledbClient.close();
+}
+
+type NestedObjectRecord record {
+    string string_attr;
+    ObjectRecord object_attr;
+};
+
+type NestedObjectRecordType record {
+    int pk;
+    NestedObjectRecord col_nested_object;
+};
+
+@test:Config {
+    groups: ["execute", "execute-params"],
+    dependsOn: [selectObjectTypeWithBoolean]
+}
+isolated function selectObjectTypeWithNestedType() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<record{}, error> streamResult = oracledbClient->query(
+        "SELECT pk, col_nested_object FROM TestNestedObjectTypeTable WHERE pk = 1", NestedObjectRecordType);
+    stream<NestedObjectRecordType, sql:Error> streamData = <stream<NestedObjectRecordType, sql:Error>>streamResult;
+    record {|NestedObjectRecordType value;|}? data = check streamData.next();
+    check streamData.close();
+    NestedObjectRecordType? value = data?.value;
+    if (value is ()) {
+        test:assertFail("Returned data is nil");
+    } else {
+        test:assertEquals(value.length(), 2);
+        test:assertEquals(value["pk"], 1);
+
+        NestedObjectRecord nestedRecord = value["col_nested_object"];
+        decimal delta = 0.01;
+        test:assertEquals(nestedRecord["string_attr"], "Hello world");
+
+        ObjectRecord objRecord = nestedRecord["object_attr"];
+
+        test:assertEquals(objRecord["int_attr"], 34);
+        test:assertEquals(objRecord["float_attr"], 34.23);
+        test:assertTrue(objRecord["decimal_attr"] - <decimal>34.23 < delta);
+        test:assertTrue(objRecord["decimal_attr"] - <decimal>34.23 > -delta);
+    }
+    check oracledbClient.close();
+}
+
+type InvalidObjectRecord record {
+    string string_attr;
+    int int_attr;
+    xml float_attr;
+    decimal decimal_attr;
+};
+
+type InvalidObjectRecordType record {
+    int pk;
+    InvalidObjectRecord col_object;
+};
+
+@test:Config {
+    groups: ["execute", "execute-params"],
+    dependsOn: [selectObjectTypeWithNestedType]
+}
+isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<record{}, error> streamResult = oracledbClient->query(
+        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1", InvalidObjectRecordType);
+    stream<InvalidObjectRecordType, sql:Error> streamData = <stream<InvalidObjectRecordType, sql:Error>>streamResult;
+    record {}|error returnData = streamData.next();
+    if (returnData is sql:ApplicationError) {
+        test:assertTrue(returnData.message().includes("Error while retrieving data for unsupported type"),
+            "Incorrect error message");
+    } else {
+        test:assertFail("Querying custom type with invalid record field type should fail with " +
+                            "sql:ApplicationError");
+    }
+    check streamData.close();
+    check oracledbClient.close();
 }

@@ -98,13 +98,21 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                             }
                             break;
                         case TypeTags.DECIMAL_TAG:
-                            struct.put(fieldName, ValueCreator.createDecimalValue((BigDecimal) value));
+                            if (value instanceof BigDecimal) {
+                                struct.put(fieldName, ValueCreator.createDecimalValue((BigDecimal) value));
+                            } else {
+                                struct.put(fieldName, value);
+                            }
                             break;
                         case TypeTags.STRING_TAG:
                             struct.put(fieldName, StringUtils.fromString((String) value));
                             break;
                         case TypeTags.BOOLEAN_TAG:
-                            struct.put(fieldName, ((int) value) == 1);
+                            if (value instanceof BigDecimal) {
+                                struct.put(fieldName, ((BigDecimal) value).intValue() == 1);
+                            } else {
+                                struct.put(fieldName, ((int) value) == 1);
+                            }
                             break;
                         case TypeTags.OBJECT_TYPE_TAG:
                         case TypeTags.RECORD_TYPE_TAG:
