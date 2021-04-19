@@ -164,3 +164,77 @@ isolated function insertVarrayWithEmptyArray() returns sql:Error? {
    var insertId = result.lastInsertId;
    test:assertTrue(insertId is string, "Last Insert id should be string");
 }
+
+@test:Config {
+    enable: true,
+    groups:["execute","insert-varray"],
+    dependsOn: [insertVarrayWithEmptyArray]
+}
+isolated function selectVarrayWithoutRecordType() returns error? {
+    string[] charArray = ["Hello", "World"];
+    decimal[] decimalArray = [34, -98.23, 0.981];
+
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<record{}, error> streamResult = oracledbClient->query(
+        "SELECT pk, COL_CHARARR, COL_DECIMALARR FROM TestVarrayTable WHERE pk = 1");
+    record {}? data = check streamResult.next();
+    check streamResult.close();
+    record {}? value = <record {}>data["value"];
+    string[] charArrayOut = <string[]>value["COL_CHARARR"];
+    decimal[] decimalArrayOut = <decimal[]>value["COL_DECIMALARR"];
+
+    test:assertEquals(charArrayOut, charArray);
+    test:assertEquals(decimalArrayOut, decimalArray);
+
+    check oracledbClient.close();
+}
+
+type ArrayRecordType record {
+    int pk;
+    string[] col_chararr;
+    byte[] col_bytearr;
+    int[] col_intarr;
+    boolean[] col_boolarr;
+    float[] col_floatarr;
+    decimal[] col_decimalarr;
+};
+
+@test:Config {
+    enable: true,
+    groups:["execute","insert-varray"],
+    dependsOn: [selectVarrayWithoutRecordType]
+}
+isolated function selectVarrayWithRecordType() returns error? {
+    
+    ArrayRecordType arrayRecordInstance = {
+        pk : 1,
+        col_chararr : ["Hello", "World"],
+        col_bytearr : [4, 23, 12],
+        col_intarr : [3,4,5],
+        col_boolarr : [true, false, false],
+        col_floatarr : [34, -98.23, 0.981],
+        col_decimalarr : [34, -98.23, 0.981]
+    };
+
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<record{}, error> streamResult = oracledbClient->query(
+        "SELECT pk, COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR FROM TestVarrayTable WHERE pk = 1", 
+        ArrayRecordType);
+    stream<ArrayRecordType, sql:Error> streamData = <stream<ArrayRecordType, sql:Error>>streamResult;
+    record {|ArrayRecordType value;|}? data = check streamData.next();
+    check streamData.close();
+    ArrayRecordType? value = data?.value;
+    if (value is ()) {
+        test:assertFail("Returned data is nil");
+    } else {
+        test:assertEquals(value.length(), 7);
+        test:assertEquals(value.pk, arrayRecordInstance.pk);
+        test:assertEquals(value.col_chararr, arrayRecordInstance.col_chararr);
+        test:assertEquals(value.col_bytearr, arrayRecordInstance.col_bytearr);
+        test:assertEquals(value.col_bytearr, arrayRecordInstance.col_bytearr);
+        test:assertEquals(value.col_boolarr, arrayRecordInstance.col_boolarr);
+        test:assertEquals(value.col_floatarr, arrayRecordInstance.col_floatarr);
+        test:assertEquals(value.col_decimalarr, arrayRecordInstance.col_decimalarr);
+    }
+    check oracledbClient.close();
+}

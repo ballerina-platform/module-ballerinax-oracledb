@@ -131,7 +131,6 @@ public final class Constants {
             public static final String INTERVAL_DAY_TO_SECOND = "INTERVAL_DAY_TO_SECOND";
             public static final String OBJECT_TYPE = "OBJECT";
             public static final String VARRAY = "VARRAY";
-            public static final String NESTED_TABLE = "NESTED_TABLE";
         }
 
         /**
@@ -177,6 +176,19 @@ public final class Constants {
         public static final class Varray {
             public static final String NAME = "name";
             public static final String ELEMENTS = "elements";
+        }
+
+        /**
+         * Constants related to the ballerina array types to which oracle varrays are converted.
+         */
+        public static final class BallerinaArrayTypes {
+            public static final String STRING = "string[]";
+            public static final String INT = "int[]";
+            public static final String FLOAT = "float[]";
+            public static final String DECIMAL = "decimal[]";
+            public static final String BOOLEAN = "boolean[]";
+            public static final String BYTE = "byte[]";
+            public static final String ANYDATA = "anydata[]";
         }
     }
 
