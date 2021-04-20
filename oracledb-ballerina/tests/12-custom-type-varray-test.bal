@@ -16,7 +16,7 @@
 import ballerina/sql;
 import ballerina/test;
  
-@test:BeforeGroups { value:["insert-varray"] }
+@test:BeforeGroups { value:["varray"] }
 isolated function beforeInsertVArrayFunc() returns sql:Error? {
    string OID = "19A57209ECB73F91E03400400B40BB25";
  
@@ -59,7 +59,7 @@ isolated function beforeInsertVArrayFunc() returns sql:Error? {
 // insert to varray
 @test:Config {
    enable: true,
-   groups:["execute","insert-varray"]
+   groups:["execute","varray"]
 }
 isolated function insertVarray() returns sql:Error? {
 
@@ -89,7 +89,7 @@ isolated function insertVarray() returns sql:Error? {
 // insert with null VarrayValue object
 @test:Config {
    enable: true,
-   groups:["execute","insert-varray"],
+   groups:["execute","varray"],
    dependsOn: [insertVarray]
 }
 isolated function insertVarrayNull() returns sql:Error? {
@@ -115,7 +115,7 @@ isolated function insertVarrayNull() returns sql:Error? {
 // insert with null array
 @test:Config {
    enable: true,
-   groups:["execute","insert-varray"],
+   groups:["execute","varray"],
    dependsOn: [insertVarrayNull]
 }
 isolated function insertVarrayWithNullArray() returns sql:Error? {
@@ -138,7 +138,7 @@ isolated function insertVarrayWithNullArray() returns sql:Error? {
 // insert with empty array
 @test:Config {
     enable: true,
-    groups:["execute","insert-varray"],
+    groups:["execute","varray"],
     dependsOn: [insertVarrayWithNullArray]
 }
 isolated function insertVarrayWithEmptyArray() returns sql:Error? {
@@ -167,7 +167,7 @@ isolated function insertVarrayWithEmptyArray() returns sql:Error? {
 
 @test:Config {
     enable: true,
-    groups:["execute","insert-varray"],
+    groups:["query","varray"],
     dependsOn: [insertVarrayWithEmptyArray]
 }
 isolated function selectVarrayWithoutRecordType() returns error? {
@@ -201,7 +201,7 @@ type ArrayRecordType record {
 
 @test:Config {
     enable: true,
-    groups:["execute","insert-varray"],
+    groups:["query","varray"],
     dependsOn: [selectVarrayWithoutRecordType]
 }
 isolated function selectVarrayWithRecordType() returns error? {
@@ -241,7 +241,7 @@ isolated function selectVarrayWithRecordType() returns error? {
 
 @test:Config {
     enable: true,
-    groups:["execute","insert-varray"],
+    groups:["query","varray"],
     dependsOn: [selectVarrayWithRecordType]
 }
 isolated function selectVarrayNull() returns error? {
@@ -275,7 +275,7 @@ type InvalidIntTypeArray record {
 
 @test:Config {
     enable: true,
-    groups:["execute","insert-varray"],
+    groups:["query","varray"],
     dependsOn: [selectVarrayNull]
 }
 isolated function selectVarrayWithInvalidIntType() returns error? {
@@ -305,7 +305,7 @@ type InvalidFloatTypeArray record {
 
 @test:Config {
     enable: true,
-    groups:["execute","insert-varray"],
+    groups:["query","varray"],
     dependsOn: [selectVarrayWithInvalidIntType]
 }
 isolated function selectVarrayWithInvalidFloatType() returns error? {
@@ -335,7 +335,7 @@ type InvalidDecimalTypeArray record {
 
 @test:Config {
     enable: true,
-    groups:["execute","insert-varray"],
+    groups:["query","varray"],
     dependsOn: [selectVarrayWithInvalidFloatType]
 }
 isolated function selectVarrayWithInvalidDecimalType() returns error? {
@@ -365,7 +365,7 @@ type InvalidBoolTypeArray record {
 
 @test:Config {
     enable: true,
-    groups:["execute","insert-varray"],
+    groups:["query","varray"],
     dependsOn: [selectVarrayWithInvalidDecimalType]
 }
 isolated function selectVarrayWithInvalidBoolType() returns error? {
@@ -395,7 +395,7 @@ type InvalidByteTypeArray record {
 
 @test:Config {
     enable: true,
-    groups:["execute","insert-varray"],
+    groups:["query","varray"],
     dependsOn: [selectVarrayWithInvalidDecimalType]
 }
 isolated function selectVarrayWithInvalidByteType() returns error? {
@@ -425,7 +425,7 @@ type InvalidStringTypeArray record {
 
 @test:Config {
     enable: true,
-    groups:["execute","insert-varray"],
+    groups:["query","varray"],
     dependsOn: [selectVarrayWithInvalidByteType]
 }
 isolated function selectVarrayWithInvalidStringType() returns error? {
