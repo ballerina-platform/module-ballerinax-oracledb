@@ -31,7 +31,7 @@ dependencies {
 
     checkstyle project(":build-config:checkstyle")
     checkstyle "com.puppycrawl.tools:checkstyle:${puppycrawlCheckstyleVersion}"
-    compile (group: 'com.oracle.database.jdbc', name: 'ojdbc10', version: "${oracleDBDriverVersion}") {
+    compile (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
         transitive = false
     }
 }
