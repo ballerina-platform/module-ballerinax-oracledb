@@ -34,9 +34,6 @@ dependencies {
     compile (group: 'com.oracle.database.jdbc', name: 'ojdbc10', version: "${oracleDBDriverVersion}") {
         transitive = false
     }
-    compile (group: 'com.oracle.database.xml', name: 'xdb', version: "${oracleXDBDriverVersion}") {
-        transitive = false
-    }
 }
 
 tasks.withType(JavaCompile) {

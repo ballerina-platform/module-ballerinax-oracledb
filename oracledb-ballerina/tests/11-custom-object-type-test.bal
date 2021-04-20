@@ -38,7 +38,7 @@ isolated function beforeInsertObjectFunc() returns sql:Error? {
        "PK NUMBER GENERATED ALWAYS AS IDENTITY, " +
        "COL_OBJECT OBJECT_TYPE, " +
        "PRIMARY KEY(PK) " +
-       ")" 
+       ")"
    );
 
    result = check oracledbClient->execute(

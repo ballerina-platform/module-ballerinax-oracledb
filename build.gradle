@@ -229,10 +229,6 @@ subprojects {
         externalJars (group: 'com.oracle.database.jdbc', name: 'ojdbc10', version: "${oracleDBDriverVersion}") {
             transitive = false
         }
-        externalJars (group: 'com.oracle.database.xml', name: 'xdb', version: "${oracleXDBDriverVersion}") {
-            transitive = false
-        }
-
     }
 }
 
@@ -255,4 +251,3 @@ release {
 task build {
     dependsOn("${packageName}-ballerina:build")
 }
-

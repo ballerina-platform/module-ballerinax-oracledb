@@ -42,7 +42,7 @@ type IntervalDayToSecond record {|
 |};
 
 
-# ObjectType is an abstraction of the real-world entities, such as purchase orders, that application programs deal with.
+# An abstraction of the real-world entities, such as purchase orders, that application programs deal with.
 #
 # + typename - Name of the object type
 # + attributes - Attributes of the object
@@ -52,7 +52,7 @@ type ObjectType record {|
 |};
 
 
-# Varray is an ordered set of data elements with a variable size. All elements of a given array are of the same data
+# An ordered set of data elements with a variable size. All elements of a given array are of the same data
 # type.
 #
 # + name - Name of the varray
