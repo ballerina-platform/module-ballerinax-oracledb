@@ -6,8 +6,7 @@ This Package provides the functionality required to access and manipulate data s
 Once you build the project by executing the `ballerina build` command, you should be able to run the resultant by
 executing the `ballerina run` command.
 
-E.g., The `Ballerina.toml` content.
-Change the path to the JDBC driver appropriately.
+Change the path to the JDBC driver appropriately in the example `Balleirna.toml` content below.
 
 ```toml
 [package]
@@ -26,7 +25,7 @@ version = "12.2.0.1"
 
 To access a database, you must first create an 
 [oracledb:Client](https://ballerina.io/learn/api-docs/ballerina/#/oracledb/clients/Client) object.
-The examples for creating a OracleDB client can be found below.
+The examples for creating an OracleDB client can be found below.
 
 #### Creating a client
 
@@ -39,11 +38,11 @@ The `dbClient2` receives the host, username, and password. Since the properties 
 as it is defined in the `oracledb:Client`, you can pass it without named params.
 
 The `dbClient3` uses the named params to pass the attributes since it is skipping some params in the constructor.
-Further [oracledb:Options](https://ballerina.io/learn/api-docs/ballerina/#/oracledb/records/Options)
-is passed to configure the SSL and connection timeout in the OracleDB client.
+Further, the [oracledb:Options](https://ballerina.io/learn/api-docs/ballerina/#/oracledb/records/Options)
+property is passed to configure the SSL and connection timeout in the OracleDB client.
 
-Similarly, the `dbClient4` uses the named params and it provides an unshared connection pool in the type of
-[sql:ConnectionPool](https://ballerina.io/learn/api-docs/ballerina/#/sql/records/ConnectionPool)
+Similarly, the `dbClient4` uses the named params and it provides an unshared connection pool of the
+[sql:ConnectionPool](https://ballerina.io/learn/api-docs/ballerina/#/sql/records/ConnectionPool) type
 to be used within the client.
 For more details about connection pooling, see the [SQL Package](https://ballerina.io/learn/api-docs/ballerina/#/sql).
 
@@ -70,7 +69,7 @@ defined by the `sql:Client` will be supported by the `oracledb:Client` as well.
 For more information on all the operations supported by the `oracledb:Client`, which include the below, see the 
 [SQL Package](https://ballerina.io/learn/api-docs/ballerina/#/sql).
 
-1. Connection Pooling
+1. Connection pooling
 
 ``` ballerina
 oracledb:Client|sql:Error oracledbClient = new (user = "rootUser", password = "rootPass", database = "School", 
@@ -132,7 +131,7 @@ sql:ParameterizedQuery deleteQuery = `Delete from Students where id = ${id}`;
 sql:ExecutionResult result = check oracledbClient->execute(deleteQuery);
 ```
 
-7. Batch insert and update data
+7. Inserting and updating data in batches
 
 ``` ballerina
 var insertRecords = [
@@ -149,7 +148,7 @@ sql:ParameterizedQuery[] insertQueries =
 sql:ExecutionResult[] result = check oracledbClient->batchExecute(insertQueries);
 ```
 
-8. Execute stored procedures
+8. Executing stored procedures
 
 ``` ballerina
 int id = 6;
@@ -159,7 +158,7 @@ sql:ParameterizedCallQuery sqlQuery = `CALL InsertStudent(${id}, ${name})`;
 sql:ProcedureCallResult callResult = check oracledbClient->call(sqlQuery);
 ```
 
-9. Closing client
+9. Closing the client
 
 ``` ballerina
 check oracledbClient.close();
