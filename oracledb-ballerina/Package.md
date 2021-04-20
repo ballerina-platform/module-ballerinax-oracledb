@@ -334,7 +334,7 @@ check oracledbClient.close();
         - Creating Varray types and tables with columns of varray types
 
         ``` ballerina
-        result = check oracledbClient->execute(
+        sql:ExecutionResult result = check oracledbClient->execute(
             "CREATE OR REPLACE TYPE CharArrayType AS VARRAY(6) OF VARCHAR(100);");
         result = check oracledbClient->execute(
             "CREATE OR REPLACE TYPE ByteArrayType AS VARRAY(6) OF RAW(100);");
