@@ -457,7 +457,7 @@ ballerinaBuild.dependsOn updateTomlFile
 ballerinaBuild.dependsOn initializeVariables
 ballerinaBuild.dependsOn ":${packageName}-native:build"
 ballerinaBuild.finalizedBy revertTomlFile
-test.finalizedBy stopTestDockerContainers
+ballerinaBuild.finalizedBy stopTestDockerContainers
 test.dependsOn startTestDockerContainers
 test.finalizedBy ballerinaBuild
 build.dependsOn ballerinaBuild
