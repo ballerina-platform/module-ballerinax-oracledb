@@ -81,7 +81,7 @@ spotbugsTest {
 }
 
 task validateSpotbugs() {
-   doLast {
+    doLast {
         if (spotbugsMain.reports.size() > 0 &&
                 spotbugsMain.reports[0].destination.exists() &&
                 spotbugsMain.reports[0].destination.text.readLines().size() > 0) {
@@ -90,7 +90,7 @@ task validateSpotbugs() {
             }
             throw new GradleException("Spotbugs rule violations were found.");
         }
-   }
+    }
 }
 
 checkstyle {
