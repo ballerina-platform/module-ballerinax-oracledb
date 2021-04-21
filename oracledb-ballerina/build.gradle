@@ -29,7 +29,6 @@ def ballerinaDependencyFile = new File("$project.projectDir/Dependencies.toml")
 def artifactBallerinaDocs = file("$project.projectDir/build/docs_parent/")
 def artifactCacheParent = file("$project.projectDir/build/cache_parent/")
 def artifactLibParent = file("$project.projectDir/build/lib_parent/")
-def artifactCodeCoverageReport = file("$project.projectDir/target/cache/tests_cache/coverage/ballerina.exec")
 def ballerinaCentralAccessToken = System.getenv('BALLERINA_CENTRAL_ACCESS_TOKEN')
 def distributionPath = project.projectDir.absolutePath + "/build/target/jballerina-tools-${ballerinaLangVersion}"
 if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -308,7 +307,6 @@ publishing {
     publications {
         maven(MavenPublication) {
             artifact source: createArtifactZip, extension: 'zip'
-            artifact source: artifactCodeCoverageReport, classifier: 'jacoco'
         }
     }
     repositories {
@@ -459,7 +457,7 @@ ballerinaBuild.dependsOn updateTomlFile
 ballerinaBuild.dependsOn initializeVariables
 ballerinaBuild.dependsOn ":${packageName}-native:build"
 ballerinaBuild.finalizedBy revertTomlFile
-ballerinaBuild.finalizedBy stopTestDockerContainers
+test.finalizedBy stopTestDockerContainers
 test.dependsOn startTestDockerContainers
 test.finalizedBy ballerinaBuild
 build.dependsOn ballerinaBuild

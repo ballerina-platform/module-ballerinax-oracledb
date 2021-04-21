@@ -260,4 +260,3 @@ release {
 task build {
     dependsOn("${packageName}-ballerina:build")
 }
-
