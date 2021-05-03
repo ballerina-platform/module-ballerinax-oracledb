@@ -170,6 +170,15 @@ public class Utils {
     }
 
     /**
+     * Throw an error if the array cannot be casted to the provided ballerina type.
+     * @param type The ballerina type of the array
+     * @return sql:ApplicationError
+     */
+    public static ApplicationError throwArrayTypeCastError(String type) {
+        return new ApplicationError("Cannot cast varray to type: " + type);
+    }
+
+    /**
      * Return an OracleConnection instance from Hikari connection.
      * @param connection Hikari connection
      * @return OracleConnection instance

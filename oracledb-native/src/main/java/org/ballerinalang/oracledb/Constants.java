@@ -131,7 +131,6 @@ public final class Constants {
             public static final String INTERVAL_DAY_TO_SECOND = "INTERVAL_DAY_TO_SECOND";
             public static final String OBJECT_TYPE = "OBJECT";
             public static final String VARRAY = "VARRAY";
-            public static final String NESTED_TABLE = "NESTED_TABLE";
         }
 
         /**
@@ -142,8 +141,6 @@ public final class Constants {
             public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondValue";
             public static final String OBJECT = "ObjectTypeValue";
             public static final String VARRAY = "VarrayValue";
-            public static final String NESTED_TABLE = "CustomTableValue";
-            public static final String XML = "XmlValue";
         }
 
         /**
@@ -182,10 +179,16 @@ public final class Constants {
         }
 
         /**
-         * Constants related to the attributes of XML Oracle DB type.
+         * Constants related to the ballerina array types to which oracle varrays are converted.
          */
-        public static class Xml {
-            public static final String XML = "xml";
+        public static final class BallerinaArrayTypes {
+            public static final String STRING = "string[]";
+            public static final String INT = "int[]";
+            public static final String FLOAT = "float[]";
+            public static final String DECIMAL = "decimal[]";
+            public static final String BOOLEAN = "boolean[]";
+            public static final String BYTE = "byte[]";
+            public static final String ANYDATA = "anydata[]";
         }
     }
 
