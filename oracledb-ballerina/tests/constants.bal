@@ -31,10 +31,9 @@ final Options options = {
     connectTimeout: 1,
     socketTimeout: 3
 };
-
-final configurable int maxOpenConnections = 10;
-final configurable decimal maxConnectionLifeTime = 2000.0;
-final configurable int minIdleConnections = 5;
+configurable int maxOpenConnections = 10;
+configurable decimal maxConnectionLifeTime = 2000.0;
+configurable int minIdleConnections = 5;
 
 final sql:ConnectionPool connectionPool = {
    maxOpenConnections: maxOpenConnections,

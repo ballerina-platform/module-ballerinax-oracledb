@@ -18,9 +18,8 @@ import ballerina/crypto;
 import ballerina/jballerina.java;
 import ballerina/sql;
 
-public client class Client {
+public isolated client class Client {
     *sql:Client;
-    private boolean clientActive = true;
 
     # Initialize the Oracle Client.
     #
@@ -55,15 +54,11 @@ public client class Client {
     # + rowType - The `typedesc` of the record that should be returned as a result. If this is not provided, the default
     #             column names of the query result set will be used for the record attributes.
     # + return - Stream of records in the type of `rowType`
-    remote isolated function query(@untainted string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? rowType = ())
-    returns @tainted stream <record {}, sql:Error> {
-        if (self.clientActive) {
-            return nativeQuery(self, sqlQuery, rowType);
-        } else {
-            return sql:generateApplicationErrorStream("OracleDB client is already closed,"
-                + "hence further operations are not allowed");
-        }
-    }
+    remote isolated function query(string|sql:ParameterizedQuery sqlQuery, typedesc<record {}> rowType = <>)
+    returns stream <rowType, sql:Error> = @java:Method {
+        'class: "org.ballerinalang.oracledb.nativeimpl.QueryProcessor",
+        name: "nativeQuery"
+    } external;
 
     # Executes the DDL or DML SQL queries provided by the user and returns a summary of the execution.
     #
@@ -71,15 +66,11 @@ public client class Client {
     #              when the query has params to be passed in
     # + return - Summary of the SQL update query as an `ExecutionResult` or returns an `Error`
     #            if any error occurred when executing the query
-    remote isolated function execute(@untainted string|sql:ParameterizedQuery sqlQuery)
-    returns sql:ExecutionResult|sql:Error {
-        if (self.clientActive) {
-            return nativeExecute(self, sqlQuery);
-        } else {
-            return error sql:ApplicationError(
-            "OracleDB client is already closed, hence further operations are not allowed");
-        }
-    }
+    remote isolated function execute(string|sql:ParameterizedQuery sqlQuery)
+    returns sql:ExecutionResult|sql:Error = @java:Method {
+        'class: "org.ballerinalang.oracledb.nativeimpl.ExecuteProcessor",
+         name: "nativeExecute"
+    } external;
 
     # Executes a batch of parameterized DDL or DML SQL query provided by the user,
     # and returns the summary of the execution.
@@ -91,17 +82,12 @@ public client class Client {
     #            will return a `BatchExecuteError`. However the database driver may or may not continue to process the
     #            remaining commands in the batch after a failure. The summary of the executed queries in case of an error
     #            can be accessed as `(<sql:BatchExecuteError> result).detail()?.executionResults`
-    remote isolated function batchExecute(@untainted sql:ParameterizedQuery[] sqlQueries)
+    remote isolated function batchExecute(sql:ParameterizedQuery[] sqlQueries)
     returns sql:ExecutionResult[]|sql:Error {
         if (sqlQueries.length() == 0) {
-            return error sql:ApplicationError("'sqlQueries' parameter cannot be an empty array");
+            return error sql:ApplicationError(" parameter 'sqlQueries' cannot be an empty array");
         }
-        if (self.clientActive) {
-            return nativeBatchExecute(self, sqlQueries);
-        } else {
-            return error sql:ApplicationError(
-                "OracleDB client is already closed, hence further operations are not allowed");
-        }
+        return nativeBatchExecute(self, sqlQueries);
     }
 
     # Executes a SQL stored procedure and returns the result as a stream and the execution summary.
@@ -110,24 +96,19 @@ public client class Client {
     # + rowTypes - The array of `typedesc` of the records that should be returned as a result. If this is not provided,
     #              the default column names of the query result set will be used for the record attributes
     # + return - Summary of the execution is returned in a `ProcedureCallResult` or an `sql:Error`
-    remote isolated function call(@untainted string|sql:ParameterizedCallQuery sqlQuery,
-    typedesc<record {}>[] rowTypes = []) returns sql:ProcedureCallResult|sql:Error {
-        if (self.clientActive) {
-            return nativeCall(self, sqlQuery, rowTypes);
-        } else {
-            return error sql:ApplicationError(
-                "OracleDB client is already closed, hence further operations are not allowed");
-        }
-    }
+    remote isolated function call(string|sql:ParameterizedCallQuery sqlQuery,
+    typedesc<record {}>[] rowTypes = []) returns sql:ProcedureCallResult|sql:Error = @java:Method {
+        'class: "org.ballerinalang.oracledb.nativeimpl.CallProcessor",
+        name: "nativeCall"
+    } external;
 
     # Close the SQL client.
     #
     # + return - Possible error during closing the client
-    public isolated function close() returns sql:Error? {
-        self.clientActive = false;
-        return close(self);
-    }
-
+    public isolated function close() returns sql:Error? = @java:Method {
+        'class: "org.ballerinalang.oracledb.nativeimpl.ClientProcessor",
+        name: "close"
+    } external;
 }
 
 # SSL Configuration to be used when connecting to the Oracle database server.
@@ -175,30 +156,11 @@ type ClientConfiguration record {|
 |};
 
 isolated function createClient(Client 'client, ClientConfiguration clientConfig, sql:ConnectionPool globalConnPool)
-returns sql:Error? = @java:Method{
+returns sql:Error? = @java:Method {
     'class: "org.ballerinalang.oracledb.nativeimpl.ClientProcessor"
-} external;
-
-isolated function nativeQuery(Client sqlClient, string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? rowType)
-returns stream <record {}, sql:Error> = @java:Method {
-    'class: "org.ballerinalang.oracledb.nativeimpl.QueryProcessor"
-} external;
-
-isolated function nativeExecute(Client sqlClient, string|sql:ParameterizedQuery sqlQuery)
-returns sql:ExecutionResult|sql:Error = @java:Method {
-    'class: "org.ballerinalang.oracledb.nativeimpl.ExecuteProcessor"
 } external;
 
 isolated function nativeBatchExecute(Client sqlClient, sql:ParameterizedQuery[] sqlQueries)
 returns sql:ExecutionResult[]|sql:Error = @java:Method {
     'class: "org.ballerinalang.oracledb.nativeimpl.ExecuteProcessor"
-} external;
-
-isolated function nativeCall(Client sqlClient, string|sql:ParameterizedCallQuery sqlQuery,
-typedesc<record {}>[] rowTypes) returns sql:ProcedureCallResult|sql:Error = @java:Method {
-    'class: "org.ballerinalang.oracledb.nativeimpl.CallProcessor"
-} external;
-
-isolated function close(Client oracledbClient) returns sql:Error? = @java:Method {
-    'class: "org.ballerinalang.oracledb.nativeimpl.ClientProcessor"
 } external;

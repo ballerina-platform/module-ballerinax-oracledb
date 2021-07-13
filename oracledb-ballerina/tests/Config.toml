@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
+[ballerina.sql]
 maxOpenConnections=10
 maxConnectionLifeTimeInSeconds=2000.0
 minIdleConnections=5

@@ -457,7 +457,12 @@ isolated function validateSqlDsSimpleQueryTableResult(record{}? returnData) {
 isolated function queryClient(@untainted string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? resultType = ())
 returns record {}|error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record {}, error> streamData = oracledbClient->query(sqlQuery, resultType);
+    stream<record {}, error> streamData;
+    if resultType is () {
+        streamData = oracledbClient->query(sqlQuery);
+    } else {
+        streamData = oracledbClient->query(sqlQuery, resultType);
+    }
     record {|record {} value;|}? data = check streamData.next();
     check streamData.close();
     record {}|sql:Error? value = data?.value;

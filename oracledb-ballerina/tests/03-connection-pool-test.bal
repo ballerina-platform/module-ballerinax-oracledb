@@ -422,7 +422,8 @@ isolated function getReturnValue(stream<record{}, error> queryResult) returns in
 isolated function validateApplicationError(int|error dbError) {
   test:assertTrue(dbError is error);
   sql:ApplicationError sqlError = <sql:ApplicationError> dbError;
-  test:assertTrue(stringutils:includes(sqlError.message(), "client is already closed"), sqlError.message());
+  test:assertTrue(stringutils:includes(sqlError.message(), "SQL Client is already closed, hence further " +
+  "operations are not allowed"), sqlError.message());
 }
 
 isolated function validateConnectionTimeoutError(int|error dbError) {
