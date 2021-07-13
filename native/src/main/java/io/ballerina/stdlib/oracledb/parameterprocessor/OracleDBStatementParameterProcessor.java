@@ -16,13 +16,13 @@
  *  under the License.
  */
 
-package org.ballerinalang.oracledb.parameterprocessor;
+package io.ballerina.stdlib.oracledb.parameterprocessor;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
+import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
 import oracle.xdb.XMLType;
-import org.ballerinalang.oracledb.Constants;
-import org.ballerinalang.oracledb.utils.ConverterUtils;
-import org.ballerinalang.oracledb.utils.Utils;
+import io.ballerina.stdlib.oracledb.Constants;
+import io.ballerina.stdlib.oracledb.utils.Utils;
 import org.ballerinalang.sql.exception.ApplicationError;
 import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
 

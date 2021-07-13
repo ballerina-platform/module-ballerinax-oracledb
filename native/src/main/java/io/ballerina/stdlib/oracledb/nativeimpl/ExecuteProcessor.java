@@ -16,11 +16,11 @@
  * under the License.
  */
 
-package org.ballerinalang.oracledb.nativeimpl;
+package io.ballerina.stdlib.oracledb.nativeimpl;
 
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BObject;
-import org.ballerinalang.oracledb.parameterprocessor.OracleDBStatementParameterProcessor;
+import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBStatementParameterProcessor;
 import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
 
 /**

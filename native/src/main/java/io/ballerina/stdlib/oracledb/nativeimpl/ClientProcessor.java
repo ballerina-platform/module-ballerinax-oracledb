@@ -16,13 +16,13 @@
  * under the License.
  */
 
- package org.ballerinalang.oracledb.nativeimpl;
+ package io.ballerina.stdlib.oracledb.nativeimpl;
 
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
-import org.ballerinalang.oracledb.Constants;
-import org.ballerinalang.oracledb.utils.Utils;
+import io.ballerina.stdlib.oracledb.Constants;
+import io.ballerina.stdlib.oracledb.utils.Utils;
 import org.ballerinalang.sql.datasource.SQLDatasource;
 
 import java.util.Properties;

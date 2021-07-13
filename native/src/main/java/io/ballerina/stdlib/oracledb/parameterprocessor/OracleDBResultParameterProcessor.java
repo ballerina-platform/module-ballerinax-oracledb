@@ -16,12 +16,12 @@
  *  under the License.
  */
 
-package org.ballerinalang.oracledb.parameterprocessor;
+package io.ballerina.stdlib.oracledb.parameterprocessor;
 
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.values.BObject;
-import org.ballerinalang.oracledb.Constants;
-import org.ballerinalang.oracledb.utils.ModuleUtils;
+import io.ballerina.stdlib.oracledb.Constants;
+import io.ballerina.stdlib.oracledb.utils.ModuleUtils;
 import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
 
 /**

@@ -56,7 +56,7 @@ public isolated client class Client {
     # + return - Stream of records in the type of `rowType`
     remote isolated function query(string|sql:ParameterizedQuery sqlQuery, typedesc<record {}> rowType = <>)
     returns stream <rowType, sql:Error> = @java:Method {
-        'class: "org.ballerinalang.oracledb.nativeimpl.QueryProcessor",
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.QueryProcessor",
         name: "nativeQuery"
     } external;
 
@@ -68,7 +68,7 @@ public isolated client class Client {
     #            if any error occurred when executing the query
     remote isolated function execute(string|sql:ParameterizedQuery sqlQuery)
     returns sql:ExecutionResult|sql:Error = @java:Method {
-        'class: "org.ballerinalang.oracledb.nativeimpl.ExecuteProcessor",
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.ExecuteProcessor",
          name: "nativeExecute"
     } external;
 
@@ -98,7 +98,7 @@ public isolated client class Client {
     # + return - Summary of the execution is returned in a `ProcedureCallResult` or an `sql:Error`
     remote isolated function call(string|sql:ParameterizedCallQuery sqlQuery,
     typedesc<record {}>[] rowTypes = []) returns sql:ProcedureCallResult|sql:Error = @java:Method {
-        'class: "org.ballerinalang.oracledb.nativeimpl.CallProcessor",
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.CallProcessor",
         name: "nativeCall"
     } external;
 
@@ -106,7 +106,7 @@ public isolated client class Client {
     #
     # + return - Possible error during closing the client
     public isolated function close() returns sql:Error? = @java:Method {
-        'class: "org.ballerinalang.oracledb.nativeimpl.ClientProcessor",
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.ClientProcessor",
         name: "close"
     } external;
 }
@@ -157,10 +157,10 @@ type ClientConfiguration record {|
 
 isolated function createClient(Client 'client, ClientConfiguration clientConfig, sql:ConnectionPool globalConnPool)
 returns sql:Error? = @java:Method {
-    'class: "org.ballerinalang.oracledb.nativeimpl.ClientProcessor"
+    'class: "io.ballerina.stdlib.oracledb.nativeimpl.ClientProcessor"
 } external;
 
 isolated function nativeBatchExecute(Client sqlClient, sql:ParameterizedQuery[] sqlQueries)
 returns sql:ExecutionResult[]|sql:Error = @java:Method {
-    'class: "org.ballerinalang.oracledb.nativeimpl.ExecuteProcessor"
+    'class: "io.ballerina.stdlib.oracledb.nativeimpl.ExecuteProcessor"
 } external;

@@ -16,38 +16,37 @@
  * under the License.
  */
 
-package org.ballerinalang.oracledb.nativeimpl;
+package io.ballerina.stdlib.oracledb.nativeimpl;
 
+import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BObject;
-import io.ballerina.runtime.api.values.BStream;
-import io.ballerina.runtime.api.values.BTypedesc;
-import org.ballerinalang.oracledb.parameterprocessor.OracleDBResultParameterProcessor;
-import org.ballerinalang.oracledb.parameterprocessor.OracleDBStatementParameterProcessor;
+import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBResultParameterProcessor;
+import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBStatementParameterProcessor;
 import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
 import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
 
 /**
- * This class provides the methods for query processing which executes sql queries.
- * 
+ * This class holds the methods required to execute call statements.
+ *
  * @since 0.1.0
  */
-public class QueryProcessor {
-    private QueryProcessor() {}
+public class CallProcessor {
+
+    private CallProcessor() {}
 
     /**
-     * Query the database and return results.
-     * @param client client object
-     * @param paramSQLString SQL string of the query
-     * @param recordType type description of the result record
-     * @return result stream or error
+     * Execute a call query and return the results.
+     * @param client Client BObject
+     * @param paramSQLString SQL string for the call statement
+     * @param recordTypes type description of the result record
+     * @return procedure call result or error
      */
-    public static BStream nativeQuery(BObject client, Object paramSQLString,
-                                      BTypedesc recordType) {
+    public static Object nativeCall(BObject client, Object paramSQLString, BArray recordTypes) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();
         DefaultResultParameterProcessor resultParametersProcessor = OracleDBResultParameterProcessor
                 .getInstance();
-        return org.ballerinalang.sql.nativeimpl.QueryProcessor.nativeQuery(client, paramSQLString, recordType,
-                statementParametersProcessor, resultParametersProcessor);
+        return org.ballerinalang.sql.nativeimpl.CallProcessor.nativeCall(client, paramSQLString,
+            recordTypes, statementParametersProcessor, resultParametersProcessor);
     }
 }

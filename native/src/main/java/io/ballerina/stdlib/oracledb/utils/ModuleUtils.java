@@ -16,7 +16,7 @@
  *  under the License.
  */
 
-package org.ballerinalang.oracledb.utils;
+package io.ballerina.stdlib.oracledb.utils;
 
 import io.ballerina.runtime.api.Environment;
 import io.ballerina.runtime.api.Module;

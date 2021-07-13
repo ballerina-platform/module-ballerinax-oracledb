@@ -16,28 +16,27 @@
  *  under the License.
  */
 
-package org.ballerinalang.oracledb.utils;
+package io.ballerina.stdlib.oracledb.utils;
 
 import io.ballerina.runtime.api.values.BObject;
-import org.ballerinalang.oracledb.parameterprocessor.OracleDBResultParameterProcessor;
+import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBResultParameterProcessor;
 import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
 
 /**
- * This class provides functionality to call `sql:ProcedureCallResult` with a custom `ResultParameterProcessor` object.
+ * This class provides functionality to call `sql:RecordIteratorUtils` with a custom `ResultParameterProcessor` object.
  *
  * @since 0.1.0
  */
-public class ProcedureCallResultUtils {
+public class RecordIteratorUtils {
 
     /**
-     * Calls sql:ProcedureCallResult` with a custom `ResultParameterProcessor` object.
+     * Call `sql:RecordIteratorUtils` with a custom `ResultParameterProcessor` object.
      * @param customResultIterator module specific resultIterator BObject
-     * @param callResult call result that needs to be iterated
-     * @return next query result
+     * @param iterator the record that needs to be iterated
+     * @return next result of the iterator
      */
-    public static Object getNextQueryResult(BObject customResultIterator, BObject callResult) {
+    public static Object nextResult(BObject customResultIterator, BObject iterator) {
         DefaultResultParameterProcessor resultParameterProcessor = OracleDBResultParameterProcessor.getInstance();
-        return org.ballerinalang.sql.utils.ProcedureCallResultUtils.getNextQueryResult(
-                callResult, resultParameterProcessor);
+        return org.ballerinalang.sql.utils.RecordIteratorUtils.nextResult(iterator, resultParameterProcessor);
     }
 }

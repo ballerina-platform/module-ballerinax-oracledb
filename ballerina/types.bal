@@ -132,13 +132,13 @@ public distinct class XmlValue {
 #
 public class CustomResultIterator {
     public isolated function nextResult(sql:ResultIterator iterator) returns record {}|sql:Error? = @java:Method {
-        'class: "org.ballerinalang.oracledb.utils.RecordIteratorUtils",
+        'class: "io.ballerina.stdlib.oracledb.utils.RecordIteratorUtils",
         paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
     } external;
 
     public isolated function getNextQueryResult(sql:ProcedureCallResult callResult)
     returns boolean|sql:Error = @java:Method {
-        'class: "org.ballerinalang.oracledb.utils.ProcedureCallResultUtils",
+        'class: "io.ballerina.stdlib.oracledb.utils.ProcedureCallResultUtils",
         paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
     } external;
 }

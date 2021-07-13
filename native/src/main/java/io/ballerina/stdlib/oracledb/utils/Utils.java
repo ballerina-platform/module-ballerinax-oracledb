@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.oracledb.utils;
+package io.ballerina.stdlib.oracledb.utils;
 
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.values.BDecimal;
@@ -23,7 +23,7 @@ import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BValue;
 import oracle.jdbc.OracleConnection;
-import org.ballerinalang.oracledb.Constants;
+import io.ballerina.stdlib.oracledb.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
 
 import java.sql.Connection;

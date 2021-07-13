@@ -16,7 +16,7 @@
  *  under the License.
  */
 
-package org.ballerinalang.oracledb.utils;
+package io.ballerina.stdlib.oracledb.utils;
 
 import io.ballerina.runtime.api.TypeTags;
 import io.ballerina.runtime.api.types.Field;
@@ -28,7 +28,7 @@ import io.ballerina.runtime.api.values.BDecimal;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import oracle.xdb.XMLType;
-import org.ballerinalang.oracledb.Constants;
+import io.ballerina.stdlib.oracledb.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
 
 import java.math.BigDecimal;
