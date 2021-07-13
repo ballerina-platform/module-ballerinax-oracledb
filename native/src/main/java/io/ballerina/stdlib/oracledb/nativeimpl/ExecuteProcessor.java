@@ -21,7 +21,7 @@ package io.ballerina.stdlib.oracledb.nativeimpl;
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBStatementParameterProcessor;
-import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
+import io.ballerina.stdlib.sql.parameterprocessor.DefaultStatementParameterProcessor;
 
 /**
  * This class contains methods for executing SQL queries.
@@ -41,7 +41,7 @@ public class ExecuteProcessor {
     public static Object nativeExecute(BObject client, Object paramSQLString) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();
-        return org.ballerinalang.sql.nativeimpl.ExecuteProcessor.nativeExecute(client, paramSQLString,
+        return io.ballerina.stdlib.sql.nativeimpl.ExecuteProcessor.nativeExecute(client, paramSQLString,
                 statementParametersProcessor);
     }
 
@@ -54,7 +54,7 @@ public class ExecuteProcessor {
     public static Object nativeBatchExecute(BObject client, BArray paramSQLStrings) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();
-        return org.ballerinalang.sql.nativeimpl.ExecuteProcessor.nativeBatchExecute(client, paramSQLStrings,
+        return io.ballerina.stdlib.sql.nativeimpl.ExecuteProcessor.nativeBatchExecute(client, paramSQLStrings,
                 statementParametersProcessor);
     }
 }

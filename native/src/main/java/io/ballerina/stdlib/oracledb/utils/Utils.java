@@ -24,7 +24,7 @@ import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BValue;
 import oracle.jdbc.OracleConnection;
 import io.ballerina.stdlib.oracledb.Constants;
-import org.ballerinalang.sql.exception.ApplicationError;
+import io.ballerina.stdlib.sql.exception.ApplicationError;
 
 import java.sql.Connection;
 import java.sql.SQLException;

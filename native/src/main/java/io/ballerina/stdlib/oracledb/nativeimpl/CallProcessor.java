@@ -22,8 +22,8 @@ import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBResultParameterProcessor;
 import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBStatementParameterProcessor;
-import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
-import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
+import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor;
+import io.ballerina.stdlib.sql.parameterprocessor.DefaultStatementParameterProcessor;
 
 /**
  * This class holds the methods required to execute call statements.
@@ -46,7 +46,7 @@ public class CallProcessor {
                 .getInstance();
         DefaultResultParameterProcessor resultParametersProcessor = OracleDBResultParameterProcessor
                 .getInstance();
-        return org.ballerinalang.sql.nativeimpl.CallProcessor.nativeCall(client, paramSQLString,
+        return io.ballerina.stdlib.sql.nativeimpl.CallProcessor.nativeCall(client, paramSQLString,
             recordTypes, statementParametersProcessor, resultParametersProcessor);
     }
 }

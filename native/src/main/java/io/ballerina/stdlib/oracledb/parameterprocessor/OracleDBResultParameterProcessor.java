@@ -22,7 +22,7 @@ import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.oracledb.utils.ModuleUtils;
-import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
+import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor;
 
 /**
  * This class overrides DefaultResultParameterProcessor to implement methods required convert SQL types into

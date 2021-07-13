@@ -20,7 +20,7 @@ package io.ballerina.stdlib.oracledb.utils;
 
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBResultParameterProcessor;
-import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
+import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor;
 
 /**
  * This class provides functionality to call `sql:ProcedureCallResult` with a custom `ResultParameterProcessor` object.
@@ -37,7 +37,7 @@ public class ProcedureCallResultUtils {
      */
     public static Object getNextQueryResult(BObject customResultIterator, BObject callResult) {
         DefaultResultParameterProcessor resultParameterProcessor = OracleDBResultParameterProcessor.getInstance();
-        return org.ballerinalang.sql.utils.ProcedureCallResultUtils.getNextQueryResult(
+        return io.ballerina.stdlib.sql.utils.ProcedureCallResultUtils.getNextQueryResult(
                 callResult, resultParameterProcessor);
     }
 }

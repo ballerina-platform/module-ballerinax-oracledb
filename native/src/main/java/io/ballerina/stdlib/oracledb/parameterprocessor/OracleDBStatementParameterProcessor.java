@@ -23,8 +23,8 @@ import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
 import oracle.xdb.XMLType;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.oracledb.utils.Utils;
-import org.ballerinalang.sql.exception.ApplicationError;
-import org.ballerinalang.sql.parameterprocessor.DefaultStatementParameterProcessor;
+import io.ballerina.stdlib.sql.exception.ApplicationError;
+import io.ballerina.stdlib.sql.parameterprocessor.DefaultStatementParameterProcessor;
 
 import java.sql.Array;
 import java.sql.Connection;

@@ -20,7 +20,7 @@ package io.ballerina.stdlib.oracledb.utils;
 
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBResultParameterProcessor;
-import org.ballerinalang.sql.parameterprocessor.DefaultResultParameterProcessor;
+import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor;
 
 /**
  * This class provides functionality to call `sql:RecordIteratorUtils` with a custom `ResultParameterProcessor` object.
@@ -37,6 +37,6 @@ public class RecordIteratorUtils {
      */
     public static Object nextResult(BObject customResultIterator, BObject iterator) {
         DefaultResultParameterProcessor resultParameterProcessor = OracleDBResultParameterProcessor.getInstance();
-        return org.ballerinalang.sql.utils.RecordIteratorUtils.nextResult(iterator, resultParameterProcessor);
+        return io.ballerina.stdlib.sql.utils.RecordIteratorUtils.nextResult(iterator, resultParameterProcessor);
     }
 }
