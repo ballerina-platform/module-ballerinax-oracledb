@@ -29,7 +29,7 @@ configurations {
 dependencies {
     jacocoRuntime "org.jacoco:org.jacoco.agent:${jacoco.toolVersion}:runtime"
 
-    checkstyle project(":build-config:checkstyle")
+    checkstyle project(":checkstyle")
     checkstyle "com.puppycrawl.tools:checkstyle:${puppycrawlCheckstyleVersion}"
     implementation (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
         transitive = false
@@ -106,7 +106,7 @@ tasks.withType(Checkstyle) {
 }
 
 spotbugsMain.finalizedBy validateSpotbugs
-checkstyleMain.dependsOn(":build-config:checkstyle:downloadMultipleFiles")
+checkstyleMain.dependsOn(':build-config:checkstyle:downloadCheckstyleRuleFiles')
 
 compileJava {
     doFirst {
