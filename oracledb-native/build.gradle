@@ -31,12 +31,14 @@ dependencies {
 
     checkstyle project(":build-config:checkstyle")
     checkstyle "com.puppycrawl.tools:checkstyle:${puppycrawlCheckstyleVersion}"
-    compile (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
+    implementation (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
         transitive = false
     }
-    compile (group: 'com.oracle.database.xml', name: 'xdb', version: "${oracleXDBDriverVersion}") {
+    implementation (group: 'com.oracle.database.xml', name: 'xdb', version: "${oracleXDBDriverVersion}") {
         transitive = false
     }
+    implementation group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
+    implementation group: 'org.ballerinalang', name: 'sql-native', version: "${stdlibSqlVersion}"
 }
 
 tasks.withType(JavaCompile) {
