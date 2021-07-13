@@ -4,7 +4,7 @@ name = "oracledb"
 version = "@toml.version@"
 
 [[platform.java11.dependency]]
-path = "../oracledb-native/build/libs/oracledb-native-@project.version@.jar"
+path = "../native/build/libs/oracledb-native-@project.version@.jar"
 groupId = "org.ballerinalang"
 artifactId = "oracledb-native"
 version = "@project.version@"
