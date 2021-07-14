@@ -27,9 +27,9 @@ import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BDecimal;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
-import oracle.xdb.XMLType;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.sql.exception.ApplicationError;
+import oracle.xdb.XMLType;
 
 import java.math.BigDecimal;
 import java.sql.Array;

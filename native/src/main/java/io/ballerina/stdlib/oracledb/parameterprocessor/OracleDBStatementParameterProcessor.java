@@ -19,12 +19,12 @@
 package io.ballerina.stdlib.oracledb.parameterprocessor;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
-import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
-import oracle.xdb.XMLType;
 import io.ballerina.stdlib.oracledb.Constants;
+import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
 import io.ballerina.stdlib.oracledb.utils.Utils;
 import io.ballerina.stdlib.sql.exception.ApplicationError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultStatementParameterProcessor;
+import oracle.xdb.XMLType;
 
 import java.sql.Array;
 import java.sql.Connection;

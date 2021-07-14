@@ -22,9 +22,9 @@ import io.ballerina.runtime.api.values.BDecimal;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BValue;
-import oracle.jdbc.OracleConnection;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.sql.exception.ApplicationError;
+import oracle.jdbc.OracleConnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;

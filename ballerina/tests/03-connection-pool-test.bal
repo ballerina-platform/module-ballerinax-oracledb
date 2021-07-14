@@ -160,7 +160,8 @@ isolated function testLocalSharedConnectionPoolConfigDifferentDbOptions() return
 }
 
 @test:Config {
-  groups: ["pool"]
+  groups: ["pool"],
+  enable: false
 }
 function testLocalSharedConnectionPoolConfigMultipleDestinations() returns sql:Error? {
     sql:ConnectionPool pool1 = {maxOpenConnections: 3};

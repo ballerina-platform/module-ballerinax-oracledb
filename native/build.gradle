@@ -106,7 +106,7 @@ tasks.withType(Checkstyle) {
 }
 
 spotbugsMain.finalizedBy validateSpotbugs
-checkstyleMain.dependsOn(':build-config:checkstyle:downloadCheckstyleRuleFiles')
+checkstyleMain.dependsOn ':checkstyle:downloadCheckstyleRuleFiles'
 
 compileJava {
     doFirst {
