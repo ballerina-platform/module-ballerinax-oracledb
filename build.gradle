@@ -29,7 +29,7 @@ def packageName = "oracledb"
 ext.ballerinaLangVersion = project.ballerinaLangVersion
 
 allprojects {
-    group = 'org.ballerinalang'
+    group = project.group
     version = project.version
 
     apply plugin: 'jacoco'
@@ -50,143 +50,7 @@ allprojects {
         }
 
         maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/ballerina-lang'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-sql'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-io'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-time'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-regex'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-os'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-jwt'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-oauth2'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-crypto'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-log'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerinai-transaction'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-task'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-file'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-uuid'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-mime'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-cache'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-auth'
-            credentials {
-                username System.getenv("packageUser")
-                password System.getenv("packagePAT")
-            }
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-http'
+            url = 'https://maven.pkg.github.com/ballerina-platform/*'
             credentials {
                 username System.getenv("packageUser")
                 password System.getenv("packagePAT")
@@ -201,7 +65,6 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'java'
 
     configurations {
         externalJars
@@ -209,27 +72,26 @@ subprojects {
     }
 
     dependencies {
-        compile group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
-        compile group: 'org.ballerinalang', name: 'sql-native', version: "${stdlibSqlVersion}"
 
-        ballerinaStdLibs "org.ballerinalang:sql-ballerina:${stdlibSqlVersion}"
-        ballerinaStdLibs "org.ballerinalang:io-ballerina:${stdlibIoVersion}"
-        ballerinaStdLibs "org.ballerinalang:time-ballerina:${stdlibTimeVersion}"
-        ballerinaStdLibs "org.ballerinalang:regex-ballerina:${stdlibRegexVersion}"
-        ballerinaStdLibs "org.ballerinalang:os-ballerina:${stdlibOsVersion}"
-        ballerinaStdLibs "org.ballerinalang:crypto-ballerina:${stdlibCryptoVersion}"
-        ballerinaStdLibs "org.ballerinalang:log-ballerina:${stdlibLogVersion}"
-        ballerinaStdLibs "org.ballerinalang:file-ballerina:${stdlibFileVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:sql-ballerina:${stdlibSqlVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:io-ballerina:${stdlibIoVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:time-ballerina:${stdlibTimeVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:regex-ballerina:${stdlibRegexVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:os-ballerina:${stdlibOsVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:crypto-ballerina:${stdlibCryptoVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:log-ballerina:${stdlibLogVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:file-ballerina:${stdlibFileVersion}"
 
         ballerinaStdLibs "org.ballerinalang:transaction-ballerina:${stdlibTransactionVersion}"
-        ballerinaStdLibs "org.ballerinalang:task-ballerina:${stdlibTaskVersion}"
-        ballerinaStdLibs "org.ballerinalang:uuid-ballerina:${stdlibUuidVersion}"
-        ballerinaStdLibs "org.ballerinalang:mime-ballerina:${stdlibMimeVersion}"
-        ballerinaStdLibs "org.ballerinalang:cache-ballerina:${stdlibCacheVersion}"
-        ballerinaStdLibs "org.ballerinalang:auth-ballerina:${stdlibAuthVersion}"
-        ballerinaStdLibs "org.ballerinalang:jwt-ballerina:${stdlibJwtVersion}"
-        ballerinaStdLibs "org.ballerinalang:oauth2-ballerina:${stdlibOAuth2Version}"
-        ballerinaStdLibs "org.ballerinalang:http-ballerina:${stdlibHttpVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:task-ballerina:${stdlibTaskVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:uuid-ballerina:${stdlibUuidVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:mime-ballerina:${stdlibMimeVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:cache-ballerina:${stdlibCacheVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:auth-ballerina:${stdlibAuthVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:jwt-ballerina:${stdlibJwtVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:oauth2-ballerina:${stdlibOAuth2Version}"
+        ballerinaStdLibs "io.ballerina.stdlib:http-ballerina:${stdlibHttpVersion}"
+        ballerinaStdLibs "io.ballerina.stdlib:url-ballerina:${stdlibUrlVersion}"
 
         externalJars (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
             transitive = false
