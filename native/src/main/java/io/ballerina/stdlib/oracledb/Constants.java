@@ -31,6 +31,11 @@ public final class Constants {
      * Constants for database client properties.
      */
     public static final class ClientConfiguration {
+
+        private ClientConfiguration() {
+
+        }
+
         public static final BString HOST = StringUtils.fromString("host");
         public static final BString PORT = StringUtils.fromString("port");
         public static final BString USER = StringUtils.fromString("user");
@@ -44,6 +49,11 @@ public final class Constants {
      * Constants for database client options.
      */
     public static final class Options {
+
+        private Options () {
+
+        }
+
         public static final BString SSL = StringUtils.fromString("ssl");
         public static final BString AUTOCOMMIT = StringUtils.fromString("autoCommit");
         public static final BString LOGIN_TIMEOUT_SECONDS = StringUtils.fromString("loginTimeout");
@@ -55,6 +65,11 @@ public final class Constants {
      * Constants for configuring database SSL options.
      */
     public static final class SecureSocket {
+
+        private SecureSocket() {
+
+        }
+
         public static final BString KEYSTORE = StringUtils.fromString("key");
         public static final BString TRUSTSTORE = StringUtils.fromString("cert");
 
@@ -62,6 +77,10 @@ public final class Constants {
          * Constants for setting crypto keystore.
          */
         public static final class CryptoKeyStoreRecord {
+
+            private CryptoKeyStoreRecord () {
+
+            }
             public static final BString PATH_FIELD = StringUtils.fromString("path");
             public static final BString PASSWORD_FIELD = StringUtils.fromString("password");
         }
@@ -70,6 +89,11 @@ public final class Constants {
          * Constants for setting crypto truststore.
          */
         public static final class CryptoTrustStoreRecord {
+
+            private CryptoTrustStoreRecord() {
+
+            }
+
             public static final BString PATH_FIELD = StringUtils.fromString("path");
             public static final BString PASSWORD_FIELD = StringUtils.fromString("password");
         }
@@ -78,6 +102,11 @@ public final class Constants {
          * Constants for available Keystore/ Truststore file types.
          */
         public static final class StoreTypes {
+
+            private StoreTypes() {
+
+            }
+
             public static final String JKS = "JKS";
             public static final String PKCS12 = "PKCS12";
             public static final String SSO = "SSO";
@@ -87,6 +116,11 @@ public final class Constants {
          * Constants for available Keystore/ Truststore extensions.
          */
         public static final class StoreExtensions {
+
+            private StoreExtensions() {
+
+            }
+
             public static final String P12 = ".p12";
             public static final String PFX = ".pfx";
             public static final String JKS = ".jks";
@@ -98,6 +132,11 @@ public final class Constants {
      * Constants for database properties.
      */
     public static final class DatabaseProps {
+
+        private DatabaseProps() {
+
+        }
+
         public static final BString LOGIN_TIMEOUT = StringUtils.fromString("loginTimeout");
         public static final BString CONN_PROPERTIES = StringUtils.fromString("connectionProperties");
     }
@@ -106,6 +145,11 @@ public final class Constants {
      * Constants for pool properties.
      */
     public static final class Pool {
+
+        private Pool() {
+
+        }
+
         public static final BString CONNECT_TIMEOUT = StringUtils.fromString("connectionTimeout");
         public static final BString AUTO_COMMIT = StringUtils.fromString("autoCommit");
 
@@ -115,6 +159,11 @@ public final class Constants {
      * Constants related to TypedValue fields.
      */
     public static final class TypedValueFields {
+
+        private TypedValueFields() {
+
+        }
+
         public static final BString VALUE = fromString("value");
     }
 
@@ -123,10 +172,19 @@ public final class Constants {
      */
     public static final class Types {
 
+        private Types() {
+
+        }
+
         /**
          * Constants related to Oracle Database type names.
          */
         public static final class OracleDbTypes {
+
+            private OracleDbTypes() {
+
+            }
+
             public static final String INTERVAL_YEAR_TO_MONTH = "INTERVAL_YEAR_TO_MONTH";
             public static final String INTERVAL_DAY_TO_SECOND = "INTERVAL_DAY_TO_SECOND";
             public static final String OBJECT_TYPE = "OBJECT";
@@ -138,6 +196,11 @@ public final class Constants {
          * Constants related to custom ballerina type names.
          */
         public static final class CustomTypes {
+
+            private CustomTypes() {
+
+            }
+
             public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthValue";
             public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondValue";
             public static final String OBJECT = "ObjectTypeValue";
@@ -150,6 +213,11 @@ public final class Constants {
          * Constants related to the attributes of INTERVAL_YEAR_TO_MONTH Oracle DB type.
          */
         public static final class IntervalYearToMonth {
+
+            private IntervalYearToMonth() {
+
+            }
+
             public static final String YEARS = "years";
             public static final String MONTHS = "months";
 
@@ -159,6 +227,11 @@ public final class Constants {
          * Constants related to the attributes of INTERVAL_DAY_TO_SECOND Oracle DB type.
          */
         public static final class IntervalDayToSecond {
+
+            private IntervalDayToSecond() {
+
+            }
+
             public static final String DAYS = "days";
             public static final String HOURS = "hours";
             public static final String MINUTES = "minutes";
@@ -169,6 +242,11 @@ public final class Constants {
          * Constants related to the attributes of OBJECT Oracle DB type.
          */
         public static final class OracleObject {
+
+            private OracleObject() {
+
+            }
+
             public static final String TYPE_NAME = "typename";
             public static final String ATTRIBUTES = "attributes";
         }
@@ -177,6 +255,11 @@ public final class Constants {
          * Constants related to the attributes of VARRAY Oracle DB type.
          */
         public static final class Varray {
+
+            private Varray() {
+
+            }
+
             public static final String NAME = "name";
             public static final String ELEMENTS = "elements";
         }
@@ -185,6 +268,11 @@ public final class Constants {
          * Constants related to the attributes of XML Oracle DB type.
          */
         public static class Xml {
+
+            private Xml() {
+
+            }
+
             public static final String XML = "xml";
         }
     }
