@@ -34,11 +34,11 @@ isolated function beforeInsertObjectFunc() returns sql:Error? {
         "DECIMAL_ATTR FLOAT " +
        ") "
    );
-   result = check oracledbClient->execute("CREATE TABLE TestObjectTypeTable(" +
-       "PK NUMBER GENERATED ALWAYS AS IDENTITY, " +
-       "COL_OBJECT OBJECT_TYPE, " +
-       "PRIMARY KEY(PK) " +
-       ")"
+   result = check oracledbClient->execute(`CREATE TABLE TestObjectTypeTable(
+       PK NUMBER GENERATED ALWAYS AS IDENTITY,
+       COL_OBJECT OBJECT_TYPE,
+       PRIMARY KEY(PK)
+       )`
    );
 
    result = check oracledbClient->execute(
@@ -48,11 +48,11 @@ isolated function beforeInsertObjectFunc() returns sql:Error? {
         "MAP MEMBER FUNCTION GET_ATTR1 RETURN NUMBER " +
        ") "
    );
-   result = check oracledbClient->execute("CREATE TABLE TestNestedObjectTypeTable(" +
-       "PK NUMBER GENERATED ALWAYS AS IDENTITY, " +
-       "COL_NESTED_OBJECT NESTED_TYPE, " +
-       "PRIMARY KEY(PK) " +
-       ")"
+   result = check oracledbClient->execute(`CREATE TABLE TestNestedObjectTypeTable(
+       PK NUMBER GENERATED ALWAYS AS IDENTITY,
+       COL_NESTED_OBJECT NESTED_TYPE,
+       PRIMARY KEY(PK)
+       )`
    );
 
    check oracledbClient.close();

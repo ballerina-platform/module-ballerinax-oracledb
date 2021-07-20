@@ -16,18 +16,18 @@
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["insert-time"] }
+@test:BeforeGroups { value:["execute", "insert-time"] }
 isolated function beforeInsertTimeFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("TestDateTimeTable");
-    result = check oracledbClient->execute("ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-RR HH:MI:SS AM'");
-    result = check oracledbClient->execute("ALTER session set NLS_TIMESTAMP_TZ_FORMAT = 'DD-MON-RR HH:MI:SS AM TZR'");
-    result = check oracledbClient->execute("CREATE TABLE TestDateTimeTable(" +
-        "PK NUMBER GENERATED ALWAYS AS IDENTITY, " +
-        "COL_INTERVAL_YEAR_TO_MONTH INTERVAL YEAR TO MONTH, " +
-        "COL_INTERVAL_DAY_TO_SECOND INTERVAL DAY(9) TO SECOND(9), " +
-        "PRIMARY KEY(PK) " +
-        ")"
+    result = check oracledbClient->execute(`ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-RR HH:MI:SS AM'`);
+    result = check oracledbClient->execute(`ALTER session set NLS_TIMESTAMP_TZ_FORMAT = 'DD-MON-RR HH:MI:SS AM TZR'`);
+    result = check oracledbClient->execute(`CREATE TABLE TestDateTimeTable(
+        PK NUMBER GENERATED ALWAYS AS IDENTITY,
+        COL_INTERVAL_YEAR_TO_MONTH INTERVAL YEAR TO MONTH,
+        COL_INTERVAL_DAY_TO_SECOND INTERVAL DAY(9) TO SECOND(9),
+        PRIMARY KEY(PK)
+        )`
     );
 
     check oracledbClient.close();

@@ -18,22 +18,22 @@ import ballerina/io;
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["execute-params"] }
+@test:BeforeGroups { value:["execute", "execute-params"] }
 isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("NumericTypesTable");
-    result = check oracledbClient->execute("CREATE TABLE NumericTypesTable(" +
-        "id NUMBER, " +
-        "col_number NUMBER, " +
-        "col_float FLOAT, " +
-        "col_binary_float BINARY_FLOAT, " +
-        "col_binary_double BINARY_DOUBLE, " +
-        "PRIMARY KEY (id) " +
-        ")"
+    result = check oracledbClient->execute(`CREATE TABLE NumericTypesTable(
+        id NUMBER,
+        col_number NUMBER,
+        col_float FLOAT,
+        col_binary_float BINARY_FLOAT,
+        col_binary_double BINARY_DOUBLE,
+        PRIMARY KEY (id)
+        )`
     );
     result = check oracledbClient->execute(
-        "INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)" +
-        "VALUES(1, 1, 922.337, 123.34, 123.34)");
+        `INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)
+        VALUES(1, 1, 922.337, 123.34, 123.34)`);
 
     result = check oracledbClient->execute(
         "INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)" +

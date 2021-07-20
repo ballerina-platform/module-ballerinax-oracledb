@@ -248,20 +248,6 @@ isolated function queryNVarchar2Param() returns error? {
     validateCharacterSimpleQueryTableResult(check queryClient(sqlQuery));
 }
 
-isolated function validateCharacterSimpleQueryTableResult(record{}? returnData) {
-    if (returnData is ()) {
-        test:assertFail("Empty row returned.");
-    } else {
-
-        test:assertEquals(<int> returnData["ID"], 1);
-        test:assertEquals(returnData["COL_VARCHAR2"], "Hello world");
-        test:assertEquals(returnData["COL_VARCHAR"], "Hello world");
-        test:assertEquals(returnData["COL_NVARCHAR2"], "Hello world");
-        test:assertEquals((<string>returnData["COL_CHAR"]).trim(), "Hello world");
-        test:assertEquals((<string>returnData["COL_NCHAR"]).trim(), "Hello world");
-    } 
-}
-
 @test:Config {
     groups: ["query","query-simple-params"]
 }
@@ -392,6 +378,35 @@ isolated function queryAnsiRealParam() returns error? {
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
 }
 
+@test:Config {
+    groups: ["query","query-simple-params"]
+}
+isolated function queryClobParam() returns error? {
+    int id = 1;
+    sql:ParameterizedQuery sqlQuery = `SELECT * from LobSimpleQueryTable WHERE id = ${id}`;
+    validateLobSimpleQueryTableResult(check queryClient(sqlQuery));
+}
+
+@test:Config {
+    groups: ["query","query-simple-params"]
+}
+isolated function querySqlDsVarcharParam() returns error? {
+    int id = 1;
+    sql:ParameterizedQuery sqlQuery = `SELECT * from SqlDsSimpleQueryTable WHERE id = ${id}`;
+    validateSqlDsSimpleQueryTableResult(check queryClient(sqlQuery));
+}
+
+isolated function validateLobSimpleQueryTableResult(record{}? returnData) {
+    if (returnData is ()) {
+        test:assertFail("Empty row returned.");
+    } else {
+        test:assertEquals(<int> returnData["ID"], 1);
+        test:assertEquals(returnData["COL_CLOB"], "Hello world");
+        test:assertEquals(returnData["COL_NCLOB"], "Hello world");
+        test:assertEquals(returnData["COL_BLOB"], [171,52,239,194,52]);
+    }
+}
+
 isolated function validateAnsiSimpleQueryTableResult(record{}? returnData) {
     if (returnData is ()) {
         test:assertFail("Empty row returned.");
@@ -412,36 +427,21 @@ isolated function validateAnsiSimpleQueryTableResult(record{}? returnData) {
         test:assertEquals(<float>returnData["COL_FLOAT"], 1234.134);
         test:assertEquals(<float>returnData["COL_DOUBLE_PRECISION"], 1234.134);
         test:assertEquals(<float>returnData["COL_REAL"], 1234.134);
-    } 
-}
-
-@test:Config {
-    groups: ["query","query-simple-params"]
-}
-isolated function queryClobParam() returns error? {
-    int id = 1;
-    sql:ParameterizedQuery sqlQuery = `SELECT * from LobSimpleQueryTable WHERE id = ${id}`;
-    validateLobSimpleQueryTableResult(check queryClient(sqlQuery));
-}
-
-isolated function validateLobSimpleQueryTableResult(record{}? returnData) {
-    if (returnData is ()) {
-        test:assertFail("Empty row returned.");
-    } else {
-        test:assertEquals(<int> returnData["ID"], 1);
-        test:assertEquals(returnData["COL_CLOB"], "Hello world");
-        test:assertEquals(returnData["COL_NCLOB"], "Hello world");
-        test:assertEquals(returnData["COL_BLOB"], [171,52,239,194,52]);
     }
 }
 
-@test:Config {
-    groups: ["query","query-simple-params"]
-}
-isolated function querySqlDsVarcharParam() returns error? {
-    int id = 1;
-    sql:ParameterizedQuery sqlQuery = `SELECT * from SqlDsSimpleQueryTable WHERE id = ${id}`;
-    validateSqlDsSimpleQueryTableResult(check queryClient(sqlQuery));
+isolated function validateCharacterSimpleQueryTableResult(record{}? returnData) {
+    if (returnData is ()) {
+        test:assertFail("Empty row returned.");
+    } else {
+
+        test:assertEquals(<int> returnData["ID"], 1);
+        test:assertEquals(returnData["COL_VARCHAR2"], "Hello world");
+        test:assertEquals(returnData["COL_VARCHAR"], "Hello world");
+        test:assertEquals(returnData["COL_NVARCHAR2"], "Hello world");
+        test:assertEquals((<string>returnData["COL_CHAR"]).trim(), "Hello world");
+        test:assertEquals((<string>returnData["COL_NCHAR"]).trim(), "Hello world");
+    }
 }
 
 isolated function validateSqlDsSimpleQueryTableResult(record{}? returnData) {
