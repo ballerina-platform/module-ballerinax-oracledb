@@ -18,10 +18,15 @@
 
 package io.ballerina.stdlib.oracledb.utils;
 
+import io.ballerina.runtime.api.PredefinedTypes;
 import io.ballerina.runtime.api.TypeTags;
+import io.ballerina.runtime.api.creators.TypeCreator;
+import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.api.types.ArrayType;
 import io.ballerina.runtime.api.types.Field;
 import io.ballerina.runtime.api.types.StructureType;
 import io.ballerina.runtime.api.types.Type;
+import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BDecimal;
@@ -50,6 +55,12 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
  * @since 0.1.0
  */
 public class ConverterUtils {
+    private static final ArrayType byteArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_BYTE);
+    private static final ArrayType stringArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_STRING);
+    private static final ArrayType booleanArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_BOOLEAN);
+    private static final ArrayType intArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_INT);
+    private static final ArrayType floatArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_FLOAT);
+    private static final ArrayType decimalArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_DECIMAL);
 
     /**
      * Convert IntervalYearToMonthValue value to String.
@@ -88,25 +99,25 @@ public class ConverterUtils {
         return day + " " + hour + ":" + minute + ":" + second;
     }
 
-     /**
-      * Convert OracleObjectValue value to oracle.sql.STRUCT.
-      * @param value Custom Bfile value
-      * @return String of BFILE
-      */
-     public static Struct convertOracleObject(Connection connection, Object value)
-             throws ApplicationError, SQLException {
-         Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.OBJECT_TYPE);
-         String objectTypeName = ((BString) fields.get(Constants.Types.OracleObject.TYPE_NAME))
-                 .getValue().toUpperCase(Locale.ENGLISH);
-         Object[] attributes = (Object[]) fields.get(Constants.Types.OracleObject.ATTRIBUTES);
-         try {
-             return connection.createStruct(objectTypeName, attributes);
-         } catch (SQLException e) {
-             throw(e);
-         } catch (Exception e) {
-             throw new ApplicationError("The array contains elements of unmappable types.");
-         }
-     }
+    /**
+     * Convert OracleObjectValue value to oracle.sql.STRUCT.
+     * @param value Custom Bfile value
+     * @return String of BFILE
+     */
+    public static Struct convertOracleObject(Connection connection, Object value)
+            throws ApplicationError, SQLException {
+        Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.OBJECT_TYPE);
+        String objectTypeName = ((BString) fields.get(Constants.Types.OracleObject.TYPE_NAME))
+                .getValue().toUpperCase(Locale.ENGLISH);
+        Object[] attributes = (Object[]) fields.get(Constants.Types.OracleObject.ATTRIBUTES);
+        try {
+            return connection.createStruct(objectTypeName, attributes);
+        } catch (SQLException e) {
+            throw(e);
+        } catch (Exception e) {
+            throw new ApplicationError("The array contains elements of unmappable types.");
+        }
+    }
 
     /**
      * Convert VArray value to oracle.sql.Array.
@@ -120,6 +131,129 @@ public class ConverterUtils {
         String name = ((BString) fields.get(Constants.Types.Varray.NAME)).getValue().toUpperCase(Locale.ENGLISH);
         Object varray = fields.get(Constants.Types.Varray.ELEMENTS);
         return Utils.getOracleConnection(connection).createARRAY(name, varray);
+    }
+
+    /**
+     * Convert SQL array to string array.
+     * @param dataArray SQL array retrieved from the database
+     * @return BArray of type string generated from the SQL array
+     * @throws ApplicationError throws error if the parameter types are incorrect
+     */
+    public static BArray convertToStringArrayFromVarray(Object[] dataArray)
+            throws ApplicationError {
+        if (dataArray[0] instanceof String) {
+            BArray typedArray = ValueCreator.createArrayValue(stringArrayType);
+            int length = dataArray.length;
+            for (int i = 0; i < length; ++i) {
+                typedArray.add(i, StringUtils.fromString((String) dataArray[i]));
+            }
+            return typedArray;
+        } else {
+            throw Utils.throwArrayTypeCastError(Constants.Types.BallerinaArrayTypes.STRING);
+        }
+
+    }
+
+    /**
+     * Convert SQL array to int array.
+     * @param dataArray SQL array retrieved from the database
+     * @return BArray of type string generated from the SQL array
+     * @throws ApplicationError throws error if the parameter types are incorrect
+     */
+    public static BArray convertToIntArrayFromVarray(Object[] dataArray)
+            throws ApplicationError {
+        BArray typedArray = ValueCreator.createArrayValue(intArrayType);
+        int length = dataArray.length;
+        if (dataArray[0] instanceof BigDecimal) {
+            for (int i = 0; i < length; ++i) {
+                typedArray.add(i, ((BigDecimal) dataArray[i]).longValue());
+            }
+        } else {
+            throw Utils.throwArrayTypeCastError(Constants.Types.BallerinaArrayTypes.INT);
+        }
+        return typedArray;
+    }
+
+    /**
+     * Convert SQL array to float array.
+     * @param dataArray SQL array retrieved from the database
+     * @return BArray of type float generated from the SQL array
+     * @throws ApplicationError throws error if the parameter types are incorrect
+     */
+    public static BArray convertToFloatArrayFromVarray(Object[] dataArray)
+            throws ApplicationError {
+        BArray typedArray = ValueCreator.createArrayValue(floatArrayType);
+        int length = dataArray.length;
+        if (dataArray[0] instanceof BigDecimal) {
+            for (int i = 0; i < length; ++i) {
+                typedArray.add(i, ((BigDecimal) dataArray[i]).doubleValue());
+            }
+        } else {
+            throw Utils.throwArrayTypeCastError(Constants.Types.BallerinaArrayTypes.FLOAT);
+        }
+        return typedArray;
+    }
+
+    /**
+     * Convert SQL array to decimal array.
+     * @param dataArray SQL array retrieved from the database
+     * @return BArray of type decimal generated from the SQL array
+     * @throws ApplicationError throws error if the parameter types are incorrect
+     */
+    public static BArray convertToDecimalArrayFromVarray(Object[] dataArray)
+            throws ApplicationError {
+        BArray typedArray = ValueCreator.createArrayValue(decimalArrayType);
+        int length = dataArray.length;
+        if (dataArray[0] instanceof BigDecimal) {
+            for (int i = 0; i < length; ++i) {
+                typedArray.add(i, ValueCreator.createDecimalValue((BigDecimal) dataArray[i]));
+            }
+        } else {
+            throw Utils.throwArrayTypeCastError(Constants.Types.BallerinaArrayTypes.DECIMAL);
+        }
+        return typedArray;
+    }
+
+    /**
+     * Convert SQL array to boolean array.
+     * @param dataArray SQL array retrieved from the database
+     * @return BArray of type string generated from the SQL array
+     * @throws ApplicationError throws error if the parameter types are incorrect
+     */
+    public static BArray convertToBooleanArrayFromVarray(Object[] dataArray)
+            throws ApplicationError {
+        BArray typedArray = ValueCreator.createArrayValue(booleanArrayType);
+        int length = dataArray.length;
+        if (dataArray[0] instanceof BigDecimal) {
+            for (int i = 0; i < length; ++i) {
+                Boolean element = dataArray[i].equals(BigDecimal.ONE);
+                typedArray.add(i, element);
+            }
+        } else {
+            throw Utils.throwArrayTypeCastError(Constants.Types.BallerinaArrayTypes.BOOLEAN);
+        }
+        return typedArray;
+    }
+
+    /**
+     * Convert SQL array to string array.
+     * @param dataArray SQL array retrieved from the database
+     * @return BArray of type string generated from the SQL array
+     * @throws ApplicationError throws error if the parameter types are incorrect
+     */
+    public static BArray convertToByteArrayFromVarray(Object[] dataArray)
+            throws ApplicationError {
+        BArray typedArray = ValueCreator.createArrayValue(byteArrayType);
+        if (dataArray[0].getClass() == byte[].class) {
+            byte[] byteArray = (byte[]) dataArray[0];
+            int length = byteArray.length;
+            for (int i = 0; i < length; ++i) {
+                typedArray.add(i, byteArray[i]);
+            }
+        } else {
+            throw Utils.throwArrayTypeCastError(Constants.Types.BallerinaArrayTypes.BYTE);
+        }
+        return typedArray;
     }
 
     /**
@@ -195,6 +329,8 @@ public class ConverterUtils {
                         structData.put(field.getFieldName(), null);
                     } else if (bValue instanceof BArray) {
                         structData.put(field.getFieldName(), getArrayData(bValue));
+                    } else if (bValue instanceof BString) {
+                        structData.put(field.getFieldName(), bValue);
                     } else {
                         throw Utils.throwInvalidParameterError(value, sqlType);
                     }
@@ -206,7 +342,7 @@ public class ConverterUtils {
         return structData;
     }
 
-    protected static Object[] getArrayData(Object bValue) throws ApplicationError {
+    private static Object[] getArrayData(Object bValue) throws ApplicationError {
         Type elementType = ((BArray) bValue).getElementType();
         int tag = elementType.getTag();
         switch (tag) {
@@ -229,11 +365,11 @@ public class ConverterUtils {
         }
     }
 
-    protected static Object[] getByteArrayData(Object value) {
+    private static Object[] getByteArrayData(Object value) {
         return new byte[][]{((BArray) value).getBytes()};
     }
 
-    protected static Object[] getIntArrayData(Object value) {
+    private static Object[] getIntArrayData(Object value) {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new Long[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -242,7 +378,7 @@ public class ConverterUtils {
         return arrayData;
     }
 
-    protected static Object[] getFloatArrayData(Object value) {
+    private static Object[] getFloatArrayData(Object value) {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new Double[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -251,7 +387,7 @@ public class ConverterUtils {
         return arrayData;
     }
 
-    protected static Object[] getStringArrayData(Object value) {
+    private static Object[] getStringArrayData(Object value) {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new String[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -260,7 +396,7 @@ public class ConverterUtils {
         return arrayData;
     }
 
-    protected static Object[] getBooleanArrayData(Object value) {
+    private static Object[] getBooleanArrayData(Object value) {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new Boolean[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -269,7 +405,7 @@ public class ConverterUtils {
         return arrayData;
     }
 
-    protected static Object[] getDecimalArrayData(Object value) {
+    private static Object[] getDecimalArrayData(Object value) {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new BigDecimal[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -278,7 +414,7 @@ public class ConverterUtils {
         return arrayData;
     }
 
-    protected static Object[] getAnydataArrayData(Object value) throws ApplicationError {
+    private static Object[] getAnydataArrayData(Object value) throws ApplicationError {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new Object[arrayLength];
         for (int i = 0; i < arrayLength; i++) {

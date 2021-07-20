@@ -22,7 +22,7 @@ import ballerina/sql;
 #
 # + years - Number of years
 # + months - Number of months
-type IntervalYearToMonth record {|
+public type IntervalYearToMonth record {|
     int years;
     int months;
 |};
@@ -34,7 +34,7 @@ type IntervalYearToMonth record {|
 # + hours - Number of hours
 # + minutes - Number of minutes
 # + seconds - Number of seconds
-type IntervalDayToSecond record {|
+public type IntervalDayToSecond record {|
     int days;
     int hours;
     int minutes;
@@ -46,7 +46,7 @@ type IntervalDayToSecond record {|
 #
 # + typename - Name of the object type
 # + attributes - Attributes of the object
-type ObjectType record {|
+public type ObjectType record {|
     string typename;
     anydata[]? attributes;
 |};
@@ -57,7 +57,7 @@ type ObjectType record {|
 #
 # + name - Name of the varray
 # + elements - Elements of the Varray
-type Varray record {|
+public type Varray record {|
     string name;
     byte[]|int[]|boolean[]|float[]|decimal[]|string[]? elements;
 |};

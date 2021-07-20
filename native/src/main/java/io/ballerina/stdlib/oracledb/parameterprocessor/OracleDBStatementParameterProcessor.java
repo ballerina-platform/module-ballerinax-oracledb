@@ -80,7 +80,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     }
 
     private void setIntervalYearToMonth(PreparedStatement preparedStatement,
-                                         int index, Object value) throws SQLException, ApplicationError {
+                                        int index, Object value) throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setNull(index, Types.NULL);
         } else if (value instanceof BString) {

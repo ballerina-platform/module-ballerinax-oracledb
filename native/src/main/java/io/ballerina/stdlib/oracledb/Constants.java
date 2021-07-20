@@ -42,7 +42,7 @@ public final class Constants {
         public static final BString PASSWORD = StringUtils.fromString("password");
         public static final BString DATABASE = StringUtils.fromString("database");
         public static final BString OPTIONS = StringUtils.fromString("options");
-        public static final BString CONNECTION_POOL_OPTIONS = StringUtils.fromString("connectionPool"); 
+        public static final BString CONNECTION_POOL_OPTIONS = StringUtils.fromString("connectionPool");
     }
 
     /**
@@ -274,6 +274,19 @@ public final class Constants {
             }
 
             public static final String XML = "xml";
+        }
+
+        /**
+         * Constants related to the ballerina array types to which oracle varrays are converted.
+         */
+        public static final class BallerinaArrayTypes {
+            public static final String STRING = "string[]";
+            public static final String INT = "int[]";
+            public static final String FLOAT = "float[]";
+            public static final String DECIMAL = "decimal[]";
+            public static final String BOOLEAN = "boolean[]";
+            public static final String BYTE = "byte[]";
+            public static final String ANYDATA = "anydata[]";
         }
     }
 
