@@ -17,7 +17,6 @@ import ballerina/sql;
 import ballerina/test;
 
 @test:Config {
-    enable: true,
     groups:["execute", "execute-basic"]
 }
 isolated function testCreateTable() returns sql:Error? {
@@ -55,7 +54,6 @@ isolated function testCreateTable() returns sql:Error? {
 }
 
 @test:Config {
-    enable: true,
     groups:["execute", "execute-basic"],
     dependsOn: [testCreateTable]
 }
@@ -69,7 +67,6 @@ isolated function testAlterTable() returns sql:Error? {
 }
 
 @test:Config {
-    enable: true,
     groups:["execute", "execute-basic"],
     dependsOn: [testAlterTable]
 }
@@ -84,7 +81,6 @@ isolated function testInsertTable() returns sql:Error? {
 }
 
 @test:Config {
-    enable: true,
     groups:["execute", "execute-basic"],
     dependsOn: [testInsertTable]
 }
@@ -224,7 +220,6 @@ isolated function testUpdateData() returns sql:Error? {
 }
 
 @test:Config {
-    enable: true,
     groups:["execute", "execute-basic"],
     dependsOn:[testUpdateData]
 }

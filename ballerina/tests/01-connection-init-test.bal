@@ -18,7 +18,6 @@ import ballerina/test;
 
 // with user and password only
 @test:Config {
-    enable: true,
     groups:["connection","connection-init"]
 }
 isolated function testWithOnlyUserPasswordParams() {
@@ -28,7 +27,6 @@ isolated function testWithOnlyUserPasswordParams() {
 
 // with user, pwd, db
 @test:Config {
-    enable: true,
     groups:["connection","connection-init"]
 }
 isolated function testWithUserPasswordDatabaseParams() {
@@ -38,7 +36,6 @@ isolated function testWithUserPasswordDatabaseParams() {
 
 // with all params except options
 @test:Config {
-    enable: true,
     groups:["connection","connection-init"]
 }
 isolated function testWithAllParamsExceptOptions() {
@@ -54,7 +51,6 @@ isolated function testWithAllParamsExceptOptions() {
 
 // with all params and options minus SSL
 @test:Config {
-    enable: true,
     groups:["connection","connection-init"]
 
 }
@@ -71,7 +67,6 @@ function testWithOptionsExceptSSL() {
 
 // with all params, options and connection Pool
 @test:Config {
-   enable: true,
    groups:["connection","connection-init"]
 }
 function testWithConnectionPoolParam() {

@@ -383,7 +383,6 @@ isolated function testTransactionWithoutHandlers() returns error? {
 isolated string rollbackOut = "";
 
 @test:Config {
-    enable: false,
     groups: ["transaction", "local-transaction"],
     dependsOn: [testTransactionWithoutHandlers]
 }

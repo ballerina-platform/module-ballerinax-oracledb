@@ -81,7 +81,6 @@ isolated function insertObjectTypeWithString() returns sql:Error? {
 }
 
 @test:Config {
-   enable: true,
    groups:["execute","object"],
    dependsOn: [insertObjectTypeWithString]
 }
@@ -107,7 +106,6 @@ isolated function insertObjectTypeWithCustomType() returns sql:Error? {
 }
 
 @test:Config {
-   enable: true,
    groups:["execute","object"],
    dependsOn: [insertObjectTypeWithCustomType]
 }
@@ -128,7 +126,6 @@ isolated function insertObjectTypeNull() returns sql:Error? {
 }
 
 @test:Config {
-   enable: true,
    groups:["execute","object"],
    dependsOn: [insertObjectTypeNull]
 }
@@ -147,7 +144,6 @@ isolated function insertObjectTypeWithNullArray() returns sql:Error? {
 }
 
 @test:Config {
-   enable: true,
    groups:["execute","object"],
    dependsOn: [insertObjectTypeWithNullArray]
 }
@@ -168,7 +164,6 @@ isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
 }
 
 @test:Config {
-   enable: true,
    groups:["execute","object"],
    dependsOn: [insertObjectTypeWithEmptyArray]
 }
@@ -193,7 +188,6 @@ isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
 }
 
 @test:Config {
-   enable: true,
    groups:["execute","object"],
    dependsOn: [insertObjectTypeWithInvalidTypes1]
 }
@@ -216,7 +210,6 @@ isolated function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
 }
 
 @test:Config {
-   enable: true,
    groups:["execute","object"],
    dependsOn: [insertObjectTypeWithInvalidTypes2]
 }
@@ -239,7 +232,6 @@ isolated function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
 }
 
 @test:Config {
-   enable: true,
    groups:["execute","object"],
    dependsOn: [insertObjectTypeWithInvalidTypes3]
 }
@@ -266,7 +258,6 @@ isolated function insertObjectTypeWithStringArray() returns sql:Error? {
 }
 
 @test:Config {
-   enable: true,
    groups:["execute","object"],
    dependsOn: [insertObjectTypeWithStringArray]
 }
@@ -306,7 +297,6 @@ type ObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
-    enable: false,
     dependsOn: [insertObjectTypeWithNestedType]
 }
 isolated function selectObjectType() returns error? {
@@ -337,7 +327,6 @@ isolated function selectObjectType() returns error? {
 
 @test:Config {
     groups: ["query", "object"],
-    enable: false,
     dependsOn: [selectObjectType]
 }
 isolated function selectObjectTypeNull() returns error? {
@@ -365,7 +354,6 @@ type MismatchObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
-    enable: false,
     dependsOn: [selectObjectTypeNull]
 }
 isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
@@ -399,7 +387,6 @@ type BoolObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
-    enable: false,
     dependsOn: [selectObjectTypeWithMisMatchingFieldCount]
 }
 isolated function selectObjectTypeWithBoolean() returns error? {
@@ -434,7 +421,6 @@ type NestedObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
-    enable: false,
     dependsOn: [selectObjectTypeWithBoolean]
 }
 isolated function selectObjectTypeWithNestedType() returns error? {
@@ -479,7 +465,6 @@ type InvalidObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
-    enable: false,
     dependsOn: [selectObjectTypeWithNestedType]
 }
 isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {

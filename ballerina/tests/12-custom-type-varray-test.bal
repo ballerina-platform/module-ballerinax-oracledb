@@ -58,7 +58,6 @@ isolated function beforeInsertVArrayFunc() returns sql:Error? {
 
 // insert to varray
 @test:Config {
-   enable: true,
    groups:["execute","varray"]
 }
 isolated function insertVarray() returns sql:Error? {
@@ -88,7 +87,6 @@ isolated function insertVarray() returns sql:Error? {
 
 // insert with null VarrayValue object
 @test:Config {
-   enable: true,
    groups:["execute","varray"],
    dependsOn: [insertVarray]
 }
@@ -114,7 +112,6 @@ isolated function insertVarrayNull() returns sql:Error? {
 
 // insert with null array
 @test:Config {
-   enable: true,
    groups:["execute","varray"],
    dependsOn: [insertVarrayNull]
 }
@@ -137,7 +134,6 @@ isolated function insertVarrayWithNullArray() returns sql:Error? {
 
 // insert with empty array
 @test:Config {
-    enable: true,
     groups:["execute","varray"],
     dependsOn: [insertVarrayWithNullArray]
 }
@@ -201,7 +197,7 @@ type ArrayRecordType record {
 
 @test:Config {
     groups:["query","varray"],
-     enable: false,
+    enable: false,
     dependsOn: [selectVarrayWithoutRecordType]
 }
 isolated function selectVarrayWithRecordType() returns error? {
@@ -246,10 +242,9 @@ isolated function selectVarrayWithRecordType() returns error? {
 }
 isolated function selectVarrayNull() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
+    stream<ArrayRecordType, sql:Error> streamData = oracledbClient->query(
         "SELECT pk, COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR " +
-        "FROM TestVarrayTable WHERE pk = 2", ArrayRecordType);
-    stream<ArrayRecordType, sql:Error> streamData = <stream<ArrayRecordType, sql:Error>>streamResult;
+        "FROM TestVarrayTable WHERE pk = 2");
     record {|ArrayRecordType value;|}? data = check streamData.next();
     check streamData.close();
     ArrayRecordType? value = data?.value;
@@ -281,9 +276,8 @@ type InvalidIntTypeArray record {
 isolated function selectVarrayWithInvalidIntType() returns error? {
 
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
-        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1", InvalidIntTypeArray);
-    stream<InvalidIntTypeArray, sql:Error> streamData = <stream<InvalidIntTypeArray, sql:Error>>streamResult;
+    stream<InvalidIntTypeArray, sql:Error> streamData = oracledbClient->query(
+        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1");
     record {}|error? returnData =  streamData.next();
 
     if (returnData is sql:ApplicationError) {
@@ -311,9 +305,8 @@ type InvalidFloatTypeArray record {
 isolated function selectVarrayWithInvalidFloatType() returns error? {
 
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
-        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1", InvalidFloatTypeArray);
-    stream<InvalidFloatTypeArray, sql:Error> streamData = <stream<InvalidFloatTypeArray, sql:Error>>streamResult;
+    stream<InvalidFloatTypeArray, sql:Error> streamData = oracledbClient->query(
+        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1");
     record {}|error? returnData =  streamData.next();
 
     if (returnData is sql:ApplicationError) {
@@ -341,9 +334,8 @@ type InvalidDecimalTypeArray record {
 isolated function selectVarrayWithInvalidDecimalType() returns error? {
 
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
-        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1", InvalidDecimalTypeArray);
-    stream<InvalidDecimalTypeArray, sql:Error> streamData = <stream<InvalidDecimalTypeArray, sql:Error>>streamResult;
+    stream<InvalidDecimalTypeArray, sql:Error> streamData = oracledbClient->query(
+        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1");
     record {}|error? returnData =  streamData.next();
 
     if (returnData is sql:ApplicationError) {
@@ -371,9 +363,8 @@ type InvalidBoolTypeArray record {
 isolated function selectVarrayWithInvalidBoolType() returns error? {
 
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
-        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1", InvalidBoolTypeArray);
-    stream<InvalidBoolTypeArray, sql:Error> streamData = <stream<InvalidBoolTypeArray, sql:Error>>streamResult;
+    stream<InvalidBoolTypeArray, sql:Error> streamData = oracledbClient->query(
+        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1");
     record {}|error? returnData =  streamData.next();
 
     if (returnData is sql:ApplicationError) {
@@ -401,9 +392,8 @@ type InvalidByteTypeArray record {
 isolated function selectVarrayWithInvalidByteType() returns error? {
 
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
-        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1", InvalidByteTypeArray);
-    stream<InvalidByteTypeArray, sql:Error> streamData = <stream<InvalidByteTypeArray, sql:Error>>streamResult;
+    stream<InvalidByteTypeArray, sql:Error> streamData = oracledbClient->query(
+        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1");
     record {}|error? returnData =  streamData.next();
 
     if (returnData is sql:ApplicationError) {
@@ -431,9 +421,8 @@ type InvalidStringTypeArray record {
 isolated function selectVarrayWithInvalidStringType() returns error? {
 
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
-        "SELECT pk, COL_BYTEARR FROM TestVarrayTable WHERE pk = 1", InvalidStringTypeArray);
-    stream<InvalidStringTypeArray, sql:Error> streamData = <stream<InvalidStringTypeArray, sql:Error>>streamResult;
+    stream<InvalidStringTypeArray, sql:Error> streamData = oracledbClient->query(
+        "SELECT pk, COL_BYTEARR FROM TestVarrayTable WHERE pk = 1");
     record {}|error? returnData =  streamData.next();
 
     if (returnData is sql:ApplicationError) {
