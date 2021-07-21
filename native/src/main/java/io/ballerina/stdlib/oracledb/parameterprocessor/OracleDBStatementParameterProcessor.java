@@ -24,7 +24,6 @@ import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
 import io.ballerina.stdlib.oracledb.utils.Utils;
 import io.ballerina.stdlib.sql.exception.ApplicationError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultStatementParameterProcessor;
-import oracle.xdb.XMLType;
 
 import java.sql.Array;
 import java.sql.Connection;
@@ -67,12 +66,6 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 break;
             case Constants.Types.CustomTypes.VARRAY:
                 setVarray(connection, preparedStatement, index, value);
-                break;
-            case Constants.Types.CustomTypes.NESTED_TABLE:
-                setNestedTable(preparedStatement, index, value);
-                break;
-            case Constants.Types.CustomTypes.XML:
-                setXml(connection, preparedStatement, index, value);
                 break;
             default:
                 throw Utils.throwInvalidParameterError(value, sqlType);
@@ -119,25 +112,5 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         }
         Array oracleArray = ConverterUtils.convertVarray(connection, value);
         preparedStatement.setArray(index, oracleArray);
-    }
-
-    private void setNestedTable(PreparedStatement preparedStatement, int index, Object value)
-            throws SQLException, ApplicationError {
-        if (value == null) {
-            preparedStatement.setNull(index, Types.NULL);
-            return;
-        }
-        Array nestedTable = ConverterUtils.convertNestedTable(value);
-        preparedStatement.setArray(index, nestedTable);
-    }
-
-    private void setXml(Connection connection, PreparedStatement preparedStatement, int index, Object value)
-            throws SQLException, ApplicationError {
-        if (value == null) {
-            preparedStatement.setNull(index, Types.NULL);
-            return;
-        }
-        XMLType xml = ConverterUtils.convertXml(connection, value);
-        preparedStatement.setObject(index, xml);
     }
 }

@@ -34,7 +34,6 @@ import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.sql.exception.ApplicationError;
-import oracle.xdb.XMLType;
 
 import java.math.BigDecimal;
 import java.sql.Array;
@@ -254,31 +253,6 @@ public class ConverterUtils {
             throw Utils.throwArrayTypeCastError(Constants.Types.BallerinaArrayTypes.BYTE);
         }
         return typedArray;
-    }
-
-    /**
-     * Convert NestedTable value to oracle.sql.Array.
-     * @param value Custom NestedTable Value
-     * @return sql Array
-     * @throws ApplicationError throws error if the parameter types are incorrect
-     */
-    public static Array convertNestedTable(Object value)
-            throws ApplicationError {
-        Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.NESTED_TABLE);
-        return (Array) fields.get(Constants.Types.Varray.ELEMENTS);
-    }
-
-    /**
-     * Convert XML value to oracle.xdb.XML.
-     * @param connection Connection instance
-     * @param value Custom XML Value
-     * @return XMLType
-     * @throws ApplicationError throws error if the parameter types are incorrect
-     */
-    public static XMLType convertXml(Connection connection, Object value) throws ApplicationError, SQLException {
-        Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.NESTED_TABLE);
-        String xml = (String) fields.get(Constants.Types.Xml.XML);
-        return XMLType.createXML(connection, xml, "oracle.xml.parser.XMLDocument.THIN");
     }
 
     private static String getIntervalString(Object param, String typeName) throws ApplicationError {
