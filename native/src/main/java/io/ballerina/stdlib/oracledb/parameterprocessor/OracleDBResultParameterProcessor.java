@@ -138,16 +138,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         return struct;
     }
 
-    /**
-     * Overrides io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor.convertArray to implement
-     * oracledb specific array conversion logic.
-     * @param array Retrieved SQL array
-     * @param sqlType SQL data type of the array
-     * @param type Ballerina type that the array needs to be converted to
-     * @return BArray generated from the SQL array
-     * @throws SQLException if an error occurs while attempting to access the array
-     * @throws ApplicationError if ballerina types do not match the data
-     */
+    @Override
     public BArray convertArray(Array array, int sqlType, Type type) throws SQLException, ApplicationError {
         if (array != null) {
             io.ballerina.stdlib.sql.utils.Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Array");
