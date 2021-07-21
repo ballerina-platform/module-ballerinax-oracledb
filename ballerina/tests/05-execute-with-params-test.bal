@@ -508,13 +508,6 @@ isolated function deleteLobTable() returns sql:Error? {
     validateResult(check executeQuery(sqlQuery), 1);
 }
 
-isolated function executeQuery(sql:ParameterizedQuery sqlQuery) returns sql:ExecutionResult|sql:Error {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute(sqlQuery);
-    check oracledbClient.close();
-    return result;
-}
-
 isolated function validateResult(sql:ExecutionResult result, int rowCount, int? lastId = ()) {
     test:assertExactEquals(result.affectedRowCount, rowCount, "Affected row count is different.");
 

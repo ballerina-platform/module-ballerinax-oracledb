@@ -59,7 +59,6 @@ isolated function beforeInsertObjectFunc() returns sql:Error? {
 }
 
 @test:Config {
-   enable: true,
    groups:["execute","object"]
 }
 isolated function insertObjectTypeWithString() returns sql:Error? {
@@ -307,6 +306,7 @@ type ObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
+    enable: false,
     dependsOn: [insertObjectTypeWithNestedType]
 }
 isolated function selectObjectType() returns error? {
@@ -337,6 +337,7 @@ isolated function selectObjectType() returns error? {
 
 @test:Config {
     groups: ["query", "object"],
+    enable: false,
     dependsOn: [selectObjectType]
 }
 isolated function selectObjectTypeNull() returns error? {
@@ -364,6 +365,7 @@ type MismatchObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
+    enable: false,
     dependsOn: [selectObjectTypeNull]
 }
 isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
@@ -397,6 +399,7 @@ type BoolObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
+    enable: false,
     dependsOn: [selectObjectTypeWithMisMatchingFieldCount]
 }
 isolated function selectObjectTypeWithBoolean() returns error? {
@@ -431,6 +434,7 @@ type NestedObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
+    enable: false,
     dependsOn: [selectObjectTypeWithBoolean]
 }
 isolated function selectObjectTypeWithNestedType() returns error? {
@@ -475,6 +479,7 @@ type InvalidObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
+    enable: false,
     dependsOn: [selectObjectTypeWithNestedType]
 }
 isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {

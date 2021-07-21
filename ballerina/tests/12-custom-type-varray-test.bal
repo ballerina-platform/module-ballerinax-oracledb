@@ -80,7 +80,7 @@ isolated function insertVarray() returns sql:Error? {
    sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
          COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
          values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
-   sql:ExecutionResult result = check executeParamQuery(insertQuery);
+   sql:ExecutionResult result = check executeQuery(insertQuery);
    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
    var insertId = result.lastInsertId;
    test:assertTrue(insertId is string, "Last Insert id should be string");
@@ -103,7 +103,7 @@ isolated function insertVarrayNull() returns sql:Error? {
    sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
       COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
       values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
-   sql:ExecutionResult|sql:Error result = executeParamQuery(insertQuery);
+   sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
 
    if (result is sql:ApplicationError) {
       test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: varray"));
@@ -129,7 +129,7 @@ isolated function insertVarrayWithNullArray() returns sql:Error? {
    sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
          COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
          values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
-   sql:ExecutionResult result = check executeParamQuery(insertQuery);
+   sql:ExecutionResult result = check executeQuery(insertQuery);
    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
    var insertId = result.lastInsertId;
    test:assertTrue(insertId is string, "Last Insert id should be string");
@@ -159,15 +159,15 @@ isolated function insertVarrayWithEmptyArray() returns sql:Error? {
    sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
             COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
             values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
-   sql:ExecutionResult result = check executeParamQuery(insertQuery);
+   sql:ExecutionResult result = check executeQuery(insertQuery);
    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
    var insertId = result.lastInsertId;
    test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
 @test:Config {
-    enable: true,
     groups:["query","varray"],
+    enable: false,
     dependsOn: [insertVarrayWithEmptyArray]
 }
 isolated function selectVarrayWithoutRecordType() returns error? {
@@ -200,8 +200,8 @@ type ArrayRecordType record {
 };
 
 @test:Config {
-    enable: true,
     groups:["query","varray"],
+     enable: false,
     dependsOn: [selectVarrayWithoutRecordType]
 }
 isolated function selectVarrayWithRecordType() returns error? {
@@ -240,8 +240,8 @@ isolated function selectVarrayWithRecordType() returns error? {
 }
 
 @test:Config {
-    enable: true,
     groups:["query","varray"],
+    enable: false,
     dependsOn: [selectVarrayWithRecordType]
 }
 isolated function selectVarrayNull() returns error? {
@@ -274,8 +274,8 @@ type InvalidIntTypeArray record {
 };
 
 @test:Config {
-    enable: true,
     groups:["query","varray"],
+    enable: false,
     dependsOn: [selectVarrayNull]
 }
 isolated function selectVarrayWithInvalidIntType() returns error? {
@@ -304,8 +304,8 @@ type InvalidFloatTypeArray record {
 };
 
 @test:Config {
-    enable: true,
     groups:["query","varray"],
+    enable: false,
     dependsOn: [selectVarrayWithInvalidIntType]
 }
 isolated function selectVarrayWithInvalidFloatType() returns error? {
@@ -334,8 +334,8 @@ type InvalidDecimalTypeArray record {
 };
 
 @test:Config {
-    enable: true,
     groups:["query","varray"],
+    enable: false,
     dependsOn: [selectVarrayWithInvalidFloatType]
 }
 isolated function selectVarrayWithInvalidDecimalType() returns error? {
@@ -364,8 +364,8 @@ type InvalidBoolTypeArray record {
 };
 
 @test:Config {
-    enable: true,
     groups:["query","varray"],
+    enable: false,
     dependsOn: [selectVarrayWithInvalidDecimalType]
 }
 isolated function selectVarrayWithInvalidBoolType() returns error? {
@@ -394,8 +394,8 @@ type InvalidByteTypeArray record {
 };
 
 @test:Config {
-    enable: true,
     groups:["query","varray"],
+    enable: false,
     dependsOn: [selectVarrayWithInvalidDecimalType]
 }
 isolated function selectVarrayWithInvalidByteType() returns error? {
@@ -424,8 +424,8 @@ type InvalidStringTypeArray record {
 };
 
 @test:Config {
-    enable: true,
     groups:["query","varray"],
+    enable: false,
     dependsOn: [selectVarrayWithInvalidByteType]
 }
 isolated function selectVarrayWithInvalidStringType() returns error? {
