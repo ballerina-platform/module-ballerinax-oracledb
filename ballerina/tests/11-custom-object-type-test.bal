@@ -62,22 +62,16 @@ isolated function beforeInsertObjectFunc() returns sql:Error? {
    groups:["execute","object"]
 }
 isolated function insertObjectTypeWithString() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-
     string string_attr = "Hello world";
     int int_attr = 34;
     float float_attr = 34.23;
     decimal decimal_attr = 34.23;
-
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT)
         VALUES(OBJECT_TYPE(${string_attr}, ${int_attr}, ${float_attr}, ${decimal_attr}))`;
-    sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-
+    sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     var insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    check oracledbClient.close();
 }
 
 @test:Config {
@@ -85,24 +79,17 @@ isolated function insertObjectTypeWithString() returns sql:Error? {
    dependsOn: [insertObjectTypeWithString]
 }
 isolated function insertObjectTypeWithCustomType() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-
     string string_attr = "Hello world";
     int int_attr = 1;
     float float_attr = 34.23;
     decimal decimal_attr = 34.23;
-
     ObjectTypeValue objectType = new({typename: "object_type",
         attributes: [ string_attr, int_attr, float_attr, decimal_attr]});
-
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
-    sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-
+    sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     var insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    check oracledbClient.close();
 }
 
 @test:Config {
@@ -110,19 +97,14 @@ isolated function insertObjectTypeWithCustomType() returns sql:Error? {
    dependsOn: [insertObjectTypeWithCustomType]
 }
 isolated function insertObjectTypeNull() returns sql:Error? {
-   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-
    ObjectTypeValue objectType = new();
-
    sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType}))`;
-   sql:ExecutionResult|sql:Error result = oracledbClient->execute(insertQuery);
-
+   sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
    if (result is sql:ApplicationError) {
       test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: object"));
    } else {
       test:assertFail("Database Error expected.");
    }
-   check oracledbClient.close();
 }
 
 @test:Config {
@@ -130,17 +112,12 @@ isolated function insertObjectTypeNull() returns sql:Error? {
    dependsOn: [insertObjectTypeNull]
 }
 isolated function insertObjectTypeWithNullArray() returns sql:Error? {
-   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
    ObjectTypeValue objectType = new({typename: "object_type", attributes: ()});
-
    sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
-   sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-
+   sql:ExecutionResult result = check executeQuery(insertQuery);
    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
    var insertId = result.lastInsertId;
    test:assertTrue(insertId is string, "Last Insert id should be string");
-
-   check oracledbClient.close();
 }
 
 @test:Config {
@@ -148,12 +125,9 @@ isolated function insertObjectTypeWithNullArray() returns sql:Error? {
    dependsOn: [insertObjectTypeWithNullArray]
 }
 isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     ObjectTypeValue objectType = new({typename: "object_type", attributes: []});
-
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
-    sql:ExecutionResult|sql:Error result = oracledbClient->execute(insertQuery);
-
+    sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if (result is sql:DatabaseError) {
         sql:DatabaseErrorDetail errorDetails = result.detail();
         test:assertEquals(errorDetails.errorCode, 17049);
@@ -168,23 +142,19 @@ isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
    dependsOn: [insertObjectTypeWithEmptyArray]
 }
 isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     string string_attr = "Hello world";
     int int_attr = 34;
     float float_attr = 34.23;
     decimal decimal_attr = 34.23;
-
     ObjectTypeValue objectType = new({typename: "object_type",
         attributes: [ float_attr, int_attr, string_attr, decimal_attr]});
-
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
-    sql:ExecutionResult|sql:Error result = oracledbClient->execute(insertQuery);
+    sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if (result is sql:ApplicationError) {
         test:assertTrue(result.message().includes("The array contains elements of unmappable types."));
     } else {
         test:assertFail("Application Error expected.");
     }
-    check oracledbClient.close();
 }
 
 @test:Config {
@@ -192,21 +162,16 @@ isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
    dependsOn: [insertObjectTypeWithInvalidTypes1]
 }
 isolated function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     boolean invalid_attr = true;
-
     ObjectTypeValue objectType = new({typename: "object_type",
         attributes: [invalid_attr]});
-
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
-    sql:ExecutionResult|sql:Error result = oracledbClient->execute(insertQuery);
-
+    sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if (result is sql:ApplicationError) {
         test:assertTrue(result.message().includes("The array contains elements of unmappable types."));
     } else {
         test:assertFail("Application Error expected.");
     }
-    check oracledbClient.close();
 }
 
 @test:Config {
@@ -214,21 +179,16 @@ isolated function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
    dependsOn: [insertObjectTypeWithInvalidTypes2]
 }
 isolated function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     map<string> invalid_attr = { key1: "value1", key2: "value2"};
-
     ObjectTypeValue objectType = new({typename: "object_type",
         attributes: [invalid_attr]});
-
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
-    sql:ExecutionResult|sql:Error result = oracledbClient->execute(insertQuery);
-
+    sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if (result is sql:ApplicationError) {
         test:assertTrue(result.message().includes("The array contains elements of unmappable types."));
     } else {
         test:assertFail("Application Error expected.");
     }
-    check oracledbClient.close();
 }
 
 @test:Config {
@@ -236,25 +196,17 @@ isolated function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
    dependsOn: [insertObjectTypeWithInvalidTypes3]
 }
 isolated function insertObjectTypeWithStringArray() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-
     string string_attr = "Hello world";
     string int_attr = "34";
     string float_attr = "34.23";
     string decimal_attr = "34.23";
-
     string[] attributes = [ string_attr, int_attr, float_attr, decimal_attr];
-
     ObjectTypeValue objectType = new({typename: "object_type", attributes: attributes});
-
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
-    sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-
+    sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     var insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    check oracledbClient.close();
 }
 
 @test:Config {
@@ -262,25 +214,18 @@ isolated function insertObjectTypeWithStringArray() returns sql:Error? {
    dependsOn: [insertObjectTypeWithStringArray]
 }
 isolated function insertObjectTypeWithNestedType() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-
     string string_attr = "Hello world";
     int int_attr = 34;
     float float_attr = 34.23;
     decimal decimal_attr = 34.23;
-
     anydata[] attributes = [ string_attr,[string_attr, int_attr, float_attr, decimal_attr]];
     ObjectTypeValue objectType = new({typename: "nested_type", attributes: attributes});
-
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestNestedObjectTypeTable(COL_NESTED_OBJECT)
         VALUES(${objectType})`;
-    sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-
+    sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     var insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
-
-    check oracledbClient.close();
 }
 
 type ObjectRecord record {
@@ -297,6 +242,7 @@ type ObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
+    enable: false,
     dependsOn: [insertObjectTypeWithNestedType]
 }
 isolated function selectObjectType() returns error? {
@@ -327,6 +273,7 @@ isolated function selectObjectType() returns error? {
 
 @test:Config {
     groups: ["query", "object"],
+    enable: false,
     dependsOn: [selectObjectType]
 }
 isolated function selectObjectTypeNull() returns error? {
@@ -354,6 +301,7 @@ type MismatchObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
+    enable: false,
     dependsOn: [selectObjectTypeNull]
 }
 isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
@@ -387,6 +335,7 @@ type BoolObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
+    enable: false,
     dependsOn: [selectObjectTypeWithMisMatchingFieldCount]
 }
 isolated function selectObjectTypeWithBoolean() returns error? {
@@ -421,6 +370,7 @@ type NestedObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
+    enable: false,
     dependsOn: [selectObjectTypeWithBoolean]
 }
 isolated function selectObjectTypeWithNestedType() returns error? {
@@ -465,6 +415,7 @@ type InvalidObjectRecordType record {
 
 @test:Config {
     groups: ["query", "object"],
+    enable: false,
     dependsOn: [selectObjectTypeWithNestedType]
 }
 isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
