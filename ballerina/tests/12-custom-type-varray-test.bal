@@ -16,7 +16,7 @@
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["varray"] }
+@test:BeforeGroups { value:["execute"] }
 isolated function beforeInsertVArrayFunc() returns sql:Error? {
    string OID = "19A57209ECB73F91E03400400B40BB25";
 
@@ -58,7 +58,7 @@ isolated function beforeInsertVArrayFunc() returns sql:Error? {
 
 // insert to varray
 @test:Config {
-   groups:["execute","varray"]
+   groups:["execute", "execute-params"]
 }
 isolated function insertVarray() returns sql:Error? {
    string[] charArray = ["Hello", "World"];
@@ -84,7 +84,7 @@ isolated function insertVarray() returns sql:Error? {
 
 // insert with null VarrayValue object
 @test:Config {
-   groups:["execute","varray"],
+   groups:["execute", "execute-params"],
    dependsOn: [insertVarray]
 }
 isolated function insertVarrayNull() returns sql:Error? {
@@ -107,7 +107,7 @@ isolated function insertVarrayNull() returns sql:Error? {
 
 // insert with null array
 @test:Config {
-   groups:["execute","varray"],
+   groups:["execute", "execute-params"],
    dependsOn: [insertVarrayNull]
 }
 isolated function insertVarrayWithNullArray() returns sql:Error? {
@@ -128,7 +128,7 @@ isolated function insertVarrayWithNullArray() returns sql:Error? {
 
 // insert with empty array
 @test:Config {
-    groups:["execute","varray"],
+    groups:["execute", "execute-params"],
     dependsOn: [insertVarrayWithNullArray]
 }
 isolated function insertVarrayWithEmptyArray() returns sql:Error? {
@@ -154,7 +154,7 @@ isolated function insertVarrayWithEmptyArray() returns sql:Error? {
 }
 
 @test:Config {
-    groups:["query","varray"],
+    groups:["query", "query-complex-params"],
     dependsOn: [insertVarrayWithEmptyArray]
 }
 isolated function selectVarrayWithoutRecordType() returns error? {
@@ -184,7 +184,7 @@ type ArrayRecordType record {
 };
 
 @test:Config {
-    groups:["query","varray"],
+    groups:["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectVarrayWithoutRecordType]
 }
@@ -221,7 +221,7 @@ isolated function selectVarrayWithRecordType() returns error? {
 }
 
 @test:Config {
-    groups:["query","varray"],
+    groups:["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectVarrayWithRecordType]
 }
@@ -254,7 +254,7 @@ type InvalidIntTypeArray record {
 };
 
 @test:Config {
-    groups:["query","varray"],
+    groups:["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectVarrayNull]
 }
@@ -280,7 +280,7 @@ type InvalidFloatTypeArray record {
 };
 
 @test:Config {
-    groups:["query","varray"],
+    groups:["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectVarrayWithInvalidIntType]
 }
@@ -306,7 +306,7 @@ type InvalidDecimalTypeArray record {
 };
 
 @test:Config {
-    groups:["query","varray"],
+    groups:["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectVarrayWithInvalidFloatType]
 }
@@ -332,7 +332,7 @@ type InvalidBoolTypeArray record {
 };
 
 @test:Config {
-    groups:["query","varray"],
+    groups:["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectVarrayWithInvalidDecimalType]
 }
@@ -358,7 +358,7 @@ type InvalidByteTypeArray record {
 };
 
 @test:Config {
-    groups:["query","varray"],
+    groups:["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectVarrayWithInvalidDecimalType]
 }
@@ -384,7 +384,7 @@ type InvalidStringTypeArray record {
 };
 
 @test:Config {
-    groups:["query","varray"],
+    groups:["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectVarrayWithInvalidByteType]
 }

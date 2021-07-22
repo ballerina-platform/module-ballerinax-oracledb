@@ -18,7 +18,7 @@ import ballerina/test;
 
 // with user and password only
 @test:Config {
-    groups:["connection","connection-init"]
+    groups:["connection"]
 }
 isolated function testWithOnlyUserPasswordParams() {
     Client|sql:Error oracledbClient = new(user = USER, password = PASSWORD);
@@ -27,7 +27,7 @@ isolated function testWithOnlyUserPasswordParams() {
 
 // with user, pwd, db
 @test:Config {
-    groups:["connection","connection-init"]
+    groups:["connection"]
 }
 isolated function testWithUserPasswordDatabaseParams() {
     Client|sql:Error oracledbClient = new(user = USER, password = PASSWORD, database = DATABASE);
@@ -36,7 +36,7 @@ isolated function testWithUserPasswordDatabaseParams() {
 
 // with all params except options
 @test:Config {
-    groups:["connection","connection-init"]
+    groups:["connection"]
 }
 isolated function testWithAllParamsExceptOptions() {
     Client|sql:Error oracledbClient = new(
@@ -51,7 +51,7 @@ isolated function testWithAllParamsExceptOptions() {
 
 // with all params and options minus SSL
 @test:Config {
-    groups:["connection","connection-init"]
+    groups:["connection"]
 
 }
 function testWithOptionsExceptSSL() {
@@ -67,7 +67,7 @@ function testWithOptionsExceptSSL() {
 
 // with all params, options and connection Pool
 @test:Config {
-   groups:["connection","connection-init"]
+   groups:["connection"]
 }
 function testWithConnectionPoolParam() {
     Client|sql:Error oracledbClient = new(

@@ -16,7 +16,7 @@
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["object"] }
+@test:BeforeGroups { value:["query", "execute", "execute-params", "query-complex-params"] }
 isolated function beforeInsertObjectFunc() returns sql:Error? {
    string OID = "19A57209ECB73F91E03400400B40BB23";
    string OID2 = "19A57209ECB73F91E03400400B40BB25";
@@ -59,7 +59,7 @@ isolated function beforeInsertObjectFunc() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","object"]
+   groups:["execute", "execute-params"]
 }
 isolated function insertObjectTypeWithString() returns sql:Error? {
     string string_attr = "Hello world";
@@ -75,7 +75,7 @@ isolated function insertObjectTypeWithString() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","object"],
+   groups:["execute", "execute-params"],
    dependsOn: [insertObjectTypeWithString]
 }
 isolated function insertObjectTypeWithCustomType() returns sql:Error? {
@@ -93,7 +93,7 @@ isolated function insertObjectTypeWithCustomType() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","object"],
+   groups:["execute", "execute-params"],
    dependsOn: [insertObjectTypeWithCustomType]
 }
 isolated function insertObjectTypeNull() returns sql:Error? {
@@ -108,7 +108,7 @@ isolated function insertObjectTypeNull() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","object"],
+   groups:["execute", "execute-params"],
    dependsOn: [insertObjectTypeNull]
 }
 isolated function insertObjectTypeWithNullArray() returns sql:Error? {
@@ -121,7 +121,7 @@ isolated function insertObjectTypeWithNullArray() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","object"],
+   groups:["execute", "execute-params"],
    dependsOn: [insertObjectTypeWithNullArray]
 }
 isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
@@ -138,7 +138,7 @@ isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","object"],
+   groups:["execute", "execute-params"],
    dependsOn: [insertObjectTypeWithEmptyArray]
 }
 isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
@@ -158,7 +158,7 @@ isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","object"],
+   groups:["execute", "execute-params"],
    dependsOn: [insertObjectTypeWithInvalidTypes1]
 }
 isolated function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
@@ -175,7 +175,7 @@ isolated function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","object"],
+   groups:["execute", "execute-params"],
    dependsOn: [insertObjectTypeWithInvalidTypes2]
 }
 isolated function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
@@ -192,7 +192,7 @@ isolated function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","object"],
+   groups:["execute", "execute-params"],
    dependsOn: [insertObjectTypeWithInvalidTypes3]
 }
 isolated function insertObjectTypeWithStringArray() returns sql:Error? {
@@ -210,7 +210,7 @@ isolated function insertObjectTypeWithStringArray() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","object"],
+   groups:["execute", "execute-params"],
    dependsOn: [insertObjectTypeWithStringArray]
 }
 isolated function insertObjectTypeWithNestedType() returns sql:Error? {
@@ -241,7 +241,7 @@ type ObjectRecordType record {
 };
 
 @test:Config {
-    groups: ["query", "object"],
+    groups: ["query", "query-complex-params"],
     enable: false,
     dependsOn: [insertObjectTypeWithNestedType]
 }
@@ -272,7 +272,7 @@ isolated function selectObjectType() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "object"],
+    groups: ["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectObjectType]
 }
@@ -300,7 +300,7 @@ type MismatchObjectRecordType record {
 };
 
 @test:Config {
-    groups: ["query", "object"],
+    groups: ["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectObjectTypeNull]
 }
@@ -334,7 +334,7 @@ type BoolObjectRecordType record {
 };
 
 @test:Config {
-    groups: ["query", "object"],
+    groups: ["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectObjectTypeWithMisMatchingFieldCount]
 }
@@ -369,7 +369,7 @@ type NestedObjectRecordType record {
 };
 
 @test:Config {
-    groups: ["query", "object"],
+    groups: ["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectObjectTypeWithBoolean]
 }
@@ -414,7 +414,7 @@ type InvalidObjectRecordType record {
 };
 
 @test:Config {
-    groups: ["query", "object"],
+    groups: ["query", "query-complex-params"],
     enable: false,
     dependsOn: [selectObjectTypeWithNestedType]
 }

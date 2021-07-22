@@ -17,7 +17,7 @@ import ballerina/sql;
 import ballerina/test;
 import ballerina/time;
 
-@test:BeforeGroups { value:["execute", "insert-time"] }
+@test:BeforeGroups { value:["execute", "execute-params"] }
 isolated function beforeInsertTimeFunc() returns sql:Error? {
    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
    sql:ExecutionResult result = check dropTableIfExists("TestDateTimeTable");
@@ -38,7 +38,7 @@ isolated function beforeInsertTimeFunc() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","insert-time"]
+   groups:["execute","execute-params"]
 }
 isolated function insertIntervalWithString() returns sql:Error? {
    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
@@ -61,7 +61,7 @@ isolated function insertIntervalWithString() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","insert-time"],
+   groups:["execute","execute-params"],
    dependsOn: [insertIntervalWithString]
 }
 isolated function insertIntervalWithBalTypeString() returns sql:Error? {
@@ -84,7 +84,7 @@ isolated function insertIntervalWithBalTypeString() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","insert-time"],
+   groups:["execute","execute-params"],
    dependsOn: [insertIntervalWithBalTypeString]
 }
 isolated function insertIntervalWithBalType() returns sql:Error? {
@@ -99,7 +99,7 @@ isolated function insertIntervalWithBalType() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","insert-time"],
+   groups:["execute","execute-params"],
    dependsOn: [insertIntervalWithBalType]
 }
 isolated function insertIntervalNull() returns sql:Error? {
@@ -120,7 +120,7 @@ isolated function insertIntervalNull() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","insert-time"],
+   groups:["execute","execute-params"],
    dependsOn: [insertIntervalNull]
 }
 isolated function insertIntervalWithInvalidBalType1() returns sql:Error? {
@@ -139,7 +139,7 @@ isolated function insertIntervalWithInvalidBalType1() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["execute","insert-time"],
+   groups:["execute","execute-params"],
    dependsOn: [insertIntervalWithInvalidBalType1]
 }
 isolated function insertIntervalWithInvalidBalType2() returns sql:Error? {

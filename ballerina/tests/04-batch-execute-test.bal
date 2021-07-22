@@ -17,7 +17,7 @@
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["execute", "batch-execute"] }
+@test:BeforeGroups { value:["batch-execute"] }
 isolated function beforeBatchExecFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("DataTable");
@@ -42,7 +42,7 @@ isolated function beforeBatchExecFunc() returns sql:Error? {
 }
 
 @test:Config {
-    groups: ["execute", "batch-execute"]
+    groups: ["batch-execute"]
 }
 isolated function batchInsertIntoDataTable() returns error? {
     var data = [
@@ -59,7 +59,7 @@ isolated function batchInsertIntoDataTable() returns error? {
 }
 
 @test:Config {
-    groups: ["execute", "batch-execute"],
+    groups: ["batch-execute"],
     dependsOn: [batchInsertIntoDataTable]
 }
 isolated function batchInsertIntoDataTable2() returns error? {
@@ -70,7 +70,7 @@ isolated function batchInsertIntoDataTable2() returns error? {
 }
 
 @test:Config {
-    groups: ["execute", "batch-execute"],
+    groups: ["batch-execute"],
     dependsOn: [batchInsertIntoDataTable2]
 }
 isolated function batchInsertIntoDataTableFailure() {
