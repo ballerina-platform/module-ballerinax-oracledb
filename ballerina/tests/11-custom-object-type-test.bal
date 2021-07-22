@@ -247,9 +247,8 @@ type ObjectRecordType record {
 }
 isolated function selectObjectType() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
-        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1", ObjectRecordType);
-    stream<ObjectRecordType, sql:Error> streamData = <stream<ObjectRecordType, sql:Error>>streamResult;
+    stream<ObjectRecordType, error> streamData = oracledbClient->query(
+        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1" );
     record {|ObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
     ObjectRecordType? value = data?.value;
@@ -278,9 +277,8 @@ isolated function selectObjectType() returns error? {
 }
 isolated function selectObjectTypeNull() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
-        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 15", ObjectRecordType);
-    stream<ObjectRecordType, sql:Error> streamData = <stream<ObjectRecordType, sql:Error>>streamResult;
+    stream<ObjectRecordType, error> streamData = oracledbClient->query(
+        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 15");
     record {|ObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
     ObjectRecordType? value = data?.value;
@@ -306,9 +304,8 @@ type MismatchObjectRecordType record {
 }
 isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
-        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1", MismatchObjectRecordType);
-    stream<MismatchObjectRecordType, sql:Error> streamData = <stream<MismatchObjectRecordType, sql:Error>>streamResult;
+    stream<MismatchObjectRecordType, error> streamData = oracledbClient->query(
+        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1");
     record {}|error returnData = streamData.next();
     if (returnData is sql:ApplicationError) {
         test:assertTrue(returnData.message().includes("specified record and the returned SQL Struct field counts " +
@@ -340,9 +337,8 @@ type BoolObjectRecordType record {
 }
 isolated function selectObjectTypeWithBoolean() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
-        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 2", BoolObjectRecordType);
-    stream<BoolObjectRecordType, sql:Error> streamData = <stream<BoolObjectRecordType, sql:Error>>streamResult;
+    stream<BoolObjectRecordType, error> streamData = oracledbClient->query(
+        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 2");
     record {|BoolObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
     BoolObjectRecordType? value = data?.value;
@@ -375,9 +371,8 @@ type NestedObjectRecordType record {
 }
 isolated function selectObjectTypeWithNestedType() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
-        "SELECT pk, col_nested_object FROM TestNestedObjectTypeTable WHERE pk = 1", NestedObjectRecordType);
-    stream<NestedObjectRecordType, sql:Error> streamData = <stream<NestedObjectRecordType, sql:Error>>streamResult;
+    stream<NestedObjectRecordType, error> streamData = oracledbClient->query(
+        "SELECT pk, col_nested_object FROM TestNestedObjectTypeTable WHERE pk = 1");
     record {|NestedObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
     NestedObjectRecordType? value = data?.value;
@@ -420,9 +415,8 @@ type InvalidObjectRecordType record {
 }
 isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record{}, error> streamResult = oracledbClient->query(
-        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1", InvalidObjectRecordType);
-    stream<InvalidObjectRecordType, sql:Error> streamData = <stream<InvalidObjectRecordType, sql:Error>>streamResult;
+    stream<InvalidObjectRecordType, error> streamData = oracledbClient->query(
+        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1");
     record {}|error returnData = streamData.next();
     if (returnData is sql:ApplicationError) {
         test:assertTrue(returnData.message().includes("Error while retrieving data for unsupported type"),
