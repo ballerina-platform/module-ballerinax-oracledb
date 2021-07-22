@@ -74,9 +74,25 @@ isolated function dropTypeIfExists(string tablename) returns sql:ExecutionResult
     return result;
 }
 
-isolated function executeParamQuery(sql:ParameterizedQuery|string query) returns sql:ExecutionResult|sql:Error {
+isolated function queryClient(string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? resultType = ())
+returns record {}|error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute(query);
+    stream<record {}, error> streamData;
+    if resultType is () {
+        streamData = oracledbClient->query(sqlQuery);
+    } else {
+        streamData = oracledbClient->query(sqlQuery, resultType);
+    }
+    record {|record {} value;|}? data = check streamData.next();
+    check streamData.close();
+    record {}|sql:Error? value = data?.value;
+    check oracledbClient.close();
+    return value;
+}
+
+isolated function executeQuery(string|sql:ParameterizedQuery sqlQuery) returns sql:ExecutionResult|sql:Error {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:ExecutionResult result = check oracledbClient->execute(sqlQuery);
     check oracledbClient.close();
     return result;
 }

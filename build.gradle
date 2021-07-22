@@ -96,10 +96,6 @@ subprojects {
         externalJars (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
             transitive = false
         }
-        externalJars (group: 'com.oracle.database.xml', name: 'xdb', version: "${oracleXDBDriverVersion}") {
-            transitive = false
-        }
-
     }
 }
 

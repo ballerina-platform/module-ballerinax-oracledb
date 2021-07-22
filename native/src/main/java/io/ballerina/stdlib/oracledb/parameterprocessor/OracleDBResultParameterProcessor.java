@@ -37,6 +37,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
 
     /**
      * Singleton static method that returns an instance of `OracleDBResultParameterProcessor`.
+     *
      * @return OracleDBResultParameterProcessor
      */
     public static OracleDBResultParameterProcessor getInstance() {

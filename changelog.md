@@ -9,3 +9,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic CRUD functionalities with an Oracle database.
 - Insert functionality for complex data types.
 - Add code examples for oracle specific data types to Package.md.
+- Select functionality for VArrays and Object Types.
