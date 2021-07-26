@@ -80,6 +80,11 @@ function testWithOptionsExceptSSL() returns error? {
    groups:["connection"]
 }
 function testWithConnectionPoolParam() returns error? {
+    sql:ConnectionPool connectionPool = {
+       maxOpenConnections: 10,
+       maxConnectionLifeTime: 2000.0,
+       minIdleConnections: 5
+    };
     Client oracledbClient = check new(
         host = HOST,
         user = USER,

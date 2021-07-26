@@ -62,7 +62,7 @@ isolated function beforePoolTestFunc() returns sql:Error? {
   groups: ["pool"]
 }
 function testLocalSharedConnectionPoolConfigSingleDestination() returns sql:Error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 5};
+  sql:ConnectionPool pool = {maxOpenConnections: 5, minIdleConnections: 5};
   Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   Client oracleDbClient3 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
@@ -106,7 +106,7 @@ function testLocalSharedConnectionPoolConfigSingleDestination() returns sql:Erro
   groups: ["pool"]
 }
 isolated function testLocalSharedConnectionPoolConfigDifferentDbOptions() returns sql:Error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 3};
+  sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 3};
   Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT,
       {connectTimeout: 2, socketTimeout: 10}, pool);
   Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT,
@@ -171,8 +171,8 @@ isolated function testLocalSharedConnectionPoolConfigDifferentDbOptions() return
   enable: false
 }
 function testLocalSharedConnectionPoolConfigMultipleDestinations() returns sql:Error? {
-    sql:ConnectionPool pool1 = {maxOpenConnections: 3};
-    sql:ConnectionPool pool2 = {maxOpenConnections: 4};
+    sql:ConnectionPool pool1 = {maxOpenConnections: 3, minIdleConnections: 3};
+    sql:ConnectionPool pool2 = {maxOpenConnections: 4, minIdleConnections: 4};
     Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool1);
     Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool1);
     Client oracleDbClient3 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool1);
@@ -234,7 +234,7 @@ function testLocalSharedConnectionPoolConfigMultipleDestinations() returns sql:E
   groups: ["pool"]
 }
 function testLocalSharedConnectionPoolCreateClientAfterShutdown() returns sql:Error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 2};
+  sql:ConnectionPool pool = {maxOpenConnections: 2, minIdleConnections: 2};
   Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
@@ -270,7 +270,7 @@ function testLocalSharedConnectionPoolCreateClientAfterShutdown() returns sql:Er
   groups: ["pool"]
 }
 function testLocalSharedConnectionPoolStopInitInterleave() returns error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 2};
+  sql:ConnectionPool pool = {maxOpenConnections: 2, minIdleConnections: 2};
 
   worker w1 returns error? {
       check testLocalSharedConnectionPoolStopInitInterleaveHelper1(pool);
@@ -305,7 +305,7 @@ returns @tainted int|error {
   groups: ["pool"]
 }
 function testShutDownUnsharedLocalConnectionPool() returns sql:Error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 2};
+  sql:ConnectionPool pool = {maxOpenConnections: 2, minIdleConnections: 2};
   Client oracleDbClient = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
   var result = oracleDbClient->query(`select count(*) as val from PoolCustomers where registrationID = 1`, Result);
@@ -325,7 +325,7 @@ function testShutDownUnsharedLocalConnectionPool() returns sql:Error? {
   groups: ["pool"]
 }
 function testShutDownSharedConnectionPool() returns sql:Error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 1};
+  sql:ConnectionPool pool = {maxOpenConnections: 1, minIdleConnections: 1};
   Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
@@ -364,7 +364,7 @@ function testShutDownSharedConnectionPool() returns sql:Error? {
   groups: ["pool"]
 }
 function testShutDownPoolCorrespondingToASharedPoolConfig() returns sql:Error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 1};
+  sql:ConnectionPool pool = {maxOpenConnections: 1, minIdleConnections: 1};
   Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
