@@ -34,6 +34,9 @@ import java.util.Properties;
  * This class contains utility functions required by the nativeimpl package.
  */
 public class Utils {
+    private Utils() {
+
+    }
 
     /**
      * Generate the map of connection parameter options.

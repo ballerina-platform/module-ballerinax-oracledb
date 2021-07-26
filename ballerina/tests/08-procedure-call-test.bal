@@ -254,6 +254,8 @@ isolated function testCallWithNumericTypesOutParams() returns error? {
     test:assertTrue((check paraBinFloat.get(float)) < 21.47483647,
         "3rd out parameter of procedure did not match.");
     test:assertEquals(paraBinDouble.get(float), 21474836.47, "4th out parameter of procedure did not match.");
+    boolean|sql:Error status = ret.getNextQueryResult();
+    test:assertTrue(status is boolean, "state is not a boolean");
 }
 
 isolated function callQueryClient(Client oracledbClient, @untainted string|sql:ParameterizedQuery sqlQuery)

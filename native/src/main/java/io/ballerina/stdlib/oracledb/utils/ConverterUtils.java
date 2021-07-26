@@ -49,6 +49,9 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
  * @since 0.1.0
  */
 public class ConverterUtils {
+    private ConverterUtils() {
+
+    }
 
     /**
      * Convert IntervalYearToMonthValue value to String.
