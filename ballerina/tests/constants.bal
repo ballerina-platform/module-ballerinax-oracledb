@@ -25,12 +25,6 @@ const string DATABASE = "ORCLCDB.localdomain";
 
 string resourcePath = check file:getAbsolutePath("tests/resources");
 
-final Options options = {
-    loginTimeout: 1,
-    autoCommit: true,
-    connectTimeout: 30,
-    socketTimeout: 30
-};
 configurable int maxOpenConnections = 10;
 configurable decimal maxConnectionLifeTime = 2000.0;
 configurable int minIdleConnections = 5;

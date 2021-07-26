@@ -24,6 +24,13 @@ public type Result record {
   int val;
 };
 
+Options options = {
+    loginTimeout: 1,
+    autoCommit: true,
+    connectTimeout: 30,
+    socketTimeout: 30
+};
+
 @test:BeforeGroups { value:["pool"] }
 isolated function beforePoolTestFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, POOLDB, POOLPORT);
