@@ -241,8 +241,7 @@ type ObjectRecordType record {
 };
 
 @test:Config {
-    groups: ["query", "query-complex-params"],
-    enable: false,
+    groups: ["query"],
     dependsOn: [insertObjectTypeWithNestedType]
 }
 isolated function selectObjectType() returns error? {
@@ -271,8 +270,7 @@ isolated function selectObjectType() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-complex-params"],
-    enable: false,
+    groups: ["query"],
     dependsOn: [selectObjectType]
 }
 isolated function selectObjectTypeNull() returns error? {
@@ -298,8 +296,7 @@ type MismatchObjectRecordType record {
 };
 
 @test:Config {
-    groups: ["query", "query-complex-params"],
-    enable: false,
+    groups: ["query"],
     dependsOn: [selectObjectTypeNull]
 }
 isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
@@ -331,8 +328,7 @@ type BoolObjectRecordType record {
 };
 
 @test:Config {
-    groups: ["query", "query-complex-params"],
-    enable: false,
+    groups: ["query"],
     dependsOn: [selectObjectTypeWithMisMatchingFieldCount]
 }
 isolated function selectObjectTypeWithBoolean() returns error? {
@@ -365,8 +361,7 @@ type NestedObjectRecordType record {
 };
 
 @test:Config {
-    groups: ["query", "query-complex-params"],
-    enable: false,
+    groups: ["query"],
     dependsOn: [selectObjectTypeWithBoolean]
 }
 isolated function selectObjectTypeWithNestedType() returns error? {
@@ -409,8 +404,7 @@ type InvalidObjectRecordType record {
 };
 
 @test:Config {
-    groups: ["query", "query-complex-params"],
-    enable: false,
+    groups: ["query"],
     dependsOn: [selectObjectTypeWithNestedType]
 }
 isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
