@@ -484,9 +484,8 @@ returns string|error {
 }
 
 isolated function getCount(Client oracledbClient, string id) returns @tainted int|error {
-    stream<TransactionResultCount, sql:Error> streamData = 
-        <stream<TransactionResultCount, sql:Error>> oracledbClient->query("Select COUNT(*) as " +
-        "countval from LocalTranCustomers where registrationID = " + id, TransactionResultCount);
+    stream<TransactionResultCount, sql:Error?> streamData = oracledbClient->query("Select COUNT(*) as " +
+        "countval from LocalTranCustomers where registrationID = " + id);
         record {|TransactionResultCount value;|}? data = check streamData.next();
         check streamData.close();
         TransactionResultCount? value = data?.value;

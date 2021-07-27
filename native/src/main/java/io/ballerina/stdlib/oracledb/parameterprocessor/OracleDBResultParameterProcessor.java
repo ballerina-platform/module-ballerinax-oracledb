@@ -45,8 +45,8 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
  */
 public class OracleDBResultParameterProcessor extends DefaultResultParameterProcessor {
     private static final OracleDBResultParameterProcessor instance = new OracleDBResultParameterProcessor();
-    private static final BObject iterator = ValueCreator.createObjectValue(
-            ModuleUtils.getModule(), Constants.CUSTOM_RESULT_ITERATOR_OBJECT, new Object[0]);
+    private static final BObject iteratorObject = ValueCreator.createObjectValue(
+            ModuleUtils.getModule(), Constants.CUSTOM_RESULT_ITERATOR_OBJECT);
 
     /**
      * Singleton static method that returns an instance of `OracleDBResultParameterProcessor`.
@@ -58,8 +58,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
     }
 
     @Override
-    protected BObject getIteratorObject() {
-        return iterator;
+    public BObject getBalStreamResultIterator() {
+        return iteratorObject;
     }
 
     @Override
