@@ -260,7 +260,7 @@ isolated function testCallWithNumericTypesOutParams() returns error? {
 
 isolated function callQueryClient(Client oracledbClient, @untainted string|sql:ParameterizedQuery sqlQuery)
 returns @tainted record {}|error {
-    stream<record {}, error> streamData = oracledbClient->query(sqlQuery);
+    stream<record {}, error?> streamData = oracledbClient->query(sqlQuery);
     record {|record {} value;|}? data = check streamData.next();
     check streamData.close();
     record {}? value = data?.value;

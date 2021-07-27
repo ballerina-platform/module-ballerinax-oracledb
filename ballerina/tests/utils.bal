@@ -77,7 +77,7 @@ isolated function dropTypeIfExists(string tablename) returns sql:ExecutionResult
 isolated function queryClient(string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? resultType = ())
 returns record {}|error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record {}, error> streamData;
+    stream<record {}, error?> streamData;
     if resultType is () {
         streamData = oracledbClient->query(sqlQuery);
     } else {
