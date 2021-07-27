@@ -20,8 +20,14 @@ plugins {
 }
 
 rootProject.name = 'ballerina-oracledb'
-include(':build-config:checkstyle')
-include ':oracledb-native', ':oracledb-ballerina'
+
+include ':checkstyle'
+include ':oracledb-native'
+include ':oracledb-ballerina'
+
+project(':checkstyle').projectDir = file("build-config${File.separator}checkstyle")
+project(':oracledb-native').projectDir = file('native')
+project(':oracledb-ballerina').projectDir = file('ballerina')
 
 gradleEnterprise {
     buildScan {
