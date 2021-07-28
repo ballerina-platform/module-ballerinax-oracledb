@@ -17,7 +17,7 @@
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["query-simple-params"] }
+@test:BeforeGroups { value:["query", "query-simple-params"] }
 isolated function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
@@ -123,7 +123,7 @@ isolated function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function querySingleNumber() returns error? {
     float col_number = -23.4;
@@ -132,7 +132,7 @@ isolated function querySingleNumber() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function querySingleString() returns error? {
     string col_varchar2 = "Hello world";
@@ -151,7 +151,7 @@ isolated function validateGeneralQueryTableResult(record{}? returnData) {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function querySingleNumberParam() returns error? {
     int id = 1;
@@ -160,7 +160,7 @@ isolated function querySingleNumberParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryDoubleNumberParam() returns error? {
     int id = 1;
@@ -170,7 +170,7 @@ isolated function queryDoubleNumberParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryFloatParam() returns error? {
     int id = 1;
@@ -181,7 +181,7 @@ isolated function queryFloatParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryBinaryFloatParam() returns error? {
     int id = 1;
@@ -192,7 +192,7 @@ isolated function queryBinaryFloatParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryBinaryDoubleParam() returns error? {
     int id = 1;
@@ -216,7 +216,7 @@ isolated function validateNumericSimpleQueryTableResult(record{}? returnData) {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryVarchar2Param() returns error? {
     int id = 1;
@@ -227,7 +227,7 @@ isolated function queryVarchar2Param() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryVarcharParam() returns error? {
     int id = 1;
@@ -238,7 +238,7 @@ isolated function queryVarcharParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryNVarchar2Param() returns error? {
     int id = 1;
@@ -248,22 +248,8 @@ isolated function queryNVarchar2Param() returns error? {
     validateCharacterSimpleQueryTableResult(check queryClient(sqlQuery));
 }
 
-isolated function validateCharacterSimpleQueryTableResult(record{}? returnData) {
-    if (returnData is ()) {
-        test:assertFail("Empty row returned.");
-    } else {
-
-        test:assertEquals(<int> returnData["ID"], 1);
-        test:assertEquals(returnData["COL_VARCHAR2"], "Hello world");
-        test:assertEquals(returnData["COL_VARCHAR"], "Hello world");
-        test:assertEquals(returnData["COL_NVARCHAR2"], "Hello world");
-        test:assertEquals((<string>returnData["COL_CHAR"]).trim(), "Hello world");
-        test:assertEquals((<string>returnData["COL_NCHAR"]).trim(), "Hello world");
-    } 
-}
-
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryAnsiCharacterVarParam() returns error? {
     int id = 1;
@@ -274,7 +260,7 @@ isolated function queryAnsiCharacterVarParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryAnsiNationalCharacterVarParam() returns error? {
     int id = 1;
@@ -285,7 +271,7 @@ isolated function queryAnsiNationalCharacterVarParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryAnsiNationalCharVarParam() returns error? {
     int id = 1;
@@ -296,7 +282,7 @@ isolated function queryAnsiNationalCharVarParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryAnsiNCharVarParam() returns error? {
     int id = 1;
@@ -307,7 +293,7 @@ isolated function queryAnsiNCharVarParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryAnsiNumericParam() returns error? {
     int id = 1;
@@ -318,7 +304,7 @@ isolated function queryAnsiNumericParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryAnsiDecimalParam() returns error? {
     int id = 1;
@@ -329,7 +315,7 @@ isolated function queryAnsiDecimalParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryAnsiIntegerParam() returns error? {
     int id = 1;
@@ -340,7 +326,7 @@ isolated function queryAnsiIntegerParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryAnsiIntParam() returns error? {
     int id = 1;
@@ -350,7 +336,7 @@ isolated function queryAnsiIntParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryAnsiSmallIntParam() returns error? {
     int id = 1;
@@ -361,7 +347,7 @@ isolated function queryAnsiSmallIntParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryAnsiFloatParam() returns error? {
     int id = 1;
@@ -372,7 +358,7 @@ isolated function queryAnsiFloatParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryAnsiDoublePrecisionParam() returns error? {
     int id = 1;
@@ -383,13 +369,42 @@ isolated function queryAnsiDoublePrecisionParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query","query-simple-params"]
+    groups: ["query", "query-simple-params"]
 }
 isolated function queryAnsiRealParam() returns error? {
     int id = 1;
     sql:RealValue col_real = new(1234.134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_real =  ${col_real}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
+}
+
+@test:Config {
+    groups: ["query", "query-simple-params"]
+}
+isolated function queryClobParam() returns error? {
+    int id = 1;
+    sql:ParameterizedQuery sqlQuery = `SELECT * from LobSimpleQueryTable WHERE id = ${id}`;
+    validateLobSimpleQueryTableResult(check queryClient(sqlQuery));
+}
+
+@test:Config {
+    groups: ["query", "query-simple-params"]
+}
+isolated function querySqlDsVarcharParam() returns error? {
+    int id = 1;
+    sql:ParameterizedQuery sqlQuery = `SELECT * from SqlDsSimpleQueryTable WHERE id = ${id}`;
+    validateSqlDsSimpleQueryTableResult(check queryClient(sqlQuery));
+}
+
+isolated function validateLobSimpleQueryTableResult(record{}? returnData) {
+    if (returnData is ()) {
+        test:assertFail("Empty row returned.");
+    } else {
+        test:assertEquals(<int> returnData["ID"], 1);
+        test:assertEquals(returnData["COL_CLOB"], "Hello world");
+        test:assertEquals(returnData["COL_NCLOB"], "Hello world");
+        test:assertEquals(returnData["COL_BLOB"], [171,52,239,194,52]);
+    }
 }
 
 isolated function validateAnsiSimpleQueryTableResult(record{}? returnData) {
@@ -412,36 +427,21 @@ isolated function validateAnsiSimpleQueryTableResult(record{}? returnData) {
         test:assertEquals(<float>returnData["COL_FLOAT"], 1234.134);
         test:assertEquals(<float>returnData["COL_DOUBLE_PRECISION"], 1234.134);
         test:assertEquals(<float>returnData["COL_REAL"], 1234.134);
-    } 
-}
-
-@test:Config {
-    groups: ["query","query-simple-params"]
-}
-isolated function queryClobParam() returns error? {
-    int id = 1;
-    sql:ParameterizedQuery sqlQuery = `SELECT * from LobSimpleQueryTable WHERE id = ${id}`;
-    validateLobSimpleQueryTableResult(check queryClient(sqlQuery));
-}
-
-isolated function validateLobSimpleQueryTableResult(record{}? returnData) {
-    if (returnData is ()) {
-        test:assertFail("Empty row returned.");
-    } else {
-        test:assertEquals(<int> returnData["ID"], 1);
-        test:assertEquals(returnData["COL_CLOB"], "Hello world");
-        test:assertEquals(returnData["COL_NCLOB"], "Hello world");
-        test:assertEquals(returnData["COL_BLOB"], [171,52,239,194,52]);
     }
 }
 
-@test:Config {
-    groups: ["query","query-simple-params"]
-}
-isolated function querySqlDsVarcharParam() returns error? {
-    int id = 1;
-    sql:ParameterizedQuery sqlQuery = `SELECT * from SqlDsSimpleQueryTable WHERE id = ${id}`;
-    validateSqlDsSimpleQueryTableResult(check queryClient(sqlQuery));
+isolated function validateCharacterSimpleQueryTableResult(record{}? returnData) {
+    if (returnData is ()) {
+        test:assertFail("Empty row returned.");
+    } else {
+
+        test:assertEquals(<int> returnData["ID"], 1);
+        test:assertEquals(returnData["COL_VARCHAR2"], "Hello world");
+        test:assertEquals(returnData["COL_VARCHAR"], "Hello world");
+        test:assertEquals(returnData["COL_NVARCHAR2"], "Hello world");
+        test:assertEquals((<string>returnData["COL_CHAR"]).trim(), "Hello world");
+        test:assertEquals((<string>returnData["COL_NCHAR"]).trim(), "Hello world");
+    }
 }
 
 isolated function validateSqlDsSimpleQueryTableResult(record{}? returnData) {
@@ -452,20 +452,4 @@ isolated function validateSqlDsSimpleQueryTableResult(record{}? returnData) {
         test:assertEquals((<string>returnData["COL_CHARACTER"]).trim(), "Hello world");
         test:assertEquals(returnData["COL_LONG_VARCHAR"], "Hello world");
     } 
-}
-
-isolated function queryClient(@untainted string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? resultType = ())
-returns record {}|error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<record {}, error> streamData;
-    if resultType is () {
-        streamData = oracledbClient->query(sqlQuery);
-    } else {
-        streamData = oracledbClient->query(sqlQuery, resultType);
-    }
-    record {|record {} value;|}? data = check streamData.next();
-    check streamData.close();
-    record {}|sql:Error? value = data?.value;
-    check oracledbClient.close();
-    return value;
 }

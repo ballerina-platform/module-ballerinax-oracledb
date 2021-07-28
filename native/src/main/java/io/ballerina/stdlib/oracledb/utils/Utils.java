@@ -34,6 +34,9 @@ import java.util.Properties;
  * This class contains utility functions required by the nativeimpl package.
  */
 public class Utils {
+    private Utils() {
+
+    }
 
     /**
      * Generate the map of connection parameter options.
@@ -167,6 +170,15 @@ public class Utils {
             valueName = value.getClass().getName();
         }
         return new ApplicationError("Invalid parameter: " + valueName + " is passed as value for SQL type: " + sqlType);
+    }
+
+    /**
+     * Throw an error if the array cannot be casted to the provided ballerina type.
+     * @param type The ballerina type of the array
+     * @return sql:ApplicationError
+     */
+    public static ApplicationError throwArrayTypeCastError(String type) {
+        return new ApplicationError("Cannot cast varray to type: " + type);
     }
 
     /**

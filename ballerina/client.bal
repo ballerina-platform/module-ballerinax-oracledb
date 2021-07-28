@@ -131,7 +131,7 @@ public type Options record {|
    SecureSocket ssl?;
    decimal loginTimeout = 0;
    boolean autoCommit = true;
-   decimal connectTimeout = 0;
+   decimal connectTimeout = 30;
    decimal socketTimeout?;
 |};
 

@@ -210,7 +210,7 @@ isolated int abortVal = 0;
     groups: ["transaction", "local-transaction"],
     dependsOn: [testLocalTransactionRollbackWithGeneratedKeys]
 }
-function testTransactionAbort() returns error? {
+isolated function testTransactionAbort() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     transactions:Info transInfo;
 
@@ -383,7 +383,6 @@ isolated function testTransactionWithoutHandlers() returns error? {
 isolated string rollbackOut = "";
 
 @test:Config {
-    enable: false,
     groups: ["transaction", "local-transaction"],
     dependsOn: [testTransactionWithoutHandlers]
 }
@@ -435,7 +434,7 @@ function testLocalTransactionFailedHelper(Client oracledbClient) returns string|
     }
 }
 
-function getError() returns error? {
+isolated function getError() returns error? {
     lock {
        return error(rollbackOut);
     }

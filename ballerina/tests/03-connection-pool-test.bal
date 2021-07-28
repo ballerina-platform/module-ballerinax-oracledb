@@ -24,29 +24,36 @@ public type Result record {
   int val;
 };
 
+Options options = {
+    loginTimeout: 1,
+    autoCommit: true,
+    connectTimeout: 30,
+    socketTimeout: 30
+};
+
 @test:BeforeGroups { value:["pool"] }
 isolated function beforePoolTestFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, POOLDB, POOLPORT);
 
     sql:ExecutionResult result = check dropPoolTableIfExists("PoolCustomers");
-    result = check oracledbClient->execute("CREATE TABLE PoolCustomers (" +
-        "customerId NUMBER GENERATED ALWAYS AS IDENTITY, " +
-        "firstName  VARCHAR2(300), " +
-        "lastName  VARCHAR2(300), " +
-        "registrationID NUMBER, " +
-        "creditLimit FLOAT, " +
-        "country  VARCHAR2(300), " +
-        "PRIMARY KEY (customerId))"
+    result = check oracledbClient->execute(`CREATE TABLE PoolCustomers (
+        customerId NUMBER GENERATED ALWAYS AS IDENTITY,
+        firstName  VARCHAR2(300),
+        lastName  VARCHAR2(300),
+        registrationID NUMBER,
+        creditLimit FLOAT,
+        country  VARCHAR2(300),
+        PRIMARY KEY (customerId))`
     );
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
     test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
     result = check oracledbClient->execute(
-        "INSERT INTO PoolCustomers (firstName,lastName,registrationID,creditLimit,country)" +
-        "VALUES ('Peter', 'Stuart', 1, 5000.75, 'USA')");
+        `INSERT INTO PoolCustomers (firstName,lastName,registrationID,creditLimit,country)
+        VALUES ('Peter', 'Stuart', 1, 5000.75, 'USA')`);
 
     result = check oracledbClient->execute(
-        "INSERT INTO PoolCustomers (firstName,lastName,registrationID,creditLimit,country)" +
-        "VALUES ('Dan', 'Brown', 2, 10000, 'UK')");
+        `INSERT INTO PoolCustomers (firstName,lastName,registrationID,creditLimit,country)
+        VALUES ('Dan', 'Brown', 2, 10000, 'UK')`);
 
     check oracledbClient.close();
 }
@@ -55,7 +62,7 @@ isolated function beforePoolTestFunc() returns sql:Error? {
   groups: ["pool"]
 }
 function testLocalSharedConnectionPoolConfigSingleDestination() returns sql:Error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 5};
+  sql:ConnectionPool pool = {maxOpenConnections: 5, minIdleConnections: 5};
   Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   Client oracleDbClient3 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
@@ -63,12 +70,12 @@ function testLocalSharedConnectionPoolConfigSingleDestination() returns sql:Erro
   Client oracleDbClient5 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
   (stream<record{}, error>)[] resultArray = [];
-  resultArray[0] = oracleDbClient1->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
-  resultArray[1] = oracleDbClient2->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
-  resultArray[2] = oracleDbClient3->query("select count(*) as val from PoolCustomers where registrationID = 2", Result);
-  resultArray[3] = oracleDbClient4->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
-  resultArray[4] = oracleDbClient5->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
-  resultArray[5] = oracleDbClient5->query("select count(*) as val from PoolCustomers where registrationID = 2", Result);
+  resultArray[0] = oracleDbClient1->query(`select count(*) as val from PoolCustomers where registrationID = 1`, Result);
+  resultArray[1] = oracleDbClient2->query(`select count(*) as val from PoolCustomers where registrationID = 1`, Result);
+  resultArray[2] = oracleDbClient3->query(`select count(*) as val from PoolCustomers where registrationID = 2`, Result);
+  resultArray[3] = oracleDbClient4->query(`select count(*) as val from PoolCustomers where registrationID = 1`, Result);
+  resultArray[4] = oracleDbClient5->query(`select count(*) as val from PoolCustomers where registrationID = 1`, Result);
+  resultArray[5] = oracleDbClient5->query(`select count(*) as val from PoolCustomers where registrationID = 2`, Result);
 
   (int|error)[] returnArray = [];
   int i = 0;
@@ -99,7 +106,7 @@ function testLocalSharedConnectionPoolConfigSingleDestination() returns sql:Erro
   groups: ["pool"]
 }
 isolated function testLocalSharedConnectionPoolConfigDifferentDbOptions() returns sql:Error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 3};
+  sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 3};
   Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT,
       {connectTimeout: 2, socketTimeout: 10}, pool);
   Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT,
@@ -115,22 +122,22 @@ isolated function testLocalSharedConnectionPoolConfigDifferentDbOptions() return
 
     stream<record {} , error>[] resultArray = [];
     resultArray[0] = oracleDbClient1->query(
-        "select count(*) as val from PoolCustomers where registrationID = 1", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
     resultArray[1] = oracleDbClient2->query(
-        "select count(*) as val from PoolCustomers where registrationID = 1", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
     resultArray[2] = oracleDbClient3->query(
-        "select count(*) as val from PoolCustomers where registrationID = 2", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 2`, Result);
     resultArray[3] = oracleDbClient3->query(
-        "select count(*) as val from PoolCustomers where registrationID = 1", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
 
     resultArray[4] = oracleDbClient4->query(
-        "select count(*) as val from PoolCustomers where registrationID = 1", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
     resultArray[5] = oracleDbClient5->query(
-        "select count(*) as val from PoolCustomers where registrationID = 2", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 2`, Result);
     resultArray[6] = oracleDbClient6->query(
-        "select count(*) as val from PoolCustomers where registrationID = 2", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 2`, Result);
     resultArray[7] = oracleDbClient6->query(
-        "select count(*) as val from PoolCustomers where registrationID = 1", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
 
   (int|error)[] returnArray = [];
   int i = 0;
@@ -164,8 +171,8 @@ isolated function testLocalSharedConnectionPoolConfigDifferentDbOptions() return
   enable: false
 }
 function testLocalSharedConnectionPoolConfigMultipleDestinations() returns sql:Error? {
-    sql:ConnectionPool pool1 = {maxOpenConnections: 3};
-    sql:ConnectionPool pool2 = {maxOpenConnections: 4};
+    sql:ConnectionPool pool1 = {maxOpenConnections: 3, minIdleConnections: 3};
+    sql:ConnectionPool pool2 = {maxOpenConnections: 4, minIdleConnections: 4};
     Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool1);
     Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool1);
     Client oracleDbClient3 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool1);
@@ -176,24 +183,24 @@ function testLocalSharedConnectionPoolConfigMultipleDestinations() returns sql:E
 
     stream<record {} , error>[] resultArray = [];
     resultArray[0] = oracleDbClient1->query(
-        "select count(*) as val from PoolCustomers where registrationID = 1", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
     resultArray[1] = oracleDbClient2->query(
-        "select count(*) as val from PoolCustomers where registrationID = 1", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
     resultArray[2] = oracleDbClient3->query(
-        "select count(*) as val from PoolCustomers where registrationID = 2", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 2`, Result);
     resultArray[3] = oracleDbClient3->query(
-        "select count(*) as val from PoolCustomers where registrationID = 1", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
 
     resultArray[4] = oracleDbClient4->query(
-        "select count(*) as val from PoolCustomers where registrationID = 1", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
     resultArray[5] = oracleDbClient5->query(
-        "select count(*) as val from PoolCustomers where registrationID = 2", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 2`, Result);
     resultArray[6] = oracleDbClient6->query(
-        "select count(*) as val from PoolCustomers where registrationID = 2", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 2`, Result);
     resultArray[7] = oracleDbClient7->query(
-        "select count(*) as val from PoolCustomers where registrationID = 1", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
     resultArray[8] = oracleDbClient7->query(
-        "select count(*) as val from PoolCustomers where registrationID = 2", Result);
+        `select count(*) as val from PoolCustomers where registrationID = 2`, Result);
 
     (int|error)[] returnArray = [];
     int i = 0;
@@ -227,12 +234,12 @@ function testLocalSharedConnectionPoolConfigMultipleDestinations() returns sql:E
   groups: ["pool"]
 }
 function testLocalSharedConnectionPoolCreateClientAfterShutdown() returns sql:Error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 2};
+  sql:ConnectionPool pool = {maxOpenConnections: 2, minIdleConnections: 2};
   Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
-  var dt1 = oracleDbClient1->query("SELECT count(*) as val from PoolCustomers where registrationID = 1", Result);
-  var dt2 = oracleDbClient2->query("SELECT count(*) as val from PoolCustomers where registrationID = 1", Result);
+  var dt1 = oracleDbClient1->query(`SELECT count(*) as val from PoolCustomers where registrationID = 1`, Result);
+  var dt2 = oracleDbClient2->query(`SELECT count(*) as val from PoolCustomers where registrationID = 1`, Result);
   int|error result1 = getReturnValue(dt1);
   int|error result2 = getReturnValue(dt2);
 
@@ -241,14 +248,14 @@ function testLocalSharedConnectionPoolCreateClientAfterShutdown() returns sql:Er
   check oracleDbClient2.close();
 
   // This call should return an error as pool is shutdown
-  var dt3 = oracleDbClient1->query("SELECT count(*) as val from PoolCustomers where registrationID = 1", Result);
+  var dt3 = oracleDbClient1->query(`SELECT count(*) as val from PoolCustomers where registrationID = 1`, Result);
   int|error result3 = getReturnValue(dt3);
 
   // Now a new pool should be created
   Client oracleDbClient3 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
   // This call should be successful
-  var dt4 = oracleDbClient3->query("SELECT count(*) as val from PoolCustomers where registrationID = 1", Result);
+  var dt4 = oracleDbClient3->query(`SELECT count(*) as val from PoolCustomers where registrationID = 1`, Result);
   int|error result4 = getReturnValue(dt4);
 
   check oracleDbClient3.close();
@@ -263,7 +270,7 @@ function testLocalSharedConnectionPoolCreateClientAfterShutdown() returns sql:Er
   groups: ["pool"]
 }
 function testLocalSharedConnectionPoolStopInitInterleave() returns error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 2};
+  sql:ConnectionPool pool = {maxOpenConnections: 2, minIdleConnections: 2};
 
   worker w1 returns error? {
       check testLocalSharedConnectionPoolStopInitInterleaveHelper1(pool);
@@ -288,7 +295,7 @@ function testLocalSharedConnectionPoolStopInitInterleaveHelper2(sql:ConnectionPo
 returns @tainted int|error {
   runtime:sleep(10);
   Client oracleDbClient = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
-  var dt = oracleDbClient->query("SELECT COUNT(*) as val from PoolCustomers where registrationID = 1", Result);
+  var dt = oracleDbClient->query(`SELECT COUNT(*) as val from PoolCustomers where registrationID = 1`, Result);
   int|error count = getReturnValue(dt);
   check oracleDbClient.close();
   return count;
@@ -298,16 +305,16 @@ returns @tainted int|error {
   groups: ["pool"]
 }
 function testShutDownUnsharedLocalConnectionPool() returns sql:Error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 2};
+  sql:ConnectionPool pool = {maxOpenConnections: 2, minIdleConnections: 2};
   Client oracleDbClient = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
-  var result = oracleDbClient->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
+  var result = oracleDbClient->query(`select count(*) as val from PoolCustomers where registrationID = 1`, Result);
   int|error retVal1 = getReturnValue(result);
   // Pool should be shutdown as the only client using it is stopped.
   check oracleDbClient.close();
   // This should result in an error return.
   var resultAfterPoolShutDown = oracleDbClient->query(
-    "select count(*) as val from PoolCustomers where registrationID = 1", Result);
+    `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
   int|error retVal2 = getReturnValue(resultAfterPoolShutDown);
 
   test:assertEquals(retVal1, 1);
@@ -318,32 +325,32 @@ function testShutDownUnsharedLocalConnectionPool() returns sql:Error? {
   groups: ["pool"]
 }
 function testShutDownSharedConnectionPool() returns sql:Error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 1};
+  sql:ConnectionPool pool = {maxOpenConnections: 1, minIdleConnections: 1};
   Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
-  var result1 = oracleDbClient1->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
+  var result1 = oracleDbClient1->query(`select count(*) as val from PoolCustomers where registrationID = 1`, Result);
   int|error retVal1 = getReturnValue(result1);
 
-  var result2 = oracleDbClient2->query("select count(*) as val from PoolCustomers where registrationID = 2", Result);
+  var result2 = oracleDbClient2->query(`select count(*) as val from PoolCustomers where registrationID = 2`, Result);
   int|error retVal2 = getReturnValue(result2);
 
   // Only one client is closed so pool should not shutdown.
   check oracleDbClient1.close();
 
   // This should be successful as pool is still up.
-  var result3 = oracleDbClient2->query("select count(*) as val from PoolCustomers where registrationID = 2", Result);
+  var result3 = oracleDbClient2->query(`select count(*) as val from PoolCustomers where registrationID = 2`, Result);
   int|error retVal3 = getReturnValue(result3);
 
   // This should fail because, even though the pool is up, this client was stopped
-  var result4 = oracleDbClient1->query("select count(*) as val from PoolCustomers where registrationID = 2", Result);
+  var result4 = oracleDbClient1->query(`select count(*) as val from PoolCustomers where registrationID = 2`, Result);
   int|error retVal4 = getReturnValue(result4);
 
   // Now pool should be shutdown as the only remaining client is stopped.
   check oracleDbClient2.close();
 
   // This should fail because this client is stopped.
-  var result5 = oracleDbClient2->query("select count(*) as val from PoolCustomers where registrationID = 2", Result);
+  var result5 = oracleDbClient2->query(`select count(*) as val from PoolCustomers where registrationID = 2`, Result);
   int|error retVal5 = getReturnValue(result4);
 
   test:assertEquals(retVal1, 1);
@@ -357,25 +364,25 @@ function testShutDownSharedConnectionPool() returns sql:Error? {
   groups: ["pool"]
 }
 function testShutDownPoolCorrespondingToASharedPoolConfig() returns sql:Error? {
-  sql:ConnectionPool pool = {maxOpenConnections: 1};
+  sql:ConnectionPool pool = {maxOpenConnections: 1, minIdleConnections: 1};
   Client oracleDbClient1 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   Client oracleDbClient2 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
-  var result1 = oracleDbClient1->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
+  var result1 = oracleDbClient1->query(`select count(*) as val from PoolCustomers where registrationID = 1`, Result);
   int|error retVal1 = getReturnValue(result1);
 
-  var result2 = oracleDbClient2->query("select count(*) as val from PoolCustomers where registrationID = 2", Result);
+  var result2 = oracleDbClient2->query(`select count(*) as val from PoolCustomers where registrationID = 2`, Result);
   int|error retVal2 = getReturnValue(result2);
 
   // This should result in stopping the pool used by this client as it was the only client using that pool.
   check oracleDbClient1.close();
 
   // This should be successful as the pool belonging to this client is up.
-  var result3 = oracleDbClient2->query("select count(*) as val from PoolCustomers where registrationID = 2", Result);
+  var result3 = oracleDbClient2->query(`select count(*) as val from PoolCustomers where registrationID = 2`, Result);
   int|error retVal3 = getReturnValue(result3);
 
   // This should fail because this client was stopped.
-  var result4 = oracleDbClient1->query("select count(*) as val from PoolCustomers where registrationID = 2", Result);
+  var result4 = oracleDbClient1->query(`select count(*) as val from PoolCustomers where registrationID = 2`, Result);
   int|error retVal4 = getReturnValue(result4);
 
   check oracleDbClient2.close();
@@ -393,14 +400,14 @@ function testStopClientUsingGlobalPool() returns sql:Error? {
   // This client doesn't have pool config specified therefore, global pool will be used.
   Client oracleDbClient = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options);
 
-  var result1 = oracleDbClient->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
+  var result1 = oracleDbClient->query(`select count(*) as val from PoolCustomers where registrationID = 1`, Result);
   int|error retVal1 = getReturnValue(result1);
 
   // This will merely stop this client and will not have any effect on the pool because it is the global pool.
   check oracleDbClient.close();
 
   // This should fail because this client was stopped, even though the pool is up.
-  var result2 = oracleDbClient->query("select count(*) as val from PoolCustomers where registrationID = 1", Result);
+  var result2 = oracleDbClient->query(`select count(*) as val from PoolCustomers where registrationID = 1`, Result);
   int|error retVal2 = getReturnValue(result2);
 
   test:assertEquals(retVal1, 1);

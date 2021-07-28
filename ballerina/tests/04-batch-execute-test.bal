@@ -21,22 +21,22 @@ import ballerina/test;
 isolated function beforeBatchExecFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("DataTable");
-    result = check oracledbClient->execute("CREATE TABLE DataTable(" +
-        "id NUMBER GENERATED ALWAYS AS IDENTITY, " +
-        "col_number NUMBER UNIQUE, " +
-        "col_float FLOAT, " +
-        "col_binary_float BINARY_FLOAT, " +
-        "col_binary_double BINARY_DOUBLE, " +
-        "PRIMARY KEY (id) " +
-        ")"
+    result = check oracledbClient->execute(`CREATE TABLE DataTable(
+        id NUMBER GENERATED ALWAYS AS IDENTITY,
+        col_number NUMBER UNIQUE,
+        col_float FLOAT,
+        col_binary_float BINARY_FLOAT,
+        col_binary_double BINARY_DOUBLE,
+        PRIMARY KEY (id)
+        )`
     );
     result = check oracledbClient->execute(
-        "INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double)" +
-        "VALUES(1, 922.337, 123.34, 123.34) ");
+        `INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double)
+        VALUES(1, 922.337, 123.34, 123.34) `);
 
     result = check oracledbClient->execute(
-        "INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double)" +
-        "VALUES(2, 922.337, 123.34, 123.34) ");
+        `INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double)
+        VALUES(2, 922.337, 123.34, 123.34) `);
 
     check oracledbClient.close();
 }

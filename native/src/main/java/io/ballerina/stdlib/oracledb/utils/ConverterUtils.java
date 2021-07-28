@@ -29,7 +29,6 @@ import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.sql.exception.ApplicationError;
-import oracle.xdb.XMLType;
 
 import java.math.BigDecimal;
 import java.sql.Array;
@@ -50,6 +49,9 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
  * @since 0.1.0
  */
 public class ConverterUtils {
+    private ConverterUtils() {
+
+    }
 
     /**
      * Convert IntervalYearToMonthValue value to String.
@@ -88,25 +90,25 @@ public class ConverterUtils {
         return day + " " + hour + ":" + minute + ":" + second;
     }
 
-     /**
-      * Convert OracleObjectValue value to oracle.sql.STRUCT.
-      * @param value Custom Bfile value
-      * @return String of BFILE
-      */
-     public static Struct convertOracleObject(Connection connection, Object value)
-             throws ApplicationError, SQLException {
-         Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.OBJECT_TYPE);
-         String objectTypeName = ((BString) fields.get(Constants.Types.OracleObject.TYPE_NAME))
-                 .getValue().toUpperCase(Locale.ENGLISH);
-         Object[] attributes = (Object[]) fields.get(Constants.Types.OracleObject.ATTRIBUTES);
-         try {
-             return connection.createStruct(objectTypeName, attributes);
-         } catch (SQLException e) {
-             throw(e);
-         } catch (Exception e) {
-             throw new ApplicationError("The array contains elements of unmappable types.");
-         }
-     }
+    /**
+     * Convert OracleObjectValue value to oracle.sql.STRUCT.
+     * @param value Custom Bfile value
+     * @return String of BFILE
+     */
+    public static Struct convertOracleObject(Connection connection, Object value)
+            throws ApplicationError, SQLException {
+        Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.OBJECT_TYPE);
+        String objectTypeName = ((BString) fields.get(Constants.Types.OracleObject.TYPE_NAME))
+                .getValue().toUpperCase(Locale.ENGLISH);
+        Object[] attributes = (Object[]) fields.get(Constants.Types.OracleObject.ATTRIBUTES);
+        try {
+            return connection.createStruct(objectTypeName, attributes);
+        } catch (SQLException e) {
+            throw(e);
+        } catch (Exception e) {
+            throw new ApplicationError("The array contains elements of unmappable types.");
+        }
+    }
 
     /**
      * Convert VArray value to oracle.sql.Array.
@@ -120,31 +122,6 @@ public class ConverterUtils {
         String name = ((BString) fields.get(Constants.Types.Varray.NAME)).getValue().toUpperCase(Locale.ENGLISH);
         Object varray = fields.get(Constants.Types.Varray.ELEMENTS);
         return Utils.getOracleConnection(connection).createARRAY(name, varray);
-    }
-
-    /**
-     * Convert NestedTable value to oracle.sql.Array.
-     * @param value Custom NestedTable Value
-     * @return sql Array
-     * @throws ApplicationError throws error if the parameter types are incorrect
-     */
-    public static Array convertNestedTable(Object value)
-            throws ApplicationError {
-        Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.NESTED_TABLE);
-        return (Array) fields.get(Constants.Types.Varray.ELEMENTS);
-    }
-
-    /**
-     * Convert XML value to oracle.xdb.XML.
-     * @param connection Connection instance
-     * @param value Custom XML Value
-     * @return XMLType
-     * @throws ApplicationError throws error if the parameter types are incorrect
-     */
-    public static XMLType convertXml(Connection connection, Object value) throws ApplicationError, SQLException {
-        Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.NESTED_TABLE);
-        String xml = (String) fields.get(Constants.Types.Xml.XML);
-        return XMLType.createXML(connection, xml, "oracle.xml.parser.XMLDocument.THIN");
     }
 
     private static String getIntervalString(Object param, String typeName) throws ApplicationError {
@@ -195,6 +172,8 @@ public class ConverterUtils {
                         structData.put(field.getFieldName(), null);
                     } else if (bValue instanceof BArray) {
                         structData.put(field.getFieldName(), getArrayData(bValue));
+                    } else if (bValue instanceof BString) {
+                        structData.put(field.getFieldName(), bValue);
                     } else {
                         throw Utils.throwInvalidParameterError(value, sqlType);
                     }
@@ -206,7 +185,7 @@ public class ConverterUtils {
         return structData;
     }
 
-    protected static Object[] getArrayData(Object bValue) throws ApplicationError {
+    private static Object[] getArrayData(Object bValue) throws ApplicationError {
         Type elementType = ((BArray) bValue).getElementType();
         int tag = elementType.getTag();
         switch (tag) {
@@ -229,11 +208,11 @@ public class ConverterUtils {
         }
     }
 
-    protected static Object[] getByteArrayData(Object value) {
+    private static Object[] getByteArrayData(Object value) {
         return new byte[][]{((BArray) value).getBytes()};
     }
 
-    protected static Object[] getIntArrayData(Object value) {
+    private static Object[] getIntArrayData(Object value) {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new Long[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -242,7 +221,7 @@ public class ConverterUtils {
         return arrayData;
     }
 
-    protected static Object[] getFloatArrayData(Object value) {
+    private static Object[] getFloatArrayData(Object value) {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new Double[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -251,7 +230,7 @@ public class ConverterUtils {
         return arrayData;
     }
 
-    protected static Object[] getStringArrayData(Object value) {
+    private static Object[] getStringArrayData(Object value) {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new String[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -260,7 +239,7 @@ public class ConverterUtils {
         return arrayData;
     }
 
-    protected static Object[] getBooleanArrayData(Object value) {
+    private static Object[] getBooleanArrayData(Object value) {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new Boolean[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -269,7 +248,7 @@ public class ConverterUtils {
         return arrayData;
     }
 
-    protected static Object[] getDecimalArrayData(Object value) {
+    private static Object[] getDecimalArrayData(Object value) {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new BigDecimal[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -278,7 +257,7 @@ public class ConverterUtils {
         return arrayData;
     }
 
-    protected static Object[] getAnydataArrayData(Object value) throws ApplicationError {
+    private static Object[] getAnydataArrayData(Object value) throws ApplicationError {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new Object[arrayLength];
         for (int i = 0; i < arrayLength; i++) {

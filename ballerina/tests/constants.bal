@@ -14,7 +14,6 @@
 // under the License.
 
 import ballerina/file;
-import ballerina/sql;
 
 const string USER = "admin";
 const string PASSWORD = "password";
@@ -24,19 +23,3 @@ const int POOLPORT = 1522;
 const string DATABASE = "ORCLCDB.localdomain";
 
 string resourcePath = check file:getAbsolutePath("tests/resources");
-
-final Options options = {
-    loginTimeout: 1,
-    autoCommit: true,
-    connectTimeout: 1,
-    socketTimeout: 3
-};
-configurable int maxOpenConnections = 10;
-configurable decimal maxConnectionLifeTime = 2000.0;
-configurable int minIdleConnections = 5;
-
-final sql:ConnectionPool connectionPool = {
-   maxOpenConnections: maxOpenConnections,
-   maxConnectionLifeTime: maxConnectionLifeTime,
-   minIdleConnections: minIdleConnections
-};

@@ -17,87 +17,77 @@ import ballerina/sql;
 import ballerina/test;
 
 @test:Config {
-    enable: true,
-    groups:["execute","execute-basic"]
+    groups:["execute", "execute-basic"]
 }
 isolated function testCreateTable() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-
     sql:ExecutionResult result = check dropTableIfExists("TestExecuteTable");
-    result = check oracledbClient->execute("CREATE TABLE TestExecuteTable(field NUMBER, field2 VARCHAR2(255))");
+    result = check oracledbClient->execute(`CREATE TABLE TestExecuteTable(field NUMBER, field2 VARCHAR2(255))`);
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
     test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
-
     result = check dropTableIfExists("TestCharacterTable");
-    result = check oracledbClient->execute("CREATE TABLE TestCharacterTable(" +
-        "id NUMBER, " +
-        "col_char CHAR(4), " +
-        "col_nchar NCHAR(4), " +
-        "col_varchar2  VARCHAR2(4000), " +
-        "col_varchar  VARCHAR2(4000), " +
-        "col_nvarchar2 NVARCHAR2(2000), " +
-        "PRIMARY KEY(id) " +
-        ")"
+    result = check oracledbClient->execute(`CREATE TABLE TestCharacterTable(
+        id NUMBER,
+        col_char CHAR(4),
+        col_nchar NCHAR(4),
+        col_varchar2  VARCHAR2(4000),
+        col_varchar  VARCHAR2(4000),
+        col_nvarchar2 NVARCHAR2(2000),
+        PRIMARY KEY(id)
+        )`
     );
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
     test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
-
     result = check dropTableIfExists("TestNumericTable");
-    result = check oracledbClient->execute("CREATE TABLE TestNumericTable(" +
-        "id NUMBER GENERATED ALWAYS AS IDENTITY, " +
-        "col_number  NUMBER, " +
-        "col_float  FLOAT, " +
-        "col_binary_float BINARY_FLOAT, " +
-        "col_binary_double BINARY_DOUBLE, " +
-        "PRIMARY KEY(id) " +
-        ")"
+    result = check oracledbClient->execute(`CREATE TABLE TestNumericTable(
+        id NUMBER GENERATED ALWAYS AS IDENTITY,
+        col_number  NUMBER,
+        col_float  FLOAT,
+        col_binary_float BINARY_FLOAT,
+        col_binary_double BINARY_DOUBLE,
+        PRIMARY KEY(id)
+        )`
     );
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
     test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
-
     check oracledbClient.close();
 }
 
 @test:Config {
-    enable: true,
-    groups:["execute","execute-basic"],
+    groups:["execute", "execute-basic"],
     dependsOn: [testCreateTable]
 }
 isolated function testAlterTable() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute(
-        "ALTER TABLE TestExecuteTable RENAME COLUMN field TO field1");
+        `ALTER TABLE TestExecuteTable RENAME COLUMN field TO field1`);
     check oracledbClient.close();
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
     test:assertExactEquals(result.lastInsertId, (), "Last Insert Id should be null.");
 }
 
 @test:Config {
-    enable: true,
-    groups:["execute","execute-basic"],
+    groups:["execute", "execute-basic"],
     dependsOn: [testAlterTable]
 }
 isolated function testInsertTable() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute(
-        "INSERT INTO TestExecuteTable(field1, field2) VALUES (1, 'Hello, world')");
+        `INSERT INTO TestExecuteTable(field1, field2) VALUES (1, 'Hello, world')`);
     check oracledbClient.close();
-
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     var insertId = result.lastInsertId;
-
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
 @test:Config {
-    enable: true,
-    groups:["execute","execute-basic"],
+    groups:["execute", "execute-basic"],
     dependsOn: [testInsertTable]
 }
 isolated function testUpdateTable() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute(
-        "UPDATE TestExecuteTable SET field2 = 'Hello, ballerina' WHERE field1 = 1");
+        `UPDATE TestExecuteTable SET field2 = 'Hello, ballerina' WHERE field1 = 1`);
     check oracledbClient.close();
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     test:assertExactEquals(result.lastInsertId, (), "Last Insert Id should be null.");
@@ -109,8 +99,8 @@ isolated function testUpdateTable() returns sql:Error? {
 }
 isolated function testInsertTableWithoutGeneratedKeys() returns sql:Error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute("Insert into TestCharacterTable (id, col_varchar2)"
-        + " values (20, 'test')");
+    sql:ExecutionResult result = check oracledbClient->execute(`Insert into TestCharacterTable (id, col_varchar2)
+         values (20, 'test')`);
     check oracledbClient.close();
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     var insertId = result.lastInsertId;
@@ -123,7 +113,7 @@ isolated function testInsertTableWithoutGeneratedKeys() returns sql:Error? {
 }
 isolated function testInsertTableWithGeneratedKeys() returns sql:Error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute("insert into TestNumericTable (col_number) values (21)");
+    sql:ExecutionResult result = check oracledbClient->execute(`insert into TestNumericTable (col_number) values (21)`);
     check oracledbClient.close();
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     var insertId = result.lastInsertId;
@@ -144,22 +134,15 @@ type NumericRecord record {|
 }
 isolated function testInsertAndSelectTableWithGeneratedKeys() returns sql:Error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute("insert into TestNumericTable (col_number) values (31)");
-
+    sql:ExecutionResult result = check oracledbClient->execute(`insert into TestNumericTable (col_number) values (31)`);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-
     string|int? insertedId = result.lastInsertId;
     if (insertedId is string|int) {
-        string query = "SELECT * from TestNumericTable where col_number = 31";
-        stream<record{} , error> queryResult = oracledbClient->query(query, NumericRecord);
-
-        stream<NumericRecord, sql:Error> streamData = <stream<NumericRecord, sql:Error>>queryResult;
+        sql:ParameterizedQuery query = `SELECT * from TestNumericTable where col_number = 31`;
+        stream<NumericRecord , sql:Error> streamData = oracledbClient->query(query);
         record {|NumericRecord value;|}? data = check streamData.next();
-
         check streamData.close();
-    
         test:assertNotExactEquals(data?.value, (), "Incorrect InsertId returned.");
-
     } else {
         test:assertFail("Last Insert id should be string.");
     }
@@ -172,23 +155,16 @@ isolated function testInsertAndSelectTableWithGeneratedKeys() returns sql:Error?
 }
 isolated function testInsertWithAllNilAndSelectTableWithGeneratedKeys() returns sql:Error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute("insert into TestNumericTable (col_number, col_float, " +
-        "col_binary_float, col_binary_double) values (null, null, null, null)");
-
+    sql:ExecutionResult result = check oracledbClient->execute(`insert into TestNumericTable (col_number, col_float,
+        col_binary_float, col_binary_double) values (null, null, null, null)`);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-
     string|int? insertedId = result.lastInsertId;
     if (insertedId is string|int) {
-        string query = "SELECT * from TestNumericTable where id =2 ";
-        stream<record{} , error> queryResult = oracledbClient->query(query, NumericRecord);
-
-        stream<NumericRecord, sql:Error> streamData = <stream<NumericRecord, sql:Error>>queryResult;
+        sql:ParameterizedQuery query = `SELECT * from TestNumericTable where id = 2`;
+        stream<NumericRecord , sql:Error> streamData = oracledbClient->query(query);
         record {|NumericRecord value;|}? data = check streamData.next();
-
         check streamData.close();
-    
         test:assertNotExactEquals(data?.value, (), "Incorrect InsertId returned.");
-
     } else {
         test:assertFail("Last Insert id should be string");
     }
@@ -202,8 +178,7 @@ isolated function testInsertWithAllNilAndSelectTableWithGeneratedKeys() returns 
 isolated function testInsertTableWithDatabaseError() returns sql:Error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult|sql:Error result = oracledbClient->execute(
-        "Insert into NumericTypesNonExistTable (int_type) values (20)");
-
+        `Insert into NumericTypesNonExistTable (int_type) values (20)`);
     if (result is sql:DatabaseError) {
         sql:DatabaseErrorDetail errorDetails = result.detail();
         test:assertEquals(errorDetails.errorCode, 942, "SQL Error code does not match");
@@ -211,7 +186,6 @@ isolated function testInsertTableWithDatabaseError() returns sql:Error? {
     } else {
         test:assertFail("Database Error expected.");
     }
-
     check oracledbClient.close();
 }
 
@@ -221,9 +195,8 @@ isolated function testInsertTableWithDatabaseError() returns sql:Error? {
 }
 isolated function testInsertTableWithDataTypeError() returns sql:Error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult|sql:Error result = oracledbClient->execute("Insert into TestNumericTable (col_number) values"
-        + " ('This is wrong type')");
-
+    sql:ExecutionResult|sql:Error result = oracledbClient->execute(`Insert into TestNumericTable (col_number) values
+         ('This is wrong type')`);
     if (result is sql:DatabaseError) {
         sql:DatabaseErrorDetail errorDetails = result.detail();
         test:assertEquals(errorDetails.errorCode, 1722, "SQL Error code does not match");
@@ -231,7 +204,6 @@ isolated function testInsertTableWithDataTypeError() returns sql:Error? {
     } else {
         test:assertFail("Database Error expected.");
     }
-
     check oracledbClient.close();
 }
 
@@ -242,20 +214,18 @@ isolated function testInsertTableWithDataTypeError() returns sql:Error? {
 isolated function testUpdateData() returns sql:Error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute(
-        "Update TestNumericTable set col_number = 11 where col_number = 31");
+        `Update TestNumericTable set col_number = 11 where col_number = 31`);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-
     check oracledbClient.close();
 }
 
 @test:Config {
-    enable: true,
-    groups:["execute","execute-basic"],
+    groups:["execute", "execute-basic"],
     dependsOn:[testUpdateData]
 }
 isolated function testDropTable() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute("DROP TABLE TestNumericTable");
+    sql:ExecutionResult result = check oracledbClient->execute(`DROP TABLE TestNumericTable`);
     check oracledbClient.close();
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
     test:assertExactEquals(result.lastInsertId, (), "Last Insert Id should be null.");
