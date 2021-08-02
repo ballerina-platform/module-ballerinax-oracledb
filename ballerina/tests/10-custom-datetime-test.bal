@@ -17,30 +17,29 @@ import ballerina/sql;
 import ballerina/test;
 import ballerina/time;
 
-@test:BeforeGroups { value:["insert-time"] }
+@test:BeforeGroups { value:["execute"] }
 isolated function beforeInsertTimeFunc() returns sql:Error? {
    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
    sql:ExecutionResult result = check dropTableIfExists("TestDateTimeTable");
-   result = check oracledbClient->execute("ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH:MI:SS AM'");
-   result = check oracledbClient->execute("ALTER session set NLS_TIMESTAMP_TZ_FORMAT = 'DD-MON-YYYY HH:MI:SS AM TZR'");
-   result = check oracledbClient->execute("CREATE TABLE TestDateTimeTable(" +
-       "PK NUMBER GENERATED ALWAYS AS IDENTITY, " +
-       "COL_DATE  DATE, " +
-       "COL_TIMESTAMP  TIMESTAMP (9), " +
-       "COL_TIMESTAMPTZ  TIMESTAMP (9) WITH TIME ZONE, " +
-       "COL_TIMESTAMPTZL  TIMESTAMP (9) WITH LOCAL TIME ZONE, " +
-       "COL_INTERVAL_YEAR_TO_MONTH INTERVAL YEAR TO MONTH, " +
-       "COL_INTERVAL_DAY_TO_SECOND INTERVAL DAY(9) TO SECOND(9), " +
-       "PRIMARY KEY(PK) " +
-       ")"
+   result = check oracledbClient->execute(`ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH:MI:SS AM'`);
+   result = check oracledbClient->execute(`ALTER session set NLS_TIMESTAMP_TZ_FORMAT = 'DD-MON-YYYY HH:MI:SS AM TZR'`);
+   result = check oracledbClient->execute(`CREATE TABLE TestDateTimeTable(
+       PK NUMBER GENERATED ALWAYS AS IDENTITY,
+       COL_DATE  DATE,
+       COL_TIMESTAMP  TIMESTAMP (9),
+       COL_TIMESTAMPTZ  TIMESTAMP (9) WITH TIME ZONE,
+       COL_TIMESTAMPTZL  TIMESTAMP (9) WITH LOCAL TIME ZONE,
+       COL_INTERVAL_YEAR_TO_MONTH INTERVAL YEAR TO MONTH,
+       COL_INTERVAL_DAY_TO_SECOND INTERVAL DAY(9) TO SECOND(9),
+       PRIMARY KEY(PK)
+       )`
    );
 
    check oracledbClient.close();
 }
 
 @test:Config {
-   enable: true,
-   groups:["execute","insert-time"]
+   groups:["execute"]
 }
 isolated function insertIntervalWithString() returns sql:Error? {
    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
@@ -50,114 +49,88 @@ isolated function insertIntervalWithString() returns sql:Error? {
    string timestamptzl = "05-JAN-2020 10:35:10 AM";
    string intervalYtoM = "15-11";
    string intervalDtoS = "200 5:12:45.89";
-
    sql:ExecutionResult result = check oracledbClient->execute(
-       "ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH:MI:SS AM'");
+       `ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH:MI:SS AM'`);
    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_DATE, COL_TIMESTAMP, COL_TIMESTAMPTZ,
        COL_TIMESTAMPTZL, COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND) VALUES (
        ${date}, ${timestamp}, ${timestamptz}, ${timestamptzl}, ${intervalYtoM}, ${intervalDtoS})`;
    result = check oracledbClient->execute(insertQuery);
-
    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
    var insertId = result.lastInsertId;
    test:assertTrue(insertId is string, "Last Insert id should be string");
-
    check oracledbClient.close();
 }
 
 @test:Config {
-   enable: true,
-   groups:["execute","insert-time"],
+   groups:["execute"],
    dependsOn: [insertIntervalWithString]
 }
 isolated function insertIntervalWithBalTypeString() returns sql:Error? {
-   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-
    time:Date balDate = {year: 2017, month: 12, day: 18};
    time:Utc balTimestamp = [100000, 0.5];
-
    sql:DateValue date = new(balDate);
    sql:TimestampValue timestamp = new(balTimestamp);
    sql:TimestampValue timestamptz = new(balTimestamp);
    sql:TimestampValue timestamptzl = new(balTimestamp);
    IntervalYearToMonthValue intervalYtoM = new("15-11");
    IntervalDayToSecondValue intervalDtoS = new("13 5:34:23.45");
-
    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(
        COL_DATE, COL_TIMESTAMP, COL_TIMESTAMPTZ, COL_TIMESTAMPTZL, COL_INTERVAL_YEAR_TO_MONTH,
        COL_INTERVAL_DAY_TO_SECOND) VALUES (${date}, ${timestamp}, ${timestamptz}, ${timestamptzl}, ${intervalYtoM},
        ${intervalDtoS})`;
-   sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-
+   sql:ExecutionResult result = check executeQuery(insertQuery);
    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
    var insertId = result.lastInsertId;
    test:assertTrue(insertId is string, "Last Insert id should be string");
-
-   check oracledbClient.close();
 }
 
 @test:Config {
-   enable: true,
-   groups:["execute","insert-time"],
+   groups:["execute"],
    dependsOn: [insertIntervalWithBalTypeString]
 }
 isolated function insertIntervalWithBalType() returns sql:Error? {
-   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
    IntervalYearToMonthValue intervalYtoM = new({ years:15, months: 11 });
    IntervalDayToSecondValue intervalDtoS = new({ days:13, hours: 5, minutes: 34, seconds: 23.45 });
-
    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
        COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
-   sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-
+   sql:ExecutionResult result = check executeQuery(insertQuery);
    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
    var insertId = result.lastInsertId;
    test:assertTrue(insertId is string, "Last Insert id should be string");
-
-   check oracledbClient.close();
 }
 
 @test:Config {
-   enable: true,
-   groups:["execute","insert-time"],
+   groups:["execute"],
    dependsOn: [insertIntervalWithBalType]
 }
 isolated function insertIntervalNull() returns sql:Error? {
-   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
    sql:DateValue date = new();
    sql:TimestampValue timestamp = new();
    sql:TimestampValue timestamptz = new();
    sql:TimestampValue timestamptzl = new();
    IntervalYearToMonthValue intervalYtoM = new ();
    IntervalDayToSecondValue intervalDtoS = new();
-
    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(
        COL_DATE, COL_TIMESTAMP, COL_TIMESTAMPTZ, COL_TIMESTAMPTZL,
        COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND) VALUES (
        ${date}, ${timestamp}, ${timestamptz}, ${timestamptzl}, ${intervalYtoM}, ${intervalDtoS})`;
-   sql:ExecutionResult result = check oracledbClient->execute(insertQuery);
-
+   sql:ExecutionResult result = check executeQuery(insertQuery);
    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
    var insertId = result.lastInsertId;
    test:assertTrue(insertId is string, "Last Insert id should be string");
-
-   check oracledbClient.close();
 }
 
 @test:Config {
-   enable: true,
-   groups:["execute","insert-time"],
+   groups:["execute"],
    dependsOn: [insertIntervalNull]
 }
 isolated function insertIntervalWithInvalidBalType1() returns sql:Error? {
-Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
    IntervalYearToMonthValue intervalYtoM = new({years:12, months: 340});
    IntervalDayToSecondValue intervalDtoS = new({ days:1, hours: 555, minutes: 34, seconds: 23.45 });
 
    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
            COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
-   sql:ExecutionResult|sql:Error result = oracledbClient->execute(insertQuery);
-
+   sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
    if (result is sql:DatabaseError) {
        sql:DatabaseErrorDetail errorDetails = result.detail();
        test:assertEquals(errorDetails.errorCode, 1843, "SQL Error code does not match");
@@ -165,24 +138,18 @@ Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
    } else {
        test:assertFail("Database Error expected.");
    }
-
-   check oracledbClient.close();
 }
 
 @test:Config {
-   enable: true,
-   groups:["execute","insert-time"],
+   groups:["execute"],
    dependsOn: [insertIntervalWithInvalidBalType1]
 }
 isolated function insertIntervalWithInvalidBalType2() returns sql:Error? {
-   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
    IntervalYearToMonthValue intervalYtoM = new({years:12, months: 34});
    IntervalDayToSecondValue intervalDtoS = new({ days:1, hours: -55, minutes: 34, seconds: 23.45 });
-
    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
            COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
-   sql:ExecutionResult|sql:Error result = oracledbClient->execute(insertQuery);
-
+   sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
    if (result is sql:DatabaseError) {
        sql:DatabaseErrorDetail errorDetails = result.detail();
        test:assertEquals(errorDetails.errorCode, 1843, "SQL Error code does not match");
@@ -190,6 +157,4 @@ isolated function insertIntervalWithInvalidBalType2() returns sql:Error? {
    } else {
        test:assertFail("Database Error expected.");
    }
-
-   check oracledbClient.close();
 }
