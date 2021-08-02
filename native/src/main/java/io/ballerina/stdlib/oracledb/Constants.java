@@ -204,7 +204,6 @@ public final class Constants {
             public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondValue";
             public static final String OBJECT = "ObjectTypeValue";
             public static final String VARRAY = "VarrayValue";
-            public static final String XML = "XmlValue";
         }
 
         /**

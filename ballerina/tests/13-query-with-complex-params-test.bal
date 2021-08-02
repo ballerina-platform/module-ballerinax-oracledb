@@ -27,9 +27,6 @@ isolated function beforeQueryWithComplexParamsFunc() returns sql:Error? {
         PRIMARY KEY (id)
         )`
     );
-    XmlValue xmlValue = new (xml `<key>value</key>`);
-    result = check oracledbClient->execute(
-            `INSERT INTO ComplexQueryTable (id, col_xml) VALUES(1, ${xmlValue})`);
     xml xmlValue = xml `<key>value</key>`;
     result = check oracledbClient->execute(
             `INSERT INTO ComplexQueryTable (id, col_xml) VALUES(1, ${xmlValue})`);
@@ -64,25 +61,6 @@ isolated function queryXmlWithReturnType() returns error? {
     XmlTypeRecord complexResult = {
             id: 1,
             col_xml: xml `<key>value</key>`
-        };
-    test:assertEquals(complexResult, value, "Returned are wrong");
-}
-
-type XmlTypeStringRecord record {
-    int id;
-    string col_xml;
-};
-
-@test:Config {
-    groups: ["query", "query-complex-params"],
-    enable: false
-}
-isolated function queryXmlStringWithReturnType() returns error? {
-    sql:ParameterizedQuery sqlQuery = `SELECT a.* from ComplexQueryTable a`;
-    record {}? value = check queryClient(sqlQuery, XmlTypeStringRecord);
-    XmlTypeStringRecord complexResult = {
-            id: 1,
-            col_xml: "<key>value</key>"
         };
     test:assertEquals(complexResult, value, "Returned are wrong");
 }
