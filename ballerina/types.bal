@@ -114,18 +114,6 @@ public distinct class VarrayValue {
     }
 }
 
-# Represents XML Oracle DB field.
-#
-# + value - Value of parameter passed into the SQL statement
-public distinct class XmlValue {
-    *sql:TypedValue;
-    public string|xml? value;
-
-    public isolated function init(string|xml? value = ()) {
-        self.value = value;
-    }
-}
-
 # Represents Xml range OutParameter used in procedure calls
 public distinct class XmlOutParameter {
     *sql:OutParameter;

@@ -20,6 +20,7 @@ package io.ballerina.stdlib.oracledb.parameterprocessor;
 
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
+import io.ballerina.runtime.api.values.BXml;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
 import io.ballerina.stdlib.oracledb.utils.Utils;
@@ -69,9 +70,6 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             case Constants.Types.CustomTypes.VARRAY:
                 setVarray(connection, preparedStatement, index, value);
                 break;
-            case Constants.Types.CustomTypes.XML:
-                setXml(connection, preparedStatement, index, value);
-                break;
             default:
                 throw Utils.throwInvalidParameterError(value, sqlType);
         }
@@ -89,6 +87,18 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 throw new ApplicationError("Unsupported OutParameter type: " + sqlType);
         }
         return sqlTypeValue;
+    }
+
+    @Override
+    protected void setXml(Connection connection, PreparedStatement preparedStatement,
+                          int index, BXml value) throws SQLException {
+        if (value == null) {
+            preparedStatement.setNull(index, Types.NULL);
+        } else {
+            SQLXML sqlXml = connection.createSQLXML();
+            sqlXml.setString(value.toString());
+            preparedStatement.setObject(index, sqlXml, Types.SQLXML);
+        }
     }
 
     private void setIntervalYearToMonth(PreparedStatement preparedStatement,
@@ -112,18 +122,6 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         } else {
             String intervalYToM = ConverterUtils.convertIntervalDayToSecond(value);
             preparedStatement.setString(index, intervalYToM);
-        }
-    }
-
-    @Override
-    protected void setXml(Connection connection, PreparedStatement preparedStatement,
-                                        int index, Object value) throws SQLException, ApplicationError {
-        if (value == null) {
-            throw Utils.throwInvalidParameterError(null, "xml");
-        } else {
-            SQLXML sqlXml = connection.createSQLXML();
-            sqlXml.setString(value.toString());
-            preparedStatement.setObject(index, sqlXml, Types.SQLXML);
         }
     }
 
