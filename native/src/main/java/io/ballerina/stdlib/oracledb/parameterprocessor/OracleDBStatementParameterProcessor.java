@@ -30,6 +30,7 @@ import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Struct;
 import java.sql.Types;
 
@@ -68,9 +69,26 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             case Constants.Types.CustomTypes.VARRAY:
                 setVarray(connection, preparedStatement, index, value);
                 break;
+            case Constants.Types.CustomTypes.XML:
+                setXml(connection, preparedStatement, index, value);
+                break;
             default:
                 throw Utils.throwInvalidParameterError(value, sqlType);
         }
+    }
+
+    @Override
+    public int getCustomOutParameterType(BObject typedValue) throws ApplicationError {
+        String sqlType = typedValue.getType().getName();
+        int sqlTypeValue;
+        switch (sqlType) {
+            case Constants.Types.OutParameterTypes.XML:
+                sqlTypeValue = Types.SQLXML;
+                break;
+            default:
+                throw new ApplicationError("Unsupported OutParameter type: " + sqlType);
+        }
+        return sqlTypeValue;
     }
 
     private void setIntervalYearToMonth(PreparedStatement preparedStatement,
@@ -94,6 +112,18 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         } else {
             String intervalYToM = ConverterUtils.convertIntervalDayToSecond(value);
             preparedStatement.setString(index, intervalYToM);
+        }
+    }
+
+    @Override
+    protected void setXml(Connection connection, PreparedStatement preparedStatement,
+                                        int index, Object value) throws SQLException, ApplicationError {
+        if (value == null) {
+            throw Utils.throwInvalidParameterError(null, "xml");
+        } else {
+            SQLXML sqlXml = connection.createSQLXML();
+            sqlXml.setString(value.toString());
+            preparedStatement.setObject(index, sqlXml, Types.SQLXML);
         }
     }
 
