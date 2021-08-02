@@ -21,6 +21,7 @@ module io.ballerina.stdlib.oracledb {
     requires io.ballerina.stdlib.sql;    
     requires java.sql;
     requires ojdbc8;
+    requires xdb;
     exports io.ballerina.stdlib.oracledb;
     exports io.ballerina.stdlib.oracledb.parameterprocessor;
 }

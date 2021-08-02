@@ -12,3 +12,11 @@ path = "./lib/sql-native-@stdlib.sql.native.version@.jar"
 [[platform.java11.dependency]]
 path = "./lib/ojdbc8-@oracledb.driver.version@.jar"
 scope = "testOnly"
+
+[[platform.java11.dependency]]
+path = "./lib/xdb-@oracle.xdb.version@.jar"
+scope = "testOnly"
+
+[[platform.java11.dependency]]
+path = "./lib/xmlparserv2-@oracle.xmlparserv2.version@.jar"
+scope = "testOnly"

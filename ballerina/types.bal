@@ -114,6 +114,31 @@ public distinct class VarrayValue {
     }
 }
 
+# Represents XML Oracle DB field.
+#
+# + value - Value of parameter passed into the SQL statement
+public distinct class XmlValue {
+    *sql:TypedValue;
+    public string|xml? value;
+
+    public isolated function init(string|xml? value = ()) {
+        self.value = value;
+    }
+}
+
+# Represents Xml range OutParameter used in procedure calls
+public distinct class XmlOutParameter {
+    *sql:OutParameter;
+
+    # Parses returned SQL value to ballerina value.
+    #
+    # + typeDesc - Type description of the data that need to be converted
+    # + return - The converted ballerina value or Error
+    public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
+    } external;
+}
+
 # The class with custom implementations for nextResult and getNextQueryResult in the connector modules.
 #
 public class CustomResultIterator {

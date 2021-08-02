@@ -34,6 +34,9 @@ dependencies {
     implementation (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
         transitive = false
     }
+    implementation (group: 'com.oracle.database.xml', name: 'xdb', version: "${oracleXDBVersion}") {
+        transitive = false
+    }
     implementation group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
     implementation group: 'io.ballerina.stdlib', name: 'sql-native', version: "${stdlibSqlVersion}"
 }
