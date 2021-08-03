@@ -69,7 +69,7 @@ function testLocalSharedConnectionPoolConfigSingleDestination() returns sql:Erro
   Client oracleDbClient4 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
   Client oracleDbClient5 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool);
 
-  (stream<record{}, error>)[] resultArray = [];
+  (stream<record{}, error?>)[] resultArray = [];
   resultArray[0] = oracleDbClient1->query(`select count(*) as val from PoolCustomers where registrationID = 1`, Result);
   resultArray[1] = oracleDbClient2->query(`select count(*) as val from PoolCustomers where registrationID = 1`, Result);
   resultArray[2] = oracleDbClient3->query(`select count(*) as val from PoolCustomers where registrationID = 2`, Result);
@@ -120,7 +120,7 @@ isolated function testLocalSharedConnectionPoolConfigDifferentDbOptions() return
     Client oracleDbClient6 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT,
         {connectTimeout: 1}, pool);
 
-    stream<record {} , error>[] resultArray = [];
+    stream<record {} , error?>[] resultArray = [];
     resultArray[0] = oracleDbClient1->query(
         `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
     resultArray[1] = oracleDbClient2->query(
@@ -181,7 +181,7 @@ function testLocalSharedConnectionPoolConfigMultipleDestinations() returns sql:E
     Client oracleDbClient6 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool2);
     Client oracleDbClient7 = check new (HOST, USER, PASSWORD, POOLDB, POOLPORT, options, pool2);
 
-    stream<record {} , error>[] resultArray = [];
+    stream<record {} , error?>[] resultArray = [];
     resultArray[0] = oracleDbClient1->query(
         `select count(*) as val from PoolCustomers where registrationID = 1`, Result);
     resultArray[1] = oracleDbClient2->query(
@@ -414,7 +414,7 @@ function testStopClientUsingGlobalPool() returns sql:Error? {
   validateApplicationError(retVal2);
 }
 
-isolated function getReturnValue(stream<record{}, error> queryResult) returns int|error {
+isolated function getReturnValue(stream<record{}, error?> queryResult) returns int|error {
   int count = -1;
   record {|record {} value;|}? data = check queryResult.next();
   if (data is record {|record {} value;|}) {
