@@ -143,8 +143,6 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         if (value != null) {
             if (type.getTag() == TypeTags.XML_TAG) {
                 return XmlUtils.parse(value.getBinaryStream());
-            } else if (type.getTag() == TypeTags.STRING_TAG) {
-                return fromString(value.toString());
             } else {
                 throw new ApplicationError("The ballerina type that can be used for SQL struct should be record type," +
                         " but found " + type.getName() + " .");

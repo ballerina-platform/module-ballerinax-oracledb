@@ -30,6 +30,8 @@ isolated function beforeQueryWithComplexParamsFunc() returns sql:Error? {
     xml xmlValue = xml `<key>value</key>`;
     result = check oracledbClient->execute(
             `INSERT INTO ComplexQueryTable (id, col_xml) VALUES(1, ${xmlValue})`);
+    result = check oracledbClient->execute(
+            `INSERT INTO ComplexQueryTable (id, col_xml) VALUES(2, ${()})`);
     check oracledbClient.close();
 }
 
@@ -37,7 +39,8 @@ isolated function beforeQueryWithComplexParamsFunc() returns sql:Error? {
     groups: ["query", "query-complex-params"]
 }
 isolated function queryXmlWithoutReturnType() returns error? {
-    sql:ParameterizedQuery sqlQuery = `SELECT a.* from ComplexQueryTable a`;
+    int id = 1;
+    sql:ParameterizedQuery sqlQuery = `SELECT a.* from ComplexQueryTable a where a.id = ${id}`;
     record {}|sql:Error? value = check queryClient(sqlQuery);
     if value is record {} {
         test:assertEquals(<decimal> 1, value["ID"], "Returned are wrong");
@@ -56,7 +59,8 @@ type XmlTypeRecord record {
     groups: ["query", "query-complex-params"]
 }
 isolated function queryXmlWithReturnType() returns error? {
-    sql:ParameterizedQuery sqlQuery = `SELECT a.* from ComplexQueryTable a`;
+    int id = 1;
+    sql:ParameterizedQuery sqlQuery = `SELECT a.* from ComplexQueryTable a where a.id = ${id}`;
     record {}? value = check queryClient(sqlQuery, XmlTypeRecord);
     XmlTypeRecord complexResult = {
             id: 1,

@@ -27,6 +27,7 @@ import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBResultParameterPr
  * @since 0.1.0
  */
 public class RecordIteratorUtils {
+    private RecordIteratorUtils() {}
 
     /**
      * Call `sql:RecordIteratorUtils` with a custom `ResultParameterProcessor` object.
