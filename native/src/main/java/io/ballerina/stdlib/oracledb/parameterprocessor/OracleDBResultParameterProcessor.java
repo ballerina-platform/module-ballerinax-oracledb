@@ -35,6 +35,7 @@ import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcesso
 import io.ballerina.stdlib.sql.utils.Utils;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Struct;
@@ -135,6 +136,18 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                     + " record. ", e);
         }
         return struct;
+    }
+
+    @Override
+    public Object getAndConvertXml(ResultSet resultSet, int columnIndex, int sqlType, Type balType)
+            throws ApplicationError, SQLException {
+        try {
+            SQLXML sqlxml = resultSet.getSQLXML(columnIndex);
+            return this.convertXml(sqlxml, sqlType, balType);
+        } catch (NoClassDefFoundError e) {
+            throw new ApplicationError("Error occurred while retrieving an xml data. Check whether both " +
+                    "`xdb.jar` and `xmlparserv2.jar` are present in the dependency jar list");
+        }
     }
 
     @Override

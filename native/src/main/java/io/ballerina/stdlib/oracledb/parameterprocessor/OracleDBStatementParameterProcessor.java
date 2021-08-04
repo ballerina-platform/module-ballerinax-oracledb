@@ -91,13 +91,18 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
 
     @Override
     protected void setXml(Connection connection, PreparedStatement preparedStatement,
-                          int index, BXml value) throws SQLException {
+                          int index, BXml value) throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setNull(index, Types.NULL);
         } else {
-            SQLXML sqlXml = connection.createSQLXML();
-            sqlXml.setString(value.toString());
-            preparedStatement.setObject(index, sqlXml, Types.SQLXML);
+            try {
+                SQLXML sqlXml = connection.createSQLXML();
+                sqlXml.setString(value.toString());
+                preparedStatement.setObject(index, sqlXml, Types.SQLXML);
+            } catch (NoClassDefFoundError e) {
+                throw new ApplicationError("Error occurred while setting an xml data. Check whether both " +
+                        "`xdb.jar` and `xmlparserv2.jar` are present in the dependency jar list");
+            }
         }
     }
 
