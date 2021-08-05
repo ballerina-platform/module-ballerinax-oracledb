@@ -139,11 +139,11 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
     }
 
     @Override
-    public Object getAndConvertXml(ResultSet resultSet, int columnIndex, int sqlType, Type balType)
+    public Object processXmlResult(ResultSet resultSet, int columnIndex, int sqlType, Type ballerinaType)
             throws ApplicationError, SQLException {
         try {
             SQLXML sqlxml = resultSet.getSQLXML(columnIndex);
-            return this.convertXml(sqlxml, sqlType, balType);
+            return this.convertXml(sqlxml, sqlType, ballerinaType);
         } catch (NoClassDefFoundError e) {
             throw new ApplicationError("Error occurred while retrieving an xml data. Check whether both " +
                     "`xdb.jar` and `xmlparserv2.jar` are present in the dependency jar list");
