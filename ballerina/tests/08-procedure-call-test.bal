@@ -15,6 +15,7 @@
 
 import ballerina/sql;
 import ballerina/test;
+import ballerina/jballerina.java;
 
 type StringDataForCall record {
     string COL_CHAR;
@@ -291,6 +292,27 @@ isolated function testCallWithComplexTypesOutParams() returns error? {
     check oracledbClient.close();
     xml 'xml = xml `<key>value</key>`;
     test:assertEquals(check paraXml.get(Xml), 'xml , "1st out parameter of procedure did not match.");
+}
+
+distinct class RandomOutParameter {
+    *sql:OutParameter;
+    public isolated function get(typedesc<anydata> typeDesc) returns typeDesc|sql:Error = @java:Method {
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
+    } external;
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallWithRandomOutParams() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:IntegerValue paraID = new (1);
+    RandomOutParameter paraRandom = new ();
+
+    var ret = oracledbClient->call(
+        `{call SelectComplexDataWithOutParams(${paraID}, ${paraRandom})}`);
+    check oracledbClient.close();
+    test:assertTrue(ret is error);
 }
 
 isolated function callQueryClient(Client oracledbClient, @untainted string|sql:ParameterizedQuery sqlQuery)

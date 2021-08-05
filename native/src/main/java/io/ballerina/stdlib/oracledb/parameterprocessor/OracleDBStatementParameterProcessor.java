@@ -101,7 +101,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 preparedStatement.setObject(index, sqlXml, Types.SQLXML);
             } catch (NoClassDefFoundError e) {
                 throw new ApplicationError("Error occurred while setting an xml data. Check whether both " +
-                        "`xdb.jar` and `xmlparserv2.jar` are present in the dependency jar list");
+                        "`xdb.jar` and `xmlparserv2.jar` are added as dependency in Ballerina.toml");
             }
         }
     }

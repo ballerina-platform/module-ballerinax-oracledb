@@ -29,6 +29,9 @@ import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBResultParameterPr
  * @since 0.1.0
  */
 public class OutParameterProcessor {
+
+    private OutParameterProcessor() {}
+
     public static Object get(BObject result, BTypedesc typeDesc) {
         return io.ballerina.stdlib.sql.nativeimpl.OutParameterProcessor
                 .get(result, typeDesc, OracleDBResultParameterProcessor.getInstance());

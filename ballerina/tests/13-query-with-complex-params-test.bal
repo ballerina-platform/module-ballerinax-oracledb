@@ -50,6 +50,21 @@ isolated function queryXmlWithoutReturnType() returns error? {
     }
 }
 
+@test:Config {
+    groups: ["query", "query-complex-params"]
+}
+isolated function queryNullXmlWithoutReturnType() returns error? {
+    int id = 2;
+    sql:ParameterizedQuery sqlQuery = `SELECT a.* from ComplexQueryTable a where a.id = ${id}`;
+    record {}|sql:Error? value = check queryClient(sqlQuery);
+    if value is record {} {
+        test:assertEquals(<decimal> 2, value["ID"], "Returned are wrong");
+        test:assertEquals((), value["COL_XML"], "Returned are wrong");
+    } else {
+        test:assertFail("Value is Error");
+    }
+}
+
 type XmlTypeRecord record {
     int id;
     xml col_xml;

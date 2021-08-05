@@ -146,7 +146,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             return this.convertXml(sqlxml, sqlType, ballerinaType);
         } catch (NoClassDefFoundError e) {
             throw new ApplicationError("Error occurred while retrieving an xml data. Check whether both " +
-                    "`xdb.jar` and `xmlparserv2.jar` are present in the dependency jar list");
+                    "`xdb.jar` and `xmlparserv2.jar` are added as dependency in Ballerina.toml");
         }
     }
 
@@ -154,12 +154,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
     public Object convertXml(SQLXML value, int sqlType, Type type) throws ApplicationError, SQLException {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL XML");
         if (value != null) {
-            if (type.getTag() == TypeTags.XML_TAG) {
-                return XmlUtils.parse(value.getBinaryStream());
-            } else {
-                throw new ApplicationError("The ballerina type that can be used for SQL struct should be xml type," +
-                        " but found " + type.getName() + " .");
-            }
+            return XmlUtils.parse(value.getBinaryStream());
         } else {
             return null;
         }
