@@ -165,3 +165,107 @@ isolated function insertIntervalWithInvalidBalType2() returns sql:Error? {
        test:assertFail("Database Error expected.");
    }
 }
+
+@test:Config {
+    groups: ["datetime"],
+    dependsOn: [insertIntervalWithString]
+}
+isolated function selectAllDateTimeDatatypesWithoutReturnType() returns error? {
+    int id = 1;
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_DATE, COL_DATE_ONLY, COL_TIME_ONLY, COL_TIMESTAMP, COL_TIMESTAMPTZ,
+            COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND FROM TestDateTimeTable WHERE pk = ${id}`;
+    record{}? data = check queryClient(sqlQuery);
+    var expectedData = {
+        COL_DATE:"2020-01-05 10:35:10.0",
+        COL_DATE_ONLY: "2020-01-05 00:00:00.0",
+        COL_TIME_ONLY: "0 11:0:0.0",
+        COL_TIMESTAMP:"2020-01-05 10:35:10.0",
+        COL_TIMESTAMPTZ:"2020-01-05 10:35:10.0 +5:30",
+        COL_INTERVAL_YEAR_TO_MONTH:"15-11",
+        COL_INTERVAL_DAY_TO_SECOND:"200 5:12:45.89"
+    };
+    test:assertEquals(expectedData, data, "Expected and actual mismatch");
+}
+
+type DateTimeReturnTypes record {
+    time:Civil col_date;
+    time:Date col_date_only;
+    time:TimeOfDay col_time_only;
+    time:Civil col_timestamp;
+    time:Civil col_timestamptz;
+    IntervalYearToMonth col_interval_year_to_month;
+    IntervalDayToSecond col_interval_day_to_second;
+};
+
+@test:Config {
+    groups: ["datetime"],
+    dependsOn: [insertIntervalWithString]
+}
+isolated function selectAllDateTimeDatatypesWithReturnType() returns error? {
+    int id = 1;
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_DATE, COL_DATE_ONLY, COL_TIME_ONLY, COL_TIMESTAMP, COL_TIMESTAMPTZ,
+     COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND FROM TestDateTimeTable WHERE pk = ${id}`;
+    record{}? data = check queryClient(sqlQuery, DateTimeReturnTypes);
+    time:Civil dateTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
+    time:Date dateOnlyTypeRecord = {year: 2020, month: 1, day: 5};
+    time:TimeOfDay timeOnlyTypeRecord = {hour: 11, minute: 0, second:0};
+    time:Civil timestampTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
+    time:Civil timestampTzTypeRecord = {utcOffset: {hours: 5, minutes: 30}, timeAbbrev: "+05:30", year: 2020,
+                                        month: 1, day: 5, hour: 10, minute: 35, second: 10};
+    IntervalYearToMonth intervalYtoMTypeRecord = {years:15, months: 11};
+    IntervalDayToSecond intervalDtoSTypeRecord = {days:200, hours: 5, minutes: 12, seconds: 45.089};
+
+    DateTimeReturnTypes expectedData = {
+        col_date: dateTypeRecord,
+        col_date_only: dateOnlyTypeRecord,
+        col_time_only: timeOnlyTypeRecord,
+        col_timestamp: timestampTypeRecord,
+        col_timestamptz: timestampTzTypeRecord,
+        col_interval_year_to_month: intervalYtoMTypeRecord,
+        col_interval_day_to_second: intervalDtoSTypeRecord
+    };
+
+    test:assertEquals(expectedData, data, "Expected and actual mismatch");
+}
+
+type DateTimeReturnTypes2 record {
+    string col_date;
+    string col_date_only;
+    string col_time_only;
+    string col_timestamp;
+    string col_timestamptz;
+    string col_interval_year_to_month;
+    string col_interval_day_to_second;
+};
+
+@test:Config {
+    groups: ["datetime"],
+    dependsOn: [insertIntervalWithString]
+}
+isolated function selectAllDateTimeDatatypesWithStringReturnType() returns error? {
+    int id = 1;
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_DATE, COL_DATE_ONLY, COL_TIME_ONLY, COL_TIMESTAMP, COL_TIMESTAMPTZ,
+     COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND FROM TestDateTimeTable WHERE pk = ${id}`;
+    record{}? data = check queryClient(sqlQuery, DateTimeReturnTypes2);
+
+    string dateTypeString = "2020-01-05 10:35:10.0";
+    string dateOnlyTypeString = "2020-01-05 00:00:00.0";
+    string timeOnlyTypeString = "0 11:0:0.0";
+    string timestampTypeString = "2020-01-05 10:35:10.0";
+    string timestampTzTypeString = "2020-01-05 10:35:10.0 +5:30";
+    string intervalYtoMTypeString = "15-11";
+    string intervalDtoSTypeString = "200 5:12:45.89";
+
+    DateTimeReturnTypes2 expectedData = {
+        col_date: dateTypeString,
+        col_date_only: dateOnlyTypeString,
+        col_time_only: timeOnlyTypeString,
+        col_timestamp: timestampTypeString,
+        col_timestamptz: timestampTzTypeString,
+        col_interval_year_to_month: intervalYtoMTypeString,
+        col_interval_day_to_second: intervalDtoSTypeString
+    };
+
+    test:assertEquals(expectedData, data, "Expected and actual mismatch");
+}
+

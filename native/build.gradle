@@ -36,6 +36,7 @@ dependencies {
     }
     implementation group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
     implementation group: 'io.ballerina.stdlib', name: 'sql-native', version: "${stdlibSqlVersion}"
+    implementation group: 'io.ballerina.stdlib', name: 'time-native', version: "${stdlibTimeVersion}"
 }
 
 tasks.withType(JavaCompile) {

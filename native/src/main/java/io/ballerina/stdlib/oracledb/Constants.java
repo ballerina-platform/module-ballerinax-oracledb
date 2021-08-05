@@ -176,6 +176,9 @@ public final class Constants {
 
         }
 
+        public static final String INTERVAL_YEAR_TO_MONTH_RECORD = "IntervalYearToMonth";
+        public static final String INTERVAL_DAY_TO_SECOND_RECORD = "IntervalDayToSecond";
+
         /**
          * Constants related to Oracle Database type names.
          */
