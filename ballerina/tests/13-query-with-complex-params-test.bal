@@ -43,7 +43,7 @@ isolated function queryXmlWithoutReturnType() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT a.* from ComplexQueryTable a where a.id = ${id}`;
     record {}|sql:Error? value = check queryClient(sqlQuery);
     if value is record {} {
-        test:assertEquals(<decimal> 1, value["ID"], "Returned are wrong");
+        test:assertEquals(<decimal> 1, value["ID"], "Expected data did not match.");
         test:assertEquals(xml `<key>value</key>`, value["COL_XML"], "Returned are wrong");
     } else {
         test:assertFail("Value is Error");
@@ -58,8 +58,8 @@ isolated function queryNullXmlWithoutReturnType() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT a.* from ComplexQueryTable a where a.id = ${id}`;
     record {}|sql:Error? value = check queryClient(sqlQuery);
     if value is record {} {
-        test:assertEquals(<decimal> 2, value["ID"], "Returned are wrong");
-        test:assertEquals((), value["COL_XML"], "Returned are wrong");
+        test:assertEquals(<decimal> 2, value["ID"], "Expected data did not match.");
+        test:assertEquals((), value["COL_XML"], "Expected data did not match.");
     } else {
         test:assertFail("Value is Error");
     }
@@ -81,5 +81,5 @@ isolated function queryXmlWithReturnType() returns error? {
             id: 1,
             col_xml: xml `<key>value</key>`
         };
-    test:assertEquals(complexResult, value, "Returned are wrong");
+    test:assertEquals(complexResult, value, "Expected data did not match.");
 }
