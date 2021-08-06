@@ -50,6 +50,10 @@ allprojects {
         }
 
         maven {
+            url = 'https://repo1.maven.org/maven2'
+        }
+
+        maven {
             url = 'https://maven.pkg.github.com/ballerina-platform/*'
             credentials {
                 username System.getenv("packageUser")
@@ -94,6 +98,12 @@ subprojects {
         ballerinaStdLibs "io.ballerina.stdlib:url-ballerina:${stdlibUrlVersion}"
 
         externalJars (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
+            transitive = false
+        }
+        externalJars (group: 'com.oracle.database.xml', name: 'xdb', version: "${oracleXDBVersion}") {
+            transitive = false
+        }
+        externalJars (group: 'com.oracle.database.xml', name: 'xmlparserv2', version: "${oracleXMLParserVersion}") {
             transitive = false
         }
     }

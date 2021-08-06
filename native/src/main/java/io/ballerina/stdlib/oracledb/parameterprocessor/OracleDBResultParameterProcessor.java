@@ -22,7 +22,9 @@ import io.ballerina.runtime.api.TypeTags;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.Field;
 import io.ballerina.runtime.api.types.StructureType;
+import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.utils.StringUtils;
+import io.ballerina.runtime.api.utils.XmlUtils;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
@@ -30,9 +32,12 @@ import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.oracledb.utils.ModuleUtils;
 import io.ballerina.stdlib.sql.exception.ApplicationError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor;
+import io.ballerina.stdlib.sql.utils.Utils;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Struct;
 
 import static io.ballerina.runtime.api.utils.StringUtils.fromString;
@@ -131,5 +136,42 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                     + " record. ", e);
         }
         return struct;
+    }
+
+    @Override
+    public Object processXmlResult(ResultSet resultSet, int columnIndex, int sqlType, Type ballerinaType)
+            throws ApplicationError, SQLException {
+        try {
+            SQLXML sqlxml = resultSet.getSQLXML(columnIndex);
+            return this.convertXml(sqlxml, sqlType, ballerinaType);
+        } catch (NoClassDefFoundError e) {
+            throw new ApplicationError("Error occurred while retrieving an xml data. Check whether both " +
+                    "`xdb.jar` and `xmlparserv2.jar` are added as dependency in Ballerina.toml");
+        }
+    }
+
+    @Override
+    public Object convertXml(SQLXML value, int sqlType, Type type) throws ApplicationError, SQLException {
+        Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL XML");
+        if (value != null) {
+            return XmlUtils.parse(value.getBinaryStream());
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Object convertDecimal(BigDecimal value, int sqlType, Type type, boolean isNull) throws ApplicationError {
+        Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL decimal or real");
+        if (isNull) {
+            return null;
+        } else {
+            if (type.getTag() == TypeTags.STRING_TAG) {
+                return fromString(String.valueOf(value));
+            } else if (type.getTag() == TypeTags.INT_TAG) {
+                return value.intValue();
+            }
+            return ValueCreator.createDecimalValue(value);
+        }
     }
 }

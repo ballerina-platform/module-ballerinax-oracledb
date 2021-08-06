@@ -20,8 +20,9 @@ import ballerina/test;
 
 @test:BeforeGroups { value:["execute", "execute-params"] }
 isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTableIfExists("NumericTypesTable");
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    sql:ExecutionResult result = check dropTableIfExists("NumericTypesTable", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE NumericTypesTable(
         id NUMBER,
         col_number NUMBER,
@@ -39,7 +40,7 @@ isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
         `INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)
         VALUES(2, 2, 922.337, 123.34, 123.34)`);
 
-    result = check dropTableIfExists("CharTypesTable");
+    result = check dropTableIfExists("CharTypesTable", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE CharTypesTable(
         id NUMBER,
         col_varchar2  VARCHAR2(4000),
@@ -50,7 +51,7 @@ isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
         PRIMARY KEY(id))`
     );
 
-    result = check dropTableIfExists("AnsiTypesTable");
+    result = check dropTableIfExists("AnsiTypesTable", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE AnsiTypesTable(
         id NUMBER,
         col_character  CHARACTER(256),
@@ -72,7 +73,7 @@ isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
         )`
     );
 
-    result = check dropTableIfExists("SqlDsTypesTable");
+    result = check dropTableIfExists("SqlDsTypesTable", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE SqlDsTypesTable(
         id NUMBER,
         col_character  CHARACTER(255),
@@ -81,7 +82,7 @@ isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
         )`
     );
 
-    result = check dropTableIfExists("LobTypesTable");
+    result = check dropTableIfExists("LobTypesTable", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE LobTypesTable(
         id NUMBER,
         col_clob  CLOB,

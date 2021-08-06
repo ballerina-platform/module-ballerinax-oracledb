@@ -15,6 +15,7 @@
 
 import ballerina/sql;
 import ballerina/test;
+import ballerina/jballerina.java;
 
 type StringDataForCall record {
     string COL_CHAR;
@@ -36,8 +37,9 @@ type StringDataSingle record {
 
 @test:BeforeGroups { value:["procedures"] }
 isolated function beforeProcCallFunc() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTableIfExists("CallStringTypes");
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    sql:ExecutionResult result = check dropTableIfExists("CallStringTypes", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE CallStringTypes (
         id NUMBER,
         col_char CHAR(5),
@@ -53,7 +55,7 @@ isolated function beforeProcCallFunc() returns sql:Error? {
         VALUES (1, 'test0', 'test1', 'test2', 'test3', 'test4')`
     );
 
-    result = check dropTableIfExists("CallNumericTypes");
+    result = check dropTableIfExists("CallNumericTypes", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE CallNumericTypes (
         id NUMBER,
         col_number  NUMBER,
@@ -67,16 +69,34 @@ isolated function beforeProcCallFunc() returns sql:Error? {
         id, col_number, col_float, col_binary_float, col_binary_double)
         VALUES (1, 2147483647, 21474.83647, 21.47483647, 21474836.47)`
     );
-    result = check oracledbClient->execute(
-        `CREATE OR REPLACE PROCEDURE InsertStringData(p_id IN NUMBER,
-        p_col_char IN CHAR, p_col_nchar IN NCHAR,
-        p_col_varchar2 IN VARCHAR2, p_col_varchar IN VARCHAR,
-        p_col_nvarchar2 IN NVARCHAR2)
-        AS BEGIN
-        INSERT INTO CallStringTypes(id, col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2)
-        VALUES (p_id, p_col_char, p_col_nchar, p_col_varchar2, p_col_varchar, p_col_nvarchar2);
-        END;`
+
+    result = check dropTableIfExists("CallComplexTypes", oracledbClient);
+    result = check oracledbClient->execute(`CREATE TABLE CallComplexTypes(
+        id NUMBER,
+        col_xml XMLType,
+        PRIMARY KEY (id)
+        )`
     );
+    result = check oracledbClient->execute( `INSERT INTO CallComplexTypes (id, col_xml)
+        VALUES(1, XMLType('<key>value</key>'))`);
+
+    check oracledbClient.close();
+    check createProcedures();
+}
+
+isolated function createProcedures() returns sql:Error? {
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    sql:ExecutionResult result = check oracledbClient->execute(
+            `CREATE OR REPLACE PROCEDURE InsertStringData(p_id IN NUMBER,
+            p_col_char IN CHAR, p_col_nchar IN NCHAR,
+            p_col_varchar2 IN VARCHAR2, p_col_varchar IN VARCHAR,
+            p_col_nvarchar2 IN NVARCHAR2)
+            AS BEGIN
+            INSERT INTO CallStringTypes(id, col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2)
+            VALUES (p_id, p_col_char, p_col_nchar, p_col_varchar2, p_col_varchar, p_col_nvarchar2);
+            END;`
+        );
 
     result = check oracledbClient->execute(
         `CREATE OR REPLACE PROCEDURE SelectStringData(p_col_char OUT CHAR, p_col_nchar OUT NCHAR,
@@ -111,6 +131,15 @@ isolated function beforeProcCallFunc() returns sql:Error? {
         FROM CallNumericTypes where id = p_id;
         END;`
     );
+
+    result = check oracledbClient->execute(
+        `CREATE OR REPLACE PROCEDURE SelectComplexDataWithOutParams(
+        p_id IN NUMBER, p_col_xml OUT XMLType)
+        AS BEGIN
+        SELECT col_xml INTO p_col_xml FROM CallComplexTypes where id = p_id;
+        END;`
+    );
+
     check oracledbClient.close();
 }
 
@@ -118,7 +147,8 @@ isolated function beforeProcCallFunc() returns sql:Error? {
     groups: ["procedures"]
 }
 isolated function testCallWithStringTypes() returns @tainted record {}|error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
     sql:ProcedureCallResult ret = check oracledbClient->call(`{call InsertStringData(2,'test0', 'test1', 'test2',
         'test3', 'test4')}`);
     sql:ParameterizedQuery sqlQuery = `SELECT col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2 from CallStringTypes
@@ -140,7 +170,8 @@ isolated function testCallWithStringTypes() returns @tainted record {}|error? {
     dependsOn: [testCallWithStringTypes]
 }
 isolated function testCallWithStringTypesInParams() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
     string col_char = "test0";
     string col_nchar = "test1";
     string col_varchar2 = "test2";
@@ -169,7 +200,8 @@ isolated function testCallWithStringTypesInParams() returns error? {
     dependsOn: [testCallWithStringTypesInParams]
 }
 isolated function testCallWithStringTypesOutParams() returns sql:Error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
     sql:CharOutParameter col_char = new();
     sql:NCharOutParameter col_nchar = new();
     sql:VarcharOutParameter col_varchar2 = new();
@@ -201,7 +233,8 @@ isolated function testCallWithStringTypesOutParams() returns sql:Error? {
     dependsOn: [testCallWithStringTypesOutParams]
 }
 isolated function testCallWithStringTypesInOutParams() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
     int id = 4;
     sql:InOutParameter col_varchar2 = new("test7");
     sql:InOutParameter col_varchar = new("test8");
@@ -233,11 +266,11 @@ isolated function testCallWithStringTypesInOutParams() returns error? {
 }
 
 @test:Config {
-    groups: ["procedures"],
-    dependsOn: [testCallWithStringTypesInOutParams]
+    groups: ["procedures"]
 }
 isolated function testCallWithNumericTypesOutParams() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
     sql:IntegerValue paraID = new(1);
     sql:NumericOutParameter paraNumber = new;
     sql:FloatOutParameter paraFloat = new;
@@ -247,7 +280,6 @@ isolated function testCallWithNumericTypesOutParams() returns error? {
     var ret = check oracledbClient->call(
         `{call SelectNumericDataWithOutParams(${paraID}, ${paraNumber}, ${paraFloat}, ${paraBinFloat},
         ${paraBinDouble})}`);
-    check oracledbClient.close();
 
     test:assertEquals(paraNumber.get(decimal), <decimal>2147483647, "1st out parameter of procedure did not match.");
     test:assertTrue((check paraFloat.get(float)) < 21474.83647, "2nd out parameter of procedure did not match.");
@@ -256,6 +288,47 @@ isolated function testCallWithNumericTypesOutParams() returns error? {
     test:assertEquals(paraBinDouble.get(float), 21474836.47, "4th out parameter of procedure did not match.");
     boolean|sql:Error status = ret.getNextQueryResult();
     test:assertTrue(status is boolean, "state is not a boolean");
+    check oracledbClient.close();
+}
+
+type Xml xml;
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallWithComplexTypesOutParams() returns error? {
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    sql:IntegerValue paraID = new (1);
+    XmlOutParameter paraXml = new ();
+
+    var ret = check oracledbClient->call(
+        `{call SelectComplexDataWithOutParams(${paraID}, ${paraXml})}`);
+    check oracledbClient.close();
+    xml 'xml = xml `<key>value</key>`;
+    test:assertEquals(check paraXml.get(Xml), 'xml , "1st out parameter of procedure did not match.");
+}
+
+distinct class RandomOutParameter {
+    *sql:OutParameter;
+    public isolated function get(typedesc<anydata> typeDesc) returns typeDesc|sql:Error = @java:Method {
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
+    } external;
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallWithRandomOutParams() returns error? {
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    sql:IntegerValue paraID = new (1);
+    RandomOutParameter paraRandom = new ();
+
+    var ret = oracledbClient->call(
+        `{call SelectComplexDataWithOutParams(${paraID}, ${paraRandom})}`);
+    check oracledbClient.close();
+    test:assertTrue(ret is error);
 }
 
 isolated function callQueryClient(Client oracledbClient, @untainted string|sql:ParameterizedQuery sqlQuery)

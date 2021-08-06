@@ -46,37 +46,36 @@ isolated function getTextColumnChannel() returns @untainted io:ReadableCharacter
     return sourceChannel;
 }
 
-isolated function dropTableIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute("BEGIN "+
-        "EXECUTE IMMEDIATE 'DROP TABLE ' || '" + tablename + "'; "+
-        "EXCEPTION "+
-        "WHEN OTHERS THEN "+
-            "IF SQLCODE != -942 THEN "+
-                "RAISE; "+
-            "END IF; "+
-        "END;");
-    check oracledbClient.close();
+isolated function dropTableIfExists(string tablename, Client oracledbClient) returns sql:ExecutionResult|sql:Error {
+    sql:ExecutionResult result = check oracledbClient->execute(
+        `BEGIN
+            EXECUTE IMMEDIATE 'DROP TABLE ' || ${tablename};
+            EXCEPTION
+            WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN
+                RAISE;
+            END IF;
+        END;`);
     return result;
 }
 
-isolated function dropTypeIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute("BEGIN "+
-        "EXECUTE IMMEDIATE 'DROP TYPE ' || '" + tablename + " FORCE'; "+
-        "EXCEPTION "+
-        "WHEN OTHERS THEN "+
-            "IF SQLCODE != -4043 THEN "+
-                "RAISE; "+
-            "END IF; "+
-        "END;");
-    check oracledbClient.close();
+isolated function dropTypeIfExists(string typename, Client oracledbClient) returns sql:ExecutionResult|sql:Error {
+    sql:ExecutionResult result = check oracledbClient->execute(
+        `BEGIN
+            EXECUTE IMMEDIATE 'DROP TYPE ' || ${typename} || ' FORCE';
+            EXCEPTION
+            WHEN OTHERS THEN
+                IF SQLCODE != -4043 THEN
+                    RAISE;
+                END IF;
+        END;`);
     return result;
 }
 
 isolated function queryClient(string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? resultType = ())
 returns record {}|error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
     stream<record {}, error?> streamData;
     if resultType is () {
         streamData = oracledbClient->query(sqlQuery);
@@ -91,7 +90,8 @@ returns record {}|error? {
 }
 
 isolated function executeQuery(string|sql:ParameterizedQuery sqlQuery) returns sql:ExecutionResult|sql:Error {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
     sql:ExecutionResult result = check oracledbClient->execute(sqlQuery);
     check oracledbClient.close();
     return result;

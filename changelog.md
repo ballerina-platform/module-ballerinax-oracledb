@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- [Add xml data type support in oracledb module](https://github.com/ballerina-platform/ballerina-standard-library/issues/1695)
 - Basic CRUD functionalities with an Oracle database.
 - Insert functionality for complex data types.
 - Add code examples for oracle specific data types to Package.md.

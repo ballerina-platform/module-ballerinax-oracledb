@@ -20,6 +20,7 @@ package io.ballerina.stdlib.oracledb.parameterprocessor;
 
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
+import io.ballerina.runtime.api.values.BXml;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
 import io.ballerina.stdlib.oracledb.utils.Utils;
@@ -30,6 +31,7 @@ import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Struct;
 import java.sql.Types;
 
@@ -70,6 +72,37 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 break;
             default:
                 throw Utils.throwInvalidParameterError(value, sqlType);
+        }
+    }
+
+    @Override
+    public int getCustomOutParameterType(BObject typedValue) throws ApplicationError {
+        String sqlType = typedValue.getType().getName();
+        int sqlTypeValue;
+        switch (sqlType) {
+            case Constants.Types.OutParameterTypes.XML:
+                sqlTypeValue = Types.SQLXML;
+                break;
+            default:
+                throw new ApplicationError("Unsupported OutParameter type: " + sqlType);
+        }
+        return sqlTypeValue;
+    }
+
+    @Override
+    protected void setXml(Connection connection, PreparedStatement preparedStatement,
+                          int index, BXml value) throws SQLException, ApplicationError {
+        if (value == null) {
+            preparedStatement.setNull(index, Types.NULL);
+        } else {
+            try {
+                SQLXML sqlXml = connection.createSQLXML();
+                sqlXml.setString(value.toString());
+                preparedStatement.setObject(index, sqlXml, Types.SQLXML);
+            } catch (NoClassDefFoundError e) {
+                throw new ApplicationError("Error occurred while setting an xml data. Check whether both " +
+                        "`xdb.jar` and `xmlparserv2.jar` are added as dependency in Ballerina.toml");
+            }
         }
     }
 
