@@ -207,6 +207,14 @@ public final class Constants {
         }
 
         /**
+         * Constants related to OutParameter supported.
+         */
+        public static final class OutParameterTypes {
+            private OutParameterTypes() {}
+            public static final String XML = "XmlOutParameter";
+        }
+
+        /**
          * Constants related to the attributes of INTERVAL_YEAR_TO_MONTH Oracle DB type.
          */
         public static final class IntervalYearToMonth {

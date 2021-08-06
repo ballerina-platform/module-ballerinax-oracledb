@@ -15,6 +15,7 @@
 
 import ballerina/sql;
 import ballerina/test;
+import ballerina/jballerina.java;
 
 type StringDataForCall record {
     string COL_CHAR;
@@ -67,6 +68,17 @@ isolated function beforeProcCallFunc() returns sql:Error? {
         id, col_number, col_float, col_binary_float, col_binary_double)
         VALUES (1, 2147483647, 21474.83647, 21.47483647, 21474836.47)`
     );
+
+    result = check dropTableIfExists("CallComplexTypes");
+    result = check oracledbClient->execute(`CREATE TABLE CallComplexTypes(
+        id NUMBER,
+        col_xml XMLType,
+        PRIMARY KEY (id)
+        )`
+    );
+    result = check oracledbClient->execute( `INSERT INTO CallComplexTypes (id, col_xml)
+        VALUES(1, XMLType('<key>value</key>'))`);
+
     result = check oracledbClient->execute(
         `CREATE OR REPLACE PROCEDURE InsertStringData(p_id IN NUMBER,
         p_col_char IN CHAR, p_col_nchar IN NCHAR,
@@ -109,6 +121,14 @@ isolated function beforeProcCallFunc() returns sql:Error? {
         SELECT col_number, col_float, col_binary_float, col_binary_double INTO
         p_col_number, p_col_float, p_col_binary_float, p_col_binary_double
         FROM CallNumericTypes where id = p_id;
+        END;`
+    );
+
+    result = check oracledbClient->execute(
+        `CREATE OR REPLACE PROCEDURE SelectComplexDataWithOutParams(
+        p_id IN NUMBER, p_col_xml OUT XMLType)
+        AS BEGIN
+        SELECT col_xml INTO p_col_xml FROM CallComplexTypes where id = p_id;
         END;`
     );
     check oracledbClient.close();
@@ -233,8 +253,7 @@ isolated function testCallWithStringTypesInOutParams() returns error? {
 }
 
 @test:Config {
-    groups: ["procedures"],
-    dependsOn: [testCallWithStringTypesInOutParams]
+    groups: ["procedures"]
 }
 isolated function testCallWithNumericTypesOutParams() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
@@ -247,7 +266,6 @@ isolated function testCallWithNumericTypesOutParams() returns error? {
     var ret = check oracledbClient->call(
         `{call SelectNumericDataWithOutParams(${paraID}, ${paraNumber}, ${paraFloat}, ${paraBinFloat},
         ${paraBinDouble})}`);
-    check oracledbClient.close();
 
     test:assertEquals(paraNumber.get(decimal), <decimal>2147483647, "1st out parameter of procedure did not match.");
     test:assertTrue((check paraFloat.get(float)) < 21474.83647, "2nd out parameter of procedure did not match.");
@@ -256,6 +274,45 @@ isolated function testCallWithNumericTypesOutParams() returns error? {
     test:assertEquals(paraBinDouble.get(float), 21474836.47, "4th out parameter of procedure did not match.");
     boolean|sql:Error status = ret.getNextQueryResult();
     test:assertTrue(status is boolean, "state is not a boolean");
+    check oracledbClient.close();
+}
+
+type Xml xml;
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallWithComplexTypesOutParams() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:IntegerValue paraID = new (1);
+    XmlOutParameter paraXml = new ();
+
+    var ret = check oracledbClient->call(
+        `{call SelectComplexDataWithOutParams(${paraID}, ${paraXml})}`);
+    check oracledbClient.close();
+    xml 'xml = xml `<key>value</key>`;
+    test:assertEquals(check paraXml.get(Xml), 'xml , "1st out parameter of procedure did not match.");
+}
+
+distinct class RandomOutParameter {
+    *sql:OutParameter;
+    public isolated function get(typedesc<anydata> typeDesc) returns typeDesc|sql:Error = @java:Method {
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
+    } external;
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallWithRandomOutParams() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:IntegerValue paraID = new (1);
+    RandomOutParameter paraRandom = new ();
+
+    var ret = oracledbClient->call(
+        `{call SelectComplexDataWithOutParams(${paraID}, ${paraRandom})}`);
+    check oracledbClient.close();
+    test:assertTrue(ret is error);
 }
 
 isolated function callQueryClient(Client oracledbClient, @untainted string|sql:ParameterizedQuery sqlQuery)

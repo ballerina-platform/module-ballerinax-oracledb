@@ -16,27 +16,24 @@
  *  under the License.
  */
 
-package io.ballerina.stdlib.oracledb.utils;
+package io.ballerina.stdlib.oracledb.nativeimpl;
 
 import io.ballerina.runtime.api.values.BObject;
+import io.ballerina.runtime.api.values.BTypedesc;
 import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBResultParameterProcessor;
 
+
 /**
- * This class provides functionality to call `sql:RecordIteratorUtils` with a custom `ResultParameterProcessor` object.
+ * This class provides the implementation of processing InOut/Out parameters of procedure calls.
  *
  * @since 0.1.0
  */
-public class RecordIteratorUtils {
-    private RecordIteratorUtils() {}
+public class OutParameterProcessor {
 
-    /**
-     * Call `sql:RecordIteratorUtils` with a custom `ResultParameterProcessor` object.
-     * @param customResultIterator module specific resultIterator BObject
-     * @param iterator the record that needs to be iterated
-     * @return next result of the iterator
-     */
-    public static Object nextResult(BObject customResultIterator, BObject iterator) {
-        return io.ballerina.stdlib.sql.utils.RecordIteratorUtils.nextResult(iterator,
-                OracleDBResultParameterProcessor.getInstance());
+    private OutParameterProcessor() {}
+
+    public static Object get(BObject result, BTypedesc typeDesc) {
+        return io.ballerina.stdlib.sql.nativeimpl.OutParameterProcessor
+                .get(result, typeDesc, OracleDBResultParameterProcessor.getInstance());
     }
 }
