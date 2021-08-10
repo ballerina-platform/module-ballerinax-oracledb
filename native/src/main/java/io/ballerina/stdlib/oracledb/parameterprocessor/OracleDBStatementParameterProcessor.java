@@ -83,6 +83,12 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             case Constants.Types.OutParameterTypes.XML:
                 sqlTypeValue = Types.SQLXML;
                 break;
+            case Constants.Types.OutParameterTypes.INTERVAL_DAY_TO_SECOND:
+                sqlTypeValue = Constants.Types.OracleDbSpecificSqlTypes.INTERVAL_DAY_TO_SECOND;
+                break;
+            case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH:
+                sqlTypeValue = Constants.Types.OracleDbSpecificSqlTypes.INTERVAL_YEAR_TO_MONTH;
+                break;
             default:
                 throw new ApplicationError("Unsupported OutParameter type: " + sqlType);
         }

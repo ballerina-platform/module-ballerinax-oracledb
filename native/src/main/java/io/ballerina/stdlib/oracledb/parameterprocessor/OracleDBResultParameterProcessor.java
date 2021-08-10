@@ -33,10 +33,12 @@ import io.ballerina.stdlib.oracledb.utils.ModuleUtils;
 import io.ballerina.stdlib.sql.exception.ApplicationError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor;
 import io.ballerina.stdlib.sql.utils.ColumnDefinition;
+import io.ballerina.stdlib.sql.utils.ErrorGenerator;
 import io.ballerina.stdlib.sql.utils.Utils;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
@@ -149,15 +151,45 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         int sqlType = columnDefinition.getSqlType();
         Type ballerinaType = columnDefinition.getBallerinaType();
         switch (sqlType) {
-            case -104:
-            case -103:
+            case Constants.Types.OracleDbSpecificSqlTypes.INTERVAL_DAY_TO_SECOND:
+            case Constants.Types.OracleDbSpecificSqlTypes.INTERVAL_YEAR_TO_MONTH:
                 return processIntervalResult(resultSet, columnIndex, sqlType, ballerinaType,
                         columnDefinition.getSqlName());
-            case -101:
-            case -102:
+            case Constants.Types.OracleDbSpecificSqlTypes.TIMESTAMP_WITH_TIME_ZONE:
+            case Constants.Types.OracleDbSpecificSqlTypes.TIMESTAMP_WITH_LOCAL_TIME_ZONE:
                 return processTimestampWithTimezoneResult(resultSet, columnIndex, sqlType, ballerinaType);
             default:
                 throw new ApplicationError("Unsupported SQL type " + columnDefinition.getSqlName());
+        }
+    }
+
+    @Override
+    public Object processCustomOutParameters(
+            CallableStatement statement, int paramIndex, int sqlType) throws ApplicationError {
+        switch (sqlType) {
+            case Constants.Types.OracleDbSpecificSqlTypes.INTERVAL_DAY_TO_SECOND:
+            case Constants.Types.OracleDbSpecificSqlTypes.INTERVAL_YEAR_TO_MONTH:
+                return processInterval(statement, paramIndex);
+            default:
+                throw new ApplicationError("Unsupported SQL type '" + sqlType + "' when reading Procedure call " +
+                        "Out parameter of index '" + paramIndex + "'.");
+        }
+    }
+
+    @Override
+    public Object convertCustomOutParameter(Object value, String outParamObjectName, int sqlType, Type ballerinaType) {
+        try {
+            switch (outParamObjectName) {
+                case Constants.Types.OutParameterTypes.INTERVAL_DAY_TO_SECOND:
+                    return convertInterval((String) value, sqlType, ballerinaType, "INTERVALDS");
+                case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH:
+                    return convertInterval((String) value, sqlType, ballerinaType, "INTERVALYM");
+                default:
+                    return ErrorGenerator.getSQLApplicationError("Unsupported SQL type " + sqlType);
+            }
+
+        } catch (ApplicationError e) {
+            return ErrorGenerator.getSQLApplicationError(e.getMessage());
         }
     }
 
@@ -189,6 +221,15 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         return null;
     }
 
+    private Object processInterval(CallableStatement statement, int paramIndex) throws ApplicationError {
+        try {
+            return statement.getString(paramIndex);
+        } catch (SQLException e) {
+            throw new ApplicationError("Error when reading Procedure call " +
+                    "Out parameter of index '" + paramIndex + "'.");
+        }
+    }
+
     private Object processIntervalResult(ResultSet resultSet, int columnIndex, int sqlType, Type ballerinaType,
                                          String sqlTypeName) throws ApplicationError, SQLException {
         String intervalString = resultSet.getString(columnIndex);
@@ -200,11 +241,11 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         if (interval != null) {
             switch (ballerinaType.getTag()) {
                 case TypeTags.STRING_TAG:
-                    return  fromString(interval);
+                    return fromString(interval);
                 case TypeTags.OBJECT_TYPE_TAG:
                 case TypeTags.RECORD_TYPE_TAG:
                     try {
-                        if (sqlType == -104) {
+                        if (sqlType == Constants.Types.OracleDbSpecificSqlTypes.INTERVAL_DAY_TO_SECOND) {
                             //format: DD HH:Min:SS.XXX
                             if (ballerinaType.getName().
                                     equalsIgnoreCase(io.ballerina.stdlib.time.util.Constants.TIME_OF_DAY_RECORD)) {
@@ -215,7 +256,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                                 String[] splitOnSpaces = interval.split("\\s+");
                                 String days = splitOnSpaces[0];
                                 String[] splitOnDots = splitOnSpaces[1].split("\\.");
-                                String xxx = splitOnDots[1];
+                                String secondFractions = splitOnDots[1];
                                 String[] splitOnColons = splitOnDots[0].split(":");
                                 BMap<BString, Object> intervalMap = ValueCreator
                                         .createRecordValue(ModuleUtils.getModule(),
@@ -227,7 +268,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.MINUTES),
                                         Integer.parseInt(splitOnColons[1]));
                                 BigDecimal second = new BigDecimal(splitOnColons[2]);
-                                second = second.add((new BigDecimal(Integer.parseInt(xxx)))
+                                second = second.add((new BigDecimal(Integer.parseInt(secondFractions)))
                                         .divide(io.ballerina.stdlib.time.util.Constants.ANALOG_KILO,
                                                 MathContext.DECIMAL128));
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.SECONDS),

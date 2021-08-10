@@ -265,7 +265,5 @@ isolated function selectAllDateTimeDatatypesWithStringReturnType() returns error
         col_interval_year_to_month: intervalYtoMTypeString,
         col_interval_day_to_second: intervalDtoSTypeString
     };
-
     test:assertEquals(expectedData, data, "Expected and actual mismatch");
 }
-
