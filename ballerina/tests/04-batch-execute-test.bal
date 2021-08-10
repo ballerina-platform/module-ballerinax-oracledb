@@ -19,8 +19,9 @@ import ballerina/test;
 
 @test:BeforeGroups { value:["batch-execute"] }
 isolated function beforeBatchExecFunc() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTableIfExists("DataTable");
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    sql:ExecutionResult result = check dropTableIfExists("DataTable", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE DataTable(
         id NUMBER GENERATED ALWAYS AS IDENTITY,
         col_number NUMBER UNIQUE,
@@ -115,7 +116,8 @@ returns error? {
 }
 
 isolated function batchExecuteQuery(sql:ParameterizedQuery[] sqlQueries) returns sql:ExecutionResult[]|sql:Error {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:ConnectionPool pool = {maxOpenConnections: 5, minIdleConnections: 3};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
     sql:ExecutionResult[] result = check oracledbClient->batchExecute(sqlQueries);
     check oracledbClient.close();
     return result;

@@ -19,8 +19,9 @@ import ballerina/test;
 
 @test:BeforeGroups { value:["query-complex-params"] }
 isolated function beforeQueryWithComplexParamsFunc() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTableIfExists("ComplexQueryTable");
+    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    sql:ExecutionResult result = check dropTableIfExists("ComplexQueryTable", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE ComplexQueryTable(
         id NUMBER,
         col_xml XMLType,
