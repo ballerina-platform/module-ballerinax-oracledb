@@ -38,7 +38,7 @@ type StringDataSingle record {
 @test:BeforeGroups { value:["procedures"] }
 isolated function beforeProcCallFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTableIfExists("CallStringTypes");
+    sql:ExecutionResult result = check dropTableIfExists("CallStringTypes", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE CallStringTypes (
         id NUMBER,
         col_char CHAR(5),
@@ -54,7 +54,7 @@ isolated function beforeProcCallFunc() returns sql:Error? {
         VALUES (1, 'test0', 'test1', 'test2', 'test3', 'test4')`
     );
 
-    result = check dropTableIfExists("CallNumericTypes");
+    result = check dropTableIfExists("CallNumericTypes", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE CallNumericTypes (
         id NUMBER,
         col_number  NUMBER,
@@ -69,7 +69,7 @@ isolated function beforeProcCallFunc() returns sql:Error? {
         VALUES (1, 2147483647, 21474.83647, 21.47483647, 21474836.47)`
     );
 
-    result = check dropTableIfExists("CallComplexTypes");
+    result = check dropTableIfExists("CallComplexTypes", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE CallComplexTypes(
         id NUMBER,
         col_xml XMLType,
@@ -79,16 +79,22 @@ isolated function beforeProcCallFunc() returns sql:Error? {
     result = check oracledbClient->execute( `INSERT INTO CallComplexTypes (id, col_xml)
         VALUES(1, XMLType('<key>value</key>'))`);
 
-    result = check oracledbClient->execute(
-        `CREATE OR REPLACE PROCEDURE InsertStringData(p_id IN NUMBER,
-        p_col_char IN CHAR, p_col_nchar IN NCHAR,
-        p_col_varchar2 IN VARCHAR2, p_col_varchar IN VARCHAR,
-        p_col_nvarchar2 IN NVARCHAR2)
-        AS BEGIN
-        INSERT INTO CallStringTypes(id, col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2)
-        VALUES (p_id, p_col_char, p_col_nchar, p_col_varchar2, p_col_varchar, p_col_nvarchar2);
-        END;`
-    );
+    check oracledbClient.close();
+    check createProcedures();
+}
+
+isolated function createProcedures() returns sql:Error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:ExecutionResult result = check oracledbClient->execute(
+            `CREATE OR REPLACE PROCEDURE InsertStringData(p_id IN NUMBER,
+            p_col_char IN CHAR, p_col_nchar IN NCHAR,
+            p_col_varchar2 IN VARCHAR2, p_col_varchar IN VARCHAR,
+            p_col_nvarchar2 IN NVARCHAR2)
+            AS BEGIN
+            INSERT INTO CallStringTypes(id, col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2)
+            VALUES (p_id, p_col_char, p_col_nchar, p_col_varchar2, p_col_varchar, p_col_nvarchar2);
+            END;`
+        );
 
     result = check oracledbClient->execute(
         `CREATE OR REPLACE PROCEDURE SelectStringData(p_col_char OUT CHAR, p_col_nchar OUT NCHAR,
@@ -131,6 +137,7 @@ isolated function beforeProcCallFunc() returns sql:Error? {
         SELECT col_xml INTO p_col_xml FROM CallComplexTypes where id = p_id;
         END;`
     );
+
     check oracledbClient.close();
 }
 
@@ -138,7 +145,7 @@ isolated function beforeProcCallFunc() returns sql:Error? {
     groups: ["procedures"]
 }
 isolated function testCallWithStringTypes() returns @tainted record {}|error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ProcedureCallResult ret = check oracledbClient->call(`{call InsertStringData(2,'test0', 'test1', 'test2',
         'test3', 'test4')}`);
     sql:ParameterizedQuery sqlQuery = `SELECT col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2 from CallStringTypes
@@ -160,14 +167,14 @@ isolated function testCallWithStringTypes() returns @tainted record {}|error? {
     dependsOn: [testCallWithStringTypes]
 }
 isolated function testCallWithStringTypesInParams() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     string col_char = "test0";
     string col_nchar = "test1";
     string col_varchar2 = "test2";
     string col_varchar = "test3";
     string col_nvarchar2 = "test4";
 
-    var ret = check oracledbClient->call(`{call InsertStringData(3, ${col_char}, ${col_nchar}, 
+    var ret = check oracledbClient->call(`{call InsertStringData(3, ${col_char}, ${col_nchar},
         ${col_varchar2}, ${col_varchar}, ${col_nvarchar2})}`);
 
     sql:ParameterizedQuery sqlQuery = `SELECT col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2
@@ -189,7 +196,7 @@ isolated function testCallWithStringTypesInParams() returns error? {
     dependsOn: [testCallWithStringTypesInParams]
 }
 isolated function testCallWithStringTypesOutParams() returns sql:Error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:CharOutParameter col_char = new();
     sql:NCharOutParameter col_nchar = new();
     sql:VarcharOutParameter col_varchar2 = new();
@@ -206,7 +213,7 @@ isolated function testCallWithStringTypesOutParams() returns sql:Error? {
         COL_VARCHAR2: "test2",
         COL_VARCHAR: "test3",
         COL_NVARCHAR2: "test4"
-    }; 
+    };
     test:assertEquals((check col_char.get(string)).trim(), expectedDataRow.COL_CHAR);
     test:assertEquals((check col_nchar.get(string)).trim(), expectedDataRow.COL_NCHAR);
     test:assertEquals((check col_varchar2.get(string)).trim(), expectedDataRow.COL_VARCHAR2);
@@ -221,7 +228,7 @@ isolated function testCallWithStringTypesOutParams() returns sql:Error? {
     dependsOn: [testCallWithStringTypesOutParams]
 }
 isolated function testCallWithStringTypesInOutParams() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     int id = 4;
     sql:InOutParameter col_varchar2 = new("test7");
     sql:InOutParameter col_varchar = new("test8");
@@ -234,7 +241,7 @@ isolated function testCallWithStringTypesInOutParams() returns error? {
     string exp_col_varchar2 = "test2";
     string exp_col_varchar = "test3";
     string exp_col_nvarchar2 = "test4";
-    
+
     test:assertEquals((check col_varchar2.get(string)).trim(), exp_col_varchar2);
     test:assertEquals((check col_varchar.get(string)).trim(), exp_col_varchar);
     test:assertEquals((check col_nvarchar2.get(string)).trim(), exp_col_nvarchar2);
@@ -256,7 +263,7 @@ isolated function testCallWithStringTypesInOutParams() returns error? {
     groups: ["procedures"]
 }
 isolated function testCallWithNumericTypesOutParams() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:IntegerValue paraID = new(1);
     sql:NumericOutParameter paraNumber = new;
     sql:FloatOutParameter paraFloat = new;
@@ -283,7 +290,7 @@ type Xml xml;
     groups: ["procedures"]
 }
 isolated function testCallWithComplexTypesOutParams() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:IntegerValue paraID = new (1);
     XmlOutParameter paraXml = new ();
 
@@ -305,7 +312,7 @@ distinct class RandomOutParameter {
     groups: ["procedures"]
 }
 isolated function testCallWithRandomOutParams() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:IntegerValue paraID = new (1);
     RandomOutParameter paraRandom = new ();
 

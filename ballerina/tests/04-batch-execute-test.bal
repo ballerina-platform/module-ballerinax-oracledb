@@ -20,7 +20,7 @@ import ballerina/test;
 @test:BeforeGroups { value:["batch-execute"] }
 isolated function beforeBatchExecFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTableIfExists("DataTable");
+    sql:ExecutionResult result = check dropTableIfExists("DataTable", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE DataTable(
         id NUMBER GENERATED ALWAYS AS IDENTITY,
         col_number NUMBER UNIQUE,

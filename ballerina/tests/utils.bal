@@ -46,31 +46,29 @@ isolated function getTextColumnChannel() returns @untainted io:ReadableCharacter
     return sourceChannel;
 }
 
-isolated function dropTableIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute("BEGIN "+
-        "EXECUTE IMMEDIATE 'DROP TABLE ' || '" + tablename + "'; "+
-        "EXCEPTION "+
-        "WHEN OTHERS THEN "+
-            "IF SQLCODE != -942 THEN "+
-                "RAISE; "+
-            "END IF; "+
-        "END;");
-    check oracledbClient.close();
+isolated function dropTableIfExists(string tablename, Client oracledbClient) returns sql:ExecutionResult|sql:Error {
+    sql:ExecutionResult result = check oracledbClient->execute(
+        `BEGIN
+            EXECUTE IMMEDIATE 'DROP TABLE ' || ${tablename};
+            EXCEPTION
+            WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN
+                RAISE;
+            END IF;
+        END;`);
     return result;
 }
 
-isolated function dropTypeIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute("BEGIN "+
-        "EXECUTE IMMEDIATE 'DROP TYPE ' || '" + tablename + " FORCE'; "+
-        "EXCEPTION "+
-        "WHEN OTHERS THEN "+
-            "IF SQLCODE != -4043 THEN "+
-                "RAISE; "+
-            "END IF; "+
-        "END;");
-    check oracledbClient.close();
+isolated function dropTypeIfExists(string typename, Client oracledbClient) returns sql:ExecutionResult|sql:Error {
+    sql:ExecutionResult result = check oracledbClient->execute(
+        `BEGIN
+            EXECUTE IMMEDIATE 'DROP TYPE ' || ${typename} || ' FORCE';
+            EXCEPTION
+            WHEN OTHERS THEN
+                IF SQLCODE != -4043 THEN
+                    RAISE;
+                END IF;
+        END;`);
     return result;
 }
 

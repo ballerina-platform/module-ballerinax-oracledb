@@ -18,48 +18,48 @@ import ballerina/test;
 
 @test:BeforeGroups { value:["custom-object"] }
 isolated function beforeInsertObjectFunc() returns sql:Error? {
-   string OID = "19A57209ECB73F91E03400400B40BB23";
-   string OID2 = "19A57209ECB73F91E03400400B40BB25";
+    string OID = "19A57209ECB73F91E03400400B40BB23";
+    string OID2 = "19A57209ECB73F91E03400400B40BB25";
 
-   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-   sql:ExecutionResult result = check dropTableIfExists("TestObjectTypeTable");
-   result = check dropTableIfExists("TestNestedObjectTypeTable");
-   result = check dropTypeIfExists("OBJECT_TYPE");
-   result = check dropTypeIfExists("NESTED_TYPE");
-   result = check oracledbClient->execute(
-       "CREATE OR REPLACE TYPE OBJECT_TYPE OID '" + OID + "' AS OBJECT(" +
-        "STRING_ATTR VARCHAR(20), " +
-        "INT_ATTR NUMBER, " +
-        "FLOAT_ATTR FLOAT, " +
-        "DECIMAL_ATTR FLOAT " +
-       ") "
-   );
-   result = check oracledbClient->execute(`CREATE TABLE TestObjectTypeTable(
-       PK NUMBER GENERATED ALWAYS AS IDENTITY,
-       COL_OBJECT OBJECT_TYPE,
-       PRIMARY KEY(PK)
-       )`
-   );
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:ExecutionResult result = check dropTableIfExists("TestObjectTypeTable", oracledbClient);
+    result = check dropTableIfExists("TestNestedObjectTypeTable", oracledbClient);
+    result = check dropTypeIfExists("OBJECT_TYPE", oracledbClient);
+    result = check dropTypeIfExists("NESTED_TYPE", oracledbClient);
+    result = check oracledbClient->execute(
+        "CREATE OR REPLACE TYPE OBJECT_TYPE OID '" + OID + "' AS OBJECT(" +
+         "STRING_ATTR VARCHAR(20), " +
+         "INT_ATTR NUMBER, " +
+         "FLOAT_ATTR FLOAT, " +
+         "DECIMAL_ATTR FLOAT " +
+        ") "
+    );
+    result = check oracledbClient->execute(`CREATE TABLE TestObjectTypeTable(
+        PK NUMBER GENERATED ALWAYS AS IDENTITY,
+        COL_OBJECT OBJECT_TYPE,
+        PRIMARY KEY(PK)
+        )`
+    );
 
-   result = check oracledbClient->execute(
-       "CREATE OR REPLACE TYPE NESTED_TYPE OID '" + OID2 + "' AS OBJECT(" +
-        "STRING_ATTR VARCHAR2(20), " +
-        "OBJECT_ATTR OBJECT_TYPE, " +
-        "MAP MEMBER FUNCTION GET_ATTR1 RETURN NUMBER " +
-       ") "
-   );
-   result = check oracledbClient->execute(`CREATE TABLE TestNestedObjectTypeTable(
-       PK NUMBER GENERATED ALWAYS AS IDENTITY,
-       COL_NESTED_OBJECT NESTED_TYPE,
-       PRIMARY KEY(PK)
-       )`
-   );
+    result = check oracledbClient->execute(
+        "CREATE OR REPLACE TYPE NESTED_TYPE OID '" + OID2 + "' AS OBJECT(" +
+         "STRING_ATTR VARCHAR2(20), " +
+         "OBJECT_ATTR OBJECT_TYPE, " +
+         "MAP MEMBER FUNCTION GET_ATTR1 RETURN NUMBER " +
+        ") "
+    );
+    result = check oracledbClient->execute(`CREATE TABLE TestNestedObjectTypeTable(
+        PK NUMBER GENERATED ALWAYS AS IDENTITY,
+        COL_NESTED_OBJECT NESTED_TYPE,
+        PRIMARY KEY(PK)
+        )`
+    );
 
-   check oracledbClient.close();
+    check oracledbClient.close();
 }
 
 @test:Config {
-   groups:["custom-object"]
+    groups:["custom-object"]
 }
 isolated function insertObjectTypeWithString() returns sql:Error? {
     string string_attr = "Hello world";
@@ -75,8 +75,8 @@ isolated function insertObjectTypeWithString() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["custom-object"],
-   dependsOn: [insertObjectTypeWithString]
+    groups:["custom-object"],
+    dependsOn: [insertObjectTypeWithString]
 }
 isolated function insertObjectTypeWithCustomType() returns sql:Error? {
     string string_attr = "Hello world";
@@ -93,36 +93,36 @@ isolated function insertObjectTypeWithCustomType() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["custom-object"],
-   dependsOn: [insertObjectTypeWithCustomType]
+    groups:["custom-object"],
+    dependsOn: [insertObjectTypeWithCustomType]
 }
 isolated function insertObjectTypeNull() returns sql:Error? {
-   ObjectTypeValue objectType = new();
-   sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType}))`;
-   sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
-   if (result is sql:ApplicationError) {
-      test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: object"));
-   } else {
-      test:assertFail("Database Error expected.");
-   }
+    ObjectTypeValue objectType = new();
+    sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType}))`;
+    sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
+    if (result is sql:ApplicationError) {
+       test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: object"));
+    } else {
+       test:assertFail("Database Error expected.");
+    }
 }
 
 @test:Config {
-   groups:["custom-object"],
-   dependsOn: [insertObjectTypeNull]
+    groups:["custom-object"],
+    dependsOn: [insertObjectTypeNull]
 }
 isolated function insertObjectTypeWithNullArray() returns sql:Error? {
-   ObjectTypeValue objectType = new({typename: "object_type", attributes: ()});
-   sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
-   sql:ExecutionResult result = check executeQuery(insertQuery);
-   test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-   var insertId = result.lastInsertId;
-   test:assertTrue(insertId is string, "Last Insert id should be string");
+    ObjectTypeValue objectType = new({typename: "object_type", attributes: ()});
+    sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
+    sql:ExecutionResult result = check executeQuery(insertQuery);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    var insertId = result.lastInsertId;
+    test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
 @test:Config {
-   groups:["custom-object"],
-   dependsOn: [insertObjectTypeWithNullArray]
+    groups:["custom-object"],
+    dependsOn: [insertObjectTypeWithNullArray]
 }
 isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
     ObjectTypeValue objectType = new({typename: "object_type", attributes: []});
@@ -138,8 +138,8 @@ isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["custom-object"],
-   dependsOn: [insertObjectTypeWithEmptyArray]
+    groups:["custom-object"],
+    dependsOn: [insertObjectTypeWithEmptyArray]
 }
 isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
     string string_attr = "Hello world";
@@ -158,8 +158,8 @@ isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["custom-object"],
-   dependsOn: [insertObjectTypeWithInvalidTypes1]
+    groups:["custom-object"],
+    dependsOn: [insertObjectTypeWithInvalidTypes1]
 }
 isolated function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
     boolean invalid_attr = true;
@@ -175,8 +175,8 @@ isolated function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["custom-object"],
-   dependsOn: [insertObjectTypeWithInvalidTypes2]
+    groups:["custom-object"],
+    dependsOn: [insertObjectTypeWithInvalidTypes2]
 }
 isolated function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
     map<string> invalid_attr = { key1: "value1", key2: "value2"};
@@ -192,8 +192,8 @@ isolated function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["custom-object"],
-   dependsOn: [insertObjectTypeWithInvalidTypes3]
+    groups:["custom-object"],
+    dependsOn: [insertObjectTypeWithInvalidTypes3]
 }
 isolated function insertObjectTypeWithStringArray() returns sql:Error? {
     string string_attr = "Hello world";
@@ -210,8 +210,8 @@ isolated function insertObjectTypeWithStringArray() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["custom-object"],
-   dependsOn: [insertObjectTypeWithStringArray]
+    groups:["custom-object"],
+    dependsOn: [insertObjectTypeWithStringArray]
 }
 isolated function insertObjectTypeWithNestedType() returns sql:Error? {
     string string_attr = "Hello world";
@@ -245,7 +245,7 @@ type ObjectRecordType record {
     dependsOn: [insertObjectTypeWithNestedType]
 }
 isolated function selectObjectType() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<ObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1" );
     record {|ObjectRecordType value;|}? data = check streamData.next();
@@ -274,7 +274,7 @@ isolated function selectObjectType() returns error? {
     dependsOn: [selectObjectType]
 }
 isolated function selectObjectTypeNull() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<ObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 15");
     record {|ObjectRecordType value;|}? data = check streamData.next();
@@ -300,7 +300,7 @@ type MismatchObjectRecordType record {
     dependsOn: [selectObjectTypeNull]
 }
 isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<MismatchObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1");
     record {}|error? returnData = streamData.next();
@@ -332,7 +332,7 @@ type BoolObjectRecordType record {
     dependsOn: [selectObjectTypeWithMisMatchingFieldCount]
 }
 isolated function selectObjectTypeWithBoolean() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<BoolObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 2");
     record {|BoolObjectRecordType value;|}? data = check streamData.next();
@@ -365,7 +365,7 @@ type NestedObjectRecordType record {
     dependsOn: [selectObjectTypeWithBoolean]
 }
 isolated function selectObjectTypeWithNestedType() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<NestedObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_nested_object FROM TestNestedObjectTypeTable WHERE pk = 1");
     record {|NestedObjectRecordType value;|}? data = check streamData.next();
@@ -408,7 +408,7 @@ type InvalidObjectRecordType record {
     dependsOn: [selectObjectTypeWithNestedType]
 }
 isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<InvalidObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1");
     record {}|error? returnData = streamData.next();

@@ -41,17 +41,18 @@ public class SQLDefaultRetryManager {
 @test:BeforeGroups { value:["local-transaction"] }
 isolated function beforeTransactionFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTableIfExists("LocalTranCustomers");
-    result = check oracledbClient->execute("CREATE TABLE LocalTranCustomers(" +
-        "id NUMBER GENERATED ALWAYS AS IDENTITY, " +
-        "firstName VARCHAR2(100), " +
-        "lastName VARCHAR2(100), " +
-        "registrationID NUMBER, " +
-        "creditLimit VARCHAR2(100), " +
-        "country VARCHAR2(100), " +
-        "PRIMARY KEY (id) " +
-        ")"
+    sql:ExecutionResult result = check dropTableIfExists("LocalTranCustomers", oracledbClient);
+    result = check executeQuery(`CREATE TABLE LocalTranCustomers(
+        id NUMBER GENERATED ALWAYS AS IDENTITY,
+        firstName VARCHAR2(100),
+        lastName VARCHAR2(100),
+        registrationID NUMBER,
+        creditLimit VARCHAR2(100),
+        country VARCHAR2(100),
+        PRIMARY KEY (id)
+        )`
     );
+    check oracledbClient.close();
 }
 
 @test:Config {
@@ -63,10 +64,10 @@ isolated function testLocalTransaction() returns error? {
     boolean committedBlockExecuted = false;
     transactions:Info transInfo;
     retry<SQLDefaultRetryManager>(1) transaction {
-        var res = check oracledbClient->execute("Insert into LocalTranCustomers (firstName, lastName, " + 
-            "registrationID, creditLimit, country) values ('James', 'Clerk', 200, 5000.75, 'USA')");
-        res = check oracledbClient->execute("Insert into LocalTranCustomers (firstName, lastName, registrationID," + 
-            "creditLimit, country) values ('James', 'Clerk', 200, 5000.75, 'USA')");
+        var res = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName, lastName,
+            registrationID, creditLimit, country) values ('James', 'Clerk', 200, 5000.75, 'USA')`);
+        res = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName, lastName, registrationID,
+            creditLimit, country) values ('James', 'Clerk', 200, 5000.75, 'USA')`);
         transInfo = transactions:info();
         var commitResult = commit;
         if(commitResult is ()){
@@ -105,10 +106,10 @@ function testTransactionRollbackWithCheckHelper(Client oracledbClient) returns e
     retry<SQLDefaultRetryManager>(1) transaction {
         transInfo = transactions:info();
         retryValRWC = transInfo.retryNumber;
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
-                "creditLimit,country) values ('James', 'Clerk', 210, 5000.75, 'USA')");
-        var e2 = check oracledbClient->execute("Insert into LocalTranCustomers2 (firstName,lastName,registrationID," +
-                    "creditLimit,country) values ('James', 'Clerk', 210, 5000.75, 'USA')");
+        var e1 = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
+                    creditLimit,country) values ('James', 'Clerk', 210, 5000.75, 'USA')`);
+        var e2 = check oracledbClient->execute(`Insert into LocalTranCustomers2 (firstName,lastName,registrationID,
+                    creditLimit,country) values ('James', 'Clerk', 210, 5000.75, 'USA')`);
         stmtAfterFailureExecutedRWC  = true;
         check commit;
     }
@@ -120,19 +121,19 @@ function testTransactionRollbackWithCheckHelper(Client oracledbClient) returns e
     dependsOn: [testTransactionRollbackWithCheck]
 }
 isolated function testTransactionRollbackWithRollback() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     int retryVal = -1;
     boolean stmtAfterFailureExecuted = false;
     transactions:Info transInfo;
     retry<SQLDefaultRetryManager>(1) transaction {
         transInfo = transactions:info();
-        var e1 = oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
-                "creditLimit,country) values ('James', 'Clerk', 211, 5000.75, 'USA')");
+        var e1 = oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
+                creditLimit,country) values ('James', 'Clerk', 211, 5000.75, 'USA')`);
         if (e1 is error){
             rollback;
         } else {
-            var e2 = oracledbClient->execute("Insert into LocalTranCustomers2 (firstName,lastName,registrationID," +
-                        "creditLimit,country) values ('James', 'Clerk', 211, 5000.75, 'USA')");
+            var e2 = oracledbClient->execute(`Insert into LocalTranCustomers2 (firstName,lastName,registrationID,
+                        creditLimit,country) values ('James', 'Clerk', 211, 5000.75, 'USA')`);
             if (e2 is error) {
                 rollback;
                 stmtAfterFailureExecuted  = true;
@@ -156,15 +157,15 @@ isolated function testTransactionRollbackWithRollback() returns error? {
     dependsOn: [testTransactionRollbackWithRollback]
 }
 isolated function testLocalTransactionUpdateWithGeneratedKeys() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     int returnVal = 0;
     transactions:Info transInfo;
     retry<SQLDefaultRetryManager>(1) transaction {
         transInfo = transactions:info();
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers " +
-         "(firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 615, 5000.75, 'USA')");
-        var e2 =  check oracledbClient->execute("Insert into LocalTranCustomers " +
-        "(firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 615, 5000.75, 'USA')");
+        var e1 = check oracledbClient->execute(`Insert into LocalTranCustomers
+            (firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 615, 5000.75, 'USA')`);
+        var e2 =  check oracledbClient->execute(`Insert into LocalTranCustomers
+            (firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 615, 5000.75, 'USA')`);
         check commit;
     }
     returnVal = transInfo.retryNumber;
@@ -182,7 +183,7 @@ int returnValRGK = 0;
     dependsOn: [testLocalTransactionUpdateWithGeneratedKeys]
 }
 function testLocalTransactionRollbackWithGeneratedKeys() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     error? result = testLocalTransactionRollbackWithGeneratedKeysHelper(oracledbClient);
     //check whether update action is performed
     int count = check getCount(oracledbClient, "615");
@@ -196,10 +197,10 @@ function testLocalTransactionRollbackWithGeneratedKeysHelper(Client oracledbClie
     retry<SQLDefaultRetryManager>(1) transaction {
         transInfo = transactions:info();
         returnValRGK = transInfo.retryNumber;
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers " +
-         "(firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 615, 5000.75, 'USA')");
-        var e2 = check oracledbClient->execute("Insert into LocalTranCustomers2 " +
-        "(firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 615, 5000.75, 'USA')");
+        var e1 = check oracledbClient->execute(`Insert into LocalTranCustomers
+            (firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 615, 5000.75, 'USA')`);
+        var e2 = check oracledbClient->execute(`Insert into LocalTranCustomers2
+            (firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 615, 5000.75, 'USA')`);
         check commit;
     }
 }
@@ -211,7 +212,7 @@ isolated int abortVal = 0;
     dependsOn: [testLocalTransactionRollbackWithGeneratedKeys]
 }
 isolated function testTransactionAbort() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     transactions:Info transInfo;
 
     var abortFunc = isolated function(transactions:Info? info, error? cause, boolean willTry) {
@@ -223,10 +224,10 @@ isolated function testTransactionAbort() returns error? {
     retry<SQLDefaultRetryManager>(1) transaction {
         transInfo = transactions:info();
         transactions:onRollback(abortFunc);
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers " +
-         "(firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 220, 5000.75, 'USA')");
-        var e2 =  check oracledbClient->execute("Insert into LocalTranCustomers " +
-        "(firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 220, 5000.75, 'USA')");
+        var e1 = check oracledbClient->execute(`Insert into LocalTranCustomers
+            (firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 220, 5000.75, 'USA')`);
+        var e2 =  check oracledbClient->execute(`Insert into LocalTranCustomers
+            (firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 220, 5000.75, 'USA')`);
         int i = 0;
         if (i == 0) {
             rollback;
@@ -253,7 +254,7 @@ int testTransactionErrorPanicRetVal = 0;
     groups: ["transaction", "local-transaction"]
 }
 function testTransactionErrorPanic() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     int returnVal = 0;
     int catchValue = 0;
     var ret = trap testTransactionErrorPanicHelper(oracledbClient);
@@ -274,8 +275,8 @@ function testTransactionErrorPanicHelper(Client oracledbClient) returns error? {
     transactions:Info transInfo;
     retry<SQLDefaultRetryManager>(1) transaction {
         transInfo = transactions:info();
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName," +
-                              "registrationID,creditLimit,country) values ('James', 'Clerk', 260, 5000.75, 'USA')");
+        var e1 = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,
+                              registrationID,creditLimit,country) values ('James', 'Clerk', 260, 5000.75, 'USA')`);
         int i = 0;
         if (i == 0) {
             error e = error("error");
@@ -293,14 +294,13 @@ function testTransactionErrorPanicHelper(Client oracledbClient) returns error? {
     dependsOn: [testTransactionAbort]
 }
 isolated function testTransactionErrorPanicAndTrap() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     int catchValue = 0;
     transactions:Info transInfo;
     retry<SQLDefaultRetryManager>(1) transaction {
         transInfo = transactions:info();
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
-                 "creditLimit,country) values ('James', 'Clerk', 250, 5000.75, 'USA')");
+        var e1 = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
+                 creditLimit,country) values ('James', 'Clerk', 250, 5000.75, 'USA')`);
         var ret = trap testTransactionErrorPanicAndTrapHelper(0);
         if (ret is error) {
             catchValue = -1;
@@ -329,26 +329,26 @@ isolated function testTransactionErrorPanicAndTrapHelper(int i) {
     dependsOn: [testTransactionErrorPanicAndTrap]
 }
 isolated function testTwoTransactions() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     transactions:Info transInfo1;
     transactions:Info transInfo2;
     retry<SQLDefaultRetryManager>(1) transaction {
         transInfo1 = transactions:info();
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
-                                    "creditLimit,country) values ('James', 'Clerk', 400, 5000.75, 'USA')");
-        var e2 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
-                                    "creditLimit,country) values ('James', 'Clerk', 400, 5000.75, 'USA')");
+        var e1 = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
+                                    creditLimit,country) values ('James', 'Clerk', 400, 5000.75, 'USA')`);
+        var e2 = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
+                                    creditLimit,country) values ('James', 'Clerk', 400, 5000.75, 'USA')`);
         check commit;
     }
     int returnVal1 = transInfo1.retryNumber;
 
     retry<SQLDefaultRetryManager>(1) transaction {
         transInfo2 = transactions:info();
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
-                        "creditLimit,country) values ('James', 'Clerk', 400, 5000.75, 'USA')");
-        var e2 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
-                        "creditLimit,country) values ('James', 'Clerk', 400, 5000.75, 'USA')");
+        var e1 = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
+                        creditLimit,country) values ('James', 'Clerk', 400, 5000.75, 'USA')`);
+        var e2 = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
+                        creditLimit,country) values ('James', 'Clerk', 400, 5000.75, 'USA')`);
         check commit;
     }
     int returnVal2 = transInfo2.retryNumber;
@@ -368,10 +368,10 @@ isolated function testTwoTransactions() returns error? {
 isolated function testTransactionWithoutHandlers() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     transaction {
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
-        "creditLimit,country) values ('James', 'Clerk', 350, 5000.75, 'USA')");
-        var e2 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
-        "creditLimit,country) values ('James', 'Clerk', 350, 5000.75, 'USA')");
+        var e1 = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
+        creditLimit,country) values ('James', 'Clerk', 350, 5000.75, 'USA')`);
+        var e2 = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
+        creditLimit,country) values ('James', 'Clerk', 350, 5000.75, 'USA')`);
         check commit;
     }
     //Check whether the update action is performed.
@@ -387,7 +387,7 @@ isolated string rollbackOut = "";
     dependsOn: [testTransactionWithoutHandlers]
 }
 function testLocalTransactionFailed() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     string a = "beforetx";
 
@@ -420,10 +420,10 @@ function testLocalTransactionFailedHelper(Client oracledbClient) returns string|
         }
         transInfo = transactions:info();
         transactions:onRollback(onRollbackFunc);
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers (firstName,lastName,registrationID," +
-                        "creditLimit,country) values ('James', 'Clerk', 111, 5000.75, 'USA')");
-        var e2 = oracledbClient->execute("Insert into LocalTranCustomers2 (firstName,lastName,registrationID," +
-                        "creditLimit,country) values ('Anne', 'Clerk', 111, 5000.75, 'USA')");
+        var e1 = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
+                        creditLimit,country) values ('James', 'Clerk', 111, 5000.75, 'USA')`);
+        var e2 = oracledbClient->execute(`Insert into LocalTranCustomers2 (firstName,lastName,registrationID,
+                        creditLimit,country) values ('Anne', 'Clerk', 111, 5000.75, 'USA')`);
         if(e2 is error) {
            check getError();
         }
@@ -445,7 +445,7 @@ isolated function getError() returns error? {
     dependsOn: [testTransactionWithoutHandlers]
 }
 isolated function testLocalTransactionSuccessWithFailed() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     string a = "beforetx";
     string | error ret = trap testLocalTransactionSuccessWithFailedHelper(a, oracledbClient);
@@ -461,21 +461,21 @@ isolated function testLocalTransactionSuccessWithFailed() returns error? {
     test:assertEquals(count, 2);
 }
 
-isolated function testLocalTransactionSuccessWithFailedHelper(string status,Client oracledbClient) 
+isolated function testLocalTransactionSuccessWithFailedHelper(string status,Client oracledbClient)
 returns string|error {
     int i = 0;
     string a = status;
     retry<SQLDefaultRetryManager>(3) transaction {
         i = i + 1;
         a = a + " inTrx";
-        var e1 = check oracledbClient->execute("Insert into LocalTranCustomers(firstName,lastName,registrationID," +
-                        "creditLimit,country) values ('James', 'Clerk', 222, 5000.75, 'USA')");
+        var e1 = check oracledbClient->execute(`Insert into LocalTranCustomers(firstName,lastName,registrationID,
+                        creditLimit,country) values ('James', 'Clerk', 222, 5000.75, 'USA')`);
         if (i == 3) {
-            var e2 = check oracledbClient->execute("Insert into LocalTranCustomers(firstName,lastName,registrationID," +
-                        "creditLimit,country) values ('Anne', 'Clerk', 222, 5000.75, 'USA')");
+            var e2 = check oracledbClient->execute(`Insert into LocalTranCustomers(firstName,lastName,registrationID,
+                        creditLimit,country) values ('Anne', 'Clerk', 222, 5000.75, 'USA')`);
         } else {
-            var e3 = check oracledbClient->execute("Insert into LocalTranCustomers2(firstName,lastName," + 
-                        "registrationID,creditLimit,country) values ('Anne', 'Clerk', 222, 5000.75, 'USA')");
+            var e3 = check oracledbClient->execute(`Insert into LocalTranCustomers2(firstName,lastName,
+                        registrationID,creditLimit,country) values ('Anne', 'Clerk', 222, 5000.75, 'USA')`);
         }
         check commit;
         a = a + " committed";
@@ -484,8 +484,8 @@ returns string|error {
 }
 
 isolated function getCount(Client oracledbClient, string id) returns @tainted int|error {
-    stream<TransactionResultCount, sql:Error?> streamData = oracledbClient->query("Select COUNT(*) as " +
-        "countval from LocalTranCustomers where registrationID = " + id);
+    stream<TransactionResultCount, sql:Error?> streamData = oracledbClient->query(`Select COUNT(*) as
+        countval from LocalTranCustomers where registrationID = ${id}`);
         record {|TransactionResultCount value;|}? data = check streamData.next();
         check streamData.close();
         TransactionResultCount? value = data?.value;

@@ -18,42 +18,41 @@ import ballerina/test;
 
 @test:BeforeGroups { value:["custom-varray"] }
 isolated function beforeInsertVArrayFunc() returns sql:Error? {
-   string OID = "19A57209ECB73F91E03400400B40BB25";
+    string OID = "19A57209ECB73F91E03400400B40BB25";
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:ExecutionResult result = check dropTypeIfExists("CharArrayType", oracledbClient);
+    result = check dropTypeIfExists("ByteArrayType", oracledbClient);
+    result = check dropTypeIfExists("IntArrayType", oracledbClient);
+    result = check dropTypeIfExists("BoolArrayType", oracledbClient);
+    result = check dropTypeIfExists("FloatArrayType", oracledbClient);
+    result = check dropTypeIfExists("DecimalArrayType", oracledbClient);
 
-   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-   sql:ExecutionResult result = check dropTypeIfExists("CharArrayType");
-   result = check dropTypeIfExists("ByteArrayType");
-   result = check dropTypeIfExists("IntArrayType");
-   result = check dropTypeIfExists("BoolArrayType");
-   result = check dropTypeIfExists("FloatArrayType");
-   result = check dropTypeIfExists("DecimalArrayType");
+    result = check oracledbClient->execute(
+       `CREATE OR REPLACE TYPE CharArrayType AS VARRAY(6) OF VARCHAR(100);`);
+    result = check oracledbClient->execute(
+       `CREATE OR REPLACE TYPE ByteArrayType AS VARRAY(6) OF RAW(100);`);
+    result = check oracledbClient->execute(
+       `CREATE OR REPLACE TYPE IntArrayType AS VARRAY(6) OF NUMBER;`);
+    result = check oracledbClient->execute(
+       `CREATE OR REPLACE TYPE BoolArrayType AS VARRAY(6) OF NUMBER;`);
+    result = check oracledbClient->execute(
+       `CREATE OR REPLACE TYPE FloatArrayType AS VARRAY(6) OF FLOAT;`);
+    result = check oracledbClient->execute(
+       `CREATE OR REPLACE TYPE DecimalArrayType AS VARRAY(6) OF NUMBER;`);
 
-   result = check oracledbClient->execute(
-      `CREATE OR REPLACE TYPE CharArrayType AS VARRAY(6) OF VARCHAR(100);`);
-   result = check oracledbClient->execute(
-      `CREATE OR REPLACE TYPE ByteArrayType AS VARRAY(6) OF RAW(100);`);
-   result = check oracledbClient->execute(
-      `CREATE OR REPLACE TYPE IntArrayType AS VARRAY(6) OF NUMBER;`);
-   result = check oracledbClient->execute(
-      `CREATE OR REPLACE TYPE BoolArrayType AS VARRAY(6) OF NUMBER;`);
-   result = check oracledbClient->execute(
-      `CREATE OR REPLACE TYPE FloatArrayType AS VARRAY(6) OF FLOAT;`);
-   result = check oracledbClient->execute(
-      `CREATE OR REPLACE TYPE DecimalArrayType AS VARRAY(6) OF NUMBER;`);
-
-   result = check dropTableIfExists("TestVarrayTable");
-   result = check oracledbClient->execute(`CREATE TABLE TestVarrayTable(
-      PK NUMBER GENERATED ALWAYS AS IDENTITY,
-      COL_CHARARR CharArrayType,
-      COL_BYTEARR ByteArrayType,
-      COL_INTARR IntArrayType,
-      COL_BOOLARR BoolArrayType,
-      COL_FLOATARR FloatArrayType,
-      COL_DECIMALARR DecimalArrayType,
-      PRIMARY KEY(PK)
-      )`
-   );
-   check oracledbClient.close();
+    result = check dropTableIfExists("TestVarrayTable", oracledbClient);
+    result = check oracledbClient->execute(`CREATE TABLE TestVarrayTable(
+       PK NUMBER GENERATED ALWAYS AS IDENTITY,
+       COL_CHARARR CharArrayType,
+       COL_BYTEARR ByteArrayType,
+       COL_INTARR IntArrayType,
+       COL_BOOLARR BoolArrayType,
+       COL_FLOATARR FloatArrayType,
+       COL_DECIMALARR DecimalArrayType,
+       PRIMARY KEY(PK)
+       )`
+    );
+    check oracledbClient.close();
  }
 
 // insert to varray
@@ -61,25 +60,25 @@ isolated function beforeInsertVArrayFunc() returns sql:Error? {
    groups:["custom-varray"]
 }
 isolated function insertVarray() returns sql:Error? {
-   string[] charArray = ["Hello", "World"];
-   byte[] byteArray = [4, 23, 12];
-   int[] intArray = [3,4,5];
-   boolean[] boolArray = [true, false, false];
-   float[] floatArray = [34, -98.23, 0.981];
-   decimal[] decimalArray = [34, -98.23, 0.981];
-   VarrayValue charVarray = new({ name:"CharArrayType", elements: charArray });
-   VarrayValue byteVarray = new({ name:"ByteArrayType", elements: byteArray });
-   VarrayValue intVarray = new({ name:"IntArrayType", elements: intArray });
-   VarrayValue boolVarray = new({ name:"BoolArrayType", elements: boolArray });
-   VarrayValue floatVarray = new({ name:"FloatArrayType", elements: floatArray });
-   VarrayValue decimalVarray = new({ name:"DecimalArrayType", elements: decimalArray });
-   sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
-         COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
-         values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
-   sql:ExecutionResult result = check executeQuery(insertQuery);
-   test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-   var insertId = result.lastInsertId;
-   test:assertTrue(insertId is string, "Last Insert id should be string");
+    string[] charArray = ["Hello", "World"];
+    byte[] byteArray = [4, 23, 12];
+    int[] intArray = [3,4,5];
+    boolean[] boolArray = [true, false, false];
+    float[] floatArray = [34, -98.23, 0.981];
+    decimal[] decimalArray = [34, -98.23, 0.981];
+    VarrayValue charVarray = new({ name:"CharArrayType", elements: charArray });
+    VarrayValue byteVarray = new({ name:"ByteArrayType", elements: byteArray });
+    VarrayValue intVarray = new({ name:"IntArrayType", elements: intArray });
+    VarrayValue boolVarray = new({ name:"BoolArrayType", elements: boolArray });
+    VarrayValue floatVarray = new({ name:"FloatArrayType", elements: floatArray });
+    VarrayValue decimalVarray = new({ name:"DecimalArrayType", elements: decimalArray });
+    sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
+          COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
+          values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
+    sql:ExecutionResult result = check executeQuery(insertQuery);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    var insertId = result.lastInsertId;
+    test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
 // insert with null VarrayValue object
@@ -88,21 +87,21 @@ isolated function insertVarray() returns sql:Error? {
    dependsOn: [insertVarray]
 }
 isolated function insertVarrayNull() returns sql:Error? {
-   VarrayValue charVarray = new();
-   VarrayValue byteVarray = new();
-   VarrayValue intVarray = new();
-   VarrayValue boolVarray = new();
-   VarrayValue floatVarray = new();
-   VarrayValue decimalVarray = new();
-   sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
-      COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
-      values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
-   sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
-   if (result is sql:ApplicationError) {
-      test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: varray"));
-   } else {
-      test:assertFail("Database Error expected.");
-   }
+    VarrayValue charVarray = new();
+    VarrayValue byteVarray = new();
+    VarrayValue intVarray = new();
+    VarrayValue boolVarray = new();
+    VarrayValue floatVarray = new();
+    VarrayValue decimalVarray = new();
+    sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
+       COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
+       values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
+    sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
+    if (result is sql:ApplicationError) {
+       test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: varray"));
+    } else {
+       test:assertFail("Database Error expected.");
+    }
 }
 
 // insert with null array
@@ -111,19 +110,19 @@ isolated function insertVarrayNull() returns sql:Error? {
    dependsOn: [insertVarrayNull]
 }
 isolated function insertVarrayWithNullArray() returns sql:Error? {
-   VarrayValue charVarray = new({ name:"CharArrayType", elements: () });
-   VarrayValue byteVarray = new({ name:"ByteArrayType", elements: () });
-   VarrayValue intVarray = new({ name:"IntArrayType", elements: () });
-   VarrayValue boolVarray = new({ name:"BoolArrayType", elements: () });
-   VarrayValue floatVarray = new({ name:"FloatArrayType", elements: () });
-   VarrayValue decimalVarray = new({ name:"DecimalArrayType", elements: () });
-   sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
-         COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
-         values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
-   sql:ExecutionResult result = check executeQuery(insertQuery);
-   test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-   var insertId = result.lastInsertId;
-   test:assertTrue(insertId is string, "Last Insert id should be string");
+    VarrayValue charVarray = new({ name:"CharArrayType", elements: () });
+    VarrayValue byteVarray = new({ name:"ByteArrayType", elements: () });
+    VarrayValue intVarray = new({ name:"IntArrayType", elements: () });
+    VarrayValue boolVarray = new({ name:"BoolArrayType", elements: () });
+    VarrayValue floatVarray = new({ name:"FloatArrayType", elements: () });
+    VarrayValue decimalVarray = new({ name:"DecimalArrayType", elements: () });
+    sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
+          COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
+          values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
+    sql:ExecutionResult result = check executeQuery(insertQuery);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    var insertId = result.lastInsertId;
+    test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
 // insert with empty array
@@ -132,25 +131,25 @@ isolated function insertVarrayWithNullArray() returns sql:Error? {
     dependsOn: [insertVarrayWithNullArray]
 }
 isolated function insertVarrayWithEmptyArray() returns sql:Error? {
-   string[] charArray = [];
-   byte[] byteArray = [];
-   int[] intArray = [];
-   boolean[] boolArray = [];
-   float[] floatArray = [];
-   decimal[] decimalArray = [];
-   VarrayValue charVarray = new({ name:"CharArrayType", elements: charArray });
-   VarrayValue byteVarray = new({ name:"ByteArrayType", elements: byteArray });
-   VarrayValue intVarray = new({ name:"IntArrayType", elements: intArray });
-   VarrayValue boolVarray = new({ name:"BoolArrayType", elements: boolArray });
-   VarrayValue floatVarray = new({ name:"FloatArrayType", elements: floatArray });
-   VarrayValue decimalVarray = new({ name:"DecimalArrayType", elements: decimalArray });
-   sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
-            COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
-            values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
-   sql:ExecutionResult result = check executeQuery(insertQuery);
-   test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-   var insertId = result.lastInsertId;
-   test:assertTrue(insertId is string, "Last Insert id should be string");
+    string[] charArray = [];
+    byte[] byteArray = [];
+    int[] intArray = [];
+    boolean[] boolArray = [];
+    float[] floatArray = [];
+    decimal[] decimalArray = [];
+    VarrayValue charVarray = new({ name:"CharArrayType", elements: charArray });
+    VarrayValue byteVarray = new({ name:"ByteArrayType", elements: byteArray });
+    VarrayValue intVarray = new({ name:"IntArrayType", elements: intArray });
+    VarrayValue boolVarray = new({ name:"BoolArrayType", elements: boolArray });
+    VarrayValue floatVarray = new({ name:"FloatArrayType", elements: floatArray });
+    VarrayValue decimalVarray = new({ name:"DecimalArrayType", elements: decimalArray });
+    sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
+             COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
+             values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
+    sql:ExecutionResult result = check executeQuery(insertQuery);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    var insertId = result.lastInsertId;
+    test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
 @test:Config {
@@ -389,7 +388,7 @@ type InvalidStringTypeArray record {
     dependsOn: [selectVarrayWithInvalidByteType]
 }
 isolated function selectVarrayWithInvalidStringType() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<InvalidStringTypeArray, sql:Error?> streamData = oracledbClient->query(
         "SELECT pk, COL_BYTEARR FROM TestVarrayTable WHERE pk = 1");
     record {}|error? returnData =  streamData.next();
