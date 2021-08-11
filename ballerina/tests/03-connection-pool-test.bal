@@ -33,7 +33,7 @@ Options options = {
 isolated function beforePoolTestFunc() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
-    sql:ExecutionResult result = check dropPoolTableIfExists("PoolCustomers");
+    sql:ExecutionResult result = check dropTableIfExists("PoolCustomers", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE PoolCustomers (
         customerId NUMBER GENERATED ALWAYS AS IDENTITY,
         firstName  VARCHAR2(300),
@@ -436,18 +436,4 @@ isolated function validateConnectionTimeoutError(int|error dbError) {
   test:assertTrue(dbError is error);
   sql:DatabaseError sqlError = <sql:DatabaseError> dbError;
   test:assertTrue(stringutils:includes(sqlError.message(), "request timed out after"), sqlError.message());
-}
-
-isolated function dropPoolTableIfExists(string tablename) returns sql:ExecutionResult|sql:Error {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check oracledbClient->execute("BEGIN "+
-        "EXECUTE IMMEDIATE 'DROP TABLE ' || '" + tablename + "'; " +
-        "EXCEPTION " +
-        "WHEN OTHERS THEN " +
-            "IF SQLCODE != -942 THEN " +
-                "RAISE; " +
-            "END IF; " +
-        "END;");
-    check oracledbClient.close();
-    return result;
 }
