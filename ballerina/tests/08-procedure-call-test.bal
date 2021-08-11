@@ -16,6 +16,7 @@
 import ballerina/sql;
 import ballerina/test;
 import ballerina/jballerina.java;
+import ballerina/time;
 
 type StringDataForCall record {
     string COL_CHAR;
@@ -79,6 +80,25 @@ isolated function beforeProcCallFunc() returns sql:Error? {
     result = check oracledbClient->execute( `INSERT INTO CallComplexTypes (id, col_xml)
         VALUES(1, XMLType('<key>value</key>'))`);
 
+    result = check dropTableIfExists("CallDateTimeTypes", oracledbClient);
+    result = check oracledbClient->execute(`ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH:MI:SS AM'`);
+    result = check oracledbClient->execute(`ALTER session set NLS_TIMESTAMP_TZ_FORMAT = 'DD-MON-YYYY HH:MI:SS AM TZR'`);
+    result = check oracledbClient->execute(`CREATE TABLE CallDateTimeTypes(
+        id NUMBER,
+        col_date DATE,
+        col_date_only DATE,
+        col_timestamp TIMESTAMP,
+        col_timestamptz TIMESTAMP WITH TIME ZONE,
+        col_interval_year_to_month INTERVAL YEAR TO MONTH,
+        col_interval_day_to_second INTERVAL DAY TO SECOND,
+        PRIMARY KEY(id)
+        )`
+    );
+    result = check oracledbClient->execute(`INSERT INTO CallDateTimeTypes(ID, COL_DATE, COL_DATE_ONLY, COL_TIMESTAMP,
+                    COL_TIMESTAMPTZ, COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND)
+                    VALUES (1, '05-JAN-2020 10:35:10 AM','05-JAN-2020','05-JAN-2020 10:35:10 AM',
+                    '05-JAN-2020 10:35:10 AM +05:30','15-11', '20 11:21:24.45')`);
+
     check oracledbClient.close();
     check createProcedures();
 }
@@ -138,6 +158,21 @@ isolated function createProcedures() returns sql:Error? {
         END;`
     );
 
+    result = check oracledbClient->execute(
+        `CREATE OR REPLACE PROCEDURE SelectDateTimesWithOutParams(
+        p_id IN NUMBER, p_col_date OUT DATE, p_col_date_only OUT DATE, p_col_timestamp OUT TIMESTAMP,
+        p_col_timestamptz OUT TIMESTAMP WITH TIME ZONE, p_col_interval_year_to_month OUT INTERVAL YEAR TO MONTH,
+        p_col_interval_day_to_second OUT INTERVAL DAY TO SECOND)
+        AS BEGIN
+        SELECT col_date INTO p_col_date FROM CallDateTimeTypes where id = p_id;
+        SELECT col_date_only INTO p_col_date_only FROM CallDateTimeTypes where id = p_id;
+        SELECT col_timestamp INTO p_col_timestamp FROM CallDateTimeTypes where id = p_id;
+        SELECT col_timestamptz INTO p_col_timestamptz FROM CallDateTimeTypes where id = p_id;
+        SELECT col_interval_year_to_month INTO p_col_interval_year_to_month FROM CallDateTimeTypes where id = p_id;
+        SELECT col_interval_day_to_second INTO p_col_interval_day_to_second FROM CallDateTimeTypes where id = p_id;
+        END;`
+    );
+
     check oracledbClient.close();
 }
 
@@ -160,6 +195,7 @@ isolated function testCallWithStringTypes() returns @tainted record {}|error? {
     };
     test:assertEquals(check callQueryClient(oracledbClient, sqlQuery), expectedDataRow,
         "Call procedure insert and query did not match.");
+    check oracledbClient.close();
 }
 
 @test:Config {
@@ -189,6 +225,7 @@ isolated function testCallWithStringTypesInParams() returns error? {
     };
     test:assertEquals(check callQueryClient(oracledbClient, sqlQuery), expectedDataRow,
         "Call procedure insert and query did not match.");
+    check oracledbClient.close();
 }
 
 @test:Config {
@@ -320,6 +357,46 @@ isolated function testCallWithRandomOutParams() returns error? {
         `{call SelectComplexDataWithOutParams(${paraID}, ${paraRandom})}`);
     check oracledbClient.close();
     test:assertTrue(ret is error);
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallWithDateTimesOutParams() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:IntegerValue paraID = new (1);
+    sql:DateTimeOutParameter paraDate = new;
+    sql:DateOutParameter paraDateOnly = new;
+    sql:TimestampOutParameter paraTimestamp = new;
+    sql:TimestampWithTimezoneOutParameter paraTimestampTz = new;
+    IntervalYearToMonthOutParameter paraIntervalMY = new;
+    IntervalDayToSecondOutParameter paraIntervalDS = new;
+
+    var ret = check oracledbClient->call(
+        `{call SelectDateTimesWithOutParams(${paraID}, ${paraDate}, ${paraDateOnly}, ${paraTimestamp},
+        ${paraTimestampTz}, ${paraIntervalMY}, ${paraIntervalDS})}`);
+    check oracledbClient.close();
+
+    time:Civil dateTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
+    time:Date dateOnlyTypeRecord = {year: 2020, month: 1, day: 5};
+    time:Civil timestampTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
+    time:Civil timestampTzTypeRecord = {utcOffset: {hours: 5, minutes: 30}, timeAbbrev: "+05:30", year: 2020,
+                                        month: 1, day: 5, hour: 10, minute: 35, second: 10};
+    IntervalYearToMonth intervalYM = {years:15, months: 11};
+    IntervalDayToSecond intervalDS = {days:20, hours: 11, minutes: 21, seconds: 24.045};
+
+    test:assertEquals(check paraDate.get(time:Civil), dateTypeRecord,
+                        "paraDate out parameter of procedure did not match.");
+    test:assertEquals(check paraDateOnly.get(time:Date), dateOnlyTypeRecord,
+                        "paraDateOnly out parameter of procedure did not match.");
+    test:assertEquals(check paraTimestamp.get(time:Civil), timestampTypeRecord,
+                        "paraTimestamp out parameter of procedure did not match.");
+    test:assertEquals(check paraTimestampTz.get(time:Civil), timestampTzTypeRecord,
+                        "paraTimestampTz out parameter of procedure did not match.");
+    test:assertEquals(check paraIntervalMY.get(IntervalYearToMonth), intervalYM,
+                        "paraIntervalMY out parameter of procedure did not match.");
+    test:assertEquals(check paraIntervalDS.get(IntervalDayToSecond), intervalDS,
+                        "paraIntervalDS out parameter of procedure did not match.");
 }
 
 isolated function callQueryClient(Client oracledbClient, @untainted string|sql:ParameterizedQuery sqlQuery)

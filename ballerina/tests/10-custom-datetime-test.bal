@@ -19,24 +19,54 @@ import ballerina/time;
 
 @test:BeforeGroups { value:["datetime"] }
 isolated function beforeInsertTimeFunc() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTableIfExists("TestDateTimeTable", oracledbClient);
-    result = check oracledbClient->execute(`ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH:MI:SS AM'`);
-    result = check oracledbClient->execute(`ALTER session set NLS_TIMESTAMP_TZ_FORMAT = 'DD-MON-YYYY HH:MI:SS AM TZR'`);
-    result = check oracledbClient->execute(`CREATE TABLE TestDateTimeTable(
-        PK NUMBER GENERATED ALWAYS AS IDENTITY,
-        COL_DATE  DATE,
-        COL_DATE_ONLY  DATE,
-        COL_TIME_ONLY  INTERVAL DAY(0) TO SECOND,
-        COL_TIMESTAMP  TIMESTAMP (9),
-        COL_TIMESTAMPTZ  TIMESTAMP (9) WITH TIME ZONE,
-        COL_TIMESTAMPTZL  TIMESTAMP (9) WITH LOCAL TIME ZONE,
-        COL_INTERVAL_YEAR_TO_MONTH INTERVAL YEAR TO MONTH,
-        COL_INTERVAL_DAY_TO_SECOND INTERVAL DAY(9) TO SECOND(9),
-        PRIMARY KEY(PK)
-        )`
-    );
-    check oracledbClient.close();
+   Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+   sql:ExecutionResult result = check dropTableIfExists("TestDateTimeTable", oracledbClient);
+   result = check oracledbClient->execute(`ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH:MI:SS AM'`);
+   result = check oracledbClient->execute(`ALTER session set NLS_TIMESTAMP_TZ_FORMAT = 'DD-MON-YYYY HH:MI:SS AM TZR'`);
+   result = check oracledbClient->execute(`CREATE TABLE TestDateTimeTable(
+       PK NUMBER GENERATED ALWAYS AS IDENTITY,
+       COL_DATE  DATE,
+       COL_DATE_ONLY  DATE,
+       COL_TIME_ONLY  INTERVAL DAY(0) TO SECOND,
+       COL_TIMESTAMP  TIMESTAMP (9),
+       COL_TIMESTAMPTZ  TIMESTAMP (9) WITH TIME ZONE,
+       COL_TIMESTAMPTZL  TIMESTAMP (9) WITH LOCAL TIME ZONE,
+       COL_INTERVAL_YEAR_TO_MONTH INTERVAL YEAR TO MONTH,
+       COL_INTERVAL_DAY_TO_SECOND INTERVAL DAY(9) TO SECOND(9),
+       PRIMARY KEY(PK)
+       )`
+   );
+
+   result = check dropTableIfExists("TestIntervalTable", oracledbClient);
+   result = check oracledbClient->execute(`CREATE TABLE TestIntervalTable(
+       ID NUMBER,
+       COL_YEAR3_TO_MONTH INTERVAL YEAR(3) TO MONTH,
+       COL_YEAR3 INTERVAL YEAR(3) TO MONTH,
+       COL_MONTH3 INTERVAL YEAR(3) TO MONTH,
+       COL_DAY_TO_SECOND3 INTERVAL DAY TO SECOND(3),
+       COL_DAY_TO_MINUTE INTERVAL DAY TO SECOND,
+       COL_DAY_TO_HOUR INTERVAL DAY(3) TO SECOND,
+       COL_DAY3 INTERVAL DAY(3) TO SECOND,
+       COL_HOUR_TO_SECOND7 INTERVAL DAY TO SECOND(7),
+       COL_HOUR_TO_MINUTE INTERVAL DAY TO SECOND,
+       COL_HOUR INTERVAL DAY TO SECOND,
+       COL_MINUTE_TO_SECOND INTERVAL DAY TO SECOND,
+       COL_MINUTE INTERVAL DAY TO SECOND,
+       COL_HOUR3 INTERVAL DAY TO SECOND,
+       COL_SECOND2_3 INTERVAL DAY TO SECOND(3),
+       PRIMARY KEY(ID)
+       )`
+   );
+
+   result = check oracledbClient->execute(`INSERT INTO TestIntervalTable(ID, COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3,
+            COL_DAY_TO_SECOND3, COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
+            COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3)
+            VALUES (1, INTERVAL '120-3' YEAR(3) TO MONTH, INTERVAL '105' YEAR(3), INTERVAL '500' MONTH(3),
+            INTERVAL '11 10:09:08.555' DAY TO SECOND(3), INTERVAL '11 10:09' DAY TO MINUTE, INTERVAL '100 10' DAY(3) TO HOUR,
+            INTERVAL '999' DAY(3), INTERVAL '09:08:07.6666666' HOUR TO SECOND(7), INTERVAL '09:30' HOUR TO MINUTE, INTERVAL '40' HOUR,
+            INTERVAL '15:30' MINUTE TO SECOND, INTERVAL '30' MINUTE, INTERVAL '250' HOUR(3), INTERVAL '15.6789' SECOND(2,3))`);
+
+   check oracledbClient.close();
 }
 
 @test:Config {
@@ -264,6 +294,35 @@ isolated function selectAllDateTimeDatatypesWithStringReturnType() returns error
         col_timestamptz: timestampTzTypeString,
         col_interval_year_to_month: intervalYtoMTypeString,
         col_interval_day_to_second: intervalDtoSTypeString
+    };
+    test:assertEquals(expectedData, data, "Expected and actual mismatch");
+}
+
+@test:Config {
+    groups: ["datetime"]
+}
+isolated function selectAllIntervalsWithoutReturnType() returns error? {
+    int id = 1;
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3, COL_DAY_TO_SECOND3,
+                COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
+                COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3 FROM TestIntervalTable
+                WHERE ID = ${id}`;
+    record{}? data = check queryClient(sqlQuery);
+    var expectedData = {
+        COL_YEAR3_TO_MONTH: "120-3",
+        COL_YEAR3: "105-0",
+        COL_MONTH3: "41-8",
+        COL_DAY_TO_SECOND3: "11 10:9:8.555",
+        COL_DAY_TO_MINUTE: "11 10:9:0.0",
+        COL_DAY_TO_HOUR: "100 10:0:0.0",
+        COL_DAY3: "999 0:0:0.0",
+        COL_HOUR_TO_SECOND7: "0 9:8:7.6666666",
+        COL_HOUR_TO_MINUTE: "0 9:30:0.0",
+        COL_HOUR: "1 16:0:0.0",
+        COL_MINUTE_TO_SECOND: "0 0:15:30.0",
+        COL_MINUTE: "0 0:30:0.0",
+        COL_HOUR3: "10 10:0:0.0",
+        COL_SECOND2_3: "0 0:0:15.679"
     };
     test:assertEquals(expectedData, data, "Expected and actual mismatch");
 }
