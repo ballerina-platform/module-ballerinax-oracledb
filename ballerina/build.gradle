@@ -16,7 +16,6 @@
  */
 
 import org.apache.tools.ant.taskdefs.condition.Os
-import groovyx.gpars.GParsPool
 
 buildscript {
     repositories {
@@ -214,28 +213,14 @@ def startDockerContainer(containerName, port) {
 
 task startTestDockerContainers() {
     doLast {
-        if ((project.hasProperty("groups") && !project.findProperty("groups").contains("pool")) ||
-                (project.hasProperty("disable-groups") && project.findProperty("disable-groups").contains("pool"))) {
-            startDockerContainer("ballerina-oracledb", 1521)
-        } else {
-            GParsPool.withPool { GParsPool.executeAsyncAndWait(
-                    {startDockerContainer("ballerina-oracledb", 1521)},
-                    {startDockerContainer("ballerina-oracledb-pool", 1522)}
-            )}
-        }
+        startDockerContainer("ballerina-oracledb", 1521)
     }
 }
 
 task stopTestDockerContainers() {
     doLast {
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-            def containers = ""
-            if ((project.hasProperty("groups") && !project.findProperty("groups").contains("pool")) ||
-                    (project.hasProperty("disable-groups") && project.findProperty("disable-groups").contains("pool"))) {
-                containers = "ballerina-oracledb"
-            } else {
-                containers = "ballerina-oracledb ballerina-oracledb-pool"
-            }
+            def containers = "ballerina-oracledb"
 
             try {
                 def stdOut = new ByteArrayOutputStream()
