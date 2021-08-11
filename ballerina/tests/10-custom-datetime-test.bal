@@ -19,8 +19,7 @@ import ballerina/time;
 
 @test:BeforeGroups { value:["datetime"] }
 isolated function beforeInsertTimeFunc() returns sql:Error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("TestDateTimeTable", oracledbClient);
     result = check oracledbClient->execute(`ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH:MI:SS AM'`);
     result = check oracledbClient->execute(`ALTER session set NLS_TIMESTAMP_TZ_FORMAT = 'DD-MON-YYYY HH:MI:SS AM TZR'`);
@@ -44,8 +43,7 @@ isolated function beforeInsertTimeFunc() returns sql:Error? {
    groups:["datetime"]
 }
 isolated function insertIntervalWithString() returns sql:Error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     string date = "05-JAN-2020 10:35:10 AM";
     string dateOnly = "05-JAN-2020";
     string timeOnly = "0 11:00:00";

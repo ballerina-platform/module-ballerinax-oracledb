@@ -20,8 +20,7 @@ import ballerina/test;
 
 @test:BeforeGroups { value:["execute", "execute-params"] }
 isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("NumericTypesTable", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE NumericTypesTable(
         id NUMBER,

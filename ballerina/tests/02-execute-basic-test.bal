@@ -20,8 +20,7 @@ import ballerina/test;
     groups:["execute", "execute-basic"]
 }
 isolated function testCreateTable() returns sql:Error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("TestExecuteTable", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE TestExecuteTable(field NUMBER, field2 VARCHAR2(255))`);
     test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
@@ -124,8 +123,7 @@ type NumericRecord record {|
     dependsOn: [testInsertTableWithGeneratedKeys]
 }
 isolated function testInsertAndSelectTableWithGeneratedKeys() returns sql:Error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute(`insert into TestNumericTable (col_number) values (31)`);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     string|int? insertedId = result.lastInsertId;
@@ -146,8 +144,7 @@ isolated function testInsertAndSelectTableWithGeneratedKeys() returns sql:Error?
     dependsOn: [testInsertAndSelectTableWithGeneratedKeys]
 }
 isolated function testInsertWithAllNilAndSelectTableWithGeneratedKeys() returns sql:Error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute(`insert into TestNumericTable (col_number, col_float,
         col_binary_float, col_binary_double) values (null, null, null, null)`);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");

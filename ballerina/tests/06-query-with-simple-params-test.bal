@@ -19,8 +19,7 @@ import ballerina/test;
 
 @test:BeforeGroups { value:["query", "query-simple-params"] }
 isolated function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 5, minIdleConnections: 3};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     sql:ExecutionResult result = check dropTableIfExists("GeneralQueryTable", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE GeneralQueryTable(
@@ -100,8 +99,7 @@ isolated function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
 }
 
 isolated function insertQuerySimpleData() returns sql:Error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 5, minIdleConnections: 3};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     sql:ExecutionResult result = check oracledbClient->execute(
         `INSERT INTO GeneralQueryTable (id, col_number, col_varchar2) VALUES(1, -23.4, 'Hello world')`);

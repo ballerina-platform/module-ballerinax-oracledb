@@ -19,8 +19,7 @@ import ballerina/test;
 @test:BeforeGroups { value:["custom-varray"] }
 isolated function beforeInsertVArrayFunc() returns sql:Error? {
     string OID = "19A57209ECB73F91E03400400B40BB25";
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTypeIfExists("CharArrayType", oracledbClient);
     result = check dropTypeIfExists("ByteArrayType", oracledbClient);
     result = check dropTypeIfExists("IntArrayType", oracledbClient);
@@ -389,8 +388,7 @@ type InvalidStringTypeArray record {
     dependsOn: [selectVarrayWithInvalidByteType]
 }
 isolated function selectVarrayWithInvalidStringType() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<InvalidStringTypeArray, sql:Error?> streamData = oracledbClient->query(
         "SELECT pk, COL_BYTEARR FROM TestVarrayTable WHERE pk = 1");
     record {}|error? returnData =  streamData.next();

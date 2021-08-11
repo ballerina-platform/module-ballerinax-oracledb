@@ -21,8 +21,7 @@ isolated function beforeInsertObjectFunc() returns sql:Error? {
     string OID = "19A57209ECB73F91E03400400B40BB23";
     string OID2 = "19A57209ECB73F91E03400400B40BB25";
 
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("TestObjectTypeTable", oracledbClient);
     result = check dropTableIfExists("TestNestedObjectTypeTable", oracledbClient);
     result = check dropTypeIfExists("OBJECT_TYPE", oracledbClient);
@@ -246,8 +245,7 @@ type ObjectRecordType record {
     dependsOn: [insertObjectTypeWithNestedType]
 }
 isolated function selectObjectType() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<ObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1" );
     record {|ObjectRecordType value;|}? data = check streamData.next();
@@ -276,8 +274,7 @@ isolated function selectObjectType() returns error? {
     dependsOn: [selectObjectType]
 }
 isolated function selectObjectTypeNull() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<ObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 15");
     record {|ObjectRecordType value;|}? data = check streamData.next();
@@ -303,8 +300,7 @@ type MismatchObjectRecordType record {
     dependsOn: [selectObjectTypeNull]
 }
 isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<MismatchObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1");
     record {}|error? returnData = streamData.next();
@@ -336,8 +332,7 @@ type BoolObjectRecordType record {
     dependsOn: [selectObjectTypeWithMisMatchingFieldCount]
 }
 isolated function selectObjectTypeWithBoolean() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<BoolObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 2");
     record {|BoolObjectRecordType value;|}? data = check streamData.next();
@@ -370,8 +365,7 @@ type NestedObjectRecordType record {
     dependsOn: [selectObjectTypeWithBoolean]
 }
 isolated function selectObjectTypeWithNestedType() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<NestedObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_nested_object FROM TestNestedObjectTypeTable WHERE pk = 1");
     record {|NestedObjectRecordType value;|}? data = check streamData.next();
@@ -414,8 +408,7 @@ type InvalidObjectRecordType record {
     dependsOn: [selectObjectTypeWithNestedType]
 }
 isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<InvalidObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1");
     record {}|error? returnData = streamData.next();

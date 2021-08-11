@@ -37,8 +37,7 @@ type StringDataSingle record {
 
 @test:BeforeGroups { value:["procedures"] }
 isolated function beforeProcCallFunc() returns sql:Error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("CallStringTypes", oracledbClient);
     result = check oracledbClient->execute(`CREATE TABLE CallStringTypes (
         id NUMBER,
@@ -85,8 +84,7 @@ isolated function beforeProcCallFunc() returns sql:Error? {
 }
 
 isolated function createProcedures() returns sql:Error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute(
             `CREATE OR REPLACE PROCEDURE InsertStringData(p_id IN NUMBER,
             p_col_char IN CHAR, p_col_nchar IN NCHAR,
@@ -147,8 +145,7 @@ isolated function createProcedures() returns sql:Error? {
     groups: ["procedures"]
 }
 isolated function testCallWithStringTypes() returns @tainted record {}|error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ProcedureCallResult ret = check oracledbClient->call(`{call InsertStringData(2,'test0', 'test1', 'test2',
         'test3', 'test4')}`);
     sql:ParameterizedQuery sqlQuery = `SELECT col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2 from CallStringTypes
@@ -170,8 +167,7 @@ isolated function testCallWithStringTypes() returns @tainted record {}|error? {
     dependsOn: [testCallWithStringTypes]
 }
 isolated function testCallWithStringTypesInParams() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     string col_char = "test0";
     string col_nchar = "test1";
     string col_varchar2 = "test2";
@@ -200,8 +196,7 @@ isolated function testCallWithStringTypesInParams() returns error? {
     dependsOn: [testCallWithStringTypesInParams]
 }
 isolated function testCallWithStringTypesOutParams() returns sql:Error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:CharOutParameter col_char = new();
     sql:NCharOutParameter col_nchar = new();
     sql:VarcharOutParameter col_varchar2 = new();
@@ -233,8 +228,7 @@ isolated function testCallWithStringTypesOutParams() returns sql:Error? {
     dependsOn: [testCallWithStringTypesOutParams]
 }
 isolated function testCallWithStringTypesInOutParams() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     int id = 4;
     sql:InOutParameter col_varchar2 = new("test7");
     sql:InOutParameter col_varchar = new("test8");
@@ -269,8 +263,7 @@ isolated function testCallWithStringTypesInOutParams() returns error? {
     groups: ["procedures"]
 }
 isolated function testCallWithNumericTypesOutParams() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:IntegerValue paraID = new(1);
     sql:NumericOutParameter paraNumber = new;
     sql:FloatOutParameter paraFloat = new;
@@ -297,8 +290,7 @@ type Xml xml;
     groups: ["procedures"]
 }
 isolated function testCallWithComplexTypesOutParams() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:IntegerValue paraID = new (1);
     XmlOutParameter paraXml = new ();
 
@@ -320,8 +312,7 @@ distinct class RandomOutParameter {
     groups: ["procedures"]
 }
 isolated function testCallWithRandomOutParams() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:IntegerValue paraID = new (1);
     RandomOutParameter paraRandom = new ();
 

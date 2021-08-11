@@ -40,8 +40,7 @@ public class SQLDefaultRetryManager {
 
 @test:BeforeGroups { value:["local-transaction"] }
 isolated function beforeTransactionFunc() returns sql:Error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check dropTableIfExists("LocalTranCustomers", oracledbClient);
     result = check executeQuery(`CREATE TABLE LocalTranCustomers(
         id NUMBER GENERATED ALWAYS AS IDENTITY,
@@ -60,8 +59,7 @@ isolated function beforeTransactionFunc() returns sql:Error? {
     groups: ["transaction", "local-transaction"]
 }
 isolated function testLocalTransaction() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     int retryVal = -1;
     boolean committedBlockExecuted = false;
     transactions:Info transInfo;
@@ -93,8 +91,7 @@ int retryValRWC = -1;
     dependsOn: [testLocalTransaction]
 }
 function testTransactionRollbackWithCheck() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     error? result = testTransactionRollbackWithCheckHelper(oracledbClient);
     int count = check getCount(oracledbClient, "210");
     check oracledbClient.close();
@@ -124,8 +121,7 @@ function testTransactionRollbackWithCheckHelper(Client oracledbClient) returns e
     dependsOn: [testTransactionRollbackWithCheck]
 }
 isolated function testTransactionRollbackWithRollback() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     int retryVal = -1;
     boolean stmtAfterFailureExecuted = false;
     transactions:Info transInfo;
@@ -161,8 +157,7 @@ isolated function testTransactionRollbackWithRollback() returns error? {
     dependsOn: [testTransactionRollbackWithRollback]
 }
 isolated function testLocalTransactionUpdateWithGeneratedKeys() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     int returnVal = 0;
     transactions:Info transInfo;
     retry<SQLDefaultRetryManager>(1) transaction {
@@ -188,8 +183,7 @@ int returnValRGK = 0;
     dependsOn: [testLocalTransactionUpdateWithGeneratedKeys]
 }
 function testLocalTransactionRollbackWithGeneratedKeys() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     error? result = testLocalTransactionRollbackWithGeneratedKeysHelper(oracledbClient);
     //check whether update action is performed
     int count = check getCount(oracledbClient, "615");
@@ -218,8 +212,7 @@ isolated int abortVal = 0;
     dependsOn: [testLocalTransactionRollbackWithGeneratedKeys]
 }
 isolated function testTransactionAbort() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     transactions:Info transInfo;
 
     var abortFunc = isolated function(transactions:Info? info, error? cause, boolean willTry) {
@@ -261,8 +254,7 @@ int testTransactionErrorPanicRetVal = 0;
     groups: ["transaction", "local-transaction"]
 }
 function testTransactionErrorPanic() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     int returnVal = 0;
     int catchValue = 0;
     var ret = trap testTransactionErrorPanicHelper(oracledbClient);
@@ -302,9 +294,7 @@ function testTransactionErrorPanicHelper(Client oracledbClient) returns error? {
     dependsOn: [testTransactionAbort]
 }
 isolated function testTransactionErrorPanicAndTrap() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
-
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     int catchValue = 0;
     transactions:Info transInfo;
     retry<SQLDefaultRetryManager>(1) transaction {
@@ -339,8 +329,7 @@ isolated function testTransactionErrorPanicAndTrapHelper(int i) {
     dependsOn: [testTransactionErrorPanicAndTrap]
 }
 isolated function testTwoTransactions() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     transactions:Info transInfo1;
     transactions:Info transInfo2;
@@ -377,8 +366,7 @@ isolated function testTwoTransactions() returns error? {
     dependsOn: [testTwoTransactions]
 }
 isolated function testTransactionWithoutHandlers() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     transaction {
         var e1 = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
         creditLimit,country) values ('James', 'Clerk', 350, 5000.75, 'USA')`);
@@ -399,8 +387,7 @@ isolated string rollbackOut = "";
     dependsOn: [testTransactionWithoutHandlers]
 }
 function testLocalTransactionFailed() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     string a = "beforetx";
 
@@ -458,8 +445,7 @@ isolated function getError() returns error? {
     dependsOn: [testTransactionWithoutHandlers]
 }
 isolated function testLocalTransactionSuccessWithFailed() returns error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     string a = "beforetx";
     string | error ret = trap testLocalTransactionSuccessWithFailedHelper(a, oracledbClient);

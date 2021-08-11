@@ -74,8 +74,7 @@ isolated function dropTypeIfExists(string typename, Client oracledbClient) retur
 
 isolated function queryClient(string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? resultType = ())
 returns record {}|error? {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<record {}, error?> streamData;
     if resultType is () {
         streamData = oracledbClient->query(sqlQuery);
@@ -90,8 +89,7 @@ returns record {}|error? {
 }
 
 isolated function executeQuery(string|sql:ParameterizedQuery sqlQuery) returns sql:ExecutionResult|sql:Error {
-    sql:ConnectionPool pool = {maxOpenConnections: 3, minIdleConnections: 1};
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute(sqlQuery);
     check oracledbClient.close();
     return result;
