@@ -17,9 +17,6 @@ import ballerina/sql;
 import ballerina/test;
 import ballerina/file;
 
-string clientStorePath = checkpanic file:getAbsolutePath("./tests/resources/keystore/client/client-keystore.p12");
-string turstStorePath = checkpanic file:getAbsolutePath("./tests/resources/keystore/client/client-truststore.p12");
-
 // with user and password only
 @test:Config {
     groups:["connection"]
@@ -101,6 +98,12 @@ function testWithConnectionPoolParam() returns error? {
     groups:["connection"]
 }
 function testWithOptionsWithErroneousSSL() returns error? {
+    string clientStorePath = checkpanic file:getAbsolutePath("./tests/resources/keystore/client/client-keystore.p12");
+    string clientStorePathPfx = checkpanic file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.pfx");
+    string clientStorePathJks = checkpanic file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.jks");
+    string clientStorePathSso = checkpanic file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.sso");
+    string turstStorePath = checkpanic file:getAbsolutePath("./tests/resources/keystore/client/client-truststore.p12");
+
      Options options = {
             ssl: {
                 key: {
@@ -113,6 +116,29 @@ function testWithOptionsWithErroneousSSL() returns error? {
                 }
             }
      };
+
+     Options options2 = {
+            ssl: {
+                key: {
+                    path: clientStorePathPfx,
+                    password: "password"
+                },
+                cert: {
+                    path: clientStorePathJks,
+                    password: "password"
+                }
+            }
+     };
+
+     Options options3 = {
+            ssl: {
+                key: {
+                    path: clientStorePathSso,
+                    password: "password"
+                }
+            }
+     };
+
     Client oracledbClient = check new(
         host = HOST,
         user = USER,
@@ -120,6 +146,26 @@ function testWithOptionsWithErroneousSSL() returns error? {
         port = PORT,
         database = DATABASE,
         options = options
+    );
+    test:assertEquals(oracledbClient.close(), (), "Client Error");
+
+    oracledbClient = check new(
+        host = HOST,
+        user = USER,
+        password = PASSWORD,
+        port = PORT,
+        database = DATABASE,
+        options = options2
+    );
+    test:assertEquals(oracledbClient.close(), (), "Client Error");
+
+    oracledbClient = check new(
+        host = HOST,
+        user = USER,
+        password = PASSWORD,
+        port = PORT,
+        database = DATABASE,
+        options = options3
     );
     test:assertEquals(oracledbClient.close(), (), "Client Error");
 }

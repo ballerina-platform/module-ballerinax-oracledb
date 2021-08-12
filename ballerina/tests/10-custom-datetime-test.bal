@@ -220,6 +220,8 @@ isolated function selectAllDateTimeDatatypesWithoutReturnType() returns error? {
 type DateTimeReturnTypes record {
     time:Civil col_date;
     time:Date col_date_only;
+    int col_date_only_as_int;
+    time:Utc col_date_only_as_utc;
     time:TimeOfDay col_time_only;
     time:Civil col_timestamp;
     time:Civil col_timestamptz;
@@ -233,11 +235,14 @@ type DateTimeReturnTypes record {
 }
 isolated function selectAllDateTimeDatatypesWithReturnType() returns error? {
     int id = 1;
-    sql:ParameterizedQuery sqlQuery = `SELECT COL_DATE, COL_DATE_ONLY, COL_TIME_ONLY, COL_TIMESTAMP, COL_TIMESTAMPTZ,
-     COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND FROM TestDateTimeTable WHERE pk = ${id}`;
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_DATE, COL_DATE_ONLY, COL_DATE_ONLY as COL_DATE_ONLY_AS_INT,
+        COL_DATE_ONLY as COL_DATE_ONLY_AS_UTC, COL_TIME_ONLY, COL_TIMESTAMP, COL_TIMESTAMPTZ,
+        COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND FROM TestDateTimeTable WHERE pk = ${id}`;
     record{}? data = check queryClient(sqlQuery, DateTimeReturnTypes);
     time:Civil dateTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
     time:Date dateOnlyTypeRecord = {year: 2020, month: 1, day: 5};
+    int col_date_only_as_int = 1578162600000;
+    time:Utc dateOnlyAsUtc = [1578162600, 0];
     time:TimeOfDay timeOnlyTypeRecord = {hour: 11, minute: 0, second:0};
     time:Civil timestampTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
     time:Civil timestampTzTypeRecord = {utcOffset: {hours: 5, minutes: 30}, timeAbbrev: "+05:30", year: 2020,
@@ -245,17 +250,13 @@ isolated function selectAllDateTimeDatatypesWithReturnType() returns error? {
     IntervalYearToMonth intervalYtoMTypeRecord = {years:15, months: 11};
     IntervalDayToSecond intervalDtoSTypeRecord = {days:200, hours: 5, minutes: 12, seconds: 45.089};
 
-    DateTimeReturnTypes expectedData = {
-        col_date: dateTypeRecord,
-        col_date_only: dateOnlyTypeRecord,
-        col_time_only: timeOnlyTypeRecord,
-        col_timestamp: timestampTypeRecord,
-        col_timestamptz: timestampTzTypeRecord,
-        col_interval_year_to_month: intervalYtoMTypeRecord,
-        col_interval_day_to_second: intervalDtoSTypeRecord
-    };
-
-    test:assertEquals(expectedData, data, "Expected and actual mismatch");
+    test:assertEquals(dateTypeRecord, data["col_date"], "col_date Expected and actual mismatch");
+    test:assertEquals(dateOnlyTypeRecord, data["col_date_only"], "col_date_only Expected and actual mismatch");
+    test:assertEquals(timeOnlyTypeRecord, data["col_time_only"], "col_time_only Expected and actual mismatch");
+    test:assertEquals(timestampTypeRecord, data["col_timestamp"], "col_timestamp Expected and actual mismatch");
+    test:assertEquals(timestampTzTypeRecord, data["col_timestamptz"], "col_timestamptz Expected and actual mismatch");
+    test:assertEquals(intervalYtoMTypeRecord, data["col_interval_year_to_month"], "col_interval_year_to_month Expected and actual mismatch");
+    test:assertEquals(intervalDtoSTypeRecord, data["col_interval_day_to_second"], "col_interval_day_to_second Expected and actual mismatch");
 }
 
 type DateTimeReturnTypes2 record {

@@ -27,6 +27,8 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
  */
 public final class Constants {
 
+    private Constants() {}
+
     /**
      * Constants for database client properties.
      */
@@ -293,6 +295,8 @@ public final class Constants {
          * Constants related to the ballerina array types to which oracle varrays are converted.
          */
         public static final class BallerinaArrayTypes {
+            private BallerinaArrayTypes() {}
+
             public static final String STRING = "string[]";
             public static final String INT = "int[]";
             public static final String FLOAT = "float[]";
