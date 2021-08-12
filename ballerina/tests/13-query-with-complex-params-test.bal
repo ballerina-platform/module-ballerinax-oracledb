@@ -32,6 +32,19 @@ isolated function beforeQueryWithComplexParamsFunc() returns sql:Error? {
             `INSERT INTO ComplexQueryTable (id, col_xml) VALUES(1, ${xmlValue})`);
     result = check oracledbClient->execute(
             `INSERT INTO ComplexQueryTable (id, col_xml) VALUES(2, ${()})`);
+
+    result = check dropTableIfExists("ComplexDataTable", oracledbClient);
+    result = check oracledbClient->execute(`CREATE TABLE ComplexDataTable (
+        row_id NUMBER,
+        int_type  NUMBER,
+        double_type BINARY_DOUBLE,
+        string_type VARCHAR2(50),
+        PRIMARY KEY (row_id)
+        )`
+    );
+    result = check oracledbClient->execute(
+            `INSERT INTO ComplexDataTable (row_id, int_type, double_type, string_type)
+             VALUES(1, 1, 2139095039.23, 'Hello')`);
     check oracledbClient.close();
 }
 
@@ -82,4 +95,38 @@ isolated function queryXmlWithReturnType() returns error? {
             col_xml: xml `<key>value</key>`
         };
     test:assertEquals(complexResult, value, "Expected data did not match.");
+}
+
+type SelectComplexData record {
+    decimal INT_TYPE;
+    float DOUBLE_TYPE;
+    string STRING_TYPE;
+};
+
+@test:Config {
+    groups: ["query", "query-complex-params"]
+}
+function testGetPrimitiveTypesRecord() returns error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    SelectComplexData value = check oracledbClient->queryRow(
+	`SELECT int_type, double_type, string_type from ComplexDataTable WHERE row_id = 1`);
+    SelectComplexData expectedData = {
+        INT_TYPE: 1,
+        DOUBLE_TYPE: 2.13909503923E9,
+        STRING_TYPE: "Hello"
+    };
+    test:assertTrue(value is SelectComplexData, "Received value type is different.");
+    test:assertEquals(value, expectedData, "Expected data did not match.");
+    sql:ParameterizedQuery sqlQuery = `SELECT COUNT(*) FROM ComplexDataTable`;
+    int count = check oracledbClient->queryRow(sqlQuery);
+    test:assertEquals(count, 1);
+    sqlQuery = `SELECT * FROM ComplexDataTable WHERE row_id = 1`;
+    int|error queryResult = oracledbClient->queryRow(sqlQuery);
+    if queryResult is error {
+        test:assertTrue(queryResult is sql:TypeMismatchError, "Incorrect error type");
+        test:assertEquals(queryResult.message(), "Expected type to be 'int' but found 'record{}'");
+    } else {
+        test:assertFail("Expected error when query result contains multiple columns.");
+    }
+    check oracledbClient.close();
 }
