@@ -16,7 +16,6 @@
  *  under the License.
  */
 
-
 package io.ballerina.stdlib.oracledb.tests.parameterprocessor;
 
 import io.ballerina.runtime.api.values.BObject;
@@ -53,7 +52,5 @@ public class OracleDBStatementParameterProcessorTest {
         } catch (ApplicationError | SQLException e) {
             assertEquals(e.getMessage(), "Invalid parameter: null is passed as value for SQL type: INTEGER");
         }
-
     }
-
 }

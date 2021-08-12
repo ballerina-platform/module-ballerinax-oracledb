@@ -35,7 +35,6 @@ import io.ballerina.runtime.internal.scheduling.Strand;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * TestUtils class for testing ballerina native classes/methods.
  */

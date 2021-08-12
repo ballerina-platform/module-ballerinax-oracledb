@@ -98,11 +98,11 @@ function testWithConnectionPoolParam() returns error? {
     groups:["connection"]
 }
 function testWithOptionsWithErroneousSSL() returns error? {
-    string clientStorePath = checkpanic file:getAbsolutePath("./tests/resources/keystore/client/client-keystore.p12");
-    string clientStorePathPfx = checkpanic file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.pfx");
-    string clientStorePathJks = checkpanic file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.jks");
-    string clientStorePathSso = checkpanic file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.sso");
-    string turstStorePath = checkpanic file:getAbsolutePath("./tests/resources/keystore/client/client-truststore.p12");
+    string clientStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-keystore.p12");
+    string clientStorePathPfx = check file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.pfx");
+    string clientStorePathJks = check file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.jks");
+    string clientStorePathSso = check file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.sso");
+    string trustStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-truststore.p12");
 
      Options options = {
             ssl: {
@@ -111,7 +111,7 @@ function testWithOptionsWithErroneousSSL() returns error? {
                     password: "password"
                 },
                 cert: {
-                    path: turstStorePath,
+                    path: trustStorePath,
                     password: "password"
                 }
             }
