@@ -35,6 +35,7 @@ import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcesso
 import io.ballerina.stdlib.sql.utils.ColumnDefinition;
 import io.ballerina.stdlib.sql.utils.ErrorGenerator;
 import io.ballerina.stdlib.sql.utils.Utils;
+import oracle.jdbc.OracleTypes;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -151,12 +152,12 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         int sqlType = columnDefinition.getSqlType();
         Type ballerinaType = columnDefinition.getBallerinaType();
         switch (sqlType) {
-            case Constants.Types.OracleDbSpecificSqlTypes.INTERVAL_DAY_TO_SECOND:
-            case Constants.Types.OracleDbSpecificSqlTypes.INTERVAL_YEAR_TO_MONTH:
+            case OracleTypes.INTERVALDS:
+            case OracleTypes.INTERVALYM:
                 return processIntervalResult(resultSet, columnIndex, sqlType, ballerinaType,
                         columnDefinition.getSqlName());
-            case Constants.Types.OracleDbSpecificSqlTypes.TIMESTAMP_WITH_TIME_ZONE:
-            case Constants.Types.OracleDbSpecificSqlTypes.TIMESTAMP_WITH_LOCAL_TIME_ZONE:
+            case OracleTypes.TIMESTAMPTZ:
+            case OracleTypes.TIMESTAMPLTZ:
                 return processTimestampWithTimezoneResult(resultSet, columnIndex, sqlType, ballerinaType);
             default:
                 throw new ApplicationError("Unsupported SQL type " + columnDefinition.getSqlName());
@@ -167,8 +168,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
     public Object processCustomOutParameters(
             CallableStatement statement, int paramIndex, int sqlType) throws ApplicationError {
         switch (sqlType) {
-            case Constants.Types.OracleDbSpecificSqlTypes.INTERVAL_DAY_TO_SECOND:
-            case Constants.Types.OracleDbSpecificSqlTypes.INTERVAL_YEAR_TO_MONTH:
+            case OracleTypes.INTERVALDS:
+            case OracleTypes.INTERVALYM:
                 return processInterval(statement, paramIndex);
             default:
                 throw new ApplicationError("Unsupported SQL type '" + sqlType + "' when reading Procedure call " +
@@ -245,7 +246,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                 case TypeTags.OBJECT_TYPE_TAG:
                 case TypeTags.RECORD_TYPE_TAG:
                     try {
-                        if (sqlType == Constants.Types.OracleDbSpecificSqlTypes.INTERVAL_DAY_TO_SECOND) {
+                        if (sqlType == OracleTypes.INTERVALDS) {
                             //format: DD HH:Min:SS.XXX
                             if (ballerinaType.getName().
                                     equalsIgnoreCase(io.ballerina.stdlib.time.util.Constants.TIME_OF_DAY_RECORD)) {

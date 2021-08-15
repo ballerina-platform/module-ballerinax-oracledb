@@ -182,21 +182,6 @@ public final class Constants {
         public static final String INTERVAL_DAY_TO_SECOND_RECORD = "IntervalDayToSecond";
 
         /**
-         * Constants related to Oracle Database specific sql type int values.
-         */
-
-        public static final class OracleDbSpecificSqlTypes {
-
-            private OracleDbSpecificSqlTypes() {}
-
-            public static final int TIMESTAMP_WITH_TIME_ZONE = -101;
-            public static final int TIMESTAMP_WITH_LOCAL_TIME_ZONE = -102;
-            public static final int INTERVAL_YEAR_TO_MONTH = -103;
-            public static final int INTERVAL_DAY_TO_SECOND = -104;
-        }
-
-
-        /**
          * Constants related to Oracle Database type names.
          */
         public static final class OracleDbTypes {
