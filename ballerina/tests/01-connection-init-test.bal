@@ -17,9 +17,6 @@ import ballerina/sql;
 import ballerina/test;
 import ballerina/file;
 
-string clientStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-keystore.p12");
-string trustStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-truststore.p12");
-
 int SSLPORT = 2484;
 
 // with user and password only
@@ -103,18 +100,47 @@ function testWithConnectionPoolParam() returns error? {
     groups:["connection"]
 }
 function testWithOptionsWithErroneousSSL() returns error? {
-     Options options = {
-            ssl: {
-                key: {
-                    path: clientStorePath,
-                    password: "password"
-                },
-                cert: {
-                    path: trustStorePath,
-                    password: "password"
-                }
+    string clientStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-keystore.p12");
+    string clientStorePathPfx = check file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.pfx");
+    string clientStorePathJks = check file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.jks");
+    string clientStorePathSso = check file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.sso");
+    string trustStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-truststore.p12");
+
+    Options options = {
+        ssl: {
+            key: {
+                path: clientStorePath,
+                password: "password"
+            },
+            cert: {
+                path: trustStorePath,
+                password: "password"
             }
-     };
+        }
+    };
+
+    Options options2 = {
+        ssl: {
+            key: {
+                path: clientStorePathPfx,
+                password: "password"
+            },
+            cert: {
+                path: clientStorePathJks,
+                password: "password"
+            }
+        }
+    };
+
+    Options options3 = {
+        ssl: {
+            key: {
+                path: clientStorePathSso,
+                password: "password"
+            }
+        }
+    };
+
     Client|error oracledbClient = new(
         host = HOST,
         user = USER,
@@ -123,9 +149,44 @@ function testWithOptionsWithErroneousSSL() returns error? {
         database = DATABASE,
         options = options
     );
+
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
         test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
+        "IO Error: closing inbound before receiving peer's close_notify"));
+    } else {
+        test:assertFail("Error ApplicatonError expected");
+    }
+
+    Client|error oracledbClient2 = new(
+        host = HOST,
+        user = USER,
+        password = PASSWORD,
+        port = PORT,
+        database = DATABASE,
+        options = options2
+    );
+
+    test:assertTrue(oracledbClient2 is error);
+    if oracledbClient2 is sql:ApplicationError {
+        test:assertTrue(oracledbClient2.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
+        "IO Error: closing inbound before receiving peer's close_notify"));
+    } else {
+        test:assertFail("Error ApplicatonError expected");
+    }
+
+    Client|error oracledbClient3 = new(
+        host = HOST,
+        user = USER,
+        password = PASSWORD,
+        port = PORT,
+        database = DATABASE,
+        options = options2
+    );
+
+    test:assertTrue(oracledbClient3 is error);
+    if oracledbClient3 is sql:ApplicationError {
+        test:assertTrue(oracledbClient3.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
         "IO Error: closing inbound before receiving peer's close_notify"));
     } else {
         test:assertFail("Error ApplicatonError expected");
@@ -137,6 +198,8 @@ function testWithOptionsWithErroneousSSL() returns error? {
     groups:["connection"]
 }
 function testWithOptionsWithErroneousSSLCorrectPort() returns error? {
+     string clientStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-keystore.p12");
+     string trustStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-truststore.p12");
      Options options = {
             ssl: {
                 key: {
