@@ -207,6 +207,30 @@ isolated function queryBinaryDoubleParam() returns error? {
     validateNumericSimpleQueryTableResult(check queryClient(sqlQuery));
 }
 
+distinct class InvalidType {
+    *sql:TypedValue;
+    public string? value;
+
+    public isolated function init(string? value = ()) {
+        self.value = value;
+    }
+}
+
+@test:Config {
+    groups: ["query", "query-simple-params"]
+}
+isolated function queryInvalidValueParam() returns error? {
+    InvalidType invalid_type = new ("Invalid");
+    sql:ParameterizedQuery sqlQuery = `SELECT * from CharSimpleQueryTable WHERE col_varchar = ${invalid_type}`;
+    record {}|error? result = queryClient(sqlQuery);
+    test:assertTrue(result is error);
+    if (result is sql:ApplicationError) {
+        test:assertEquals(result.message(), "Invalid parameter: string is passed as value for SQL type: InvalidType");
+    } else {
+        test:assertFail("Error ApplicationError is expected.");
+    }
+}
+
 isolated function validateNumericSimpleQueryTableResult(record{}? returnData) {
     if (returnData is ()) {
         test:assertFail("Empty row returned.");
