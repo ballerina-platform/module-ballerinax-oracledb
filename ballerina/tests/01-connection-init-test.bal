@@ -136,7 +136,7 @@ function testWithOptionsWithErroneousSSL() returns error? {
 @test:Config {
     groups:["connection"]
 }
-function testWithOptionsWithErroneousSSLCorrctPort() returns error? {
+function testWithOptionsWithErroneousSSLCorrectPort() returns error? {
      Options options = {
             ssl: {
                 key: {
@@ -170,7 +170,7 @@ function testWithOptionsWithErroneousSSLCorrctPort() returns error? {
 @test:Config {
     groups:["connection"]
 }
-function testWithOptionsWithErroneousSSLCorrctPortWrongPW() returns error? {
+function testWithOptionsWithErroneousSSLWrongPW() returns error? {
     string trustStorePathValid = check file:getAbsolutePath("./tests/resources/wallets/client-wallet/ballerina-server.p12");
          Options options = {
                 ssl: {
@@ -226,7 +226,7 @@ function testWithOptionsWithSSLWithoutKey() returns error? {
 @test:Config {
     groups:["connection"]
 }
-function testWithOptionsWithSSLWitKey() returns error? {
+function testWithOptionsWithSSLWithKey() returns error? {
     string clientStorePathValid = check file:getAbsolutePath("./tests/resources/wallets/client-wallet/ballerina-client.p12");
     string trustStorePathValid = check file:getAbsolutePath("./tests/resources/wallets/client-wallet/ballerina-server.p12");
      Options options = {
