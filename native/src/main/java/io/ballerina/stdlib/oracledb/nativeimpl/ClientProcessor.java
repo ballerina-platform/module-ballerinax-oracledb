@@ -50,7 +50,6 @@ public class ClientProcessor {
         int port = clientConfig.getIntValue(Constants.ClientConfiguration.PORT).intValue();
         BString databaseVal = clientConfig.getStringValue(Constants.ClientConfiguration.DATABASE);
         String database = databaseVal == null ? null : databaseVal.getValue();
-        String url = Constants.DRIVER + host + ":" + Integer.toString(port) + "/" + database;
         BString userVal = clientConfig.getStringValue(Constants.ClientConfiguration.USER);
         String user = userVal == null ? null : userVal.getValue();
         BString passwordVal = clientConfig.getStringValue(Constants.ClientConfiguration.PASSWORD);
@@ -58,15 +57,27 @@ public class ClientProcessor {
         BMap options = clientConfig.getMapValue(Constants.ClientConfiguration.OPTIONS);
         BMap<BString, Object> datasourceOptions = null;
         Properties poolProperties = null;
+        String protocol = Constants.PROTOCOL_TCP;
 
         if (options != null) {
             datasourceOptions = Utils.generateOptionsMap(options);
             poolProperties = Utils.generatePoolProperties(options);
+            if (options.getMapValue(Constants.Options.SSL) != null) {
+                protocol = Constants.PROTOCOL_TCPS;
+            }
         }
+        StringBuilder url = new StringBuilder(Constants.DRIVER);
+        url.append("(DESCRIPTION=(ADDRESS=");
+        url.append("(PROTOCOL=").append(protocol).append(")");
+        url.append("(PORT=").append(port).append(")");
+        url.append("(HOST=").append(host).append(")");
+        url.append(")");
+        url.append("(CONNECT_DATA=(SERVICE_NAME=").append(database).append("))");
+        url.append(")");
         BMap connectionPool = clientConfig.getMapValue(Constants.ClientConfiguration.CONNECTION_POOL_OPTIONS);
         String dataSourceName = Constants.ORACLE_DATASOURCE_NAME;
         SQLDatasource.SQLDatasourceParams sqlDatasourceParams = new SQLDatasource.SQLDatasourceParams()
-                .setUrl(url)
+                .setUrl(url.toString())
                 .setUser(user)
                 .setPassword(password)
                 .setDatasourceName(dataSourceName)

@@ -177,7 +177,7 @@ def waitForContainerHealth(containerName) {
 def initializeDatabase(containerName) {
     if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
         println("Waiting for ${containerName} database to open.")
-        sleep(3*60*1000)
+        sleep(120000)
         try {
             def temp = exec {
                 commandLine 'sh', '-c',
@@ -191,10 +191,10 @@ def initializeDatabase(containerName) {
     }
 }
 
-def startDockerContainer(containerName, port) {
+def startDockerContainer(containerName, port, sslPort) {
     if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
         exec {
-            commandLine 'sh', '-c', "docker run --rm -d --name ${containerName} -p ${port}:1521 -t ballerina-oracledb"
+            commandLine 'sh', '-c', "docker run --rm -d --name ${containerName} -p ${port}:1521 -p ${sslPort}:2484 -t ballerina-oracledb"
         }
         def healthCheck = waitForContainerHealth(containerName)
         if (healthCheck != 0) {
@@ -213,7 +213,7 @@ def startDockerContainer(containerName, port) {
 
 task startTestDockerContainers() {
     doLast {
-        startDockerContainer("ballerina-oracledb", 1521)
+        startDockerContainer("ballerina-oracledb", 1521, 2484)
     }
 }
 
