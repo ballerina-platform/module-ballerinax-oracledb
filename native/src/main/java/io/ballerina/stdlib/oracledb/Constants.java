@@ -307,7 +307,9 @@ public final class Constants {
         }
     }
 
-    public static final String DRIVER = "jdbc:oracle:thin:@//";
+    public static final String DRIVER = "jdbc:oracle:thin:@";
+    public static final String PROTOCOL_TCP = "TCP";
+    public static final String PROTOCOL_TCPS = "TCPS";
     public static final String ORACLE_DATASOURCE_NAME = "oracle.jdbc.pool.OracleDataSource";
     public static final String CUSTOM_RESULT_ITERATOR_OBJECT = "CustomResultIterator";
 }

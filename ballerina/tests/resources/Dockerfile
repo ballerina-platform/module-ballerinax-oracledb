@@ -17,5 +17,11 @@ ARG REPO_LOCATION=gayaldassanayake/oracle-enterprise
 ARG BASE_VERSION=12.2.0.1
 FROM ${REPO_LOCATION}:${BASE_VERSION}
 
+# copy wallet files and configDBora.sh file
+COPY wallets/server-wallet/ /home/usr/wallet/
+RUN rm -rf /home/oracle/setup/configDBora.sh
+COPY setup/configDBora.sh /home/oracle/setup
+
 # Setup database using sqlplus script
 COPY sql-scripts/schema/create-schema.sql /home/oracle
+EXPOSE 2484
