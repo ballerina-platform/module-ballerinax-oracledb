@@ -35,11 +35,8 @@ dependencies {
         transitive = false
     }
     implementation group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
-    implementation group: 'io.ballerina.stdlib', name: 'io-native', version: "${stdlibIoVersion}"
     implementation group: 'io.ballerina.stdlib', name: 'sql-native', version: "${stdlibSqlVersion}"
     implementation group: 'io.ballerina.stdlib', name: 'time-native', version: "${stdlibTimeVersion}"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 }
 
 tasks.withType(JavaCompile) {
@@ -56,30 +53,13 @@ test {
     testLogging {
         showStackTraces = true
         showStandardStreams = true
-        events "PASSED", "FAILED", "SKIPPED"
+        events "failed"
         exceptionFormat "full"
-        afterSuite { desc, result ->
-            if (!desc.parent) { // will match the outermost suite
-                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
-                def startItem = '|  ', endItem = '  |'
-                def repeatLength = startItem.length() + output.length() + endItem.length()
-                println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
-            }
-        }
     }
     jacoco {
         enabled = true
-        excludes = ['jdk.internal.*']
+        destinationFile = file("$buildDir/coverage-reports/jacoco.exec")
         includeNoLocationClasses = true
-        useJUnitPlatform()
-    }
-    finalizedBy jacocoTestReport
-}
-
-jacocoTestReport {
-    dependsOn test
-    reports {
-        xml.enabled true
     }
 }
 
@@ -125,7 +105,6 @@ tasks.withType(Checkstyle) {
 
 spotbugsMain.finalizedBy validateSpotbugs
 checkstyleMain.dependsOn ':checkstyle:downloadCheckstyleRuleFiles'
-checkstyleTest.dependsOn ':checkstyle:downloadCheckstyleRuleFiles'
 
 compileJava {
     doFirst {
