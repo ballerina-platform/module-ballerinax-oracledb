@@ -32,13 +32,20 @@ import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.oracledb.utils.ModuleUtils;
 import io.ballerina.stdlib.sql.exception.ApplicationError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor;
+import io.ballerina.stdlib.sql.utils.ColumnDefinition;
+import io.ballerina.stdlib.sql.utils.ErrorGenerator;
 import io.ballerina.stdlib.sql.utils.Utils;
+import oracle.jdbc.OracleTypes;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Struct;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
@@ -136,6 +143,166 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                     + " record. ", e);
         }
         return struct;
+    }
+
+    @Override
+    public Object processCustomTypeFromResultSet(ResultSet resultSet, int columnIndex,
+                                                 ColumnDefinition columnDefinition)
+            throws ApplicationError, SQLException {
+        int sqlType = columnDefinition.getSqlType();
+        Type ballerinaType = columnDefinition.getBallerinaType();
+        switch (sqlType) {
+            case OracleTypes.INTERVALDS:
+            case OracleTypes.INTERVALYM:
+                return processIntervalResult(resultSet, columnIndex, sqlType, ballerinaType,
+                        columnDefinition.getSqlName());
+            case OracleTypes.TIMESTAMPTZ:
+            case OracleTypes.TIMESTAMPLTZ:
+                return processTimestampWithTimezoneResult(resultSet, columnIndex, sqlType, ballerinaType);
+            default:
+                throw new ApplicationError("Unsupported SQL type " + columnDefinition.getSqlName());
+        }
+    }
+
+    @Override
+    public Object processCustomOutParameters(
+            CallableStatement statement, int paramIndex, int sqlType) throws ApplicationError {
+        switch (sqlType) {
+            case OracleTypes.INTERVALDS:
+            case OracleTypes.INTERVALYM:
+                return processInterval(statement, paramIndex);
+            default:
+                throw new ApplicationError("Unsupported SQL type '" + sqlType + "' when reading Procedure call " +
+                        "Out parameter of index '" + paramIndex + "'.");
+        }
+    }
+
+    @Override
+    public Object convertCustomOutParameter(Object value, String outParamObjectName, int sqlType, Type ballerinaType) {
+        try {
+            switch (outParamObjectName) {
+                case Constants.Types.OutParameterTypes.INTERVAL_DAY_TO_SECOND:
+                    return convertInterval((String) value, sqlType, ballerinaType, "INTERVALDS");
+                case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH:
+                    return convertInterval((String) value, sqlType, ballerinaType, "INTERVALYM");
+                default:
+                    return ErrorGenerator.getSQLApplicationError("Unsupported SQL type " + sqlType);
+            }
+
+        } catch (ApplicationError e) {
+            return ErrorGenerator.getSQLApplicationError(e.getMessage());
+        }
+    }
+
+    @Override
+    public Object convertTimeStamp(java.util.Date timestamp, int sqlType, Type type) throws ApplicationError {
+        Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Date/Time");
+        if (timestamp != null) {
+            switch (type.getTag()) {
+                case TypeTags.STRING_TAG:
+                    return fromString(timestamp.toString());
+                case TypeTags.OBJECT_TYPE_TAG:
+                case TypeTags.RECORD_TYPE_TAG:
+                    if (type.getName().equalsIgnoreCase(io.ballerina.stdlib.time.util.Constants.CIVIL_RECORD)
+                            && timestamp instanceof Timestamp) {
+                        return Utils.createTimestampRecord((Timestamp) timestamp);
+                    } else if (type.getName().equalsIgnoreCase(io.ballerina.stdlib.time.util.Constants.DATE_RECORD)
+                            && timestamp instanceof Timestamp) {
+                        return Utils.createDateRecord(new java.sql.Date(timestamp.getTime()));
+                    } else {
+                        throw new ApplicationError("Unsupported Ballerina type:" +
+                                type.getName() + " for SQL Timestamp data type.");
+                    }
+                case TypeTags.INT_TAG:
+                    return timestamp.getTime();
+                case TypeTags.INTERSECTION_TAG:
+                    return Utils.createTimeStruct(timestamp.getTime());
+            }
+        }
+        return null;
+    }
+
+    private Object processInterval(CallableStatement statement, int paramIndex) throws ApplicationError {
+        try {
+            return statement.getString(paramIndex);
+        } catch (SQLException e) {
+            throw new ApplicationError("Error when reading Procedure call " +
+                    "Out parameter of index '" + paramIndex + "'.");
+        }
+    }
+
+    private Object processIntervalResult(ResultSet resultSet, int columnIndex, int sqlType, Type ballerinaType,
+                                         String sqlTypeName) throws ApplicationError, SQLException {
+        String intervalString = resultSet.getString(columnIndex);
+        return convertInterval(intervalString, sqlType, ballerinaType, sqlTypeName);
+    }
+
+    private Object convertInterval(String interval, int sqlType, Type ballerinaType, String sqlTypeName)
+            throws ApplicationError {
+        if (interval != null) {
+            switch (ballerinaType.getTag()) {
+                case TypeTags.STRING_TAG:
+                    return fromString(interval);
+                case TypeTags.OBJECT_TYPE_TAG:
+                case TypeTags.RECORD_TYPE_TAG:
+                    try {
+                        if (sqlType == OracleTypes.INTERVALDS) {
+                            //format: DD HH:Min:SS.XXX
+                            if (ballerinaType.getName().
+                                    equalsIgnoreCase(io.ballerina.stdlib.time.util.Constants.TIME_OF_DAY_RECORD)) {
+                                Time time = Time.valueOf(interval.split("\\s+")[1].split("\\.")[0]);
+                                return Utils.createTimeRecord(time);
+                            } else if (ballerinaType.getName().
+                                    equalsIgnoreCase(Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD)) {
+                                String[] splitOnSpaces = interval.split("\\s+");
+                                String days = splitOnSpaces[0];
+                                String[] splitOnDots = splitOnSpaces[1].split("\\.");
+                                String secondFractions = splitOnDots[1];
+                                String[] splitOnColons = splitOnDots[0].split(":");
+                                BMap<BString, Object> intervalMap = ValueCreator
+                                        .createRecordValue(ModuleUtils.getModule(),
+                                                Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD);
+                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.DAYS),
+                                        Integer.parseInt(days));
+                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.HOURS),
+                                        Integer.parseInt(splitOnColons[0]));
+                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.MINUTES),
+                                        Integer.parseInt(splitOnColons[1]));
+                                BigDecimal second = new BigDecimal(splitOnColons[2]);
+                                second = second.add((new BigDecimal(Integer.parseInt(secondFractions)))
+                                        .divide(io.ballerina.stdlib.time.util.Constants.ANALOG_KILO,
+                                                MathContext.DECIMAL128));
+                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.SECONDS),
+                                        ValueCreator.createDecimalValue(second));
+                                return intervalMap;
+                            }
+                        } else {
+                            //format: YY-MM
+                            if (ballerinaType.getName().
+                                    equalsIgnoreCase(Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD)) {
+                                String[] splitOnDash = interval.split("-");
+                                BMap<BString, Object> intervalMap = ValueCreator
+                                        .createRecordValue(ModuleUtils.getModule(),
+                                                Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD);
+                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.YEARS),
+                                        Integer.parseInt(splitOnDash[0]));
+                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.MONTHS),
+                                        Integer.parseInt(splitOnDash[1]));
+                                return intervalMap;
+                            }
+                        }
+                        throw new ApplicationError("Unsupported Ballerina type:" +
+                                ballerinaType.getName() + " for " + sqlTypeName + " data type.");
+                    } catch (IndexOutOfBoundsException e) {
+                        throw new ApplicationError("Incompatible format found in : " + interval);
+                    }
+                default:
+                    throw new ApplicationError(sqlTypeName + " field cannot be converted to ballerina type : " +
+                            ballerinaType.getName());
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override

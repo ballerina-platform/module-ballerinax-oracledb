@@ -27,6 +27,8 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
  */
 public final class Constants {
 
+    private Constants() {}
+
     /**
      * Constants for database client properties.
      */
@@ -176,6 +178,9 @@ public final class Constants {
 
         }
 
+        public static final String INTERVAL_YEAR_TO_MONTH_RECORD = "IntervalYearToMonth";
+        public static final String INTERVAL_DAY_TO_SECOND_RECORD = "IntervalDayToSecond";
+
         /**
          * Constants related to Oracle Database type names.
          */
@@ -212,6 +217,8 @@ public final class Constants {
         public static final class OutParameterTypes {
             private OutParameterTypes() {}
             public static final String XML = "XmlOutParameter";
+            public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthOutParameter";
+            public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondOutParameter";
         }
 
         /**
@@ -273,6 +280,8 @@ public final class Constants {
          * Constants related to the ballerina array types to which oracle varrays are converted.
          */
         public static final class BallerinaArrayTypes {
+            private BallerinaArrayTypes() {}
+
             public static final String STRING = "string[]";
             public static final String INT = "int[]";
             public static final String FLOAT = "float[]";

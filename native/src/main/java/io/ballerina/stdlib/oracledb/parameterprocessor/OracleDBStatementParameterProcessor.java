@@ -26,6 +26,7 @@ import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
 import io.ballerina.stdlib.oracledb.utils.Utils;
 import io.ballerina.stdlib.sql.exception.ApplicationError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultStatementParameterProcessor;
+import oracle.jdbc.OracleTypes;
 
 import java.sql.Array;
 import java.sql.Connection;
@@ -82,6 +83,12 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         switch (sqlType) {
             case Constants.Types.OutParameterTypes.XML:
                 sqlTypeValue = Types.SQLXML;
+                break;
+            case Constants.Types.OutParameterTypes.INTERVAL_DAY_TO_SECOND:
+                sqlTypeValue = OracleTypes.INTERVALDS;
+                break;
+            case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH:
+                sqlTypeValue = OracleTypes.INTERVALYM;
                 break;
             default:
                 throw new ApplicationError("Unsupported OutParameter type: " + sqlType);

@@ -127,6 +127,32 @@ public distinct class XmlOutParameter {
     } external;
 }
 
+# Represents IntervalYearToMonth OutParameter used in procedure calls
+public distinct class IntervalYearToMonthOutParameter {
+    *sql:OutParameter;
+
+    # Parses returned SQL value to ballerina value.
+    #
+    # + typeDesc - Type description of the data that need to be converted
+    # + return - The converted ballerina value or Error
+    public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
+    } external;
+}
+
+# Represents IntervalDayToSecond OutParameter used in procedure calls
+public distinct class IntervalDayToSecondOutParameter {
+    *sql:OutParameter;
+
+    # Parses returned SQL value to ballerina value.
+    #
+    # + typeDesc - Type description of the data that need to be converted
+    # + return - The converted ballerina value or Error
+    public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
+    } external;
+}
+
 # The class with custom implementations for nextResult and getNextQueryResult in the connector modules.
 #
 public class CustomResultIterator {
