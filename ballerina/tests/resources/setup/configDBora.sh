@@ -164,8 +164,10 @@ else
     exit;
 EOF
 fi
+mkdir -m a=rwx /u01/app/oracle/product/12.2.0/dbhome_1/jdk/
+mv /home/oracle/jdk/* /u01/app/oracle/product/12.2.0/dbhome_1/jdk/
 
-mkdir mkdir -m a=rwx /home/oracle/wallet
+mkdir -m a=rwx /home/oracle/wallet
 cp -a /home/usr/wallet/. /home/oracle/wallet/
 
 orapki wallet create -wallet /home/oracle/wallet/ -auto_login -pwd password@123
