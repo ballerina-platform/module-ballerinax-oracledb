@@ -13,8 +13,8 @@
 # limitations under the License.
 
 # Dockerfile using dockerhub repository image
-ARG REPO_LOCATION=gayaldassanayake/oracle-enterprise
-ARG BASE_VERSION=12.2.0.1
+ARG REPO_LOCATION=lahirusamith/oracle-enterprise
+ARG BASE_VERSION=12.2.0.1-slim
 FROM ${REPO_LOCATION}:${BASE_VERSION}
 
 # copy wallet files and configDBora.sh file
