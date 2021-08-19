@@ -57,7 +57,7 @@ isolated function testWithAllParamsExceptOptions() returns error? {
     groups:["connection"]
 
 }
-function testWithOptionsExceptSSL() returns error? {
+isolated function testWithOptionsExceptSSL() returns error? {
     Options options = {
         loginTimeout: 1,
         autoCommit: true,
@@ -78,7 +78,7 @@ function testWithOptionsExceptSSL() returns error? {
 @test:Config {
    groups:["connection"]
 }
-function testWithConnectionPoolParam() returns error? {
+isolated function testWithConnectionPoolParam() returns error? {
     sql:ConnectionPool connectionPool = {
        maxOpenConnections: 10,
        maxConnectionLifeTime: 2000.0,
@@ -99,7 +99,7 @@ function testWithConnectionPoolParam() returns error? {
 @test:Config {
     groups:["connection"]
 }
-function testWithOptionsWithErroneousSSL() returns error? {
+isolated function testWithOptionsWithErroneousSSL() returns error? {
     string clientStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-keystore.p12");
     string clientStorePathPfx = check file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.pfx");
     string clientStorePathJks = check file:getAbsolutePath("./tests/resources/keystore/client/client-invalid.jks");

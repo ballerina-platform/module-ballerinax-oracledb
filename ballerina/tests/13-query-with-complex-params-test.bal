@@ -19,33 +19,7 @@ import ballerina/test;
 
 @test:BeforeGroups { value:["query-complex-params"] }
 isolated function beforeQueryWithComplexParamsFunc() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTableIfExists("ComplexQueryTable", oracledbClient);
-    result = check oracledbClient->execute(`CREATE TABLE ComplexQueryTable(
-        id NUMBER,
-        col_xml XMLType,
-        PRIMARY KEY (id)
-        )`
-    );
-    xml xmlValue = xml `<key>value</key>`;
-    result = check oracledbClient->execute(
-            `INSERT INTO ComplexQueryTable (id, col_xml) VALUES(1, ${xmlValue})`);
-    result = check oracledbClient->execute(
-            `INSERT INTO ComplexQueryTable (id, col_xml) VALUES(2, ${()})`);
 
-    result = check dropTableIfExists("ComplexDataTable", oracledbClient);
-    result = check oracledbClient->execute(`CREATE TABLE ComplexDataTable (
-        row_id NUMBER,
-        int_type  NUMBER,
-        double_type BINARY_DOUBLE,
-        string_type VARCHAR2(50),
-        PRIMARY KEY (row_id)
-        )`
-    );
-    result = check oracledbClient->execute(
-            `INSERT INTO ComplexDataTable (row_id, int_type, double_type, string_type)
-             VALUES(1, 1, 2139095039.23, 'Hello')`);
-    check oracledbClient.close();
 }
 
 @test:Config {
@@ -106,7 +80,7 @@ type SelectComplexData record {
 @test:Config {
     groups: ["query", "query-complex-params"]
 }
-function testGetPrimitiveTypesRecord() returns error? {
+isolated function testGetPrimitiveTypesRecord() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     SelectComplexData value = check oracledbClient->queryRow(
 	`SELECT int_type, double_type, string_type from ComplexDataTable WHERE row_id = 1`);

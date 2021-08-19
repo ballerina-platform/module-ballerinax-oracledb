@@ -177,11 +177,11 @@ def waitForContainerHealth(containerName) {
 def initializeDatabase(containerName) {
     if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
         println("Waiting for ${containerName} database to open.")
-        sleep(120000)
+        sleep(60000)
         try {
             def temp = exec {
                 commandLine 'sh', '-c',
-                        "docker exec ${containerName} /bin/bash -c 'cd home/oracle && source .bashrc; sqlplus /nolog <<< @create-schema.sql'"
+                        "docker exec ${containerName} /bin/bash -c 'cd /home/oracle && source .bashrc; sh ./sql-scripts/run-sql-scripts.sh'"
             }.exitValue
             return temp
         } catch (all) {

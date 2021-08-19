@@ -31,29 +31,7 @@ Options options = {
 
 @test:BeforeGroups { value:["pool"] }
 isolated function beforePoolTestFunc() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
-    sql:ExecutionResult result = check dropTableIfExists("PoolCustomers", oracledbClient);
-    result = check oracledbClient->execute(`CREATE TABLE PoolCustomers (
-        customerId NUMBER GENERATED ALWAYS AS IDENTITY,
-        firstName  VARCHAR2(300),
-        lastName  VARCHAR2(300),
-        registrationID NUMBER,
-        creditLimit FLOAT,
-        country  VARCHAR2(300),
-        PRIMARY KEY (customerId))`
-    );
-    test:assertExactEquals(result.affectedRowCount, 0, "Affected row count is different.");
-    test:assertExactEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
-    result = check oracledbClient->execute(
-        `INSERT INTO PoolCustomers (firstName,lastName,registrationID,creditLimit,country)
-        VALUES ('Peter', 'Stuart', 1, 5000.75, 'USA')`);
-
-    result = check oracledbClient->execute(
-        `INSERT INTO PoolCustomers (firstName,lastName,registrationID,creditLimit,country)
-        VALUES ('Dan', 'Brown', 2, 10000, 'UK')`);
-
-    check oracledbClient.close();
 }
 
 @test:Config {
