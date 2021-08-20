@@ -38,11 +38,6 @@ public class SQLDefaultRetryManager {
     }
 }
 
-@test:BeforeGroups { value:["local-transaction"] }
-isolated function beforeTransactionFunc() returns sql:Error? {
-
-}
-
 @test:Config {
     groups: ["transaction", "local-transaction"]
 }

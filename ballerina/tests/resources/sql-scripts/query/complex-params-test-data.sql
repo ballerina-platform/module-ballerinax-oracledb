@@ -4,12 +4,6 @@ CREATE TABLE ComplexQueryTable (
         PRIMARY KEY (id)
 );
 
-INSERT INTO ComplexQueryTable (id, col_xml)
-    VALUES (1, XMLType('<key>value</key>'));
-
-INSERT INTO ComplexQueryTable (id, col_xml)
-    VALUES (2, null);
-
 CREATE TABLE ComplexDataTable (
         row_id      NUMBER,
         int_type    NUMBER,

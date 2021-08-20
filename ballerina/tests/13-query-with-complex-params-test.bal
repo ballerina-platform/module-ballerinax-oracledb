@@ -17,13 +17,22 @@
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["query-complex-params"] }
-isolated function beforeQueryWithComplexParamsFunc() returns sql:Error? {
-
+@test:Config {
+    groups: ["query", "query-complex-params"]
+}
+isolated function insertXmlDataToTable() returns error? {
+    xml xmlValue = xml `<key>value</key>`;
+    sql:ExecutionResult result = check executeQuery(
+            `INSERT INTO ComplexQueryTable (id, col_xml) VALUES(1, ${xmlValue})`);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    result = check executeQuery(
+            `INSERT INTO ComplexQueryTable (id, col_xml) VALUES(2, ${()})`);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
 }
 
 @test:Config {
-    groups: ["query", "query-complex-params"]
+    groups: ["query", "query-complex-params"],
+    dependsOn: [insertXmlDataToTable]
 }
 isolated function queryXmlWithoutReturnType() returns error? {
     int id = 1;
@@ -38,7 +47,8 @@ isolated function queryXmlWithoutReturnType() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-complex-params"]
+    groups: ["query", "query-complex-params"],
+    dependsOn: [insertXmlDataToTable]
 }
 isolated function queryNullXmlWithoutReturnType() returns error? {
     int id = 2;
@@ -58,7 +68,8 @@ type XmlTypeRecord record {
 };
 
 @test:Config {
-    groups: ["query", "query-complex-params"]
+    groups: ["query", "query-complex-params"],
+    dependsOn: [insertXmlDataToTable]
 }
 isolated function queryXmlWithReturnType() returns error? {
     int id = 1;

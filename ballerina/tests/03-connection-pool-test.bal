@@ -29,11 +29,6 @@ Options options = {
     socketTimeout: 30
 };
 
-@test:BeforeGroups { value:["pool"] }
-isolated function beforePoolTestFunc() returns sql:Error? {
-
-}
-
 @test:Config {
   groups: ["pool"]
 }

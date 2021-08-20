@@ -17,11 +17,6 @@
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["batch-execute"] }
-isolated function beforeBatchExecFunc() returns sql:Error? {
-
-}
-
 @test:Config {
     groups: ["batch-execute"]
 }

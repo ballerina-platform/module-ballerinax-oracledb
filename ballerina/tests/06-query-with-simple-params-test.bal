@@ -17,11 +17,6 @@
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["query", "query-simple-params"] }
-isolated function beforeQueryWithSimpleParamsFunc() returns sql:Error? {
-
-}
-
 @test:Config {
     groups: ["query", "query-simple-params"]
 }

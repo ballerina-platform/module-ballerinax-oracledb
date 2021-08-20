@@ -18,11 +18,6 @@ import ballerina/io;
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["execute", "execute-params"] }
-isolated function beforeExecuteWithParamsFunc() returns sql:Error? {
-
-}
-
 @test:Config {
     groups: ["execute", "execute-params"]
 }

@@ -8,7 +8,7 @@ CREATE TABLE CallStringTypes (
         PRIMARY KEY (id)
 );
 
-INSERT INTO CallStringTypes(id, col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2)
+INSERT INTO CallStringTypes (id, col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2)
         VALUES (1, 'test0', 'test1', 'test2', 'test3', 'test4');
 
 CREATE TABLE CallNumericTypes (
@@ -20,10 +20,10 @@ CREATE TABLE CallNumericTypes (
         PRIMARY KEY (id)
 );
 
-INSERT INTO CallNumericTypes(id, col_number, col_float, col_binary_float, col_binary_double)
+INSERT INTO CallNumericTypes (id, col_number, col_float, col_binary_float, col_binary_double)
         VALUES (1, 2147483647, 21474.83647, 21.47483647, 21474836.47);
 
-CREATE TABLE CallComplexTypes(
+CREATE TABLE CallComplexTypes (
         id      NUMBER,
         col_xml XMLType,
         PRIMARY KEY (id)
@@ -63,6 +63,7 @@ BEGIN
         INSERT INTO callstringtypes (id, col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2)
             VALUES (p_id, p_col_char, p_col_nchar, p_col_varchar2, p_col_varchar, p_col_nvarchar2);
 END;
+/
 
 CREATE OR REPLACE PROCEDURE SelectStringData (
         p_col_char      OUT CHAR,
@@ -76,6 +77,7 @@ BEGIN
         INTO p_col_char, p_col_nchar, p_col_varchar2, p_col_varchar, p_col_nvarchar2
         FROM CallStringTypes where id = 1;
 END;
+/
 
 CREATE OR REPLACE PROCEDURE InOutStringData (
         p_id            IN OUT NUMBER,
@@ -89,6 +91,7 @@ BEGIN
         SELECT col_varchar2, col_varchar, col_nvarchar2 INTO p_col_varchar2, p_col_varchar, p_col_nvarchar2
             FROM CallStringTypes where id = 1;
 END;
+/
 
 CREATE OR REPLACE PROCEDURE SelectNumericDataWithOutParams (
         p_id                IN NUMBER,
@@ -102,6 +105,7 @@ BEGIN
         p_col_number, p_col_float, p_col_binary_float, p_col_binary_double
         FROM CallNumericTypes where id = p_id;
 END;
+/
 
 CREATE OR REPLACE PROCEDURE SelectComplexDataWithOutParams (
         p_id        IN NUMBER,
@@ -110,6 +114,7 @@ AS
 BEGIN
         SELECT col_xml INTO p_col_xml FROM CallComplexTypes where id = p_id;
 END;
+/
 
 CREATE OR REPLACE PROCEDURE SelectDateTimesWithOutParams(
         p_id                            IN NUMBER,
@@ -128,3 +133,4 @@ BEGIN
         SELECT col_interval_year_to_month INTO p_col_interval_year_to_month FROM CallDateTimeTypes where id = p_id;
         SELECT col_interval_day_to_second INTO p_col_interval_day_to_second FROM CallDateTimeTypes where id = p_id;
 END;
+/

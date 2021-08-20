@@ -16,45 +16,6 @@
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["custom-varray"] }
-isolated function beforeInsertVArrayFunc() returns sql:Error? {
-    string OID = "19A57209ECB73F91E03400400B40BB25";
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTypeIfExists("CharArrayType", oracledbClient);
-    result = check dropTypeIfExists("ByteArrayType", oracledbClient);
-    result = check dropTypeIfExists("IntArrayType", oracledbClient);
-    result = check dropTypeIfExists("BoolArrayType", oracledbClient);
-    result = check dropTypeIfExists("FloatArrayType", oracledbClient);
-    result = check dropTypeIfExists("DecimalArrayType", oracledbClient);
-
-    result = check oracledbClient->execute(
-       `CREATE OR REPLACE TYPE CharArrayType AS VARRAY(6) OF VARCHAR(100);`);
-    result = check oracledbClient->execute(
-       `CREATE OR REPLACE TYPE ByteArrayType AS VARRAY(6) OF RAW(100);`);
-    result = check oracledbClient->execute(
-       `CREATE OR REPLACE TYPE IntArrayType AS VARRAY(6) OF NUMBER;`);
-    result = check oracledbClient->execute(
-       `CREATE OR REPLACE TYPE BoolArrayType AS VARRAY(6) OF NUMBER;`);
-    result = check oracledbClient->execute(
-       `CREATE OR REPLACE TYPE FloatArrayType AS VARRAY(6) OF FLOAT;`);
-    result = check oracledbClient->execute(
-       `CREATE OR REPLACE TYPE DecimalArrayType AS VARRAY(6) OF NUMBER;`);
-
-    result = check dropTableIfExists("TestVarrayTable", oracledbClient);
-    result = check oracledbClient->execute(`CREATE TABLE TestVarrayTable(
-       PK NUMBER GENERATED ALWAYS AS IDENTITY,
-       COL_CHARARR CharArrayType,
-       COL_BYTEARR ByteArrayType,
-       COL_INTARR IntArrayType,
-       COL_BOOLARR BoolArrayType,
-       COL_FLOATARR FloatArrayType,
-       COL_DECIMALARR DecimalArrayType,
-       PRIMARY KEY(PK)
-       )`
-    );
-    check oracledbClient.close();
- }
-
 // insert to varray
 @test:Config {
    groups:["custom-varray"]
