@@ -369,7 +369,7 @@ isolated string rollbackOut = "";
     groups: ["transaction", "local-transaction"],
     dependsOn: [testTransactionWithoutHandlers]
 }
-function testLocalTransactionFailed() returns error? {
+isolated function testLocalTransactionFailed() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     string a = "beforetx";

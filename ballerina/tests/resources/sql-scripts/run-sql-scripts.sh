@@ -1,7 +1,7 @@
 cd /home/oracle/sql-scripts
 sleep 10s
 sqlplus /nolog <<< @schema/create-schema.sql
-sleep 5s
+sleep 10s
 sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @connection/connection-pool-test-data.sql
 sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @custom-types/custom-type-test-data.sql
 sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @execute/batch-execute-test-data.sql

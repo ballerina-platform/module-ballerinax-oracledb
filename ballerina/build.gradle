@@ -138,7 +138,7 @@ task createTestDockerImage(type: Exec) {
                 " -q $project.projectDir/tests/resources/"
         doLast {
             checkExecResult(execResult, 'Error', standardOutput)
-            sleep(10 * 1000)
+            sleep(5 * 1000)
         }
     }
 }
@@ -177,7 +177,7 @@ def waitForContainerHealth(containerName) {
 def initializeDatabase(containerName) {
     if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
         println("Waiting for ${containerName} database to open.")
-        sleep(60000)
+        sleep(70000)
         try {
             def temp = exec {
                 commandLine 'sh', '-c',

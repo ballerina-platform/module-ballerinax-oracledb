@@ -100,7 +100,6 @@ isolated function testGetPrimitiveTypesRecord() returns error? {
         DOUBLE_TYPE: 2.13909503923E9,
         STRING_TYPE: "Hello"
     };
-    test:assertTrue(value is SelectComplexData, "Received value type is different.");
     test:assertEquals(value, expectedData, "Expected data did not match.");
     sql:ParameterizedQuery sqlQuery = `SELECT COUNT(*) FROM ComplexDataTable`;
     int count = check oracledbClient->queryRow(sqlQuery);
