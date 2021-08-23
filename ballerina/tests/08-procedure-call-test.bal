@@ -55,6 +55,7 @@ isolated function testCallWithStringTypes() returns @tainted record {}|error? {
     };
     test:assertEquals(check callQueryClient(oracledbClient, sqlQuery), expectedDataRow,
         "Call procedure insert and query did not match.");
+    check ret.close();
     check oracledbClient.close();
 }
 
@@ -70,7 +71,7 @@ isolated function testCallWithStringTypesInParams() returns error? {
     string col_varchar = "test3";
     string col_nvarchar2 = "test4";
 
-    var ret = check oracledbClient->call(`{call InsertStringData(3, ${col_char}, ${col_nchar},
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{call InsertStringData(3, ${col_char}, ${col_nchar},
         ${col_varchar2}, ${col_varchar}, ${col_nvarchar2})}`);
 
     sql:ParameterizedQuery sqlQuery = `SELECT col_char, col_nchar, col_varchar2, col_varchar, col_nvarchar2
@@ -85,6 +86,7 @@ isolated function testCallWithStringTypesInParams() returns error? {
     };
     test:assertEquals(check callQueryClient(oracledbClient, sqlQuery), expectedDataRow,
         "Call procedure insert and query did not match.");
+    check ret.close();
     check oracledbClient.close();
 }
 
@@ -117,6 +119,7 @@ isolated function testCallWithStringTypesOutParams() returns sql:Error? {
     test:assertEquals((check col_varchar.get(string)).trim(), expectedDataRow.COL_VARCHAR);
     test:assertEquals((check col_nvarchar2.get(string)).trim(), expectedDataRow.COL_NVARCHAR2);
 
+    check ret.close();
     check oracledbClient.close();
 }
 
@@ -152,7 +155,7 @@ isolated function testCallWithStringTypesInOutParams() returns error? {
     };
     test:assertEquals(check callQueryClient(oracledbClient, sqlQuery), expectedDataRow,
         "Call procedure insert and query did not match.");
-
+    check ret.close();
     check oracledbClient.close();
 }
 
@@ -167,7 +170,7 @@ isolated function testCallWithNumericTypesOutParams() returns error? {
     sql:FloatOutParameter paraBinFloat = new;
     sql:DoubleOutParameter paraBinDouble = new;
 
-    var ret = check oracledbClient->call(
+    sql:ProcedureCallResult ret = check oracledbClient->call(
         `{call SelectNumericDataWithOutParams(${paraID}, ${paraNumber}, ${paraFloat}, ${paraBinFloat},
         ${paraBinDouble})}`);
 
@@ -178,6 +181,7 @@ isolated function testCallWithNumericTypesOutParams() returns error? {
     test:assertEquals(paraBinDouble.get(float), 21474836.47, "4th out parameter of procedure did not match.");
     boolean|sql:Error status = ret.getNextQueryResult();
     test:assertTrue(status is boolean, "state is not a boolean");
+    check ret.close();
     check oracledbClient.close();
 }
 
@@ -191,11 +195,12 @@ isolated function testCallWithComplexTypesOutParams() returns error? {
     sql:IntegerValue paraID = new (1);
     XmlOutParameter paraXml = new ();
 
-    var ret = check oracledbClient->call(
+    sql:ProcedureCallResult ret = check oracledbClient->call(
         `{call SelectComplexDataWithOutParams(${paraID}, ${paraXml})}`);
-    check oracledbClient.close();
     xml 'xml = xml `<key>value</key>`;
     test:assertEquals(check paraXml.get(Xml), 'xml , "1st out parameter of procedure did not match.");
+    check ret.close();
+    check oracledbClient.close();
 }
 
 distinct class RandomOutParameter {
@@ -232,10 +237,9 @@ isolated function testCallWithDateTimesOutParams() returns error? {
     IntervalYearToMonthOutParameter paraIntervalMY = new;
     IntervalDayToSecondOutParameter paraIntervalDS = new;
 
-    var ret = check oracledbClient->call(
+    sql:ProcedureCallResult ret = check oracledbClient->call(
         `{call SelectDateTimesWithOutParams(${paraID}, ${paraDate}, ${paraDateOnly}, ${paraTimestamp},
         ${paraTimestampTz}, ${paraIntervalMY}, ${paraIntervalDS})}`);
-    check oracledbClient.close();
 
     time:Civil dateTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
     time:Date dateOnlyTypeRecord = {year: 2020, month: 1, day: 5};
@@ -257,6 +261,8 @@ isolated function testCallWithDateTimesOutParams() returns error? {
                         "paraIntervalMY out parameter of procedure did not match.");
     test:assertEquals(check paraIntervalDS.get(IntervalDayToSecond), intervalDS,
                         "paraIntervalDS out parameter of procedure did not match.");
+    check ret.close();
+    check oracledbClient.close();
 }
 
 isolated function callQueryClient(Client oracledbClient, @untainted string|sql:ParameterizedQuery sqlQuery)
