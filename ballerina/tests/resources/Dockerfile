@@ -23,5 +23,5 @@ RUN rm -rf /home/oracle/setup/configDBora.sh
 COPY setup/configDBora.sh /home/oracle/setup
 
 # Setup database using sqlplus script
-COPY sql-scripts/schema/create-schema.sql /home/oracle
+COPY sql-scripts/ /home/oracle/sql-scripts/
 EXPOSE 2484

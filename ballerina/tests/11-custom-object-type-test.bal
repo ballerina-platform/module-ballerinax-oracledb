@@ -16,47 +16,6 @@
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["custom-object"] }
-isolated function beforeInsertObjectFunc() returns sql:Error? {
-    string OID = "19A57209ECB73F91E03400400B40BB23";
-    string OID2 = "19A57209ECB73F91E03400400B40BB25";
-
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTableIfExists("TestObjectTypeTable", oracledbClient);
-    result = check dropTableIfExists("TestNestedObjectTypeTable", oracledbClient);
-    result = check dropTypeIfExists("OBJECT_TYPE", oracledbClient);
-    result = check dropTypeIfExists("NESTED_TYPE", oracledbClient);
-    result = check oracledbClient->execute(
-        "CREATE OR REPLACE TYPE OBJECT_TYPE OID '" + OID + "' AS OBJECT(" +
-         "STRING_ATTR VARCHAR(20), " +
-         "INT_ATTR NUMBER, " +
-         "FLOAT_ATTR FLOAT, " +
-         "DECIMAL_ATTR FLOAT " +
-        ") "
-    );
-    result = check oracledbClient->execute(`CREATE TABLE TestObjectTypeTable(
-        PK NUMBER GENERATED ALWAYS AS IDENTITY,
-        COL_OBJECT OBJECT_TYPE,
-        PRIMARY KEY(PK)
-        )`
-    );
-
-    result = check oracledbClient->execute(
-        "CREATE OR REPLACE TYPE NESTED_TYPE OID '" + OID2 + "' AS OBJECT(" +
-         "STRING_ATTR VARCHAR2(20), " +
-         "OBJECT_ATTR OBJECT_TYPE, " +
-         "MAP MEMBER FUNCTION GET_ATTR1 RETURN NUMBER " +
-        ") "
-    );
-    result = check oracledbClient->execute(`CREATE TABLE TestNestedObjectTypeTable(
-        PK NUMBER GENERATED ALWAYS AS IDENTITY,
-        COL_NESTED_OBJECT NESTED_TYPE,
-        PRIMARY KEY(PK)
-        )`
-    );
-
-    check oracledbClient.close();
-}
 
 @test:Config {
     groups:["custom-object"]

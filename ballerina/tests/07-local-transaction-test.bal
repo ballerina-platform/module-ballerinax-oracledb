@@ -38,23 +38,6 @@ public class SQLDefaultRetryManager {
     }
 }
 
-@test:BeforeGroups { value:["local-transaction"] }
-isolated function beforeTransactionFunc() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTableIfExists("LocalTranCustomers", oracledbClient);
-    result = check executeQuery(`CREATE TABLE LocalTranCustomers(
-        id NUMBER GENERATED ALWAYS AS IDENTITY,
-        firstName VARCHAR2(100),
-        lastName VARCHAR2(100),
-        registrationID NUMBER,
-        creditLimit VARCHAR2(100),
-        country VARCHAR2(100),
-        PRIMARY KEY (id)
-        )`
-    );
-    check oracledbClient.close();
-}
-
 @test:Config {
     groups: ["transaction", "local-transaction"]
 }
@@ -386,7 +369,7 @@ isolated string rollbackOut = "";
     groups: ["transaction", "local-transaction"],
     dependsOn: [testTransactionWithoutHandlers]
 }
-function testLocalTransactionFailed() returns error? {
+isolated function testLocalTransactionFailed() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     string a = "beforetx";
@@ -404,7 +387,7 @@ function testLocalTransactionFailed() returns error? {
     test:assertEquals(count, 0);
 }
 
-function testLocalTransactionFailedHelper(Client oracledbClient) returns string|error {
+isolated function testLocalTransactionFailedHelper(Client oracledbClient) returns string|error {
     transactions:Info transInfo;
     int i = 0;
 

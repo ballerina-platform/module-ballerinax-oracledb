@@ -17,39 +17,22 @@
 import ballerina/sql;
 import ballerina/test;
 
-@test:BeforeGroups { value:["query-complex-params"] }
-isolated function beforeQueryWithComplexParamsFunc() returns sql:Error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:ExecutionResult result = check dropTableIfExists("ComplexQueryTable", oracledbClient);
-    result = check oracledbClient->execute(`CREATE TABLE ComplexQueryTable(
-        id NUMBER,
-        col_xml XMLType,
-        PRIMARY KEY (id)
-        )`
-    );
+@test:Config {
+    groups: ["query", "query-complex-params"]
+}
+isolated function insertXmlDataToTable() returns error? {
     xml xmlValue = xml `<key>value</key>`;
-    result = check oracledbClient->execute(
+    sql:ExecutionResult result = check executeQuery(
             `INSERT INTO ComplexQueryTable (id, col_xml) VALUES(1, ${xmlValue})`);
-    result = check oracledbClient->execute(
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    result = check executeQuery(
             `INSERT INTO ComplexQueryTable (id, col_xml) VALUES(2, ${()})`);
-
-    result = check dropTableIfExists("ComplexDataTable", oracledbClient);
-    result = check oracledbClient->execute(`CREATE TABLE ComplexDataTable (
-        row_id NUMBER,
-        int_type  NUMBER,
-        double_type BINARY_DOUBLE,
-        string_type VARCHAR2(50),
-        PRIMARY KEY (row_id)
-        )`
-    );
-    result = check oracledbClient->execute(
-            `INSERT INTO ComplexDataTable (row_id, int_type, double_type, string_type)
-             VALUES(1, 1, 2139095039.23, 'Hello')`);
-    check oracledbClient.close();
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
 }
 
 @test:Config {
-    groups: ["query", "query-complex-params"]
+    groups: ["query", "query-complex-params"],
+    dependsOn: [insertXmlDataToTable]
 }
 isolated function queryXmlWithoutReturnType() returns error? {
     int id = 1;
@@ -64,7 +47,8 @@ isolated function queryXmlWithoutReturnType() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-complex-params"]
+    groups: ["query", "query-complex-params"],
+    dependsOn: [insertXmlDataToTable]
 }
 isolated function queryNullXmlWithoutReturnType() returns error? {
     int id = 2;
@@ -84,7 +68,8 @@ type XmlTypeRecord record {
 };
 
 @test:Config {
-    groups: ["query", "query-complex-params"]
+    groups: ["query", "query-complex-params"],
+    dependsOn: [insertXmlDataToTable]
 }
 isolated function queryXmlWithReturnType() returns error? {
     int id = 1;
@@ -106,7 +91,7 @@ type SelectComplexData record {
 @test:Config {
     groups: ["query", "query-complex-params"]
 }
-function testGetPrimitiveTypesRecord() returns error? {
+isolated function testGetPrimitiveTypesRecord() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     SelectComplexData value = check oracledbClient->queryRow(
 	`SELECT int_type, double_type, string_type from ComplexDataTable WHERE row_id = 1`);
@@ -115,7 +100,6 @@ function testGetPrimitiveTypesRecord() returns error? {
         DOUBLE_TYPE: 2.13909503923E9,
         STRING_TYPE: "Hello"
     };
-    test:assertTrue(value is SelectComplexData, "Received value type is different.");
     test:assertEquals(value, expectedData, "Expected data did not match.");
     sql:ParameterizedQuery sqlQuery = `SELECT COUNT(*) FROM ComplexDataTable`;
     int count = check oracledbClient->queryRow(sqlQuery);
