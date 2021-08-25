@@ -84,7 +84,7 @@ public class ClientProcessor {
                 .setOptions(datasourceOptions)
                 .setConnectionPool(connectionPool, globalConnPool)
                 .setPoolProperties(poolProperties);
-        return io.ballerina.stdlib.sql.nativeimpl.ClientProcessor.createClient(client, sqlDatasourceParams);
+        return io.ballerina.stdlib.sql.nativeimpl.ClientProcessor.createClient(client, sqlDatasourceParams, true, true);
     }
 
     public static Object close(BObject client) {
