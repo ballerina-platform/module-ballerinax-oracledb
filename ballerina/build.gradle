@@ -40,9 +40,7 @@ def packageName = 'oracledb'
 def packageOrg = 'ballerinax'
 def tomlVersion = stripBallerinaExtensionVersion("${project.version}")
 def ballerinaConfigFile = new File("$project.projectDir/Ballerina.toml")
-def ballerinaDependencyFile = new File("$project.projectDir/Dependencies.toml")
 def originalConfig = ballerinaConfigFile.text
-def originalDependencies = ballerinaDependencyFile.text
 
 def stripBallerinaExtensionVersion(String extVersion) {
     if (extVersion.matches(project.ext.timestampedVersionRegex)) {
@@ -75,7 +73,6 @@ dependencies {
 task updateTomlFiles {
     doLast {
         def stdlibDependentSqlVersion = stripBallerinaExtensionVersion(project.stdlibSqlVersion)
-        def stdlibCryptoVersion = stripBallerinaExtensionVersion(project.stdlibCryptoVersion)
 
         def newConfig = ballerinaConfigFile.text.replace('@project.version@', project.version.toString())
         newConfig = newConfig.replace('@toml.version@', tomlVersion)
@@ -86,17 +83,12 @@ task updateTomlFiles {
         newConfig = newConfig.replace('@oracle.xmlparserv2.version@', project.oracleXMLParserVersion)
 
         ballerinaConfigFile.text = newConfig
-
-        def newDependencyConfig = ballerinaDependencyFile.text.replace('@stdlib.sql.version@', stdlibDependentSqlVersion)
-        newDependencyConfig = newDependencyConfig.replace('@stdlib.crypto.version@', stdlibCryptoVersion)
-        ballerinaDependencyFile.text = newDependencyConfig
     }
 }
 
 task revertTomlFiles {
     doLast {
         ballerinaConfigFile.text = originalConfig
-        ballerinaDependencyFile.text = originalDependencies
     }
 }
 

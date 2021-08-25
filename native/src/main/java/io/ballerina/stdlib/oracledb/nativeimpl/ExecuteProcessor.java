@@ -18,6 +18,7 @@
 
 package io.ballerina.stdlib.oracledb.nativeimpl;
 
+import io.ballerina.runtime.api.Environment;
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBStatementParameterProcessor;
@@ -38,10 +39,10 @@ public class ExecuteProcessor {
      * @param paramSQLString array of SQL string for the execute statement
      * @return execution result or error
      */
-    public static Object nativeExecute(BObject client, Object paramSQLString) {
+    public static Object nativeExecute(Environment env, BObject client, Object paramSQLString) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();
-        return io.ballerina.stdlib.sql.nativeimpl.ExecuteProcessor.nativeExecute(client, paramSQLString,
+        return io.ballerina.stdlib.sql.nativeimpl.ExecuteProcessor.nativeExecute(env, client, paramSQLString,
                 statementParametersProcessor);
     }
 
@@ -51,10 +52,10 @@ public class ExecuteProcessor {
      * @param paramSQLStrings array of SQL string for the execute statement
      * @return execution result or error
      */
-    public static Object nativeBatchExecute(BObject client, BArray paramSQLStrings) {
+    public static Object nativeBatchExecute(Environment env, BObject client, BArray paramSQLStrings) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();
-        return io.ballerina.stdlib.sql.nativeimpl.ExecuteProcessor.nativeBatchExecute(client, paramSQLStrings,
+        return io.ballerina.stdlib.sql.nativeimpl.ExecuteProcessor.nativeBatchExecute(env, client, paramSQLStrings,
                 statementParametersProcessor);
     }
 }
