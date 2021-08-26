@@ -120,10 +120,11 @@ public class ConverterUtils {
         leftover = leftover % (3600);
         minutes = leftover / 60;
         leftover = leftover % 60;
-        seconds = leftover + effectivePeriod.subtract(new BigDecimal(onlyLongPeriod)).doubleValue();
         if (effectivePeriod.doubleValue() >= 0.0d) {
+            seconds = leftover + effectivePeriod.subtract(new BigDecimal(onlyLongPeriod)).doubleValue();
             return days + " " + hours + ":" + minutes + ":" + seconds;
         } else {
+            seconds = leftover + effectivePeriod.negate().subtract(new BigDecimal(onlyLongPeriod)).doubleValue();
             return "-" + days + " " + hours + ":" + minutes + ":" + seconds;
         }
     }

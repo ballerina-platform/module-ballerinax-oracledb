@@ -249,3 +249,144 @@ isolated function selectAllIntervalDSWithoutReturnType() returns error? {
     };
     test:assertEquals(expectedData, data, "Expected and actual mismatch");
 }
+
+@test:Config {
+   groups:["datetime"]
+}
+isolated function insertNegativeIntervalsWithDifferentBalTypes() returns sql:Error? {
+    IntervalYearToMonth intY3M = {years: -120, months: 11};
+    IntervalYearToMonthValue colY3M = new (intY3M);
+    IntervalYearToMonth intY3 = {years: -145};
+    IntervalYearToMonthValue colY3 = new (intY3);
+    IntervalYearToMonth intM3 = {months: -311};
+    IntervalYearToMonthValue colM3 = new (intM3);
+
+    IntervalDayToSecond intDS3 = {days:-11, hours:10, minutes:-9, seconds:8.555};
+    IntervalDayToSecondValue colDS3 = new (intDS3);
+    IntervalDayToSecond intDM = {days:11, hours:-10, minutes:9};
+    IntervalDayToSecondValue colDM = new (intDM);
+    IntervalDayToSecond intD3H = {days:200, hours:-110};
+    IntervalDayToSecondValue colD3H = new (intD3H);
+    IntervalDayToSecond intD3 = {days:-167};
+    IntervalDayToSecondValue colD3 = new (intD3);
+    IntervalDayToSecond intHS7 = {hours:-10, minutes:-9, seconds:8.555666};
+    IntervalDayToSecondValue colHS7 = new (intHS7);
+    IntervalDayToSecond intHM = {hours:10, minutes:-9};
+    IntervalDayToSecondValue colHM = new (intHM);
+    IntervalDayToSecond intH = {hours:-12};
+    IntervalDayToSecondValue colH = new (intH);
+    IntervalDayToSecond intMS = {minutes:-9, seconds:30};
+    IntervalDayToSecondValue colMS = new (intMS);
+    IntervalDayToSecond intM = {minutes:-9};
+    IntervalDayToSecondValue colM = new (intM);
+    IntervalDayToSecond intH3 = {hours:-810};
+    IntervalDayToSecondValue colH3 = new (intH3);
+    IntervalDayToSecond intS = {seconds:-15.679};
+    IntervalDayToSecondValue colS = new (intS);
+
+    sql:ParameterizedQuery insertQuery = `INSERT INTO TestIntervalTable(ID, COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3,
+        COL_DAY_TO_SECOND3, COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
+        COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3)
+        VALUES (2, ${colY3M}, ${colY3}, ${colM3}, ${colDS3}, ${colDM}, ${colD3H}, ${colD3}, ${colHS7}, ${colHM},
+         ${colH}, ${colMS}, ${colM}, ${colH3}, ${colS})`;
+    sql:ExecutionResult result = check executeQuery(insertQuery);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    var insertId = result.lastInsertId;
+    test:assertTrue(insertId is string, "Last Insert id should be string");
+}
+
+@test:Config {
+    groups: ["datetime"],
+    dependsOn: [insertNegativeIntervalsWithDifferentBalTypes]
+
+}
+isolated function selectAllNegativeIntervalsWithoutReturnType() returns error? {
+    int id = 2;
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3, COL_DAY_TO_SECOND3,
+                COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
+                COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3 FROM TestIntervalTable
+                WHERE ID = ${id}`;
+    record{}? data = check queryClient(sqlQuery);
+
+    var expectedData = {
+        COL_YEAR3_TO_MONTH: "-119-1",
+        COL_YEAR3: "-145-0",
+        COL_MONTH3: "-25-11",
+        COL_DAY_TO_SECOND3: "-10 14:8:51.445",
+        COL_DAY_TO_MINUTE: "10 14:9:0.0",
+        COL_DAY_TO_HOUR: "195 10:0:0.0",
+        COL_DAY3: "-167 0:0:0.0",
+        COL_HOUR_TO_SECOND7: "-0 10:8:51.444334",
+        COL_HOUR_TO_MINUTE: "0 9:51:0.0",
+        COL_HOUR: "-0 12:0:0.0",
+        COL_MINUTE_TO_SECOND: "-0 0:8:30.0",
+        COL_MINUTE: "-0 0:9:0.0",
+        COL_HOUR3: "-33 18:0:0.0",
+        COL_SECOND2_3: "-0 0:0:15.679"
+    };
+    test:assertEquals(expectedData, data, "Expected and actual mismatch");
+}
+
+type IntervalReturnTypes record {
+    IntervalYearToMonth COL_YEAR3_TO_MONTH;
+    IntervalYearToMonth COL_YEAR3;
+    IntervalYearToMonth COL_MONTH3;
+    IntervalDayToSecond COL_DAY_TO_SECOND3;
+    IntervalDayToSecond COL_DAY_TO_MINUTE;
+    IntervalDayToSecond COL_DAY_TO_HOUR;
+    IntervalDayToSecond COL_DAY3;
+    IntervalDayToSecond COL_HOUR_TO_SECOND7;
+    IntervalDayToSecond COL_HOUR_TO_MINUTE;
+    IntervalDayToSecond COL_HOUR;
+    IntervalDayToSecond COL_MINUTE_TO_SECOND;
+    IntervalDayToSecond COL_MINUTE;
+    IntervalDayToSecond COL_HOUR3;
+    IntervalDayToSecond COL_SECOND2_3;
+};
+
+@test:Config {
+    groups: ["datetime"],
+    dependsOn: [insertNegativeIntervalsWithDifferentBalTypes]
+}
+isolated function selectAllNegativeIntervalsWithReturnType() returns error? {
+    int id = 2;
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3, COL_DAY_TO_SECOND3,
+        COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
+        COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3 FROM TestIntervalTable
+        WHERE ID = ${id}`;
+    record{}? data = check queryClient(sqlQuery, IntervalReturnTypes);
+
+    IntervalYearToMonth intY3M = {years: -119, months: -1};
+    IntervalYearToMonth intY3 = {years: -145, months: 0};
+    IntervalYearToMonth intM3 = {years: -25, months: -11};
+
+    IntervalDayToSecond intDS3 = {days: -10, hours: -14, minutes: -8, seconds: -51.445};
+    IntervalDayToSecond intDM = {days: 10, hours: 14, minutes: 9, seconds: 0.0};
+    IntervalDayToSecond intD3H = {days:195, hours:10, minutes: 0, seconds: 0.0};
+    IntervalDayToSecond intD3 = {days: -167, hours:0, minutes: 0, seconds: 0.0};
+    IntervalDayToSecond intHS7 = {days: 0, hours: -10, minutes: -8, seconds: -51.444334};
+    IntervalDayToSecond intHM = {days:0, hours: 9, minutes: 51, seconds: 0.0};
+    IntervalDayToSecond intH = {days:0, hours: -12, minutes: 0, seconds: 0.0};
+    IntervalDayToSecond intMS = {days:0, hours: 0, minutes: -8, seconds: -30.0};
+    IntervalDayToSecond intM = {days: 0, hours: 0, minutes:-9, seconds: 0.0};
+    IntervalDayToSecond intH3 = {days:-33, hours: -18, minutes: 0, seconds: 0.0};
+    IntervalDayToSecond intS = {days:0, hours: 0, minutes: 0, seconds: -15.679};
+
+    IntervalReturnTypes expectedData = {
+        COL_YEAR3_TO_MONTH: intY3M,
+        COL_YEAR3: intY3,
+        COL_MONTH3: intM3,
+        COL_DAY_TO_SECOND3: intDS3,
+        COL_DAY_TO_MINUTE: intDM,
+        COL_DAY_TO_HOUR: intD3H,
+        COL_DAY3: intD3,
+        COL_HOUR_TO_SECOND7: intHS7,
+        COL_HOUR_TO_MINUTE: intHM,
+        COL_HOUR: intH,
+        COL_MINUTE_TO_SECOND: intMS,
+        COL_MINUTE: intM,
+        COL_HOUR3: intH3,
+        COL_SECOND2_3: intS
+    };
+    test:assertEquals(expectedData, data, "Expected data and actual are mismatched");
+}
