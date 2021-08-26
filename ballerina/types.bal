@@ -23,10 +23,9 @@ import ballerina/sql;
 # + years - Number of years
 # + months - Number of months
 public type IntervalYearToMonth record {|
-    int years;
-    int months;
+    int years?;
+    int months?;
 |};
-
 
 # Stores a period of time in days, hours, minutes, and seconds.
 #
@@ -35,12 +34,11 @@ public type IntervalYearToMonth record {|
 # + minutes - Number of minutes
 # + seconds - Number of seconds
 public type IntervalDayToSecond record {|
-    int days;
-    int hours;
-    int minutes;
-    decimal seconds;
+    int days?;
+    int hours?;
+    int minutes?;
+    decimal seconds?;
 |};
-
 
 # An abstraction of the real-world entities, such as purchase orders, that application programs deal with.
 #
@@ -51,7 +49,6 @@ public type ObjectType record {|
     anydata[]? attributes;
 |};
 
-
 # An ordered set of data elements with a variable size. All elements of a given array are of the same data
 # type.
 #
@@ -61,7 +58,6 @@ public type Varray record {|
     string name;
     byte[]|int[]|boolean[]|float[]|decimal[]|string[]? elements;
 |};
-
 
 # Represents INTERVAL YEAR TO MONTH Oracle DB field.
 #
@@ -75,7 +71,6 @@ public distinct class IntervalYearToMonthValue {
     }
 }
 
-
 # Represents INTERVAL DAY TO SECOND Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
@@ -88,7 +83,6 @@ public distinct class IntervalDayToSecondValue {
     }
 }
 
-
 # Represents OBJECT TYPE Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
@@ -100,7 +94,6 @@ public distinct class ObjectTypeValue {
         self.value = value;
     }
 }
-
 
 # Represents VARRAY Oracle DB field.
 #

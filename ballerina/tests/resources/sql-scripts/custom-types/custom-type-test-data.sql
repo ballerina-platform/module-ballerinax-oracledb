@@ -5,7 +5,6 @@ CREATE TABLE TestDateTimeTable (
        PK                           NUMBER GENERATED ALWAYS AS IDENTITY,
        COL_DATE                     DATE,
        COL_DATE_ONLY                DATE,
-       COL_TIME_ONLY                INTERVAL DAY(0) TO SECOND,
        COL_TIMESTAMP                TIMESTAMP (9),
        COL_TIMESTAMPTZ              TIMESTAMP (9) WITH TIME ZONE,
        COL_TIMESTAMPTZL             TIMESTAMP (9) WITH LOCAL TIME ZONE,

@@ -62,11 +62,24 @@ public class ConverterUtils {
     public static String convertIntervalYearToMonth(Object value)
             throws ApplicationError {
         Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.INTERVAL_YEAR_TO_MONTH);
-        Object yearObject = fields.get(Constants.Types.IntervalYearToMonth.YEARS);
-        Object monthObject = fields.get(Constants.Types.IntervalYearToMonth.MONTHS);
-        String year = getIntervalString(yearObject, Constants.Types.OracleDbTypes.INTERVAL_YEAR_TO_MONTH);
-        String month = getIntervalString(monthObject, Constants.Types.OracleDbTypes.INTERVAL_YEAR_TO_MONTH);
-        return year + "-" + month;
+        long years = 0L;
+        long months = 0L;
+        Object yearsObj = fields.get(Constants.Types.IntervalYearToMonth.YEARS);
+        Object monthsObj = fields.get(Constants.Types.IntervalYearToMonth.MONTHS);
+        if (yearsObj != null) {
+            years = (Long) yearsObj;
+        }
+        long effectiveMonths = 0L;
+        if (monthsObj != null) {
+            effectiveMonths = (years * 12) + (Long) monthsObj;
+            years = effectiveMonths / 12;
+            months = effectiveMonths % 12;
+        }
+        if (effectiveMonths >= 0L) {
+            return years + "-" + months;
+        } else {
+            return "-" + Math.abs(years) + "-" + Math.abs(months);
+        }
     }
 
     /**
@@ -78,16 +91,41 @@ public class ConverterUtils {
     public static String convertIntervalDayToSecond(Object value)
             throws ApplicationError {
         Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
-        Object dayObject = fields.get(Constants.Types.IntervalDayToSecond.DAYS);
-        Object hourObject = fields.get(Constants.Types.IntervalDayToSecond.HOURS);
-        Object minuteObject = fields.get(Constants.Types.IntervalDayToSecond.MINUTES);
-        Object secondObject = fields.get(Constants.Types.IntervalDayToSecond.SECONDS);
-        String day = getIntervalString(dayObject, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
-        String hour = getIntervalString(hourObject, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
-        String minute = getIntervalString(minuteObject, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
-        String second = getIntervalString(secondObject, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
-
-        return day + " " + hour + ":" + minute + ":" + second;
+        long days = 0L;
+        long hours = 0L;
+        long minutes = 0L;
+        double seconds = 0.0D;
+        Object dayObj = fields.get(Constants.Types.IntervalDayToSecond.DAYS);
+        Object hourObj = fields.get(Constants.Types.IntervalDayToSecond.HOURS);
+        Object minuteObj = fields.get(Constants.Types.IntervalDayToSecond.MINUTES);
+        Object secondObj = fields.get(Constants.Types.IntervalDayToSecond.SECONDS);
+        if (dayObj != null) {
+            days = (Long) dayObj;
+        }
+        if (hourObj != null) {
+            hours = (Long) hourObj;
+        }
+        if (minuteObj != null) {
+            minutes = (Long) minuteObj;
+        }
+        if (secondObj != null) {
+            seconds = ((BDecimal) secondObj).floatValue();
+        }
+        BigDecimal effectivePeriod = new BigDecimal(String.valueOf((((((days * 24) + hours) * 60) + minutes) * 60) +
+                seconds));
+        long onlyLongPeriod = Math.abs(effectivePeriod.longValue());
+        days = onlyLongPeriod / (86400);
+        long leftover = onlyLongPeriod % (86400);
+        hours = leftover / (3600);
+        leftover = leftover % (3600);
+        minutes = leftover / 60;
+        leftover = leftover % 60;
+        seconds = leftover + effectivePeriod.subtract(new BigDecimal(onlyLongPeriod)).doubleValue();
+        if (effectivePeriod.doubleValue() >= 0.0d) {
+            return days + " " + hours + ":" + minutes + ":" + seconds;
+        } else {
+            return "-" + days + " " + hours + ":" + minutes + ":" + seconds;
+        }
     }
 
     /**
@@ -122,20 +160,6 @@ public class ConverterUtils {
         String name = ((BString) fields.get(Constants.Types.Varray.NAME)).getValue().toUpperCase(Locale.ENGLISH);
         Object varray = fields.get(Constants.Types.Varray.ELEMENTS);
         return Utils.getOracleConnection(connection).createARRAY(name, varray);
-    }
-
-    private static String getIntervalString(Object param, String typeName) throws ApplicationError {
-        String value;
-        if (param instanceof BString) {
-            value = ((BString) param).getValue();
-        } else if (param instanceof Long || param instanceof Double) {
-            value = param.toString();
-        } else if (param instanceof BDecimal) {
-            value = Double.toString(((BDecimal) param).floatValue());
-        } else {
-            throw Utils.throwInvalidParameterError(param, typeName);
-        }
-        return value;
     }
 
     private static Map<String, Object> getRecordData(Object value, String sqlType)

@@ -38,13 +38,11 @@ import io.ballerina.stdlib.sql.utils.Utils;
 import oracle.jdbc.OracleTypes;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Struct;
-import java.sql.Time;
 import java.sql.Timestamp;
 
 import static io.ballerina.runtime.api.utils.StringUtils.fromString;
@@ -247,47 +245,56 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                 case TypeTags.RECORD_TYPE_TAG:
                     try {
                         if (sqlType == OracleTypes.INTERVALDS) {
-                            //format: DD HH:Min:SS.XXX
+                            //format: [-]DD HH:Min:SS.XXX
                             if (ballerinaType.getName().
-                                    equalsIgnoreCase(io.ballerina.stdlib.time.util.Constants.TIME_OF_DAY_RECORD)) {
-                                Time time = Time.valueOf(interval.split("\\s+")[1].split("\\.")[0]);
-                                return Utils.createTimeRecord(time);
-                            } else if (ballerinaType.getName().
                                     equalsIgnoreCase(Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD)) {
+                                boolean isNegative = interval.startsWith("-");
+                                if (isNegative) {
+                                    interval = interval.substring(1);
+                                }
                                 String[] splitOnSpaces = interval.split("\\s+");
                                 String days = splitOnSpaces[0];
-                                String[] splitOnDots = splitOnSpaces[1].split("\\.");
-                                String secondFractions = splitOnDots[1];
-                                String[] splitOnColons = splitOnDots[0].split(":");
+                                String[] splitOnColons = splitOnSpaces[1].split(":");
+                                int dayValue = isNegative ? Integer.parseInt(days) * -1 : Integer.parseInt(days);
+                                int hourValue = isNegative ?
+                                        Integer.parseInt(splitOnColons[0]) * -1 : Integer.parseInt(splitOnColons[0]);
+                                int minuteValue = isNegative ?
+                                        Integer.parseInt(splitOnColons[1]) * -1 : Integer.parseInt(splitOnColons[1]);
+                                BigDecimal seconds = isNegative ?
+                                        new BigDecimal(splitOnColons[2]).negate() : new BigDecimal(splitOnColons[2]);
                                 BMap<BString, Object> intervalMap = ValueCreator
                                         .createRecordValue(ModuleUtils.getModule(),
                                                 Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD);
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.DAYS),
-                                        Integer.parseInt(days));
+                                        dayValue);
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.HOURS),
-                                        Integer.parseInt(splitOnColons[0]));
+                                        hourValue);
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.MINUTES),
-                                        Integer.parseInt(splitOnColons[1]));
-                                BigDecimal second = new BigDecimal(splitOnColons[2]);
-                                second = second.add((new BigDecimal(Integer.parseInt(secondFractions)))
-                                        .divide(io.ballerina.stdlib.time.util.Constants.ANALOG_KILO,
-                                                MathContext.DECIMAL128));
+                                        minuteValue);
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.SECONDS),
-                                        ValueCreator.createDecimalValue(second));
+                                        ValueCreator.createDecimalValue(seconds));
                                 return intervalMap;
                             }
                         } else {
-                            //format: YY-MM
+                            //format: [-]YY-MM
                             if (ballerinaType.getName().
                                     equalsIgnoreCase(Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD)) {
+                                boolean isNegative = interval.startsWith("-");
+                                if (isNegative) {
+                                    interval = interval.substring(1);
+                                }
                                 String[] splitOnDash = interval.split("-");
+                                int yearValue = isNegative ?
+                                        Integer.parseInt(splitOnDash[0]) * -1 : Integer.parseInt(splitOnDash[0]);
+                                int monthValue = isNegative ?
+                                        Integer.parseInt(splitOnDash[1]) * -1 : Integer.parseInt(splitOnDash[1]);
                                 BMap<BString, Object> intervalMap = ValueCreator
                                         .createRecordValue(ModuleUtils.getModule(),
                                                 Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD);
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.YEARS),
-                                        Integer.parseInt(splitOnDash[0]));
+                                       yearValue);
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.MONTHS),
-                                        Integer.parseInt(splitOnDash[1]));
+                                        monthValue);
                                 return intervalMap;
                             }
                         }
