@@ -66,20 +66,21 @@ public class ConverterUtils {
         long months = 0L;
         Object yearsObj = fields.get(Constants.Types.IntervalYearToMonth.YEARS);
         Object monthsObj = fields.get(Constants.Types.IntervalYearToMonth.MONTHS);
+        Boolean isNegative = (Boolean) fields.get(Constants.Types.OptionalIsNegative.IS_NEGATIVE);
         if (yearsObj != null) {
             years = (Long) yearsObj;
         }
-        long effectiveMonths = 0L;
         if (monthsObj != null) {
-            effectiveMonths = (years * 12) + (Long) monthsObj;
-            years = effectiveMonths / 12;
-            months = effectiveMonths % 12;
+            months = (Long) monthsObj;
         }
-        if (effectiveMonths >= 0L) {
-            return years + "-" + months;
-        } else {
-            return "-" + Math.abs(years) + "-" + Math.abs(months);
+        if (years < 0L || months < 0L) {
+            throw new ApplicationError("Provided either years : " + years + " value or months : " + months +
+                    " value is negative. Set isNegative flag as true and provide positive values always.");
         }
+        long effectiveMonths = (years * 12) + months;
+        years = effectiveMonths / 12;
+        months = effectiveMonths % 12;
+        return isNegative ? "-" + years + "-" + months : years + "-" + months;
     }
 
     /**
@@ -94,11 +95,12 @@ public class ConverterUtils {
         long days = 0L;
         long hours = 0L;
         long minutes = 0L;
-        double seconds = 0.0D;
+        double seconds = 0.0d;
         Object dayObj = fields.get(Constants.Types.IntervalDayToSecond.DAYS);
         Object hourObj = fields.get(Constants.Types.IntervalDayToSecond.HOURS);
         Object minuteObj = fields.get(Constants.Types.IntervalDayToSecond.MINUTES);
         Object secondObj = fields.get(Constants.Types.IntervalDayToSecond.SECONDS);
+        Boolean isNegative = (Boolean) fields.get(Constants.Types.OptionalIsNegative.IS_NEGATIVE);
         if (dayObj != null) {
             days = (Long) dayObj;
         }
@@ -111,22 +113,22 @@ public class ConverterUtils {
         if (secondObj != null) {
             seconds = ((BDecimal) secondObj).floatValue();
         }
+        if (days < 0L || hours < 0L || minutes < 0L || seconds < 0.0d) {
+            throw new ApplicationError("Provided one or few values for IntervalDayToSecond Record is/are negative. " +
+                    "Set isNegative flag as true and provide positive values always.");
+        }
         BigDecimal effectivePeriod = new BigDecimal(String.valueOf((((((days * 24) + hours) * 60) + minutes) * 60) +
                 seconds));
-        long onlyLongPeriod = Math.abs(effectivePeriod.longValue());
+        long onlyLongPeriod = effectivePeriod.longValue();
         days = onlyLongPeriod / (86400);
         long leftover = onlyLongPeriod % (86400);
         hours = leftover / (3600);
         leftover = leftover % (3600);
         minutes = leftover / 60;
         leftover = leftover % 60;
-        if (effectivePeriod.doubleValue() >= 0.0d) {
-            seconds = leftover + effectivePeriod.subtract(new BigDecimal(onlyLongPeriod)).doubleValue();
-            return days + " " + hours + ":" + minutes + ":" + seconds;
-        } else {
-            seconds = leftover + effectivePeriod.negate().subtract(new BigDecimal(onlyLongPeriod)).doubleValue();
-            return "-" + days + " " + hours + ":" + minutes + ":" + seconds;
-        }
+        seconds = leftover + effectivePeriod.subtract(new BigDecimal(onlyLongPeriod)).doubleValue();
+        return isNegative ? "-" + days + " " + hours + ":" + minutes + ":" + seconds :
+                days + " " + hours + ":" + minutes + ":" + seconds;
     }
 
     /**

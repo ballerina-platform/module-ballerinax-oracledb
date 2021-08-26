@@ -255,13 +255,10 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                                 String[] splitOnSpaces = interval.split("\\s+");
                                 String days = splitOnSpaces[0];
                                 String[] splitOnColons = splitOnSpaces[1].split(":");
-                                int dayValue = isNegative ? Integer.parseInt(days) * -1 : Integer.parseInt(days);
-                                int hourValue = isNegative ?
-                                        Integer.parseInt(splitOnColons[0]) * -1 : Integer.parseInt(splitOnColons[0]);
-                                int minuteValue = isNegative ?
-                                        Integer.parseInt(splitOnColons[1]) * -1 : Integer.parseInt(splitOnColons[1]);
-                                BigDecimal seconds = isNegative ?
-                                        new BigDecimal(splitOnColons[2]).negate() : new BigDecimal(splitOnColons[2]);
+                                int dayValue = Integer.parseInt(days);
+                                int hourValue = Integer.parseInt(splitOnColons[0]);
+                                int minuteValue = Integer.parseInt(splitOnColons[1]);
+                                BigDecimal seconds = new BigDecimal(splitOnColons[2]);
                                 BMap<BString, Object> intervalMap = ValueCreator
                                         .createRecordValue(ModuleUtils.getModule(),
                                                 Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD);
@@ -273,6 +270,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                                         minuteValue);
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.SECONDS),
                                         ValueCreator.createDecimalValue(seconds));
+                                intervalMap.put(StringUtils.fromString(Constants.Types.OptionalIsNegative.IS_NEGATIVE),
+                                        isNegative);
                                 return intervalMap;
                             }
                         } else {
@@ -284,17 +283,17 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                                     interval = interval.substring(1);
                                 }
                                 String[] splitOnDash = interval.split("-");
-                                int yearValue = isNegative ?
-                                        Integer.parseInt(splitOnDash[0]) * -1 : Integer.parseInt(splitOnDash[0]);
-                                int monthValue = isNegative ?
-                                        Integer.parseInt(splitOnDash[1]) * -1 : Integer.parseInt(splitOnDash[1]);
+                                int yearValue = Integer.parseInt(splitOnDash[0]);
+                                int monthValue = Integer.parseInt(splitOnDash[1]);
                                 BMap<BString, Object> intervalMap = ValueCreator
                                         .createRecordValue(ModuleUtils.getModule(),
                                                 Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD);
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.YEARS),
-                                       yearValue);
+                                        yearValue);
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.MONTHS),
                                         monthValue);
+                                intervalMap.put(StringUtils.fromString(Constants.Types.OptionalIsNegative.IS_NEGATIVE),
+                                        isNegative);
                                 return intervalMap;
                             }
                         }

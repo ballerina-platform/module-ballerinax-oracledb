@@ -236,6 +236,16 @@ public final class Constants {
         }
 
         /**
+         * Constants related to the attributes of OptionalIsNegative Record type.
+         */
+        public static final class OptionalIsNegative {
+
+            private OptionalIsNegative() {}
+
+            public static final String IS_NEGATIVE = "isNegative";
+        }
+
+        /**
          * Constants related to the attributes of INTERVAL_DAY_TO_SECOND Oracle DB type.
          */
         public static final class IntervalDayToSecond {
