@@ -270,8 +270,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                                         minuteValue);
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.SECONDS),
                                         ValueCreator.createDecimalValue(seconds));
-                                intervalMap.put(StringUtils.fromString(Constants.Types.OptionalIsNegative.IS_NEGATIVE),
-                                        isNegative);
+                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.SIGN),
+                                        isNegative ? -1L  : 1L);
                                 return intervalMap;
                             }
                         } else {
@@ -292,8 +292,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                                         yearValue);
                                 intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.MONTHS),
                                         monthValue);
-                                intervalMap.put(StringUtils.fromString(Constants.Types.OptionalIsNegative.IS_NEGATIVE),
-                                        isNegative);
+                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.SIGN),
+                                        isNegative ? -1L : 1L);
                                 return intervalMap;
                             }
                         }

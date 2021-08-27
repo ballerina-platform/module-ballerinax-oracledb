@@ -17,34 +17,32 @@
 import ballerina/jballerina.java;
 import ballerina/sql;
 
-# Sets the interval value as Negative or Positive.
-#
-# + isNegative - flag as a boolean. Default is false.
-type IsIntervalNegative record {
-    boolean isNegative = false;
-};
+# Represents the type that can be either minus one or plus one.
+public type Sign +1|-1;
 
 # Stores a period of time in years and months.
 #
+# + sign - sign of the interval value
 # + years - Number of years
 # + months - Number of months
 public type IntervalYearToMonth record {|
-    *IsIntervalNegative;
-    int years?;
-    int months?;
+    Sign sign = +1;
+    int:Unsigned32 years?;
+    int:Unsigned32 months?;
 |};
 
 # Stores a period of time in days, hours, minutes, and seconds.
 #
+# + sign - sign of the interval value
 # + days - Number of days
 # + hours - Number of hours
 # + minutes - Number of minutes
 # + seconds - Number of seconds
 public type IntervalDayToSecond record {|
-    *IsIntervalNegative;
-    int days?;
-    int hours?;
-    int minutes?;
+    Sign sign = +1;
+    int:Unsigned32 days?;
+    int:Unsigned32 hours?;
+    int:Unsigned32 minutes?;
     decimal seconds?;
 |};
 

@@ -246,8 +246,8 @@ isolated function testCallWithDateTimesOutParams() returns error? {
     time:Civil timestampTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
     time:Civil timestampTzTypeRecord = {utcOffset: {hours: 5, minutes: 30}, timeAbbrev: "+05:30", year: 2020,
                                         month: 1, day: 5, hour: 10, minute: 35, second: 10};
-    IntervalYearToMonth intervalYM = {years:15, months: 11, isNegative: false};
-    IntervalDayToSecond intervalDS = {days:20, hours: 11, minutes: 21, seconds: 24.45, isNegative: false};
+    IntervalYearToMonth intervalYM = {years:15, months: 11, sign: 1};
+    IntervalDayToSecond intervalDS = {days:20, hours: 11, minutes: 21, seconds: 24.45, sign: 1};
 
     test:assertEquals(check paraDate.get(time:Civil), dateTypeRecord,
                         "paraDate out parameter of procedure did not match.");

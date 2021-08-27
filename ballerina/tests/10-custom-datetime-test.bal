@@ -31,7 +31,7 @@ isolated function insertDateTimeTypesAndIntervalsWithString() returns sql:Error?
     string intervalDtoS = "200 5:12:45.89";
     sql:ExecutionResult result = check oracledbClient->execute(
         `ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH:MI:SS AM'`);
-    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_DATE, COL_DATE_ONLY,COL_TIMESTAMP,
+    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_DATE, COL_DATE_ONLY, COL_TIMESTAMP,
             COL_TIMESTAMPTZ, COL_TIMESTAMPTZL, COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND)
          VALUES (${date}, ${dateOnly}, ${timestamp}, ${timestamptz}, ${timestamptzl}, ${intervalYtoM},
             ${intervalDtoS})`;
@@ -152,8 +152,8 @@ isolated function selectAllDateTimeDatatypesWithReturnType() returns error? {
     time:Civil timestampTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
     time:Civil timestampTzTypeRecord = {utcOffset: {hours: 5, minutes: 30}, timeAbbrev: "+05:30", year: 2020,
                                         month: 1, day: 5, hour: 10, minute: 35, second: 10};
-    IntervalYearToMonth intervalYtoMTypeRecord = {years:15, months: 11, isNegative: false};
-    IntervalDayToSecond intervalDtoSTypeRecord = {days:200, hours: 5, minutes: 12, seconds: 45.89, isNegative: false};
+    IntervalYearToMonth intervalYtoMTypeRecord = {years:15, months: 11, sign: 1};
+    IntervalDayToSecond intervalDtoSTypeRecord = {days:200, hours: 5, minutes: 12, seconds: 45.89, sign: 1};
 
     test:assertEquals(dateTypeRecord, data["col_date"], "col_date Expected and actual mismatch");
     test:assertEquals(dateOnlyTypeRecord, data["col_date_only"], "col_date_only Expected and actual mismatch");
@@ -254,34 +254,34 @@ isolated function selectAllIntervalDSWithoutReturnType() returns error? {
    groups:["datetime"]
 }
 isolated function insertNegativeIntervalsWithDifferentBalTypes() returns sql:Error? {
-    IntervalYearToMonth intY3M = {years: 120, months: 11, isNegative: true};
+    IntervalYearToMonth intY3M = {years: 120, months: 11, sign: -1};
     IntervalYearToMonthValue colY3M = new (intY3M);
-    IntervalYearToMonth intY3 = {years: 145, isNegative: true};
+    IntervalYearToMonth intY3 = {years: 145, sign: -1};
     IntervalYearToMonthValue colY3 = new (intY3);
-    IntervalYearToMonth intM3 = {months: 311, isNegative: true};
+    IntervalYearToMonth intM3 = {months: 311, sign: -1};
     IntervalYearToMonthValue colM3 = new (intM3);
 
-    IntervalDayToSecond intDS3 = {days: 11, hours: 10, minutes: 9, seconds: 8.555, isNegative: true};
+    IntervalDayToSecond intDS3 = {days: 11, hours: 10, minutes: 9, seconds: 8.555, sign: -1};
     IntervalDayToSecondValue colDS3 = new (intDS3);
-    IntervalDayToSecond intDM = {days: 11, hours: 10, minutes: 9, isNegative: true};
+    IntervalDayToSecond intDM = {days: 11, hours: 10, minutes: 9, sign: -1};
     IntervalDayToSecondValue colDM = new (intDM);
-    IntervalDayToSecond intD3H = {days: 200, hours: 110, isNegative: true};
+    IntervalDayToSecond intD3H = {days: 200, hours: 110, sign: -1};
     IntervalDayToSecondValue colD3H = new (intD3H);
-    IntervalDayToSecond intD3 = {days:167, isNegative: true};
+    IntervalDayToSecond intD3 = {days:167, sign: -1};
     IntervalDayToSecondValue colD3 = new (intD3);
-    IntervalDayToSecond intHS7 = {hours:10, minutes:9, seconds:8.555666, isNegative: true};
+    IntervalDayToSecond intHS7 = {hours:10, minutes:9, seconds:8.555666, sign: -1};
     IntervalDayToSecondValue colHS7 = new (intHS7);
-    IntervalDayToSecond intHM = {hours:10, minutes:9, isNegative: true};
+    IntervalDayToSecond intHM = {hours:10, minutes:9, sign: -1};
     IntervalDayToSecondValue colHM = new (intHM);
-    IntervalDayToSecond intH = {hours:12, isNegative: true};
+    IntervalDayToSecond intH = {hours:12, sign: -1};
     IntervalDayToSecondValue colH = new (intH);
-    IntervalDayToSecond intMS = {minutes:9, seconds:30, isNegative: true};
+    IntervalDayToSecond intMS = {minutes:9, seconds:30, sign: -1};
     IntervalDayToSecondValue colMS = new (intMS);
-    IntervalDayToSecond intM = {minutes:9, isNegative: true};
+    IntervalDayToSecond intM = {minutes:9, sign: -1};
     IntervalDayToSecondValue colM = new (intM);
-    IntervalDayToSecond intH3 = {hours:810, isNegative: true};
+    IntervalDayToSecond intH3 = {hours:810, sign: -1};
     IntervalDayToSecondValue colH3 = new (intH3);
-    IntervalDayToSecond intS = {seconds:15.679, isNegative: true};
+    IntervalDayToSecond intS = {seconds:15.679, sign: -1};
     IntervalDayToSecondValue colS = new (intS);
 
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestIntervalTable(ID, COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3,
@@ -355,21 +355,21 @@ isolated function selectAllNegativeIntervalsWithReturnType() returns error? {
         WHERE ID = ${id}`;
     record{}? data = check queryClient(sqlQuery, IntervalReturnTypes);
 
-    IntervalYearToMonth intY3M = {years: 120, months: 11, isNegative: true};
-    IntervalYearToMonth intY3 = {years: 145, months: 0, isNegative: true};
-    IntervalYearToMonth intM3 = {years: 25, months: 11, isNegative: true};
+    IntervalYearToMonth intY3M = {years: 120, months: 11, sign: -1};
+    IntervalYearToMonth intY3 = {years: 145, months: 0, sign: -1};
+    IntervalYearToMonth intM3 = {years: 25, months: 11, sign: -1};
 
-    IntervalDayToSecond intDS3 = {days: 11, hours: 10, minutes: 9, seconds: 8.555, isNegative: true};
-    IntervalDayToSecond intDM = {days: 11, hours: 10, minutes: 9, seconds: 0.0, isNegative: true};
-    IntervalDayToSecond intD3H = {days:204, hours:14, minutes: 0, seconds: 0.0, isNegative: true};
-    IntervalDayToSecond intD3 = {days: 167, hours:0, minutes: 0, seconds: 0.0, isNegative: true};
-    IntervalDayToSecond intHS7 = {days: 0, hours: 10, minutes: 9, seconds: 8.555666, isNegative: true};
-    IntervalDayToSecond intHM = {days:0, hours: 10, minutes: 9, seconds: 0.0, isNegative: true};
-    IntervalDayToSecond intH = {days:0, hours: 12, minutes: 0, seconds: 0.0, isNegative: true};
-    IntervalDayToSecond intMS = {days:0, hours: 0, minutes: 9, seconds: 30.0, isNegative: true};
-    IntervalDayToSecond intM = {days: 0, hours: 0, minutes: 9, seconds: 0.0, isNegative: true};
-    IntervalDayToSecond intH3 = {days: 33, hours: 18, minutes: 0, seconds: 0.0, isNegative: true};
-    IntervalDayToSecond intS = {days: 0, hours: 0, minutes: 0, seconds: 15.679, isNegative: true};
+    IntervalDayToSecond intDS3 = {days: 11, hours: 10, minutes: 9, seconds: 8.555, sign: -1};
+    IntervalDayToSecond intDM = {days: 11, hours: 10, minutes: 9, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intD3H = {days:204, hours:14, minutes: 0, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intD3 = {days: 167, hours:0, minutes: 0, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intHS7 = {days: 0, hours: 10, minutes: 9, seconds: 8.555666, sign: -1};
+    IntervalDayToSecond intHM = {days:0, hours: 10, minutes: 9, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intH = {days:0, hours: 12, minutes: 0, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intMS = {days:0, hours: 0, minutes: 9, seconds: 30.0, sign: -1};
+    IntervalDayToSecond intM = {days: 0, hours: 0, minutes: 9, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intH3 = {days: 33, hours: 18, minutes: 0, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intS = {days: 0, hours: 0, minutes: 0, seconds: 15.679, sign: -1};
 
     IntervalReturnTypes expectedData = {
         COL_YEAR3_TO_MONTH: intY3M,
@@ -388,39 +388,4 @@ isolated function selectAllNegativeIntervalsWithReturnType() returns error? {
         COL_SECOND2_3: intS
     };
     test:assertEquals(expectedData, data, "Expected data and actual are mismatched");
-}
-
-@test:Config {
-    groups: ["datetime"],
-    dependsOn: [insertNegativeIntervalsWithDifferentBalTypes]
-}
-isolated function selectInvalidIntervalYMWithoutReturnType() returns error? {
-    IntervalYearToMonth intY3M = {years: -120, months: 11};
-    IntervalYearToMonthValue colY3M = new (intY3M);
-    sql:ParameterizedQuery sqlQuery = `SELECT COL_YEAR3_TO_MONTH FROM TestIntervalTable
-                WHERE COL_YEAR3_TO_MONTH = ${colY3M}`;
-    record {}|error? data = queryClient(sqlQuery);
-    test:assertTrue(data is error);
-    if data is sql:ApplicationError {
-        test:assertTrue(data.message().startsWith("Provided either years : -120 value or months : 11 value is negative."));
-    } else {
-        test:assertFail("Error ApplicatonError expected");
-    }
-}
-
-@test:Config {
-    groups: ["datetime"],
-    dependsOn: [insertNegativeIntervalsWithDifferentBalTypes]
-}
-isolated function selectInvalidIntervalDSWithoutReturnType() returns error? {
-    IntervalDayToSecond intD3 = {days: -167};
-    IntervalDayToSecondValue colD3 = new (intD3);
-    sql:ParameterizedQuery sqlQuery = `SELECT COL_DAY3 FROM TestIntervalTable WHERE COL_DAY3 = ${colD3}`;
-    record {}|error? data = queryClient(sqlQuery);
-    test:assertTrue(data is error);
-    if data is sql:ApplicationError {
-        test:assertTrue(data.message().startsWith("Provided one or few values for IntervalDayToSecond Record is/are negative."));
-    } else {
-        test:assertFail("Error ApplicatonError expected");
-    }
 }
