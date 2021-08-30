@@ -20,11 +20,10 @@ import ballerina/time;
 @test:Config {
    groups:["datetime"]
 }
-isolated function insertIntervalWithString() returns sql:Error? {
+isolated function insertDateTimeTypesAndIntervalsWithString() returns sql:Error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     string date = "05-JAN-2020 10:35:10 AM";
     string dateOnly = "05-JAN-2020";
-    string timeOnly = "0 11:00:00";
     string timestamp = "05-JAN-2020 10:35:10 AM";
     string timestamptz = "05-JAN-2020 10:35:10 AM +05:30";
     string timestamptzl = "05-JAN-2020 10:35:10 AM";
@@ -32,10 +31,10 @@ isolated function insertIntervalWithString() returns sql:Error? {
     string intervalDtoS = "200 5:12:45.89";
     sql:ExecutionResult result = check oracledbClient->execute(
         `ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH:MI:SS AM'`);
-    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_DATE, COL_DATE_ONLY, COL_TIME_ONLY,
-         COL_TIMESTAMP, COL_TIMESTAMPTZ, COL_TIMESTAMPTZL, COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND)
-         VALUES (${date}, ${dateOnly}, ${timeOnly}, ${timestamp}, ${timestamptz}, ${timestamptzl}, ${intervalYtoM},
-         ${intervalDtoS})`;
+    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_DATE, COL_DATE_ONLY, COL_TIMESTAMP,
+            COL_TIMESTAMPTZ, COL_TIMESTAMPTZL, COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND)
+         VALUES (${date}, ${dateOnly}, ${timestamp}, ${timestamptz}, ${timestamptzl}, ${intervalYtoM},
+            ${intervalDtoS})`;
     result = check oracledbClient->execute(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     var insertId = result.lastInsertId;
@@ -45,7 +44,7 @@ isolated function insertIntervalWithString() returns sql:Error? {
 
 @test:Config {
    groups:["datetime"],
-   dependsOn: [insertIntervalWithString]
+   dependsOn: [insertDateTimeTypesAndIntervalsWithString]
 }
 isolated function insertIntervalWithBalTypeString() returns sql:Error? {
     time:Civil date = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
@@ -89,12 +88,12 @@ isolated function insertIntervalWithBalType() returns sql:Error? {
    dependsOn: [insertIntervalWithBalType]
 }
 isolated function insertIntervalNull() returns sql:Error? {
-   sql:DateValue date = new();
-   sql:TimestampValue timestamp = new();
-   sql:TimestampValue timestamptz = new();
-   sql:TimestampValue timestamptzl = new();
+   sql:DateValue date = new ();
+   sql:TimestampValue timestamp = new ();
+   sql:TimestampValue timestamptz = new ();
+   sql:TimestampValue timestamptzl = new ();
    IntervalYearToMonthValue intervalYtoM = new ();
-   IntervalDayToSecondValue intervalDtoS = new();
+   IntervalDayToSecondValue intervalDtoS = new ();
    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(
        COL_DATE, COL_TIMESTAMP, COL_TIMESTAMPTZ, COL_TIMESTAMPTZL,
        COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND) VALUES (
@@ -106,57 +105,17 @@ isolated function insertIntervalNull() returns sql:Error? {
 }
 
 @test:Config {
-   groups:["datetime"],
-   dependsOn: [insertIntervalNull]
-}
-isolated function insertIntervalWithInvalidBalType1() returns sql:Error? {
-   IntervalYearToMonthValue intervalYtoM = new({years:12, months: 340});
-   IntervalDayToSecondValue intervalDtoS = new({ days:1, hours: 555, minutes: 34, seconds: 23.45 });
-
-   sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
-           COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
-   sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
-   if (result is sql:DatabaseError) {
-       sql:DatabaseErrorDetail errorDetails = result.detail();
-       test:assertEquals(errorDetails.errorCode, 1843, "SQL Error code does not match");
-       test:assertEquals(errorDetails.sqlState, "22008", "SQL Error state does not match");
-   } else {
-       test:assertFail("Database Error expected.");
-   }
-}
-
-@test:Config {
-   groups:["datetime"],
-   dependsOn: [insertIntervalWithInvalidBalType1]
-}
-isolated function insertIntervalWithInvalidBalType2() returns sql:Error? {
-   IntervalYearToMonthValue intervalYtoM = new({years:12, months: 34});
-   IntervalDayToSecondValue intervalDtoS = new({ days:1, hours: -55, minutes: 34, seconds: 23.45 });
-   sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
-           COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
-   sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
-   if (result is sql:DatabaseError) {
-       sql:DatabaseErrorDetail errorDetails = result.detail();
-       test:assertEquals(errorDetails.errorCode, 1843, "SQL Error code does not match");
-       test:assertEquals(errorDetails.sqlState, "22008", "SQL Error state does not match");
-   } else {
-       test:assertFail("Database Error expected.");
-   }
-}
-
-@test:Config {
     groups: ["datetime"],
-    dependsOn: [insertIntervalWithString]
+    dependsOn: [insertDateTimeTypesAndIntervalsWithString]
 }
 isolated function selectAllDateTimeDatatypesWithoutReturnType() returns error? {
     int id = 1;
-    sql:ParameterizedQuery sqlQuery = `SELECT COL_DATE, COL_DATE_ONLY, COL_TIME_ONLY, COL_TIMESTAMP, COL_TIMESTAMPTZ,
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_DATE, COL_DATE_ONLY, COL_TIMESTAMP, COL_TIMESTAMPTZ,
             COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND FROM TestDateTimeTable WHERE pk = ${id}`;
     record{}? data = check queryClient(sqlQuery);
     var expectedData = {
         COL_DATE:"2020-01-05 10:35:10.0",
         COL_DATE_ONLY: "2020-01-05 00:00:00.0",
-        COL_TIME_ONLY: "0 11:0:0.0",
         COL_TIMESTAMP:"2020-01-05 10:35:10.0",
         COL_TIMESTAMPTZ:"2020-01-05 10:35:10.0 +5:30",
         COL_INTERVAL_YEAR_TO_MONTH:"15-11",
@@ -170,7 +129,6 @@ type DateTimeReturnTypes record {
     time:Date col_date_only;
     int col_date_only_as_int;
     time:Utc col_date_only_as_utc;
-    time:TimeOfDay col_time_only;
     time:Civil col_timestamp;
     time:Civil col_timestamptz;
     IntervalYearToMonth col_interval_year_to_month;
@@ -179,28 +137,26 @@ type DateTimeReturnTypes record {
 
 @test:Config {
     groups: ["datetime"],
-    dependsOn: [insertIntervalWithString]
+    dependsOn: [insertDateTimeTypesAndIntervalsWithString]
 }
 isolated function selectAllDateTimeDatatypesWithReturnType() returns error? {
     int id = 1;
     sql:ParameterizedQuery sqlQuery = `SELECT COL_DATE, COL_DATE_ONLY, COL_DATE_ONLY as COL_DATE_ONLY_AS_INT,
-        COL_DATE_ONLY as COL_DATE_ONLY_AS_UTC, COL_TIME_ONLY, COL_TIMESTAMP, COL_TIMESTAMPTZ,
+        COL_DATE_ONLY as COL_DATE_ONLY_AS_UTC, COL_TIMESTAMP, COL_TIMESTAMPTZ,
         COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND FROM TestDateTimeTable WHERE pk = ${id}`;
     record{}? data = check queryClient(sqlQuery, DateTimeReturnTypes);
     time:Civil dateTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
     time:Date dateOnlyTypeRecord = {year: 2020, month: 1, day: 5};
     int col_date_only_as_int = 1578162600000;
     time:Utc dateOnlyAsUtc = [1578162600, 0];
-    time:TimeOfDay timeOnlyTypeRecord = {hour: 11, minute: 0, second:0};
     time:Civil timestampTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
     time:Civil timestampTzTypeRecord = {utcOffset: {hours: 5, minutes: 30}, timeAbbrev: "+05:30", year: 2020,
                                         month: 1, day: 5, hour: 10, minute: 35, second: 10};
-    IntervalYearToMonth intervalYtoMTypeRecord = {years:15, months: 11};
-    IntervalDayToSecond intervalDtoSTypeRecord = {days:200, hours: 5, minutes: 12, seconds: 45.089};
+    IntervalYearToMonth intervalYtoMTypeRecord = {years:15, months: 11, sign: 1};
+    IntervalDayToSecond intervalDtoSTypeRecord = {days:200, hours: 5, minutes: 12, seconds: 45.89, sign: 1};
 
     test:assertEquals(dateTypeRecord, data["col_date"], "col_date Expected and actual mismatch");
     test:assertEquals(dateOnlyTypeRecord, data["col_date_only"], "col_date_only Expected and actual mismatch");
-    test:assertEquals(timeOnlyTypeRecord, data["col_time_only"], "col_time_only Expected and actual mismatch");
     test:assertEquals(timestampTypeRecord, data["col_timestamp"], "col_timestamp Expected and actual mismatch");
     test:assertEquals(timestampTzTypeRecord, data["col_timestamptz"], "col_timestamptz Expected and actual mismatch");
     test:assertEquals(intervalYtoMTypeRecord, data["col_interval_year_to_month"], "col_interval_year_to_month Expected and actual mismatch");
@@ -210,7 +166,6 @@ isolated function selectAllDateTimeDatatypesWithReturnType() returns error? {
 type DateTimeReturnTypes2 record {
     string col_date;
     string col_date_only;
-    string col_time_only;
     string col_timestamp;
     string col_timestamptz;
     string col_interval_year_to_month;
@@ -219,17 +174,16 @@ type DateTimeReturnTypes2 record {
 
 @test:Config {
     groups: ["datetime"],
-    dependsOn: [insertIntervalWithString]
+    dependsOn: [insertDateTimeTypesAndIntervalsWithString]
 }
 isolated function selectAllDateTimeDatatypesWithStringReturnType() returns error? {
     int id = 1;
-    sql:ParameterizedQuery sqlQuery = `SELECT COL_DATE, COL_DATE_ONLY, COL_TIME_ONLY, COL_TIMESTAMP, COL_TIMESTAMPTZ,
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_DATE, COL_DATE_ONLY, COL_TIMESTAMP, COL_TIMESTAMPTZ,
      COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND FROM TestDateTimeTable WHERE pk = ${id}`;
     record{}? data = check queryClient(sqlQuery, DateTimeReturnTypes2);
 
     string dateTypeString = "2020-01-05 10:35:10.0";
     string dateOnlyTypeString = "2020-01-05 00:00:00.0";
-    string timeOnlyTypeString = "0 11:0:0.0";
     string timestampTypeString = "2020-01-05 10:35:10.0";
     string timestampTzTypeString = "2020-01-05 10:35:10.0 +5:30";
     string intervalYtoMTypeString = "15-11";
@@ -238,7 +192,6 @@ isolated function selectAllDateTimeDatatypesWithStringReturnType() returns error
     DateTimeReturnTypes2 expectedData = {
         col_date: dateTypeString,
         col_date_only: dateOnlyTypeString,
-        col_time_only: timeOnlyTypeString,
         col_timestamp: timestampTypeString,
         col_timestamptz: timestampTzTypeString,
         col_interval_year_to_month: intervalYtoMTypeString,
@@ -250,17 +203,38 @@ isolated function selectAllDateTimeDatatypesWithStringReturnType() returns error
 @test:Config {
     groups: ["datetime"]
 }
-isolated function selectAllIntervalsWithoutReturnType() returns error? {
+isolated function selectIntervalYMWithoutReturnType() returns error? {
     int id = 1;
-    sql:ParameterizedQuery sqlQuery = `SELECT COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3, COL_DAY_TO_SECOND3,
-                COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
-                COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3 FROM TestIntervalTable
-                WHERE ID = ${id}`;
+    IntervalYearToMonth interval = {years:120, months:3};
+    IntervalYearToMonth interval2 = {years:105};
+    IntervalYearToMonth interval3 = {months:500};
+    IntervalYearToMonthValue value = new (interval);
+    IntervalYearToMonthValue value2 = new (interval2);
+    IntervalYearToMonthValue value3 = new (interval3);
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3 FROM TestIntervalTable
+                WHERE COL_YEAR3_TO_MONTH = ${value} AND COL_YEAR3 = ${value2} AND COL_MONTH3 = ${value3} AND ID = ${id}`;
     record{}? data = check queryClient(sqlQuery);
     var expectedData = {
         COL_YEAR3_TO_MONTH: "120-3",
         COL_YEAR3: "105-0",
-        COL_MONTH3: "41-8",
+        COL_MONTH3: "41-8"
+    };
+    test:assertEquals(expectedData, data, "Expected and actual mismatch");
+}
+
+@test:Config {
+    groups: ["datetime"]
+}
+isolated function selectAllIntervalDSWithoutReturnType() returns error? {
+    int id = 1;
+    IntervalDayToSecond interval = {days:11, hours:10, minutes:9, seconds:8.555};
+    IntervalDayToSecondValue value = new (interval);
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_DAY_TO_SECOND3,
+                COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
+                COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3 FROM TestIntervalTable
+                WHERE COL_DAY_TO_SECOND3 = ${value} AND ID = ${id}`;
+    record{}? data = check queryClient(sqlQuery);
+    var expectedData = {
         COL_DAY_TO_SECOND3: "11 10:9:8.555",
         COL_DAY_TO_MINUTE: "11 10:9:0.0",
         COL_DAY_TO_HOUR: "100 10:0:0.0",
@@ -274,4 +248,144 @@ isolated function selectAllIntervalsWithoutReturnType() returns error? {
         COL_SECOND2_3: "0 0:0:15.679"
     };
     test:assertEquals(expectedData, data, "Expected and actual mismatch");
+}
+
+@test:Config {
+   groups:["datetime"]
+}
+isolated function insertNegativeIntervalsWithDifferentBalTypes() returns sql:Error? {
+    IntervalYearToMonth intY3M = {years: 120, months: 11, sign: -1};
+    IntervalYearToMonthValue colY3M = new (intY3M);
+    IntervalYearToMonth intY3 = {years: 145, sign: -1};
+    IntervalYearToMonthValue colY3 = new (intY3);
+    IntervalYearToMonth intM3 = {months: 311, sign: -1};
+    IntervalYearToMonthValue colM3 = new (intM3);
+
+    IntervalDayToSecond intDS3 = {days: 11, hours: 10, minutes: 9, seconds: 8.555, sign: -1};
+    IntervalDayToSecondValue colDS3 = new (intDS3);
+    IntervalDayToSecond intDM = {days: 11, hours: 10, minutes: 9, sign: -1};
+    IntervalDayToSecondValue colDM = new (intDM);
+    IntervalDayToSecond intD3H = {days: 200, hours: 110, sign: -1};
+    IntervalDayToSecondValue colD3H = new (intD3H);
+    IntervalDayToSecond intD3 = {days:167, sign: -1};
+    IntervalDayToSecondValue colD3 = new (intD3);
+    IntervalDayToSecond intHS7 = {hours:10, minutes:9, seconds:8.555666, sign: -1};
+    IntervalDayToSecondValue colHS7 = new (intHS7);
+    IntervalDayToSecond intHM = {hours:10, minutes:9, sign: -1};
+    IntervalDayToSecondValue colHM = new (intHM);
+    IntervalDayToSecond intH = {hours:12, sign: -1};
+    IntervalDayToSecondValue colH = new (intH);
+    IntervalDayToSecond intMS = {minutes:9, seconds:30, sign: -1};
+    IntervalDayToSecondValue colMS = new (intMS);
+    IntervalDayToSecond intM = {minutes:9, sign: -1};
+    IntervalDayToSecondValue colM = new (intM);
+    IntervalDayToSecond intH3 = {hours:810, sign: -1};
+    IntervalDayToSecondValue colH3 = new (intH3);
+    IntervalDayToSecond intS = {seconds:15.679, sign: -1};
+    IntervalDayToSecondValue colS = new (intS);
+
+    sql:ParameterizedQuery insertQuery = `INSERT INTO TestIntervalTable(ID, COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3,
+        COL_DAY_TO_SECOND3, COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
+        COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3)
+        VALUES (2, ${colY3M}, ${colY3}, ${colM3}, ${colDS3}, ${colDM}, ${colD3H}, ${colD3}, ${colHS7}, ${colHM},
+         ${colH}, ${colMS}, ${colM}, ${colH3}, ${colS})`;
+    sql:ExecutionResult result = check executeQuery(insertQuery);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    var insertId = result.lastInsertId;
+    test:assertTrue(insertId is string, "Last Insert id should be string");
+}
+
+@test:Config {
+    groups: ["datetime"],
+    dependsOn: [insertNegativeIntervalsWithDifferentBalTypes]
+}
+isolated function selectAllNegativeIntervalsWithoutReturnType() returns error? {
+    int id = 2;
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3, COL_DAY_TO_SECOND3,
+                COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
+                COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3 FROM TestIntervalTable
+                WHERE ID = ${id}`;
+    record{}? data = check queryClient(sqlQuery);
+
+    var expectedData = {
+        COL_YEAR3_TO_MONTH: "-120-11",
+        COL_YEAR3: "-145-0",
+        COL_MONTH3: "-25-11",
+        COL_DAY_TO_SECOND3: "-11 10:9:8.555",
+        COL_DAY_TO_MINUTE: "-11 10:9:0.0",
+        COL_DAY_TO_HOUR: "-204 14:0:0.0",
+        COL_DAY3: "-167 0:0:0.0",
+        COL_HOUR_TO_SECOND7: "-0 10:9:8.555666",
+        COL_HOUR_TO_MINUTE: "-0 10:9:0.0",
+        COL_HOUR: "-0 12:0:0.0",
+        COL_MINUTE_TO_SECOND: "-0 0:9:30.0",
+        COL_MINUTE: "-0 0:9:0.0",
+        COL_HOUR3: "-33 18:0:0.0",
+        COL_SECOND2_3: "-0 0:0:15.679"
+    };
+    test:assertEquals(expectedData, data, "Expected and actual mismatch");
+}
+
+type IntervalReturnTypes record {
+    IntervalYearToMonth COL_YEAR3_TO_MONTH;
+    IntervalYearToMonth COL_YEAR3;
+    IntervalYearToMonth COL_MONTH3;
+    IntervalDayToSecond COL_DAY_TO_SECOND3;
+    IntervalDayToSecond COL_DAY_TO_MINUTE;
+    IntervalDayToSecond COL_DAY_TO_HOUR;
+    IntervalDayToSecond COL_DAY3;
+    IntervalDayToSecond COL_HOUR_TO_SECOND7;
+    IntervalDayToSecond COL_HOUR_TO_MINUTE;
+    IntervalDayToSecond COL_HOUR;
+    IntervalDayToSecond COL_MINUTE_TO_SECOND;
+    IntervalDayToSecond COL_MINUTE;
+    IntervalDayToSecond COL_HOUR3;
+    IntervalDayToSecond COL_SECOND2_3;
+};
+
+@test:Config {
+    groups: ["datetime"],
+    dependsOn: [insertNegativeIntervalsWithDifferentBalTypes]
+}
+isolated function selectAllNegativeIntervalsWithReturnType() returns error? {
+    int id = 2;
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3, COL_DAY_TO_SECOND3,
+        COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
+        COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3 FROM TestIntervalTable
+        WHERE ID = ${id}`;
+    record{}? data = check queryClient(sqlQuery, IntervalReturnTypes);
+
+    IntervalYearToMonth intY3M = {years: 120, months: 11, sign: -1};
+    IntervalYearToMonth intY3 = {years: 145, months: 0, sign: -1};
+    IntervalYearToMonth intM3 = {years: 25, months: 11, sign: -1};
+
+    IntervalDayToSecond intDS3 = {days: 11, hours: 10, minutes: 9, seconds: 8.555, sign: -1};
+    IntervalDayToSecond intDM = {days: 11, hours: 10, minutes: 9, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intD3H = {days:204, hours:14, minutes: 0, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intD3 = {days: 167, hours:0, minutes: 0, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intHS7 = {days: 0, hours: 10, minutes: 9, seconds: 8.555666, sign: -1};
+    IntervalDayToSecond intHM = {days:0, hours: 10, minutes: 9, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intH = {days:0, hours: 12, minutes: 0, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intMS = {days:0, hours: 0, minutes: 9, seconds: 30.0, sign: -1};
+    IntervalDayToSecond intM = {days: 0, hours: 0, minutes: 9, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intH3 = {days: 33, hours: 18, minutes: 0, seconds: 0.0, sign: -1};
+    IntervalDayToSecond intS = {days: 0, hours: 0, minutes: 0, seconds: 15.679, sign: -1};
+
+    IntervalReturnTypes expectedData = {
+        COL_YEAR3_TO_MONTH: intY3M,
+        COL_YEAR3: intY3,
+        COL_MONTH3: intM3,
+        COL_DAY_TO_SECOND3: intDS3,
+        COL_DAY_TO_MINUTE: intDM,
+        COL_DAY_TO_HOUR: intD3H,
+        COL_DAY3: intD3,
+        COL_HOUR_TO_SECOND7: intHS7,
+        COL_HOUR_TO_MINUTE: intHM,
+        COL_HOUR: intH,
+        COL_MINUTE_TO_SECOND: intMS,
+        COL_MINUTE: intM,
+        COL_HOUR3: intH3,
+        COL_SECOND2_3: intS
+    };
+    test:assertEquals(expectedData, data, "Expected data and actual are mismatched");
 }

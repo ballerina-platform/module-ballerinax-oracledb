@@ -34,9 +34,7 @@ public final class Constants {
      */
     public static final class ClientConfiguration {
 
-        private ClientConfiguration() {
-
-        }
+        private ClientConfiguration() {}
 
         public static final BString HOST = StringUtils.fromString("host");
         public static final BString PORT = StringUtils.fromString("port");
@@ -52,9 +50,7 @@ public final class Constants {
      */
     public static final class Options {
 
-        private Options () {
-
-        }
+        private Options () {}
 
         public static final BString SSL = StringUtils.fromString("ssl");
         public static final BString AUTOCOMMIT = StringUtils.fromString("autoCommit");
@@ -68,9 +64,7 @@ public final class Constants {
      */
     public static final class SecureSocket {
 
-        private SecureSocket() {
-
-        }
+        private SecureSocket() {}
 
         public static final BString KEYSTORE = StringUtils.fromString("key");
         public static final BString TRUSTSTORE = StringUtils.fromString("cert");
@@ -80,9 +74,8 @@ public final class Constants {
          */
         public static final class CryptoKeyStoreRecord {
 
-            private CryptoKeyStoreRecord () {
+            private CryptoKeyStoreRecord () {}
 
-            }
             public static final BString PATH_FIELD = StringUtils.fromString("path");
             public static final BString PASSWORD_FIELD = StringUtils.fromString("password");
         }
@@ -92,9 +85,7 @@ public final class Constants {
          */
         public static final class CryptoTrustStoreRecord {
 
-            private CryptoTrustStoreRecord() {
-
-            }
+            private CryptoTrustStoreRecord() {}
 
             public static final BString PATH_FIELD = StringUtils.fromString("path");
             public static final BString PASSWORD_FIELD = StringUtils.fromString("password");
@@ -105,9 +96,7 @@ public final class Constants {
          */
         public static final class StoreTypes {
 
-            private StoreTypes() {
-
-            }
+            private StoreTypes() {}
 
             public static final String JKS = "JKS";
             public static final String PKCS12 = "PKCS12";
@@ -119,9 +108,7 @@ public final class Constants {
          */
         public static final class StoreExtensions {
 
-            private StoreExtensions() {
-
-            }
+            private StoreExtensions() {}
 
             public static final String P12 = ".p12";
             public static final String PFX = ".pfx";
@@ -135,9 +122,7 @@ public final class Constants {
      */
     public static final class DatabaseProps {
 
-        private DatabaseProps() {
-
-        }
+        private DatabaseProps() {}
 
         public static final BString LOGIN_TIMEOUT = StringUtils.fromString("loginTimeout");
         public static final BString CONN_PROPERTIES = StringUtils.fromString("connectionProperties");
@@ -148,13 +133,10 @@ public final class Constants {
      */
     public static final class Pool {
 
-        private Pool() {
-
-        }
+        private Pool() {}
 
         public static final BString CONNECT_TIMEOUT = StringUtils.fromString("connectionTimeout");
         public static final BString AUTO_COMMIT = StringUtils.fromString("autoCommit");
-
     }
 
     /**
@@ -162,9 +144,7 @@ public final class Constants {
      */
     public static final class TypedValueFields {
 
-        private TypedValueFields() {
-
-        }
+        private TypedValueFields() {}
 
         public static final BString VALUE = fromString("value");
     }
@@ -174,9 +154,7 @@ public final class Constants {
      */
     public static final class Types {
 
-        private Types() {
-
-        }
+        private Types() {}
 
         public static final String INTERVAL_YEAR_TO_MONTH_RECORD = "IntervalYearToMonth";
         public static final String INTERVAL_DAY_TO_SECOND_RECORD = "IntervalDayToSecond";
@@ -186,9 +164,7 @@ public final class Constants {
          */
         public static final class OracleDbTypes {
 
-            private OracleDbTypes() {
-
-            }
+            private OracleDbTypes() {}
 
             public static final String INTERVAL_YEAR_TO_MONTH = "INTERVAL_YEAR_TO_MONTH";
             public static final String INTERVAL_DAY_TO_SECOND = "INTERVAL_DAY_TO_SECOND";
@@ -201,9 +177,7 @@ public final class Constants {
          */
         public static final class CustomTypes {
 
-            private CustomTypes() {
-
-            }
+            private CustomTypes() {}
 
             public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthValue";
             public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondValue";
@@ -215,7 +189,9 @@ public final class Constants {
          * Constants related to OutParameter supported.
          */
         public static final class OutParameterTypes {
+
             private OutParameterTypes() {}
+
             public static final String XML = "XmlOutParameter";
             public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthOutParameter";
             public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondOutParameter";
@@ -226,13 +202,11 @@ public final class Constants {
          */
         public static final class IntervalYearToMonth {
 
-            private IntervalYearToMonth() {
-
-            }
+            private IntervalYearToMonth() {}
 
             public static final String YEARS = "years";
             public static final String MONTHS = "months";
-
+            public static final String SIGN = "sign";
         }
 
         /**
@@ -240,14 +214,13 @@ public final class Constants {
          */
         public static final class IntervalDayToSecond {
 
-            private IntervalDayToSecond() {
-
-            }
+            private IntervalDayToSecond() {}
 
             public static final String DAYS = "days";
             public static final String HOURS = "hours";
             public static final String MINUTES = "minutes";
             public static final String SECONDS = "seconds";
+            public static final String SIGN = "sign";
         }
 
         /**
@@ -255,9 +228,7 @@ public final class Constants {
          */
         public static final class OracleObject {
 
-            private OracleObject() {
-
-            }
+            private OracleObject() {}
 
             public static final String TYPE_NAME = "typename";
             public static final String ATTRIBUTES = "attributes";
@@ -268,9 +239,7 @@ public final class Constants {
          */
         public static final class Varray {
 
-            private Varray() {
-
-            }
+            private Varray() {}
 
             public static final String NAME = "name";
             public static final String ELEMENTS = "elements";
@@ -280,6 +249,7 @@ public final class Constants {
          * Constants related to the ballerina array types to which oracle varrays are converted.
          */
         public static final class BallerinaArrayTypes {
+
             private BallerinaArrayTypes() {}
 
             public static final String STRING = "string[]";
