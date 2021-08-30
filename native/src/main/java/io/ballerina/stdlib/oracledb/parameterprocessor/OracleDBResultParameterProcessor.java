@@ -244,14 +244,14 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                 case TypeTags.OBJECT_TYPE_TAG:
                 case TypeTags.RECORD_TYPE_TAG:
                     try {
+                        boolean isNegative = interval.startsWith("-");
+                        if (isNegative) {
+                            interval = interval.substring(1);
+                        }
                         if (sqlType == OracleTypes.INTERVALDS) {
                             //format: [-]DD HH:Min:SS.XXX
                             if (ballerinaType.getName().
                                     equalsIgnoreCase(Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD)) {
-                                boolean isNegative = interval.startsWith("-");
-                                if (isNegative) {
-                                    interval = interval.substring(1);
-                                }
                                 String[] splitOnSpaces = interval.split("\\s+");
                                 String days = splitOnSpaces[0];
                                 String[] splitOnColons = splitOnSpaces[1].split(":");
@@ -278,10 +278,6 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                             //format: [-]YY-MM
                             if (ballerinaType.getName().
                                     equalsIgnoreCase(Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD)) {
-                                boolean isNegative = interval.startsWith("-");
-                                if (isNegative) {
-                                    interval = interval.substring(1);
-                                }
                                 String[] splitOnDash = interval.split("-");
                                 int yearValue = Integer.parseInt(splitOnDash[0]);
                                 int monthValue = Integer.parseInt(splitOnDash[1]);
