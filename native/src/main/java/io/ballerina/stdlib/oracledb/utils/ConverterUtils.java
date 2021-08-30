@@ -62,17 +62,12 @@ public class ConverterUtils {
     public static String convertIntervalYearToMonth(Object value)
             throws ApplicationError {
         Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.INTERVAL_YEAR_TO_MONTH);
-        long years = 0L;
-        long months = 0L;
-        Object yearsObj = fields.get(Constants.Types.IntervalYearToMonth.YEARS);
-        Object monthsObj = fields.get(Constants.Types.IntervalYearToMonth.MONTHS);
+
+        long years = fields.get(Constants.Types.IntervalYearToMonth.YEARS) == null ? 0L :
+                (Long) fields.get(Constants.Types.IntervalYearToMonth.YEARS);
+        long months = fields.get(Constants.Types.IntervalYearToMonth.MONTHS) == null ? 0L :
+                (Long) fields.get(Constants.Types.IntervalYearToMonth.MONTHS);
         long sign = (Long) fields.get(Constants.Types.IntervalYearToMonth.SIGN);
-        if (yearsObj != null) {
-            years = (Long) yearsObj;
-        }
-        if (monthsObj != null) {
-            months = (Long) monthsObj;
-        }
         long effectiveMonths = (years * 12L) + months;
         years = effectiveMonths / 12L;
         months = effectiveMonths % 12L;
@@ -88,27 +83,15 @@ public class ConverterUtils {
     public static String convertIntervalDayToSecond(Object value)
             throws ApplicationError {
         Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
-        long days = 0L;
-        long hours = 0L;
-        long minutes = 0L;
-        double seconds = 0.0d;
-        Object dayObj = fields.get(Constants.Types.IntervalDayToSecond.DAYS);
-        Object hourObj = fields.get(Constants.Types.IntervalDayToSecond.HOURS);
-        Object minuteObj = fields.get(Constants.Types.IntervalDayToSecond.MINUTES);
-        Object secondObj = fields.get(Constants.Types.IntervalDayToSecond.SECONDS);
+        long days = fields.get(Constants.Types.IntervalDayToSecond.DAYS) == null ? 0L :
+                (Long) fields.get(Constants.Types.IntervalDayToSecond.DAYS);
+        long hours = fields.get(Constants.Types.IntervalDayToSecond.HOURS) == null ? 0L :
+                (Long) fields.get(Constants.Types.IntervalDayToSecond.HOURS);
+        long minutes = fields.get(Constants.Types.IntervalDayToSecond.MINUTES) == null ? 0L :
+                (Long) fields.get(Constants.Types.IntervalDayToSecond.MINUTES);
+        double seconds = fields.get(Constants.Types.IntervalDayToSecond.SECONDS) == null ? 0.0d :
+                ((BDecimal) fields.get(Constants.Types.IntervalDayToSecond.SECONDS)).floatValue();
         long sign = (Long) fields.get(Constants.Types.IntervalDayToSecond.SIGN);
-        if (dayObj != null) {
-            days = (Long) dayObj;
-        }
-        if (hourObj != null) {
-            hours = (Long) hourObj;
-        }
-        if (minuteObj != null) {
-            minutes = (Long) minuteObj;
-        }
-        if (secondObj != null) {
-            seconds = ((BDecimal) secondObj).floatValue();
-        }
         BigDecimal effectivePeriod = new BigDecimal(String.valueOf((((((days * 24L) + hours) * 60L) + minutes) * 60L) +
                 seconds));
         long onlyLongPeriod = effectivePeriod.longValue();
