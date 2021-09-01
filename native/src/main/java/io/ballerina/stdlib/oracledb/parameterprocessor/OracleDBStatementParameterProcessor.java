@@ -18,13 +18,15 @@
 
 package io.ballerina.stdlib.oracledb.parameterprocessor;
 
+import io.ballerina.runtime.api.types.Type;
+import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BXml;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
 import io.ballerina.stdlib.oracledb.utils.Utils;
-import io.ballerina.stdlib.sql.exception.ApplicationError;
+import io.ballerina.stdlib.sql.exception.DataError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultStatementParameterProcessor;
 import oracle.jdbc.OracleTypes;
 
@@ -55,7 +57,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
 
     @Override
     protected void setCustomSqlTypedParam(Connection connection, PreparedStatement preparedStatement, int index,
-        BObject typedValue) throws SQLException, ApplicationError {
+        BObject typedValue) throws SQLException, DataError {
         String sqlType = typedValue.getType().getName();
         Object value = typedValue.get(Constants.TypedValueFields.VALUE);
         switch (sqlType) {
@@ -77,7 +79,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     }
 
     @Override
-    public int getCustomOutParameterType(BObject typedValue) throws ApplicationError {
+    public int getCustomOutParameterType(BObject typedValue) throws DataError {
         String sqlType = typedValue.getType().getName();
         int sqlTypeValue;
         switch (sqlType) {
@@ -91,14 +93,14 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 sqlTypeValue = OracleTypes.INTERVALYM;
                 break;
             default:
-                throw new ApplicationError("Unsupported OutParameter type: " + sqlType);
+                throw new DataError("Unsupported OutParameter type: " + sqlType);
         }
         return sqlTypeValue;
     }
 
     @Override
     protected void setXml(Connection connection, PreparedStatement preparedStatement,
-                          int index, BXml value) throws SQLException, ApplicationError {
+                          int index, BXml value) throws SQLException, DataError {
         if (value == null) {
             preparedStatement.setNull(index, Types.NULL);
         } else {
@@ -107,14 +109,31 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 sqlXml.setString(value.toString());
                 preparedStatement.setObject(index, sqlXml, Types.SQLXML);
             } catch (NoClassDefFoundError e) {
-                throw new ApplicationError("Error occurred while setting an xml data. Check whether both " +
+                throw new DataError("Error occurred while setting an xml data. Check whether both " +
                         "`xdb.jar` and `xmlparserv2.jar` are added as dependency in Ballerina.toml");
             }
         }
     }
 
+    @Override
+    protected int setCustomBOpenRecord(Connection connection, PreparedStatement preparedStatement, int index,
+                                      Object value, boolean returnType) throws DataError, SQLException {
+        Type type = ((BMap<?, ?>) value).getType();
+        String recordName = type.getPackage().getName() + ":" + type.getName();
+        switch (recordName) {
+            case "oracledb:IntervalYearToMonth":
+                setIntervalYearToMonth(preparedStatement, index, value);
+                return returnType ? OracleTypes.INTERVALYM : 0;
+            case "oracledb:IntervalDayToSecond":
+                setIntervalDayToSecond(preparedStatement, index, value);
+                return returnType ? OracleTypes.INTERVALDS : 0;
+            default:
+                throw new DataError("Unsupported type passed in column index: " + index);
+        }
+    }
+
     private void setIntervalYearToMonth(PreparedStatement preparedStatement,
-                                        int index, Object value) throws SQLException, ApplicationError {
+                                        int index, Object value) throws SQLException, DataError {
         if (value == null) {
             preparedStatement.setNull(index, Types.NULL);
         } else if (value instanceof BString) {
@@ -126,7 +145,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     }
 
     private void setIntervalDayToSecond(PreparedStatement preparedStatement,
-                                        int index, Object value) throws SQLException, ApplicationError {
+                                        int index, Object value) throws SQLException, DataError {
         if (value == null) {
             preparedStatement.setNull(index, Types.NULL);
         } else if (value instanceof BString) {
@@ -138,7 +157,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     }
 
     private void setOracleObject(Connection connection, PreparedStatement preparedStatement, int index, Object value)
-            throws SQLException, ApplicationError {
+            throws SQLException, DataError {
         if (value == null) {
             throw Utils.throwInvalidParameterError(null, "object");
         }
@@ -147,7 +166,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     }
 
     private void setVarray(Connection connection, PreparedStatement preparedStatement, int index, Object value)
-            throws SQLException, ApplicationError {
+            throws SQLException, DataError {
         if (value == null) {
             throw Utils.throwInvalidParameterError(null, "varray");
         }

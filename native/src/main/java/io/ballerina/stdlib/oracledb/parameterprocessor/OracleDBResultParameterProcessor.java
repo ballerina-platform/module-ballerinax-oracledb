@@ -31,6 +31,7 @@ import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.oracledb.utils.ModuleUtils;
 import io.ballerina.stdlib.sql.exception.ApplicationError;
+import io.ballerina.stdlib.sql.exception.DataError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor;
 import io.ballerina.stdlib.sql.utils.ColumnDefinition;
 import io.ballerina.stdlib.sql.utils.ErrorGenerator;
@@ -74,7 +75,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
 
     @Override
     protected BMap<BString, Object> createUserDefinedType(Struct structValue, StructureType structType)
-            throws ApplicationError {
+            throws DataError {
         if (structValue == null) {
             return null;
         }
@@ -84,7 +85,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             Object[] dataArray = structValue.getAttributes();
             if (dataArray != null) {
                 if (dataArray.length != internalStructFields.length) {
-                    throw new ApplicationError("specified record and the returned SQL Struct field counts " +
+                    throw new DataError("specified record and the returned SQL Struct field counts " +
                             "are different, and hence not compatible");
                 }
                 int index = 0;
@@ -137,7 +138,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                 }
             }
         } catch (SQLException e) {
-            throw new ApplicationError("Error while retrieving data to create " + structType.getName()
+            throw new DataError("Error while retrieving data to create " + structType.getName()
                     + " record. ", e);
         }
         return struct;
@@ -146,7 +147,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
     @Override
     public Object processCustomTypeFromResultSet(ResultSet resultSet, int columnIndex,
                                                  ColumnDefinition columnDefinition)
-            throws ApplicationError, SQLException {
+            throws DataError, SQLException {
         int sqlType = columnDefinition.getSqlType();
         Type ballerinaType = columnDefinition.getBallerinaType();
         switch (sqlType) {
@@ -158,19 +159,19 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             case OracleTypes.TIMESTAMPLTZ:
                 return processTimestampWithTimezoneResult(resultSet, columnIndex, sqlType, ballerinaType);
             default:
-                throw new ApplicationError("Unsupported SQL type " + columnDefinition.getSqlName());
+                throw new DataError("Unsupported SQL type " + columnDefinition.getSqlName());
         }
     }
 
     @Override
     public Object processCustomOutParameters(
-            CallableStatement statement, int paramIndex, int sqlType) throws ApplicationError {
+            CallableStatement statement, int paramIndex, int sqlType) throws DataError {
         switch (sqlType) {
             case OracleTypes.INTERVALDS:
             case OracleTypes.INTERVALYM:
                 return processInterval(statement, paramIndex);
             default:
-                throw new ApplicationError("Unsupported SQL type '" + sqlType + "' when reading Procedure call " +
+                throw new DataError("Unsupported SQL type '" + sqlType + "' when reading Procedure call " +
                         "Out parameter of index '" + paramIndex + "'.");
         }
     }
@@ -193,7 +194,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
     }
 
     @Override
-    public Object convertTimeStamp(java.util.Date timestamp, int sqlType, Type type) throws ApplicationError {
+    public Object convertTimeStamp(java.util.Date timestamp, int sqlType, Type type) throws DataError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Date/Time");
         if (timestamp != null) {
             switch (type.getTag()) {
@@ -208,7 +209,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                             && timestamp instanceof Timestamp) {
                         return Utils.createDateRecord(new java.sql.Date(timestamp.getTime()));
                     } else {
-                        throw new ApplicationError("Unsupported Ballerina type:" +
+                        throw new DataError("Unsupported Ballerina type:" +
                                 type.getName() + " for SQL Timestamp data type.");
                     }
                 case TypeTags.INT_TAG:
@@ -220,23 +221,23 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         return null;
     }
 
-    private Object processInterval(CallableStatement statement, int paramIndex) throws ApplicationError {
+    private Object processInterval(CallableStatement statement, int paramIndex) throws DataError {
         try {
             return statement.getString(paramIndex);
         } catch (SQLException e) {
-            throw new ApplicationError("Error when reading Procedure call " +
+            throw new DataError("Error when reading Procedure call " +
                     "Out parameter of index '" + paramIndex + "'.");
         }
     }
 
     private Object processIntervalResult(ResultSet resultSet, int columnIndex, int sqlType, Type ballerinaType,
-                                         String sqlTypeName) throws ApplicationError, SQLException {
+                                         String sqlTypeName) throws DataError, SQLException {
         String intervalString = resultSet.getString(columnIndex);
         return convertInterval(intervalString, sqlType, ballerinaType, sqlTypeName);
     }
 
     private Object convertInterval(String interval, int sqlType, Type ballerinaType, String sqlTypeName)
-            throws ApplicationError {
+            throws DataError {
         if (interval != null) {
             switch (ballerinaType.getTag()) {
                 case TypeTags.STRING_TAG:
@@ -293,13 +294,13 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                                 return intervalMap;
                             }
                         }
-                        throw new ApplicationError("Unsupported Ballerina type:" +
+                        throw new DataError("Unsupported Ballerina type:" +
                                 ballerinaType.getName() + " for " + sqlTypeName + " data type.");
                     } catch (IndexOutOfBoundsException e) {
-                        throw new ApplicationError("Incompatible format found in : " + interval);
+                        throw new DataError("Incompatible format found in : " + interval);
                     }
                 default:
-                    throw new ApplicationError(sqlTypeName + " field cannot be converted to ballerina type : " +
+                    throw new DataError(sqlTypeName + " field cannot be converted to ballerina type : " +
                             ballerinaType.getName());
             }
         } else {
@@ -309,18 +310,18 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
 
     @Override
     public Object processXmlResult(ResultSet resultSet, int columnIndex, int sqlType, Type ballerinaType)
-            throws ApplicationError, SQLException {
+            throws DataError, SQLException {
         try {
             SQLXML sqlxml = resultSet.getSQLXML(columnIndex);
             return this.convertXml(sqlxml, sqlType, ballerinaType);
         } catch (NoClassDefFoundError e) {
-            throw new ApplicationError("Error occurred while retrieving an xml data. Check whether both " +
+            throw new DataError("Error occurred while retrieving an xml data. Check whether both " +
                     "`xdb.jar` and `xmlparserv2.jar` are added as dependency in Ballerina.toml");
         }
     }
 
     @Override
-    public Object convertXml(SQLXML value, int sqlType, Type type) throws ApplicationError, SQLException {
+    public Object convertXml(SQLXML value, int sqlType, Type type) throws DataError, SQLException {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL XML");
         if (value != null) {
             return XmlUtils.parse(value.getBinaryStream());
@@ -330,7 +331,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
     }
 
     @Override
-    public Object convertDecimal(BigDecimal value, int sqlType, Type type, boolean isNull) throws ApplicationError {
+    public Object convertDecimal(BigDecimal value, int sqlType, Type type, boolean isNull) throws DataError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL decimal or real");
         if (isNull) {
             return null;

@@ -257,12 +257,10 @@ isolated function insertNegativeIntervalsWithDifferentBalTypes() returns sql:Err
     IntervalYearToMonth intY3M = {years: 120, months: 11, sign: -1};
     IntervalYearToMonthValue colY3M = new (intY3M);
     IntervalYearToMonth intY3 = {years: 145, sign: -1};
-    IntervalYearToMonthValue colY3 = new (intY3);
     IntervalYearToMonth intM3 = {months: 311, sign: -1};
     IntervalYearToMonthValue colM3 = new (intM3);
 
     IntervalDayToSecond intDS3 = {days: 11, hours: 10, minutes: 9, seconds: 8.555, sign: -1};
-    IntervalDayToSecondValue colDS3 = new (intDS3);
     IntervalDayToSecond intDM = {days: 11, hours: 10, minutes: 9, sign: -1};
     IntervalDayToSecondValue colDM = new (intDM);
     IntervalDayToSecond intD3H = {days: 200, hours: 110, sign: -1};
@@ -287,7 +285,7 @@ isolated function insertNegativeIntervalsWithDifferentBalTypes() returns sql:Err
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestIntervalTable(ID, COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3,
         COL_DAY_TO_SECOND3, COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
         COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3)
-        VALUES (2, ${colY3M}, ${colY3}, ${colM3}, ${colDS3}, ${colDM}, ${colD3H}, ${colD3}, ${colHS7}, ${colHM},
+        VALUES (2, ${colY3M}, ${intY3}, ${colM3}, ${intDS3}, ${colDM}, ${colD3H}, ${colD3}, ${colHS7}, ${colHM},
          ${colH}, ${colMS}, ${colM}, ${colH3}, ${colS})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");

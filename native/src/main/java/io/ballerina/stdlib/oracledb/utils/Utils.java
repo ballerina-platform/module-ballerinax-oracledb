@@ -23,7 +23,7 @@ import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BValue;
 import io.ballerina.stdlib.oracledb.Constants;
-import io.ballerina.stdlib.sql.exception.ApplicationError;
+import io.ballerina.stdlib.sql.exception.DataError;
 import oracle.jdbc.OracleConnection;
 
 import java.sql.Connection;
@@ -160,7 +160,7 @@ public class Utils {
      * @param sqlType The SQL type of the parameter
      * @return sql:ApplicationError
      */
-    public static ApplicationError throwInvalidParameterError(Object value, String sqlType) {
+    public static DataError throwInvalidParameterError(Object value, String sqlType) {
         String valueName;
         if (value == null) {
             valueName = "null";
@@ -169,7 +169,7 @@ public class Utils {
         } else {
             valueName = value.getClass().getName();
         }
-        return new ApplicationError("Invalid parameter: " + valueName + " is passed as value for SQL type: " + sqlType);
+        return new DataError("Invalid parameter: " + valueName + " is passed as value for SQL type: " + sqlType);
     }
 
     /**

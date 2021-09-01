@@ -28,7 +28,7 @@ import io.ballerina.runtime.api.values.BDecimal;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.oracledb.Constants;
-import io.ballerina.stdlib.sql.exception.ApplicationError;
+import io.ballerina.stdlib.sql.exception.DataError;
 
 import java.math.BigDecimal;
 import java.sql.Array;
@@ -57,10 +57,10 @@ public class ConverterUtils {
      * Convert IntervalYearToMonthValue value to String.
      * @param value Custom IntervalYearToMonthValue value
      * @return String of INTERVAL_YEAR_TO_MONTH
-     * @throws ApplicationError error thrown if invalid types are passed
+     * @throws DataError error thrown if invalid types are passed
      */
     public static String convertIntervalYearToMonth(Object value)
-            throws ApplicationError {
+            throws DataError {
         Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.INTERVAL_YEAR_TO_MONTH);
 
         long years = fields.get(Constants.Types.IntervalYearToMonth.YEARS) == null ? 0L :
@@ -78,10 +78,10 @@ public class ConverterUtils {
      * Convert IntervalDayToSecondValue value to String.
      * @param value Custom IntervalDayToSecond value
      * @return String of INTERVAL_DAY_TO_SECOND
-     * @throws ApplicationError error thrown if invalid types are passed
+     * @throws DataError error thrown if invalid types are passed
      */
     public static String convertIntervalDayToSecond(Object value)
-            throws ApplicationError {
+            throws DataError {
         Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.INTERVAL_DAY_TO_SECOND);
         long days = fields.get(Constants.Types.IntervalDayToSecond.DAYS) == null ? 0L :
                 (Long) fields.get(Constants.Types.IntervalDayToSecond.DAYS);
@@ -112,7 +112,7 @@ public class ConverterUtils {
      * @return String of BFILE
      */
     public static Struct convertOracleObject(Connection connection, Object value)
-            throws ApplicationError, SQLException {
+            throws DataError, SQLException {
         Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.OBJECT_TYPE);
         String objectTypeName = ((BString) fields.get(Constants.Types.OracleObject.TYPE_NAME))
                 .getValue().toUpperCase(Locale.ENGLISH);
@@ -122,7 +122,7 @@ public class ConverterUtils {
         } catch (SQLException e) {
             throw(e);
         } catch (Exception e) {
-            throw new ApplicationError("The array contains elements of unmappable types.");
+            throw new DataError("The array contains elements of unmappable types.");
         }
     }
 
@@ -130,10 +130,10 @@ public class ConverterUtils {
      * Convert VArray value to oracle.sql.Array.
      * @param value Custom VArray Value
      * @return sql Array
-     * @throws ApplicationError throws error if the parameter types are incorrect
+     * @throws DataError throws error if the parameter types are incorrect
      */
     public static Array convertVarray(Connection connection, Object value)
-            throws ApplicationError, SQLException {
+            throws DataError, SQLException {
         Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.VARRAY);
         String name = ((BString) fields.get(Constants.Types.Varray.NAME)).getValue().toUpperCase(Locale.ENGLISH);
         Object varray = fields.get(Constants.Types.Varray.ELEMENTS);
@@ -141,7 +141,7 @@ public class ConverterUtils {
     }
 
     private static Map<String, Object> getRecordData(Object value, String sqlType)
-            throws ApplicationError {
+            throws DataError {
         Type type = TypeUtils.getType(value);
         if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
             throw Utils.throwInvalidParameterError(value, sqlType);
@@ -189,7 +189,7 @@ public class ConverterUtils {
         return structData;
     }
 
-    private static Object[] getArrayData(Object bValue) throws ApplicationError {
+    private static Object[] getArrayData(Object bValue) throws DataError {
         Type elementType = ((BArray) bValue).getElementType();
         int tag = elementType.getTag();
         switch (tag) {
@@ -208,7 +208,7 @@ public class ConverterUtils {
             case TypeTags.ANYDATA_TAG:
                 return getAnydataArrayData(bValue);
             default:
-                throw new ApplicationError("Unsupported data type for array specified for struct parameter");
+                throw new DataError("Unsupported data type for array specified for struct parameter");
         }
     }
 
@@ -261,7 +261,7 @@ public class ConverterUtils {
         return arrayData;
     }
 
-    private static Object[] getAnydataArrayData(Object value) throws ApplicationError {
+    private static Object[] getAnydataArrayData(Object value) throws DataError {
         int arrayLength = ((BArray) value).size();
         Object[] arrayData = new Object[arrayLength];
         for (int i = 0; i < arrayLength; i++) {
@@ -275,7 +275,7 @@ public class ConverterUtils {
             } else if (element instanceof BArray) {
                 arrayData[i] = getAnydataArrayData(element);
             } else {
-                throw new ApplicationError("The array contains elements of unmappable types.");
+                throw new DataError("The array contains elements of unmappable types.");
             }
         }
         return arrayData;
