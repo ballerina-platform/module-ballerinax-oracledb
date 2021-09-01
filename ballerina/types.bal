@@ -65,30 +65,6 @@ public type Varray record {|
     byte[]|int[]|boolean[]|float[]|decimal[]|string[]? elements;
 |};
 
-# Represents INTERVAL YEAR TO MONTH Oracle DB field.
-#
-# + value - Value of parameter passed into the SQL statement
-public distinct class IntervalYearToMonthValue {
-    *sql:TypedValue;
-    public string|IntervalYearToMonth? value;
-
-    public isolated function init(string|IntervalYearToMonth? value = ()) {
-        self.value = value;
-    }
-}
-
-# Represents INTERVAL DAY TO SECOND Oracle DB field.
-#
-# + value - Value of parameter passed into the SQL statement
-public distinct class IntervalDayToSecondValue {
-    *sql:TypedValue;
-    public string|IntervalDayToSecond? value;
-
-    public isolated function init(string|IntervalDayToSecond? value = ()) {
-        self.value = value;
-    }
-}
-
 # Represents OBJECT TYPE Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement

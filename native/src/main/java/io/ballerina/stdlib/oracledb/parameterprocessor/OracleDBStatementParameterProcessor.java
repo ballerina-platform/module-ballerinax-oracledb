@@ -61,12 +61,6 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         String sqlType = typedValue.getType().getName();
         Object value = typedValue.get(Constants.TypedValueFields.VALUE);
         switch (sqlType) {
-            case Constants.Types.CustomTypes.INTERVAL_YEAR_TO_MONTH:
-                setIntervalYearToMonth(preparedStatement, index, value);
-                break;
-            case Constants.Types.CustomTypes.INTERVAL_DAY_TO_SECOND:
-                setIntervalDayToSecond(preparedStatement, index, value);
-                break;
             case Constants.Types.CustomTypes.OBJECT:
                 setOracleObject(connection, preparedStatement, index, value);
                 break;
@@ -119,12 +113,12 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     protected int setCustomBOpenRecord(Connection connection, PreparedStatement preparedStatement, int index,
                                       Object value, boolean returnType) throws DataError, SQLException {
         Type type = ((BMap<?, ?>) value).getType();
-        String recordName = type.getPackage().getName() + ":" + type.getName();
+        String recordName = type.getName();
         switch (recordName) {
-            case "oracledb:IntervalYearToMonth":
+            case Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD:
                 setIntervalYearToMonth(preparedStatement, index, value);
                 return returnType ? OracleTypes.INTERVALYM : 0;
-            case "oracledb:IntervalDayToSecond":
+            case Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD:
                 setIntervalDayToSecond(preparedStatement, index, value);
                 return returnType ? OracleTypes.INTERVALDS : 0;
             default:

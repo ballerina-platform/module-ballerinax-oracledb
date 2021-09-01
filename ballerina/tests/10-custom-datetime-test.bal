@@ -56,8 +56,8 @@ isolated function insertIntervalWithBalTypeString() returns sql:Error? {
     time:Civil timestampWTz = {utcOffset: {hours: 5, minutes: 30}, timeAbbrev: "+05:30", year: 2020,
                                  month: 1, day: 5, hour: 10, minute: 35, second: 10};
     sql:DateTimeValue dateTimeValueForTz = new (timestampWTz);
-    IntervalYearToMonthValue intervalYtoM = new("15-11");
-    IntervalDayToSecondValue intervalDtoS = new("13 5:34:23.45");
+    string intervalYtoM = "15-11";
+    string intervalDtoS = "13 5:34:23.45";
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(
         COL_DATE, COL_DATE_ONLY, COL_TIMESTAMP, COL_TIMESTAMPTZ, COL_INTERVAL_YEAR_TO_MONTH,
         COL_INTERVAL_DAY_TO_SECOND) VALUES (${dateTimeValue}, ${dateValue}, ${timestampValue}, ${dateTimeValueForTz}, ${intervalYtoM},
@@ -73,8 +73,8 @@ isolated function insertIntervalWithBalTypeString() returns sql:Error? {
    dependsOn: [insertIntervalWithBalTypeString]
 }
 isolated function insertIntervalWithBalType() returns sql:Error? {
-   IntervalYearToMonthValue intervalYtoM = new({ years:15, months: 11 });
-   IntervalDayToSecondValue intervalDtoS = new({ days:13, hours: 5, minutes: 34, seconds: 23.45 });
+   IntervalYearToMonth intervalYtoM = {years:15, months: 11};
+   IntervalDayToSecond intervalDtoS = {days:13, hours: 5, minutes: 34, seconds: 23.45};
    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_INTERVAL_YEAR_TO_MONTH,
        COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
    sql:ExecutionResult result = check executeQuery(insertQuery);
@@ -92,8 +92,8 @@ isolated function insertIntervalNull() returns sql:Error? {
    sql:TimestampValue timestamp = new ();
    sql:TimestampValue timestamptz = new ();
    sql:TimestampValue timestamptzl = new ();
-   IntervalYearToMonthValue intervalYtoM = new ();
-   IntervalDayToSecondValue intervalDtoS = new ();
+   IntervalYearToMonth? intervalYtoM = ();
+   IntervalDayToSecond? intervalDtoS = ();
    sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(
        COL_DATE, COL_TIMESTAMP, COL_TIMESTAMPTZ, COL_TIMESTAMPTZL,
        COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND) VALUES (
@@ -208,11 +208,8 @@ isolated function selectIntervalYMWithoutReturnType() returns error? {
     IntervalYearToMonth interval = {years:120, months:3};
     IntervalYearToMonth interval2 = {years:105};
     IntervalYearToMonth interval3 = {months:500};
-    IntervalYearToMonthValue value = new (interval);
-    IntervalYearToMonthValue value2 = new (interval2);
-    IntervalYearToMonthValue value3 = new (interval3);
     sql:ParameterizedQuery sqlQuery = `SELECT COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3 FROM TestIntervalTable
-                WHERE COL_YEAR3_TO_MONTH = ${value} AND COL_YEAR3 = ${value2} AND COL_MONTH3 = ${value3} AND ID = ${id}`;
+                WHERE COL_YEAR3_TO_MONTH = ${interval} AND COL_YEAR3 = ${interval2} AND COL_MONTH3 = ${interval3} AND ID = ${id}`;
     record{}? data = check queryClient(sqlQuery);
     var expectedData = {
         COL_YEAR3_TO_MONTH: "120-3",
@@ -227,12 +224,11 @@ isolated function selectIntervalYMWithoutReturnType() returns error? {
 }
 isolated function selectAllIntervalDSWithoutReturnType() returns error? {
     int id = 1;
-    IntervalDayToSecond interval = {days:11, hours:10, minutes:9, seconds:8.555};
-    IntervalDayToSecondValue value = new (interval);
+    IntervalDayToSecond intervalVal = {days:11, hours:10, minutes:9, seconds:8.555};
     sql:ParameterizedQuery sqlQuery = `SELECT COL_DAY_TO_SECOND3,
                 COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
                 COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3 FROM TestIntervalTable
-                WHERE COL_DAY_TO_SECOND3 = ${value} AND ID = ${id}`;
+                WHERE COL_DAY_TO_SECOND3 = ${intervalVal} AND ID = ${id}`;
     record{}? data = check queryClient(sqlQuery);
     var expectedData = {
         COL_DAY_TO_SECOND3: "11 10:9:8.555",
@@ -255,38 +251,26 @@ isolated function selectAllIntervalDSWithoutReturnType() returns error? {
 }
 isolated function insertNegativeIntervalsWithDifferentBalTypes() returns sql:Error? {
     IntervalYearToMonth intY3M = {years: 120, months: 11, sign: -1};
-    IntervalYearToMonthValue colY3M = new (intY3M);
     IntervalYearToMonth intY3 = {years: 145, sign: -1};
     IntervalYearToMonth intM3 = {months: 311, sign: -1};
-    IntervalYearToMonthValue colM3 = new (intM3);
 
     IntervalDayToSecond intDS3 = {days: 11, hours: 10, minutes: 9, seconds: 8.555, sign: -1};
     IntervalDayToSecond intDM = {days: 11, hours: 10, minutes: 9, sign: -1};
-    IntervalDayToSecondValue colDM = new (intDM);
     IntervalDayToSecond intD3H = {days: 200, hours: 110, sign: -1};
-    IntervalDayToSecondValue colD3H = new (intD3H);
     IntervalDayToSecond intD3 = {days:167, sign: -1};
-    IntervalDayToSecondValue colD3 = new (intD3);
     IntervalDayToSecond intHS7 = {hours:10, minutes:9, seconds:8.555666, sign: -1};
-    IntervalDayToSecondValue colHS7 = new (intHS7);
     IntervalDayToSecond intHM = {hours:10, minutes:9, sign: -1};
-    IntervalDayToSecondValue colHM = new (intHM);
     IntervalDayToSecond intH = {hours:12, sign: -1};
-    IntervalDayToSecondValue colH = new (intH);
     IntervalDayToSecond intMS = {minutes:9, seconds:30, sign: -1};
-    IntervalDayToSecondValue colMS = new (intMS);
     IntervalDayToSecond intM = {minutes:9, sign: -1};
-    IntervalDayToSecondValue colM = new (intM);
     IntervalDayToSecond intH3 = {hours:810, sign: -1};
-    IntervalDayToSecondValue colH3 = new (intH3);
     IntervalDayToSecond intS = {seconds:15.679, sign: -1};
-    IntervalDayToSecondValue colS = new (intS);
 
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestIntervalTable(ID, COL_YEAR3_TO_MONTH, COL_YEAR3, COL_MONTH3,
         COL_DAY_TO_SECOND3, COL_DAY_TO_MINUTE, COL_DAY_TO_HOUR, COL_DAY3, COL_HOUR_TO_SECOND7, COL_HOUR_TO_MINUTE,
         COL_HOUR, COL_MINUTE_TO_SECOND, COL_MINUTE, COL_HOUR3, COL_SECOND2_3)
-        VALUES (2, ${colY3M}, ${intY3}, ${colM3}, ${intDS3}, ${colDM}, ${colD3H}, ${colD3}, ${colHS7}, ${colHM},
-         ${colH}, ${colMS}, ${colM}, ${colH3}, ${colS})`;
+        VALUES (2, ${intY3M}, ${intY3}, ${intM3}, ${intDS3}, ${intDM}, ${intD3H}, ${intD3}, ${intHS7}, ${intHM},
+         ${intH}, ${intMS}, ${intM}, ${intH3}, ${intS})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     var insertId = result.lastInsertId;
