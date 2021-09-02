@@ -179,8 +179,6 @@ public final class Constants {
 
             private CustomTypes() {}
 
-            public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthValue";
-            public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondValue";
             public static final String OBJECT = "ObjectTypeValue";
             public static final String VARRAY = "VarrayValue";
         }
