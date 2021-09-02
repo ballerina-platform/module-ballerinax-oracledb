@@ -87,7 +87,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 sqlTypeValue = OracleTypes.INTERVALYM;
                 break;
             default:
-                throw new DataError("Unsupported OutParameter type: " + sqlType);
+                throw new DataError(String.format("Unsupported OutParameter type: %s", sqlType));
         }
         return sqlTypeValue;
     }
@@ -122,7 +122,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 setIntervalDayToSecond(preparedStatement, index, value);
                 return returnType ? OracleTypes.INTERVALDS : 0;
             default:
-                throw new DataError("Unsupported type passed in column index: " + index);
+                throw new DataError(String.format("Unsupported type passed in column index: %d", index));
         }
     }
 

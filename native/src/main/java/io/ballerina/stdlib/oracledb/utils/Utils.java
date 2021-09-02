@@ -169,7 +169,8 @@ public class Utils {
         } else {
             valueName = value.getClass().getName();
         }
-        return new DataError("Invalid parameter: " + valueName + " is passed as value for SQL type: " + sqlType);
+        return new DataError(String.format("Invalid parameter: %s is passed as value for SQL type: %s",
+                valueName, sqlType));
     }
 
     /**

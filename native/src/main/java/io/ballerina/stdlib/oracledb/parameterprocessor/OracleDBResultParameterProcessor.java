@@ -138,8 +138,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                 }
             }
         } catch (SQLException e) {
-            throw new DataError("Error while retrieving data to create " + structType.getName()
-                    + " record. ", e);
+            throw new DataError(String.format("Error while retrieving data to create %s record. ",
+                    structType.getName()), e);
         }
         return struct;
     }
@@ -171,8 +171,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             case OracleTypes.INTERVALYM:
                 return processInterval(statement, paramIndex);
             default:
-                throw new DataError("Unsupported SQL type '" + sqlType + "' when reading Procedure call " +
-                        "Out parameter of index '" + paramIndex + "'.");
+                throw new DataError(String.format("Unsupported SQL type '%d' when reading Procedure call " +
+                        "Out parameter of index '%d'.", sqlType, paramIndex));
         }
     }
 
@@ -185,7 +185,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                 case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH:
                     return convertInterval((String) value, sqlType, ballerinaType, "INTERVALYM");
                 default:
-                    return ErrorGenerator.getSQLApplicationError("Unsupported SQL type " + sqlType);
+                    return ErrorGenerator.getSQLApplicationError(String.format("Unsupported SQL type %d", sqlType));
             }
 
         } catch (ApplicationError e) {
@@ -209,8 +209,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                             && timestamp instanceof Timestamp) {
                         return Utils.createDateRecord(new java.sql.Date(timestamp.getTime()));
                     } else {
-                        throw new DataError("Unsupported Ballerina type:" +
-                                type.getName() + " for SQL Timestamp data type.");
+                        throw new DataError(String.format("Unsupported Ballerina type:%s for SQL Timestamp data type.",
+                                type.getName()));
                     }
                 case TypeTags.INT_TAG:
                     return timestamp.getTime();
@@ -225,8 +225,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         try {
             return statement.getString(paramIndex);
         } catch (SQLException e) {
-            throw new DataError("Error when reading Procedure call " +
-                    "Out parameter of index '" + paramIndex + "'.");
+            throw new DataError(String.format("Error when reading Procedure call " +
+                    "Out parameter of index '%d'.", paramIndex));
         }
     }
 
@@ -294,14 +294,14 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                                 return intervalMap;
                             }
                         }
-                        throw new DataError("Unsupported Ballerina type:" +
-                                ballerinaType.getName() + " for " + sqlTypeName + " data type.");
+                        throw new DataError(String.format("Unsupported Ballerina type:%s for %s data type.",
+                                ballerinaType.getName(), sqlTypeName));
                     } catch (IndexOutOfBoundsException e) {
-                        throw new DataError("Incompatible format found in : " + interval);
+                        throw new DataError(String.format("Incompatible format found in : %s", interval));
                     }
                 default:
-                    throw new DataError(sqlTypeName + " field cannot be converted to ballerina type : " +
-                            ballerinaType.getName());
+                    throw new DataError(String.format("%s field cannot be converted to ballerina type : %s",
+                            sqlTypeName, ballerinaType.getName()));
             }
         } else {
             return null;
