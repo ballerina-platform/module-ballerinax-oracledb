@@ -20,6 +20,20 @@ import ballerina/test;
 @test:Config {
     groups: ["batch-execute"]
 }
+isolated function batchExecuteWithEmptyArray() returns error? {
+    sql:ParameterizedQuery[] sqlQueries = [];
+    sql:ExecutionResult[]|sql:Error result = batchExecuteQuery(sqlQueries);
+    test:assertTrue(result is sql:Error);
+    if result is sql:ApplicationError {
+        test:assertTrue(result.message().includes("Parameter 'sqlQueries' cannot be an empty array"));
+      } else {
+        test:assertFail("ApplicationError Error expected");
+    }
+}
+
+@test:Config {
+    groups: ["batch-execute"]
+}
 isolated function batchInsertIntoDataTable() returns error? {
     var data = [
         {col_number:3, col_float:922.337, col_binary_float:123.34, col_binary_double:123.34},
@@ -28,7 +42,7 @@ isolated function batchInsertIntoDataTable() returns error? {
     ];
     sql:ParameterizedQuery[] sqlQueries =
         from var row in data
-        select `INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double) 
+        select `INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double)
         VALUES (${row.col_number}, ${row.col_float}, ${row.col_binary_float}, ${row.col_binary_double})`;
 
     check validateBatchExecutionResult(check batchExecuteQuery(sqlQueries), [1, 1, 1], [3,4,5]);

@@ -94,17 +94,13 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     @Override
     protected void setXml(Connection connection, PreparedStatement preparedStatement,
                           int index, BXml value) throws SQLException, DataError {
-        if (value == null) {
-            preparedStatement.setNull(index, Types.NULL);
-        } else {
-            try {
-                SQLXML sqlXml = connection.createSQLXML();
-                sqlXml.setString(value.toString());
-                preparedStatement.setObject(index, sqlXml, Types.SQLXML);
-            } catch (NoClassDefFoundError e) {
-                throw new DataError("Error occurred while setting an xml data. Check whether both " +
-                        "`xdb.jar` and `xmlparserv2.jar` are added as dependency in Ballerina.toml");
-            }
+        try {
+            SQLXML sqlXml = connection.createSQLXML();
+            sqlXml.setString(value.toString());
+            preparedStatement.setObject(index, sqlXml, Types.SQLXML);
+        } catch (NoClassDefFoundError e) {
+            throw new DataError("Error occurred while setting an xml data. Check whether both " +
+                    "`xdb.jar` and `xmlparserv2.jar` are added as dependency in Ballerina.toml");
         }
     }
 

@@ -239,65 +239,59 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             throws DataError {
         if (interval != null) {
             switch (ballerinaType.getTag()) {
-                case TypeTags.STRING_TAG:
-                    return fromString(interval);
                 case TypeTags.OBJECT_TYPE_TAG:
                 case TypeTags.RECORD_TYPE_TAG:
-                    try {
-                        boolean isNegative = interval.startsWith("-");
-                        if (isNegative) {
-                            interval = interval.substring(1);
-                        }
-                        if (sqlType == OracleTypes.INTERVALDS) {
-                            //format: [-]DD HH:Min:SS.XXX
-                            if (ballerinaType.getName().
-                                    equalsIgnoreCase(Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD)) {
-                                String[] splitOnSpaces = interval.split("\\s+");
-                                String days = splitOnSpaces[0];
-                                String[] splitOnColons = splitOnSpaces[1].split(":");
-                                int dayValue = Integer.parseInt(days);
-                                int hourValue = Integer.parseInt(splitOnColons[0]);
-                                int minuteValue = Integer.parseInt(splitOnColons[1]);
-                                BigDecimal seconds = new BigDecimal(splitOnColons[2]);
-                                BMap<BString, Object> intervalMap = ValueCreator
-                                        .createRecordValue(ModuleUtils.getModule(),
-                                                Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD);
-                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.DAYS),
-                                        dayValue);
-                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.HOURS),
-                                        hourValue);
-                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.MINUTES),
-                                        minuteValue);
-                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.SECONDS),
-                                        ValueCreator.createDecimalValue(seconds));
-                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.SIGN),
-                                        isNegative ? -1L  : 1L);
-                                return intervalMap;
-                            }
-                        } else {
-                            //format: [-]YY-MM
-                            if (ballerinaType.getName().
-                                    equalsIgnoreCase(Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD)) {
-                                String[] splitOnDash = interval.split("-");
-                                int yearValue = Integer.parseInt(splitOnDash[0]);
-                                int monthValue = Integer.parseInt(splitOnDash[1]);
-                                BMap<BString, Object> intervalMap = ValueCreator
-                                        .createRecordValue(ModuleUtils.getModule(),
-                                                Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD);
-                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.YEARS),
-                                        yearValue);
-                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.MONTHS),
-                                        monthValue);
-                                intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.SIGN),
-                                        isNegative ? -1L : 1L);
-                                return intervalMap;
-                            }
-                        }
-                        throw new DataError(String.format("Unsupported Ballerina type:%s for %s data type.",
-                                ballerinaType.getName(), sqlTypeName));
-                    } catch (IndexOutOfBoundsException e) {
-                        throw new DataError(String.format("Incompatible format found in : %s", interval));
+                    boolean isNegative = interval.startsWith("-");
+                    if (isNegative) {
+                        interval = interval.substring(1);
                     }
+                    if (sqlType == OracleTypes.INTERVALDS) {
+                        //format: [-]DD HH:Min:SS.XXX
+                        if (ballerinaType.getName().
+                                equalsIgnoreCase(Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD)) {
+                            String[] splitOnSpaces = interval.split("\\s+");
+                            String days = splitOnSpaces[0];
+                            String[] splitOnColons = splitOnSpaces[1].split(":");
+                            int dayValue = Integer.parseInt(days);
+                            int hourValue = Integer.parseInt(splitOnColons[0]);
+                            int minuteValue = Integer.parseInt(splitOnColons[1]);
+                            BigDecimal seconds = new BigDecimal(splitOnColons[2]);
+                            BMap<BString, Object> intervalMap = ValueCreator
+                                    .createRecordValue(ModuleUtils.getModule(),
+                                            Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD);
+                            intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.DAYS),
+                                    dayValue);
+                            intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.HOURS),
+                                    hourValue);
+                            intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.MINUTES),
+                                    minuteValue);
+                            intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.SECONDS),
+                                    ValueCreator.createDecimalValue(seconds));
+                            intervalMap.put(StringUtils.fromString(Constants.Types.IntervalDayToSecond.SIGN),
+                                    isNegative ? -1L  : 1L);
+                            return intervalMap;
+                        }
+                    } else {
+                        //format: [-]YY-MM
+                        if (ballerinaType.getName().
+                                equalsIgnoreCase(Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD)) {
+                            String[] splitOnDash = interval.split("-");
+                            int yearValue = Integer.parseInt(splitOnDash[0]);
+                            int monthValue = Integer.parseInt(splitOnDash[1]);
+                            BMap<BString, Object> intervalMap = ValueCreator
+                                    .createRecordValue(ModuleUtils.getModule(),
+                                            Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD);
+                            intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.YEARS),
+                                    yearValue);
+                            intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.MONTHS),
+                                    monthValue);
+                            intervalMap.put(StringUtils.fromString(Constants.Types.IntervalYearToMonth.SIGN),
+                                    isNegative ? -1L : 1L);
+                            return intervalMap;
+                        }
+                    }
+                    throw new DataError(String.format("Unsupported Ballerina type:%s for %s data type.",
+                            ballerinaType.getName(), sqlTypeName));
                 default:
                     throw new DataError(String.format("%s field cannot be converted to ballerina type : %s",
                             sqlTypeName, ballerinaType.getName()));
