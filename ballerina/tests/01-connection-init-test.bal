@@ -19,6 +19,15 @@ import ballerina/file;
 
 int SSLPORT = 2484;
 
+// with no parameters
+@test:Config {
+    groups:["connection"]
+}
+isolated function testWithNoParams() {
+    Client|sql:Error oracledbClient = new();
+    test:assertTrue(oracledbClient is sql:Error, "Initializing with no parameters should fail");
+}
+
 // with user and password only
 @test:Config {
     groups:["connection"]

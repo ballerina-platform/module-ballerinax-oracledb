@@ -138,7 +138,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                 }
             }
         } catch (SQLException e) {
-            throw new DataError(String.format("Error while retrieving data to create %s record. ",
+            throw new DataError(String.format("Error while retrieving data to create %s record.",
                     structType.getName()), e);
         }
         return struct;
@@ -159,7 +159,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             case OracleTypes.TIMESTAMPLTZ:
                 return processTimestampWithTimezoneResult(resultSet, columnIndex, sqlType, ballerinaType);
             default:
-                throw new DataError("Unsupported SQL type " + columnDefinition.getSqlName());
+                throw new DataError(String.format("Unsupported SQL type %s", columnDefinition.getSqlName()));
         }
     }
 
@@ -187,7 +187,6 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                 default:
                     return ErrorGenerator.getSQLApplicationError(String.format("Unsupported SQL type %d", sqlType));
             }
-
         } catch (ApplicationError e) {
             return ErrorGenerator.getSQLApplicationError(e.getMessage());
         }
