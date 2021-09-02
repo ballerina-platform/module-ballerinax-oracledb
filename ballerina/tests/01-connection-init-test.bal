@@ -190,13 +190,13 @@ isolated function testWithOptionsWithErroneousSSL() returns error? {
         password = PASSWORD,
         port = PORT,
         database = DATABASE,
-        options = options2
+        options = options3
     );
 
     test:assertTrue(oracledbClient3 is error);
     if oracledbClient3 is sql:ApplicationError {
         test:assertTrue(oracledbClient3.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
-        "IO Error: closing inbound before receiving peer's close_notify"));
+        "IO Error: The Network Adapter could not establish the connection"));
     } else {
         test:assertFail("Error ApplicatonError expected");
     }
