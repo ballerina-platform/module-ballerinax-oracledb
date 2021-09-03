@@ -45,7 +45,7 @@ type InvalidRecord record {
 function queryInvalidRecordParam() {
     InvalidRecord recordValue = {id : 1};
     sql:ParameterizedQuery sqlQuery = `SELECT * from DataTable WHERE row_id = ${recordValue}`;
-    record {}|error? result = trap queryClient(sqlQuery);
+    record {}|error? result = queryClient(sqlQuery);
     test:assertTrue(result is error);
     if result is sql:ApplicationError {
         test:assertTrue(result.message().includes("Unsupported type passed in column index: 1"));
