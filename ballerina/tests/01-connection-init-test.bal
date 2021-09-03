@@ -19,6 +19,15 @@ import ballerina/file;
 
 int SSLPORT = 2484;
 
+// with no parameters
+@test:Config {
+    groups:["connection"]
+}
+isolated function testWithNoParams() {
+    Client|sql:Error oracledbClient = new();
+    test:assertTrue(oracledbClient is sql:Error, "Initializing with no parameters should fail");
+}
+
 // with user and password only
 @test:Config {
     groups:["connection"]
@@ -181,13 +190,13 @@ isolated function testWithOptionsWithErroneousSSL() returns error? {
         password = PASSWORD,
         port = PORT,
         database = DATABASE,
-        options = options2
+        options = options3
     );
 
     test:assertTrue(oracledbClient3 is error);
     if oracledbClient3 is sql:ApplicationError {
         test:assertTrue(oracledbClient3.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
-        "IO Error: closing inbound before receiving peer's close_notify"));
+        "IO Error: The Network Adapter could not establish the connection"));
     } else {
         test:assertFail("Error ApplicatonError expected");
     }

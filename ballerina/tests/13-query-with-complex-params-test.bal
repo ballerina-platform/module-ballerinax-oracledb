@@ -84,6 +84,7 @@ isolated function queryXmlWithReturnType() returns error? {
 
 type SelectComplexData record {
     decimal INT_TYPE;
+    string INT_AS_STR_TYPE;
     float DOUBLE_TYPE;
     string STRING_TYPE;
 };
@@ -94,9 +95,10 @@ type SelectComplexData record {
 isolated function testGetPrimitiveTypesRecord() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     SelectComplexData value = check oracledbClient->queryRow(
-	`SELECT int_type, double_type, string_type from ComplexDataTable WHERE row_id = 1`);
+	`SELECT int_type, int_type as int_as_str_type, double_type, string_type from ComplexDataTable WHERE row_id = 1`);
     SelectComplexData expectedData = {
         INT_TYPE: 1,
+        INT_AS_STR_TYPE: "1",
         DOUBLE_TYPE: 2.13909503923E9,
         STRING_TYPE: "Hello"
     };

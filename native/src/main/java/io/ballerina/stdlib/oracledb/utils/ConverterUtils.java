@@ -49,9 +49,8 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
  * @since 0.1.0
  */
 public class ConverterUtils {
-    private ConverterUtils() {
 
-    }
+    private ConverterUtils() {}
 
     /**
      * Convert IntervalYearToMonthValue value to String.
@@ -143,9 +142,6 @@ public class ConverterUtils {
     private static Map<String, Object> getRecordData(Object value, String sqlType)
             throws DataError {
         Type type = TypeUtils.getType(value);
-        if (type.getTag() != TypeTags.RECORD_TYPE_TAG) {
-            throw Utils.throwInvalidParameterError(value, sqlType);
-        }
         Map<String, Field> structFields = ((StructureType) type).getFields();
         int fieldCount = structFields.size();
         Iterator<Field> fieldIterator = structFields.values().iterator();

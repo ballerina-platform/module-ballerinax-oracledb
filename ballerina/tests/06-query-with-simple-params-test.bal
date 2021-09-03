@@ -35,6 +35,25 @@ isolated function querySingleString() returns error? {
     validateGeneralQueryTableResult(check queryClient(sqlQuery));
 }
 
+type InvalidRecord record {
+    int id;
+};
+
+@test:Config {
+    groups: ["query", "query-simple-params"]
+}
+function queryInvalidRecordParam() {
+    InvalidRecord recordValue = {id : 1};
+    sql:ParameterizedQuery sqlQuery = `SELECT * from DataTable WHERE row_id = ${recordValue}`;
+    record {}|error? result = queryClient(sqlQuery);
+    test:assertTrue(result is error);
+    if result is sql:ApplicationError {
+        test:assertTrue(result.message().includes("Unsupported type passed in column index: 1"));
+    } else {
+        test:assertFail("ApplicationError Error expected.");
+    }
+}
+
 isolated function validateGeneralQueryTableResult(record{}? returnData) {
     if (returnData is ()) {
         test:assertFail("Empty row returned.");

@@ -21,7 +21,6 @@ package io.ballerina.stdlib.oracledb.parameterprocessor;
 import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
-import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BXml;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
@@ -95,17 +94,13 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     @Override
     protected void setXml(Connection connection, PreparedStatement preparedStatement,
                           int index, BXml value) throws SQLException, DataError {
-        if (value == null) {
-            preparedStatement.setNull(index, Types.NULL);
-        } else {
-            try {
-                SQLXML sqlXml = connection.createSQLXML();
-                sqlXml.setString(value.toString());
-                preparedStatement.setObject(index, sqlXml, Types.SQLXML);
-            } catch (NoClassDefFoundError e) {
-                throw new DataError("Error occurred while setting an xml data. Check whether both " +
-                        "`xdb.jar` and `xmlparserv2.jar` are added as dependency in Ballerina.toml");
-            }
+        try {
+            SQLXML sqlXml = connection.createSQLXML();
+            sqlXml.setString(value.toString());
+            preparedStatement.setObject(index, sqlXml, Types.SQLXML);
+        } catch (NoClassDefFoundError e) {
+            throw new DataError("Error occurred while setting an xml data. Check whether both " +
+                    "`xdb.jar` and `xmlparserv2.jar` are added as dependency in Ballerina.toml");
         }
     }
 
@@ -128,26 +123,15 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
 
     private void setIntervalYearToMonth(PreparedStatement preparedStatement,
                                         int index, Object value) throws SQLException, DataError {
-        if (value == null) {
-            preparedStatement.setNull(index, Types.NULL);
-        } else if (value instanceof BString) {
-            preparedStatement.setString(index, value.toString());
-        } else {
-            String intervalYToM = ConverterUtils.convertIntervalYearToMonth(value);
-            preparedStatement.setString(index, intervalYToM);
-        }
+        String intervalYToM = ConverterUtils.convertIntervalYearToMonth(value);
+        preparedStatement.setString(index, intervalYToM);
     }
 
     private void setIntervalDayToSecond(PreparedStatement preparedStatement,
                                         int index, Object value) throws SQLException, DataError {
-        if (value == null) {
-            preparedStatement.setNull(index, Types.NULL);
-        } else if (value instanceof BString) {
-            preparedStatement.setString(index, value.toString());
-        } else {
-            String intervalYToM = ConverterUtils.convertIntervalDayToSecond(value);
-            preparedStatement.setString(index, intervalYToM);
-        }
+        String intervalYToM = ConverterUtils.convertIntervalDayToSecond(value);
+        preparedStatement.setString(index, intervalYToM);
+
     }
 
     private void setOracleObject(Connection connection, PreparedStatement preparedStatement, int index, Object value)

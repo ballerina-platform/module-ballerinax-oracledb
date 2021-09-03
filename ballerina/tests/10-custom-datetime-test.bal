@@ -371,3 +371,27 @@ isolated function selectAllNegativeIntervalsWithReturnType() returns error? {
     };
     test:assertEquals(expectedData, data, "Expected data and actual are mismatched");
 }
+
+type InvalidTimestampRecord record {
+    int id;
+};
+
+type InvalidTimestampReturnType record {
+    InvalidTimestampRecord col_date;
+};
+
+@test:Config {
+    groups: ["datetime"],
+    dependsOn: [insertDateTimeTypesAndIntervalsWithString]
+}
+isolated function selectTimestampWithInvalidReturnType() returns error? {
+    int id = 1;
+    sql:ParameterizedQuery sqlQuery = `SELECT COL_DATE FROM TestDateTimeTable WHERE pk = ${id}`;
+    record {}|error? data = queryClient(sqlQuery, InvalidTimestampReturnType);
+    test:assertTrue(data is error);
+    if data is sql:ApplicationError {
+        test:assertTrue(data.message().includes("Unsupported Ballerina type:InvalidTimestampRecord for SQL Timestamp data type."));
+    } else {
+        test:assertFail("ApplicationError Error expected.");
+    }
+}
