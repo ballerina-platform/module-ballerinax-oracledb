@@ -383,4 +383,44 @@ if result is error {
 ```
 Note that you have to explicitly invoke the close operation on the `sql:ProcedureCallResult` to release the connection resources and avoid a connection leak as shown above.
 
+### OracleDB specific Custom data types
+ 
+#### Interval Types
+
+OracleDB has two `INTERVAL` data types `INTERVAL YEAR TO MONTH` and `INTERVAL DAY TO SECOND` to store the various `INTERVAL` periods. 
+
+ballerina equivalent types as follows
+
+```ballerina
+public type Sign +1|-1;
+
+public type IntervalYearToMonth record {|
+    Sign sign = +1;
+    int:Unsigned32 years?;
+    int:Unsigned32 months?;
+|};
+
+public type IntervalDayToSecond record {|
+    Sign sign = +1;
+    int:Unsigned32 days?;
+    int:Unsigned32 hours?;
+    int:Unsigned32 minutes?;
+    decimal seconds?;
+|};
+```
+
+Here, `oracledb:Sign` is used to mark the sign of the interval period and period values are always ZERO or positive integers. 
+
+```ballerina
+oracledb:IntervalYearToMonth intervalYM = {years: 120, months: 11};
+oracledb:IntervalYearToMonth intervalYM2 = {years: 120};
+oracledb:IntervalYearToMonth intervalYM3 = {months: 11, sign: -1};
+oracledb:IntervalYearToMonth intervalYM4 = {years: 120, months: 11, sign: -1};
+
+oracledb:IntervalDayToSecond intervalDS = {days: 11, hours: 10, minutes: 9, seconds: 8.555};
+oracledb:IntervalDayToSecond intervalDS2 = {days: 11, hours: 10, minutes: 9, seconds: 8.555, sign: -1};
+oracledb:IntervalDayToSecond intervalDS3 = {hours: 10, minutes: 9, seconds: 8.555, sign: -1};
+oracledb:IntervalDayToSecond intervalDS4 = {days: 11, minutes: 9, seconds: 8.55578};
+```
+
 >**Note:** The default thread pool size used in Ballerina is: `the number of processors available * 2`. You can configure the thread pool size by using the `BALLERINA_MAX_POOL_SIZE` environment variable.
