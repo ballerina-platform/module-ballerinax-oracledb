@@ -250,13 +250,14 @@ public final class Constants {
 
             private BallerinaArrayTypes() {}
 
-            public static final String STRING = "string[]";
-            public static final String INT = "int[]";
-            public static final String FLOAT = "float[]";
-            public static final String DECIMAL = "decimal[]";
-            public static final String BOOLEAN = "boolean[]";
-            public static final String BYTE = "byte[]";
+            public static final String OPTIONAL_STRING = "string?[]";
+            public static final String OPTIONAL_INT = "int?[]";
+            public static final String OPTIONAL_FLOAT = "float?[]";
+            public static final String OPTIONAL_DECIMAL = "decimal?[]";
+            public static final String OPTIONAL_BOOLEAN = "boolean?[]";
+            public static final String OPTIONAL_BYTE = "byte[]?[]";
             public static final String ANYDATA = "anydata[]";
+            public static final String OPTIONAL_ANYDATA_TYPE = "anydata?";
         }
     }
 

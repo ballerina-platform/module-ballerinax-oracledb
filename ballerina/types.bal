@@ -55,6 +55,9 @@ public type ObjectType record {|
     anydata[]? attributes;
 |};
 
+# Represents ballerina typed array.
+type ArrayValueType string?[]|int?[]|boolean?[]|float?[]|decimal?[]|byte[]?[];
+
 # An ordered set of data elements with a variable size. All elements of a given array are of the same data
 # type.
 #
@@ -62,7 +65,7 @@ public type ObjectType record {|
 # + elements - Elements of the Varray
 public type Varray record {|
     string name;
-    byte[]|int[]|boolean[]|float[]|decimal[]|string[]? elements;
+    ArrayValueType? elements;
 |};
 
 # Represents OBJECT TYPE Oracle DB field.

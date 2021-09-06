@@ -25,10 +25,12 @@ import io.ballerina.runtime.api.types.StructureType;
 import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.utils.XmlUtils;
+import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.oracledb.Constants;
+import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
 import io.ballerina.stdlib.oracledb.utils.ModuleUtils;
 import io.ballerina.stdlib.sql.exception.DataError;
 import io.ballerina.stdlib.sql.exception.FieldMismatchError;
@@ -40,6 +42,7 @@ import io.ballerina.stdlib.sql.utils.Utils;
 import oracle.jdbc.OracleTypes;
 
 import java.math.BigDecimal;
+import java.sql.Array;
 import java.sql.CallableStatement;
 import java.sql.JDBCType;
 import java.sql.ResultSet;
@@ -156,6 +159,47 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                 return processTimestampWithTimezoneResult(resultSet, columnIndex, sqlType, ballerinaType);
             default:
                 throw new UnsupportedTypeError(JDBCType.valueOf(sqlType).getName(), columnIndex);
+        }
+    }
+
+    @Override
+    public BArray convertArray(Array array, int sqlType, Type type) throws SQLException, DataError {
+        if (array != null) {
+            Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Array");
+            Object[] dataArray = (Object[]) array.getArray();
+            if (dataArray == null || dataArray.length == 0) {
+                return null;
+            }
+            Object firstNonNullElement = firstNonNullObject(dataArray);
+            boolean containsNull = containsNullObject(dataArray);
+            return createAndPopulateVArrays(firstNonNullElement, dataArray, type, array, containsNull);
+        } else {
+            return null;
+        }
+    }
+
+    private BArray createAndPopulateVArrays(Object firstNonNullElement, Object[] dataArray,
+                                                          Type type, Array array, Boolean containsNull)
+            throws DataError, SQLException {
+        if (firstNonNullElement == null) {
+            BArray refValueArray = createEmptyBBRefValueArray(type);
+            for (int i = 0; i < dataArray.length; i++) {
+                refValueArray.add(i, (Object) null);
+            }
+            return refValueArray;
+        }
+        String elementType = firstNonNullElement.getClass().getCanonicalName();
+        switch (elementType) {
+            case io.ballerina.stdlib.sql.Constants.Classes.BIG_DECIMAL:
+                return ConverterUtils.convertBigDecimalArrayToBallerinaType(this, dataArray, type, containsNull);
+            case io.ballerina.stdlib.sql.Constants.Classes.STRING:
+                return ConverterUtils.convertStringArrayToBallerinaType(this, dataArray, type, containsNull);
+            case io.ballerina.stdlib.sql.Constants.Classes.BYTE:
+                return ConverterUtils.convertByteArrayToBallerinaType(this, dataArray, type, containsNull);
+            default:
+                return containsNull ?
+                        super.createAndPopulateBBRefValueArray(firstNonNullElement, dataArray, type, array) :
+                        super.createAndPopulatePrimitiveValueArray(firstNonNullElement, dataArray, type, array);
         }
     }
 

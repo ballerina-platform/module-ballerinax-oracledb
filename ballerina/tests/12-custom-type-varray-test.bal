@@ -23,7 +23,7 @@ import ballerina/test;
 isolated function insertVarray() returns sql:Error? {
     string[] charArray = ["Hello", "World"];
     byte[] byteArray = [4, 23, 12];
-    int[] intArray = [3,4,5];
+    int[] intArray = [3, 4, 5];
     boolean[] boolArray = [true, false, false];
     float[] floatArray = [34, -98.23, 0.981];
     decimal[] decimalArray = [34, -98.23, 0.981];
@@ -58,7 +58,7 @@ isolated function insertVarrayNull() returns sql:Error? {
        COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
        values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
-    if (result is sql:ApplicationError) {
+    if result is sql:ApplicationError {
        test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: varray"));
     } else {
        test:assertFail("Database Error expected.");
@@ -113,30 +113,71 @@ isolated function insertVarrayWithEmptyArray() returns sql:Error? {
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
+// insert with null elements
+@test:Config {
+   groups:["custom-varray"],
+   dependsOn: [insertVarrayWithEmptyArray]
+}
+isolated function insertVarrayWithNullElements() returns sql:Error? {
+    string?[] charArray = [null, null];
+    byte[]?[] byteArray = [null, null];
+    int?[] intArray = [null, null];
+    boolean?[] boolArray = [null, null];
+    float?[] floatArray = [null, null];
+    decimal?[] decimalArray = [null, null];
+
+    VarrayValue charVarray = new({ name:"CharArrayType", elements: charArray });
+    VarrayValue byteVarray = new({ name:"ByteArrayType", elements: byteArray });
+    VarrayValue intVarray = new({ name:"IntArrayType", elements: intArray });
+    VarrayValue boolVarray = new({ name:"BoolArrayType", elements: boolArray });
+    VarrayValue floatVarray = new({ name:"FloatArrayType", elements: floatArray });
+    VarrayValue decimalVarray = new({ name:"DecimalArrayType", elements: decimalArray });
+
+    sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
+          COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
+          values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
+    sql:ExecutionResult result = check executeQuery(insertQuery);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    var insertId = result.lastInsertId;
+    test:assertTrue(insertId is string, "Last Insert id should be string");
+}
+
 @test:Config {
     groups:["custom-varray"],
-    dependsOn: [insertVarrayWithEmptyArray]
+    dependsOn: [insertVarray]
 }
 isolated function selectVarrayWithoutRecordType() returns error? {
     string[] charArray = ["Hello", "World"];
+    byte[][] byteArray = [[4, 23, 12]];
+    decimal[] intArray = [3, 4, 5];
+    decimal[] boolArray = [1, 0, 0];
+    decimal[] floatArray = [34, -98.23, 0.981];
     decimal[] decimalArray = [34, -98.23, 0.981];
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<record{}, error?> streamResult = oracledbClient->query(
-        "SELECT pk, COL_CHARARR, COL_DECIMALARR FROM TestVarrayTable WHERE pk = 1");
+        `SELECT pk, COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR FROM TestVarrayTable WHERE pk = 1`);
     record {}? data = check streamResult.next();
     check streamResult.close();
-    record {}? value = <record {}>data["value"];
-    string[] charArrayOut = <string[]>value["COL_CHARARR"];
-    decimal[] decimalArrayOut = <decimal[]>value["COL_DECIMALARR"];
-    test:assertEquals(charArrayOut, charArray);
-    test:assertEquals(decimalArrayOut, decimalArray);
     check oracledbClient.close();
+    record {}? value = <record {}> data["value"];
+    string[] charArrayOut = <string[]> value["COL_CHARARR"];
+    byte[][] byteArrayOut = <byte[][]> value["COL_BYTEARR"];
+    decimal[] intArrayOut = <decimal[]> value["COL_INTARR"];
+    decimal[] boolArrayOut = <decimal[]> value["COL_BOOLARR"];
+    decimal[] floatArrayOut = <decimal[]> value["COL_FLOATARR"];
+    decimal[] decimalArrayOut = <decimal[]> value["COL_DECIMALARR"];
+    test:assertEquals(charArrayOut, charArray);
+    test:assertEquals(byteArrayOut, byteArray);
+    test:assertEquals(intArrayOut, intArray);
+    test:assertEquals(boolArrayOut, boolArray);
+    test:assertEquals(floatArrayOut, floatArray);
+    test:assertEquals(decimalArrayOut, decimalArray);
 }
 
 type ArrayRecordType record {
     int pk;
     string[] col_chararr;
-    byte[] col_bytearr;
+    byte[][] col_bytearr;
     int[] col_intarr;
     boolean[] col_boolarr;
     float[] col_floatarr;
@@ -145,14 +186,13 @@ type ArrayRecordType record {
 
 @test:Config {
     groups:["custom-varray"],
-    enable: false,
-    dependsOn: [selectVarrayWithoutRecordType]
+    dependsOn: [insertVarray]
 }
 isolated function selectVarrayWithRecordType() returns error? {
     ArrayRecordType arrayRecordInstance = {
         pk : 1,
         col_chararr : ["Hello", "World"],
-        col_bytearr : [4, 23, 12],
+        col_bytearr : [[4, 23, 12]],
         col_intarr : [3,4,5],
         col_boolarr : [true, false, false],
         col_floatarr : [34, -98.23, 0.981],
@@ -160,12 +200,13 @@ isolated function selectVarrayWithRecordType() returns error? {
     };
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<ArrayRecordType, error?> streamData = oracledbClient->query(
-        "SELECT pk, COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR " +
-        "FROM TestVarrayTable WHERE pk = 1" );
+        `SELECT pk, COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR
+         FROM TestVarrayTable WHERE pk = 1`);
     record {|ArrayRecordType value;|}? data = check streamData.next();
     check streamData.close();
+    check oracledbClient.close();
     ArrayRecordType? value = data?.value;
-    if (value is ()) {
+    if value is () {
         test:assertFail("Returned data is nil");
     } else {
         test:assertEquals(value.length(), 7);
@@ -177,13 +218,11 @@ isolated function selectVarrayWithRecordType() returns error? {
         test:assertEquals(value.col_floatarr, arrayRecordInstance.col_floatarr);
         test:assertEquals(value.col_decimalarr, arrayRecordInstance.col_decimalarr);
     }
-    check oracledbClient.close();
 }
 
 @test:Config {
     groups:["custom-varray"],
-    enable: false,
-    dependsOn: [selectVarrayWithRecordType]
+    dependsOn: [insertVarrayNull]
 }
 isolated function selectVarrayNull() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
@@ -192,8 +231,9 @@ isolated function selectVarrayNull() returns error? {
         "FROM TestVarrayTable WHERE pk = 2");
     record {|ArrayRecordType value;|}? data = check streamData.next();
     check streamData.close();
+    check oracledbClient.close();
     ArrayRecordType? value = data?.value;
-    if (value is ()) {
+    if value is () {
         test:assertFail("Returned data is nil");
     } else {
         test:assertEquals(value.length(), 7);
@@ -205,7 +245,6 @@ isolated function selectVarrayNull() returns error? {
         test:assertEquals(value.col_floatarr, ());
         test:assertEquals(value.col_decimalarr, ());
     }
-    check oracledbClient.close();
 }
 
 type InvalidIntTypeArray record {
@@ -215,127 +254,22 @@ type InvalidIntTypeArray record {
 
 @test:Config {
     groups:["custom-varray"],
-    enable: false,
-    dependsOn: [selectVarrayNull]
+    dependsOn: [insertVarray]
 }
 isolated function selectVarrayWithInvalidIntType() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<InvalidIntTypeArray, sql:Error?> streamData = oracledbClient->query(
         "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1");
     record {}|error? returnData =  streamData.next();
-    if (returnData is sql:ApplicationError) {
+    check streamData.close();
+    check oracledbClient.close();
+    if returnData is sql:ApplicationError {
         test:assertTrue(returnData.message().includes("Cannot cast varray to type: int[]"),
             "Incorrect error message");
     } else {
         test:assertFail("Querying varray with invalid array type should fail with " +
                             "sql:ApplicationError");
     }
-    check streamData.close();
-    check oracledbClient.close();
-}
-
-type InvalidFloatTypeArray record {
-    int pk;
-    float[] col_chararr;
-};
-
-@test:Config {
-    groups:["custom-varray"],
-    enable: false,
-    dependsOn: [selectVarrayWithInvalidIntType]
-}
-isolated function selectVarrayWithInvalidFloatType() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<InvalidFloatTypeArray, sql:Error?> streamData = oracledbClient->query(
-        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1");
-    record {}|error? returnData =  streamData.next();
-    if (returnData is sql:ApplicationError) {
-        test:assertTrue(returnData.message().includes("Cannot cast varray to type: float[]"),
-            "Incorrect error message");
-    } else {
-        test:assertFail("Querying varray with invalid array type should fail with " +
-                            "sql:ApplicationError");
-    }
-    check streamData.close();
-    check oracledbClient.close();
-}
-
-type InvalidDecimalTypeArray record {
-    int pk;
-    decimal[] col_chararr;
-};
-
-@test:Config {
-    groups:["custom-varray"],
-    enable: false,
-    dependsOn: [selectVarrayWithInvalidFloatType]
-}
-isolated function selectVarrayWithInvalidDecimalType() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<InvalidDecimalTypeArray, sql:Error?> streamData = oracledbClient->query(
-        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1");
-    record {}|error? returnData =  streamData.next();
-    if (returnData is sql:ApplicationError) {
-        test:assertTrue(returnData.message().includes("Cannot cast varray to type: decimal[]"),
-            "Incorrect error message");
-    } else {
-        test:assertFail("Querying varray with invalid array type should fail with " +
-                            "sql:ApplicationError");
-    }
-    check streamData.close();
-    check oracledbClient.close();
-}
-
-type InvalidBoolTypeArray record {
-    int pk;
-    boolean[] col_chararr;
-};
-
-@test:Config {
-    groups:["custom-varray"],
-    enable: false,
-    dependsOn: [selectVarrayWithInvalidDecimalType]
-}
-isolated function selectVarrayWithInvalidBoolType() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<InvalidBoolTypeArray, sql:Error?> streamData = oracledbClient->query(
-        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1");
-    record {}|error? returnData =  streamData.next();
-    if (returnData is sql:ApplicationError) {
-        test:assertTrue(returnData.message().includes("Cannot cast varray to type: boolean[]"),
-            "Incorrect error message");
-    } else {
-        test:assertFail("Querying varray with invalid array type should fail with " +
-                            "sql:ApplicationError");
-    }
-    check streamData.close();
-    check oracledbClient.close();
-}
-
-type InvalidByteTypeArray record {
-    int pk;
-    byte[] col_chararr;
-};
-
-@test:Config {
-    groups:["custom-varray"],
-    enable: false,
-    dependsOn: [selectVarrayWithInvalidDecimalType]
-}
-isolated function selectVarrayWithInvalidByteType() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<InvalidByteTypeArray, sql:Error?> streamData = oracledbClient->query(
-        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1");
-    record {}|error? returnData =  streamData.next();
-    if (returnData is sql:ApplicationError) {
-        test:assertTrue(returnData.message().includes("Cannot cast varray to type: byte[]"),
-            "Incorrect error message");
-    } else {
-        test:assertFail("Querying varray with invalid array type should fail with " +
-                            "sql:ApplicationError");
-    }
-    check streamData.close();
-    check oracledbClient.close();
 }
 
 type InvalidStringTypeArray record {
@@ -345,21 +279,45 @@ type InvalidStringTypeArray record {
 
 @test:Config {
     groups:["custom-varray"],
-    enable: false,
-    dependsOn: [selectVarrayWithInvalidByteType]
+    dependsOn: [insertVarray]
 }
 isolated function selectVarrayWithInvalidStringType() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<InvalidStringTypeArray, sql:Error?> streamData = oracledbClient->query(
         "SELECT pk, COL_BYTEARR FROM TestVarrayTable WHERE pk = 1");
     record {}|error? returnData =  streamData.next();
-    if (returnData is sql:ApplicationError) {
+    check streamData.close();
+    check oracledbClient.close();
+    if returnData is sql:ApplicationError {
         test:assertTrue(returnData.message().includes("Cannot cast varray to type: string[]"),
             "Incorrect error message");
     } else {
         test:assertFail("Querying varray with invalid array type should fail with " +
                             "sql:ApplicationError");
     }
+}
+
+type InvalidByteTypeArray record {
+    int pk;
+    byte[][] col_chararr;
+};
+
+@test:Config {
+    groups:["custom-varray"],
+    dependsOn: [insertVarray]
+}
+isolated function selectVarrayWithInvalidByteType() returns error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<InvalidByteTypeArray, sql:Error?> streamData = oracledbClient->query(
+        "SELECT pk, COL_CHARARR FROM TestVarrayTable WHERE pk = 1");
+    record {}|error? returnData =  streamData.next();
     check streamData.close();
     check oracledbClient.close();
+    if returnData is sql:ApplicationError {
+        test:assertTrue(returnData.message().includes("Cannot cast varray to type: byte[][]"),
+            "Incorrect error message");
+    } else {
+        test:assertFail("Querying varray with invalid array type should fail with " +
+                            "sql:ApplicationError");
+    }
 }
