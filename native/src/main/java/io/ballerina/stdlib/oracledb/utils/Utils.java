@@ -18,6 +18,7 @@
 package io.ballerina.stdlib.oracledb.utils;
 
 import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BDecimal;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
@@ -171,6 +172,11 @@ public class Utils {
         }
         return new UnsupportedTypeError(String.format("Invalid parameter: %s is passed as value for SQL type: %s",
                 valueName, sqlType));
+    }
+
+    public static void throwUnsupportedArrayTypeError(BArray value, int index) throws DataError {
+        throw new DataError(String.format("Unsupported array type :%s passed in column index: %d",
+                value.getElementType().toString(), index));
     }
 
     /**

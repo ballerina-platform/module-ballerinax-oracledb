@@ -19,6 +19,7 @@
 package io.ballerina.stdlib.oracledb.parameterprocessor;
 
 import io.ballerina.runtime.api.types.Type;
+import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BXml;
@@ -104,6 +105,42 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             throw new DataError("Error occurred while setting an xml data. Check whether both " +
                     "`xdb.jar` and `xmlparserv2.jar` are added as dependency in Ballerina.toml");
         }
+    }
+
+    @Override
+    protected void setVarcharArray(Connection conn, PreparedStatement preparedStatement, int index,
+                                   Object value) throws DataError, SQLException {
+        Utils.throwUnsupportedArrayTypeError((BArray) value, index);
+    }
+
+    @Override
+    protected void setBinaryArray(Connection conn, PreparedStatement preparedStatement, int index,
+                                   Object value) throws DataError, SQLException {
+        Utils.throwUnsupportedArrayTypeError((BArray) value, index);
+    }
+
+    @Override
+    protected void setIntegerArray(Connection conn, PreparedStatement preparedStatement, int index,
+                                   Object value) throws DataError, SQLException {
+        Utils.throwUnsupportedArrayTypeError((BArray) value, index);
+    }
+
+    @Override
+    protected void setBooleanArray(Connection conn, PreparedStatement preparedStatement, int index,
+                                   Object value) throws DataError, SQLException {
+        Utils.throwUnsupportedArrayTypeError((BArray) value, index);
+    }
+
+    @Override
+    protected void setFloatArray(Connection conn, PreparedStatement preparedStatement, int index,
+                                   Object value) throws DataError, SQLException {
+        Utils.throwUnsupportedArrayTypeError((BArray) value, index);
+    }
+
+    @Override
+    protected void setDecimalArray(Connection conn, PreparedStatement preparedStatement, int index,
+                                   Object value) throws DataError, SQLException {
+        Utils.throwUnsupportedArrayTypeError((BArray) value, index);
     }
 
     @Override
