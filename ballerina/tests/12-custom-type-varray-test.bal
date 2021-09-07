@@ -15,6 +15,7 @@
 
 import ballerina/sql;
 import ballerina/test;
+import ballerina/io;
 
 // insert to varray
 @test:Config {
@@ -140,6 +141,112 @@ isolated function insertVarrayWithNullElements() returns sql:Error? {
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     var insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
+}
+
+// insert direct array types
+@test:Config {
+   groups:["custom-varray"],
+   dependsOn:[insertVarrayWithNullElements]
+}
+isolated function insertDirectArrayTypes() returns sql:Error? {
+    string[] charArray = ["Hello", "World"];
+    byte[] byteArray = [1, 2, 3];
+    byte[][] arrayOfByteArray = [[4, 23, 12]];
+    int[] intArray = [3, 4, 5];
+    boolean[] boolArray = [true, false, false];
+    float[] floatArray = [34, -98.23, 0.981];
+    decimal[] decimalArray = [34, -98.23, 0.981];
+    sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(COL_CHARARR) values(${charArray})`;
+    sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
+    if result is sql:ApplicationError {
+       test:assertTrue(result.message().includes("Unsupported array type"));
+    } else {
+       test:assertFail("Database Error expected.");
+    }
+    insertQuery = `insert into TestVarrayTable(COL_BYTEARR) values(${arrayOfByteArray})`;
+    result = executeQuery(insertQuery);
+    io:println(result);
+    if result is sql:ApplicationError {
+       test:assertTrue(result.message().includes("Unsupported array type"));
+    } else {
+       test:assertFail("Database Error expected.");
+    }
+    insertQuery = `insert into TestVarrayTable(COL_BYTEARR) values(${byteArray})`;
+    result = executeQuery(insertQuery);
+    io:println(result);
+    if result is sql:DatabaseError {
+       test:assertTrue(result.message().includes("Error while executing SQL query: insert into " +
+       "TestVarrayTable(COL_BYTEARR) values( ? ). ORA-00600: internal error code"));
+    } else {
+       test:assertFail("Database Error expected.");
+    }
+    insertQuery = `insert into TestVarrayTable(COL_INTARR) values(${intArray})`;
+    result = executeQuery(insertQuery);
+    if result is sql:ApplicationError {
+       test:assertTrue(result.message().includes("Unsupported array type"));
+    } else {
+       test:assertFail("Database Error expected.");
+    }
+    insertQuery = `insert into TestVarrayTable(COL_BOOLARR) values(${boolArray})`;
+    result = executeQuery(insertQuery);
+    if result is sql:ApplicationError {
+       test:assertTrue(result.message().includes("Unsupported array type"));
+    } else {
+       test:assertFail("Database Error expected.");
+    }
+    insertQuery = `insert into TestVarrayTable(COL_DECIMALARR) values(${decimalArray})`;
+    result = executeQuery(insertQuery);
+    if result is sql:ApplicationError {
+       test:assertTrue(result.message().includes("Unsupported array type"));
+    } else {
+       test:assertFail("Database Error expected.");
+    }
+}
+
+type ArrayRecordType2 record {
+    int pk;
+    string?[] col_chararr;
+    byte[]?[] col_bytearr;
+    int?[] col_intarr;
+    boolean?[] col_boolarr;
+    float?[] col_floatarr;
+    decimal?[] col_decimalarr;
+};
+
+@test:Config {
+    groups:["custom-varray"],
+    dependsOn: [insertVarrayWithNullElements]
+}
+isolated function selectVarrayHavingNullElementsWithRecordType() returns error? {
+    ArrayRecordType2 arrayRecordInstance = {
+        pk : 4,
+        col_chararr : [null, null],
+        col_bytearr : [null, null],
+        col_intarr : [null, null],
+        col_boolarr : [null, null],
+        col_floatarr : [null, null],
+        col_decimalarr : [null, null]
+    };
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<ArrayRecordType2, error?> streamData = oracledbClient->query(
+        `SELECT pk, COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR
+         FROM TestVarrayTable WHERE pk = 4`);
+    record {|ArrayRecordType2 value;|}? data = check streamData.next();
+    check streamData.close();
+    check oracledbClient.close();
+    ArrayRecordType2? value = data?.value;
+    if value is () {
+        test:assertFail("Returned data is nil");
+    } else {
+        test:assertEquals(value.length(), 7);
+        test:assertEquals(value.pk, arrayRecordInstance.pk);
+        test:assertEquals(value.col_chararr, arrayRecordInstance.col_chararr);
+        test:assertEquals(value.col_bytearr, arrayRecordInstance.col_bytearr);
+        test:assertEquals(value.col_intarr, arrayRecordInstance.col_intarr);
+        test:assertEquals(value.col_boolarr, arrayRecordInstance.col_boolarr);
+        test:assertEquals(value.col_floatarr, arrayRecordInstance.col_floatarr);
+        test:assertEquals(value.col_decimalarr, arrayRecordInstance.col_decimalarr);
+    }
 }
 
 @test:Config {
@@ -315,6 +422,31 @@ isolated function selectVarrayWithInvalidByteType() returns error? {
     check oracledbClient.close();
     if returnData is sql:ApplicationError {
         test:assertTrue(returnData.message().includes("Cannot cast varray to type: byte[][]"),
+            "Incorrect error message");
+    } else {
+        test:assertFail("Querying varray with invalid array type should fail with " +
+                            "sql:ApplicationError");
+    }
+}
+
+type InvalidStringTypeArray2 record {
+    int pk;
+    string[] col_intarr;
+};
+
+@test:Config {
+    groups:["custom-varray"],
+    dependsOn: [insertVarray]
+}
+isolated function selectVarrayWithInvalidStringType2() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<InvalidStringTypeArray2, sql:Error?> streamData = oracledbClient->query(
+        "SELECT pk, COL_INTARR FROM TestVarrayTable WHERE pk = 1");
+    record {}|error? returnData =  streamData.next();
+    check streamData.close();
+    check oracledbClient.close();
+    if returnData is sql:ApplicationError {
+        test:assertTrue(returnData.message().includes("Cannot cast varray to type: string[]"),
             "Incorrect error message");
     } else {
         test:assertFail("Querying varray with invalid array type should fail with " +
