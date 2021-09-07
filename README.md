@@ -11,7 +11,7 @@ The OracleDB library is one of the external library packages of the <a target="_
 
 This provides the functionality required to access and manipulate data stored in an Oracle database.
 
-For more information on the operations supported by the `oracledb:Client`, which include the below, go to [The OracleDB Package](https://docs.central.ballerina.io/ballerinax/oracledb/latest).
+For more information on the operations supported by the `oracledb:Client`, which include the below, go to [The `oracledb` package](https://docs.central.ballerina.io/ballerinax/oracledb/latest).
 
 - Pooling connections
 - Querying data
@@ -32,13 +32,13 @@ This repository only contains the source code for the package.
 
 ### Setting Up the Prerequisites
 
-1. Download and install Java SE Development Kit (JDK) version 11 (from one of the following locations).
+1. Download and install the Java SE Development Kit (JDK) version 11 (from one of the following locations).
    * [Oracle](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
    * [OpenJDK](http://openjdk.java.net/install/index.html)
 
-2. Download and install [Docker](https://www.docker.com/get-started)
+2. Download and install [Docker](https://www.docker.com/get-started).
 
-3. Export Github Personal access token with read package permissions as follows,
+3. Export your Github Personal access token with the read package permissions as follows.
 
         export packageUser=<Username>
         export packagePAT=<Personal access token>
@@ -77,7 +77,7 @@ Execute the commands below to build from the source.
    custom-object | custom-object
    custom-varray | custom-varray
 
-5. To disable some specific groups during test,
+5. To disable some specific groups during the test:
 
         ./gradlew clean build -Pdisable-groups=<Comma separated groups/test cases>
 
@@ -86,12 +86,12 @@ Execute the commands below to build from the source.
         ./gradlew clean build -Pdebug=<port>
         ./gradlew clean test -Pdebug=<port>
 
-7. To debug the package with Ballerina language:
+7. To debug the package with the Ballerina language:
 
         ./gradlew clean build -PbalJavaDebug=<port>
         ./gradlew clean test -PbalJavaDebug=<port>
 
-8. Publish ZIP artifact to the local `.m2` repository:
+8. Publish the ZIP artifact to the local `.m2` repository:
 
         ./gradlew clean build publishToMavenLocal
 

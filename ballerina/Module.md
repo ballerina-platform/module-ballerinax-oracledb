@@ -6,15 +6,15 @@ This module provides the functionality required to access and manipulate data st
 Add the OracleDB thin driver `ojdbc8.jar` along with `xdb.jar` and `xmlparserv2.jar` as native library dependencies in your Ballerina project's `Ballerina.toml` file.
 It is recommended to use an oracle thin driver `ojdbc8.jar` version greater than 12.2.0.1.
 
-Follow one of the following ways to add the JAR in the file:
+Follow one of the ways below to add the JAR in the file:
 
-* Download the JAR and update the path
+* Download the JAR and update the path.
     ```
     [[platform.java11.dependency]]
     path = "PATH"
     ```
 
-* Add JAR with a maven dependency params
+* Add JAR with the Maven dependency params.
     ```
     [platform.java11.dependency]]
     groupId = "com.oracle.database.jdbc"
@@ -33,7 +33,7 @@ Follow one of the following ways to add the JAR in the file:
     ```
 
 ### Client
-To access a database, you must first create a
+To access a database, you must first create an
 [oracledb:Client](https://docs.central.ballerina.io/ballerinax/oracledb/latest/clients/Client) object.
 The samples for creating an OracleDB client can be found below.
 
@@ -96,12 +96,12 @@ oracledb:Client|sql:Error dbClient = new (user = "adminUser", password = "adminP
 #### Connection Pool Handling
 
 All ballerina database modules share the same connection pooling concept and there are three possible scenarios for
-connection pool handling.  For its properties and possible values, see the [`sql:ConnectionPool`](https://docs.central.ballerina.io/ballerina/sql/latest/records/ConnectionPool).
+connection pool handling. For its properties and possible values, see the [`sql:ConnectionPool`](https://docs.central.ballerina.io/ballerina/sql/latest/records/ConnectionPool).
 
 1. Global shareable default connection pool
 
    If you do not provide the `poolOptions` field when creating the database client, a globally-shareable pool will be
-   created for your database unless a connection pool matching with the properties you provided already exists.
+   created for your database unless a connection pool matching the properties you provided already exists.
 
     ```ballerina
     oracledb:Client|sql:Error dbClient = new (user = "adminUser", password = "adminPassword");
@@ -119,7 +119,7 @@ connection pool handling.  For its properties and possible values, see the [`sql
 
 3. Local, shareable connection pool
 
-   If you create a record of type `sql:ConnectionPool` and reuse that in the configuration of multiple clients,
+   If you create a record of the`sql:ConnectionPool` type and reuse that in the configuration of multiple clients,
    for each set of clients that connects to the same database instance with the same set of properties, a shared
    connection pool will be created.
 
@@ -158,20 +158,20 @@ check dbClient.close();
 
 ### Database Operations
 
-Once the client is created, database operations can be executed through that client. This module defines the interface
+Once the client is created, the database operations can be executed through that client. This module defines the interface
 and common properties that are shared among multiple database clients.  It also supports querying, inserting, deleting,
 updating, and batch updating data. 
 
 #### Creating Tables
 
-This sample creates a table with two columns. One column is of type `int` and the other is of type `varchar`.
+This sample creates a table with two columns. One column is of the `int` type and the other is of the `varchar` type.
 The `CREATE` statement is executed via the `execute` remote function of the client.
 
 ```ballerina
 // Create the ‘Students’ table with the  ‘id’, 'name', and ‘age’ fields.
 sql:ExecutionResult result = check dbClient->execute("CREATE TABLE student(id INT AUTO_INCREMENT, " +
                          "age INT, name VARCHAR(255), PRIMARY KEY (id))");
-//A value of the`sql:ExecutionResult` type is returned for 'result'. 
+//A value of the`sql:ExecutionResult` type is returned for the 'result'. 
 ```
 
 #### Inserting Data
@@ -240,12 +240,12 @@ database table and obtain the results.
 
 This sample demonstrates querying data from a table in a database.
 First, a type is created to represent the returned result set. This record can be defined as an open or a closed record
-according to the requirement. If an open record is defined, the returned stream type will include both defined fields
-in the record and additional database columns fetched by the SQL query which are not defined in the record.
+according to the requirement. If an open record is defined, the returned stream type will include both the defined fields
+in the record and additional database columns fetched by the SQL query, which are not defined in the record.
 Note the mapping of the database column to the returned record's property is case-insensitive if it is defined in the
-record(i.e., the `ID` column in the result can be mapped to the `id` property in the record). Additional Column names
-added to the returned record as in the SQL query. If the record is defined as a close record, only defined fields in the
-record are returned or gives an error when additional columns present in the SQL query. Next, the `SELECT` query is executed
+record (i.e., the `ID` column in the result can be mapped to the `id` property in the record). Additional column names
+are added to the returned record as in the SQL query. If the record is defined as a close record, only the defined fields in the
+record are returned or gives an error when additional columns are present in the SQL query. Next, the `SELECT` query is executed
 via the `query` remote function of the client. Once the query is executed, each data record can be retrieved by looping
 the result set. The `stream` returned by the select operation holds a pointer to the actual data in the database and it
 loads data from the table only when it is accessed. This stream can be iterated only once.
@@ -269,7 +269,7 @@ stream<Student, sql:Error?> resultStream = dbClient->query(query);
 
 // Iterating the returned table.
 error? e = resultStream.forEach(function(Student student) {
-   //Can perform any operations using 'student' and can access any fields in the returned record of type Student.
+   //Can perform any operations using 'student' and can access any fields in the returned record of type `Student`.
 });
 ```
 
@@ -342,7 +342,7 @@ sql:ExecutionResult result = check dbClient->execute(query);
 
 This sample demonstrates how to insert multiple records with a single `INSERT` statement that is executed via the
 `batchExecute` remote function of the client. This is done by creating a `table` with multiple records and
-parameterized SQL query as same as the  above `execute` operations.
+a parameterized SQL query as same as the above `execute` operations.
 
 ```ballerina
 // Create the table with the records that need to be inserted.
@@ -389,7 +389,7 @@ Note that you have to explicitly invoke the close operation on the `sql:Procedur
 
 OracleDB has two `INTERVAL` data types `INTERVAL YEAR TO MONTH` and `INTERVAL DAY TO SECOND` to store the various `INTERVAL` periods. 
 
-ballerina equivalent types as follows
+The equivalent types in Ballerina are as follows.
 
 ```ballerina
 public type Sign +1|-1;
