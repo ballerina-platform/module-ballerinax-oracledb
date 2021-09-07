@@ -110,37 +110,37 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     @Override
     protected void setVarcharArray(Connection conn, PreparedStatement preparedStatement, int index,
                                    Object value) throws DataError, SQLException {
-        Utils.throwUnsupportedArrayTypeError((BArray) value, index);
+        Utils.throwUnsupportedArrayTypeError((BArray) value);
     }
 
     @Override
     protected void setBinaryArray(Connection conn, PreparedStatement preparedStatement, int index,
                                    Object value) throws DataError, SQLException {
-        Utils.throwUnsupportedArrayTypeError((BArray) value, index);
+        Utils.throwUnsupportedArrayTypeError((BArray) value);
     }
 
     @Override
     protected void setIntegerArray(Connection conn, PreparedStatement preparedStatement, int index,
                                    Object value) throws DataError, SQLException {
-        Utils.throwUnsupportedArrayTypeError((BArray) value, index);
+        Utils.throwUnsupportedArrayTypeError((BArray) value);
     }
 
     @Override
     protected void setBooleanArray(Connection conn, PreparedStatement preparedStatement, int index,
                                    Object value) throws DataError, SQLException {
-        Utils.throwUnsupportedArrayTypeError((BArray) value, index);
+        Utils.throwUnsupportedArrayTypeError((BArray) value);
     }
 
     @Override
     protected void setFloatArray(Connection conn, PreparedStatement preparedStatement, int index,
                                    Object value) throws DataError, SQLException {
-        Utils.throwUnsupportedArrayTypeError((BArray) value, index);
+        Utils.throwUnsupportedArrayTypeError((BArray) value);
     }
 
     @Override
     protected void setDecimalArray(Connection conn, PreparedStatement preparedStatement, int index,
                                    Object value) throws DataError, SQLException {
-        Utils.throwUnsupportedArrayTypeError((BArray) value, index);
+        Utils.throwUnsupportedArrayTypeError((BArray) value);
     }
 
     @Override

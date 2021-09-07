@@ -174,9 +174,10 @@ public class Utils {
                 valueName, sqlType));
     }
 
-    public static void throwUnsupportedArrayTypeError(BArray value, int index) throws DataError {
-        throw new DataError(String.format("Unsupported array type :%s passed in column index: %d",
-                value.getElementType().toString(), index));
+    public static void throwUnsupportedArrayTypeError(BArray value) throws DataError {
+        throw new DataError(String.format("OracleDB module can only handle varray data types where both type name " +
+                        "and elements are expected. Unsupported varray type :%s passed as an array type",
+                value.getType().toString()));
     }
 
     /**

@@ -15,7 +15,6 @@
 
 import ballerina/sql;
 import ballerina/test;
-import ballerina/io;
 
 // insert to varray
 @test:Config {
@@ -143,6 +142,35 @@ isolated function insertVarrayWithNullElements() returns sql:Error? {
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
+// insert with mix type elements
+@test:Config {
+   groups:["custom-varray"],
+   dependsOn: [insertVarrayWithNullElements]
+}
+isolated function insertVarrayWithMixElements() returns sql:Error? {
+    string?[] charArray = [null, "Hello"];
+    byte[]?[] byteArray = [null, [1, 2]];
+    int?[] intArray = [null, 1];
+    boolean?[] boolArray = [null, true];
+    float?[] floatArray = [null, 34];
+    decimal?[] decimalArray = [null, 34.2];
+
+    VarrayValue charVarray = new({ name:"CharArrayType", elements: charArray });
+    VarrayValue byteVarray = new({ name:"ByteArrayType", elements: byteArray });
+    VarrayValue intVarray = new({ name:"IntArrayType", elements: intArray });
+    VarrayValue boolVarray = new({ name:"BoolArrayType", elements: boolArray });
+    VarrayValue floatVarray = new({ name:"FloatArrayType", elements: floatArray });
+    VarrayValue decimalVarray = new({ name:"DecimalArrayType", elements: decimalArray });
+
+    sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(
+          COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR)
+          values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
+    sql:ExecutionResult result = check executeQuery(insertQuery);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    var insertId = result.lastInsertId;
+    test:assertTrue(insertId is string, "Last Insert id should be string");
+}
+
 // insert direct array types
 @test:Config {
    groups:["custom-varray"],
@@ -159,21 +187,19 @@ isolated function insertDirectArrayTypes() returns sql:Error? {
     sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(COL_CHARARR) values(${charArray})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Unsupported array type"));
+       test:assertTrue(result.message().includes("Unsupported varray type :string[] passed as an array type"));
     } else {
        test:assertFail("Database Error expected.");
     }
     insertQuery = `insert into TestVarrayTable(COL_BYTEARR) values(${arrayOfByteArray})`;
     result = executeQuery(insertQuery);
-    io:println(result);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Unsupported array type"));
+       test:assertTrue(result.message().includes("Unsupported varray type :byte[][] passed as an array type"));
     } else {
        test:assertFail("Database Error expected.");
     }
     insertQuery = `insert into TestVarrayTable(COL_BYTEARR) values(${byteArray})`;
     result = executeQuery(insertQuery);
-    io:println(result);
     if result is sql:DatabaseError {
        test:assertTrue(result.message().includes("Error while executing SQL query: insert into " +
        "TestVarrayTable(COL_BYTEARR) values( ? ). ORA-00600: internal error code"));
@@ -183,21 +209,28 @@ isolated function insertDirectArrayTypes() returns sql:Error? {
     insertQuery = `insert into TestVarrayTable(COL_INTARR) values(${intArray})`;
     result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Unsupported array type"));
+       test:assertTrue(result.message().includes("Unsupported varray type :int[] passed as an array type"));
     } else {
        test:assertFail("Database Error expected.");
     }
     insertQuery = `insert into TestVarrayTable(COL_BOOLARR) values(${boolArray})`;
     result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Unsupported array type"));
+       test:assertTrue(result.message().includes("Unsupported varray type :boolean[] passed as an array type"));
+    } else {
+       test:assertFail("Database Error expected.");
+    }
+    insertQuery = `insert into TestVarrayTable(COL_FLOATARR) values(${floatArray})`;
+    result = executeQuery(insertQuery);
+    if result is sql:ApplicationError {
+       test:assertTrue(result.message().includes("Unsupported varray type :float[] passed as an array type"));
     } else {
        test:assertFail("Database Error expected.");
     }
     insertQuery = `insert into TestVarrayTable(COL_DECIMALARR) values(${decimalArray})`;
     result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Unsupported array type"));
+       test:assertTrue(result.message().includes("Unsupported varray type :decimal[] passed as an array type"));
     } else {
        test:assertFail("Database Error expected.");
     }
@@ -231,6 +264,42 @@ isolated function selectVarrayHavingNullElementsWithRecordType() returns error? 
     stream<ArrayRecordType2, error?> streamData = oracledbClient->query(
         `SELECT pk, COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR
          FROM TestVarrayTable WHERE pk = 4`);
+    record {|ArrayRecordType2 value;|}? data = check streamData.next();
+    check streamData.close();
+    check oracledbClient.close();
+    ArrayRecordType2? value = data?.value;
+    if value is () {
+        test:assertFail("Returned data is nil");
+    } else {
+        test:assertEquals(value.length(), 7);
+        test:assertEquals(value.pk, arrayRecordInstance.pk);
+        test:assertEquals(value.col_chararr, arrayRecordInstance.col_chararr);
+        test:assertEquals(value.col_bytearr, arrayRecordInstance.col_bytearr);
+        test:assertEquals(value.col_intarr, arrayRecordInstance.col_intarr);
+        test:assertEquals(value.col_boolarr, arrayRecordInstance.col_boolarr);
+        test:assertEquals(value.col_floatarr, arrayRecordInstance.col_floatarr);
+        test:assertEquals(value.col_decimalarr, arrayRecordInstance.col_decimalarr);
+    }
+}
+
+@test:Config {
+    groups:["custom-varray"],
+    dependsOn: [insertVarrayWithMixElements]
+}
+isolated function selectVarrayHavingMixElementsWithRecordType() returns error? {
+    ArrayRecordType2 arrayRecordInstance = {
+        pk : 5,
+        col_chararr : [null, "Hello"],
+        col_bytearr : [null, [1, 2]],
+        col_intarr : [null, 1],
+        col_boolarr : [null, true],
+        col_floatarr : [null, 34],
+        col_decimalarr : [null, 34.2]
+    };
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<ArrayRecordType2, error?> streamData = oracledbClient->query(
+        `SELECT pk, COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR
+         FROM TestVarrayTable WHERE pk = 5`);
     record {|ArrayRecordType2 value;|}? data = check streamData.next();
     check streamData.close();
     check oracledbClient.close();
