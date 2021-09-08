@@ -178,8 +178,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         }
     }
 
-    private BArray createAndPopulateVArrays(Object firstNonNullElement, Object[] dataArray,
-                                                          Type type, Array array, Boolean containsNull)
+    private BArray createAndPopulateVArrays(Object firstNonNullElement, Object[] dataArray, Type type, Array array,
+                                            Boolean containsNull)
             throws DataError, SQLException {
         if (firstNonNullElement == null) {
             BArray refValueArray = createEmptyBBRefValueArray(type);

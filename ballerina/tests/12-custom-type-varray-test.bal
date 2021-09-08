@@ -119,12 +119,12 @@ isolated function insertVarrayWithEmptyArray() returns sql:Error? {
    dependsOn: [insertVarrayWithEmptyArray]
 }
 isolated function insertVarrayWithNullElements() returns sql:Error? {
-    string?[] charArray = [null, null];
-    byte[]?[] byteArray = [null, null];
-    int?[] intArray = [null, null];
-    boolean?[] boolArray = [null, null];
-    float?[] floatArray = [null, null];
-    decimal?[] decimalArray = [null, null];
+    string?[] charArray = [(), ()];
+    byte[]?[] byteArray = [(), ()];
+    int?[] intArray = [(), ()];
+    boolean?[] boolArray = [(), ()];
+    float?[] floatArray = [(), ()];
+    decimal?[] decimalArray = [(), ()];
 
     VarrayValue charVarray = new({ name:"CharArrayType", elements: charArray });
     VarrayValue byteVarray = new({ name:"ByteArrayType", elements: byteArray });
@@ -148,12 +148,12 @@ isolated function insertVarrayWithNullElements() returns sql:Error? {
    dependsOn: [insertVarrayWithNullElements]
 }
 isolated function insertVarrayWithMixElements() returns sql:Error? {
-    string?[] charArray = [null, "Hello"];
-    byte[]?[] byteArray = [null, [1, 2]];
-    int?[] intArray = [null, 1];
-    boolean?[] boolArray = [null, true];
-    float?[] floatArray = [null, 34];
-    decimal?[] decimalArray = [null, 34.2];
+    string?[] charArray = [(), "Hello"];
+    byte[]?[] byteArray = [(), [1, 2]];
+    int?[] intArray = [(), 1];
+    boolean?[] boolArray = [(), true];
+    float?[] floatArray = [(), 34];
+    decimal?[] decimalArray = [(), 34.2];
 
     VarrayValue charVarray = new({ name:"CharArrayType", elements: charArray });
     VarrayValue byteVarray = new({ name:"ByteArrayType", elements: byteArray });
