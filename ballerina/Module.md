@@ -169,8 +169,8 @@ The `CREATE` statement is executed via the `execute` remote function of the clie
 
 ```ballerina
 // Create the ‘Students’ table with the  ‘id’, 'name', and ‘age’ fields.
-sql:ExecutionResult result = check dbClient->execute("CREATE TABLE student(id INT AUTO_INCREMENT, " +
-                         "age INT, name VARCHAR(255), PRIMARY KEY (id))");
+sql:ExecutionResult result = check dbClient->execute(`CREATE TABLE student(id INT AUTO_INCREMENT, 
+                         age INT, name VARCHAR(255), PRIMARY KEY (id))`);
 //A value of the`sql:ExecutionResult` type is returned for the 'result'. 
 ```
 
@@ -183,8 +183,7 @@ In this sample, the query parameter values are passed directly into the query st
 remote function.
 
 ```ballerina
-sql:ExecutionResult result = check dbClient->execute("INSERT INTO student(age, name) " +
-                         "values (23, 'john')");
+sql:ExecutionResult result = check dbClient->execute(`INSERT INTO student(age, name) values (23, 'john')`);
 ```
 
 In this sample, the parameter values, which are in local variables are used to parameterize the SQL query in
@@ -301,7 +300,7 @@ result stream will not be closed and you have to explicitly invoke the `close` o
 
 ```ballerina
 stream<record{}, sql:Error?> resultStream = 
-            dbClient->query("SELECT count(*) as total FROM students");
+            dbClient->query(`SELECT count(*) as total FROM students`);
 
 record {|record {} value;|}? result = check resultStream.next();
 
@@ -412,15 +411,55 @@ public type IntervalDayToSecond record {|
 Here, `oracledb:Sign` is used to mark the sign of the interval period and period values are always ZERO or positive integers. 
 
 ```ballerina
+//INTERVAL '120-11' YEAR(3) TO MONTH
 oracledb:IntervalYearToMonth intervalYM = {years: 120, months: 11};
+//INTERVAL '120' YEAR(3)
 oracledb:IntervalYearToMonth intervalYM2 = {years: 120};
+//INTERVAL '-11' MONTH(3)
 oracledb:IntervalYearToMonth intervalYM3 = {months: 11, sign: -1};
+//INTERVAL '-120-11' YEAR(3) TO MONTH
 oracledb:IntervalYearToMonth intervalYM4 = {years: 120, months: 11, sign: -1};
 
+//INTERVAL '11 10:09:08.555' DAY TO SECOND(3)
 oracledb:IntervalDayToSecond intervalDS = {days: 11, hours: 10, minutes: 9, seconds: 8.555};
+//INTERVAL '-11 10:09:08.555' DAY TO SECOND(3)
 oracledb:IntervalDayToSecond intervalDS2 = {days: 11, hours: 10, minutes: 9, seconds: 8.555, sign: -1};
+//INTERVAL '-10:09:08.555' HOUR TO SECOND(3)
 oracledb:IntervalDayToSecond intervalDS3 = {hours: 10, minutes: 9, seconds: 8.555, sign: -1};
+//INTERVAL '11 00:09:08.55578' DAY TO SECOND(5)
 oracledb:IntervalDayToSecond intervalDS4 = {days: 11, minutes: 9, seconds: 8.55578};
+```
+#### VARRAY Types
+
+OracleDB has support for `VARRAY` data type and `VARRAY` consists a type name and elements attributes.
+
+The `VARRAY` equivalent type in Ballerina are as follows.
+
+```ballerina
+type ArrayValueType string?[]|int?[]|boolean?[]|float?[]|decimal?[]|byte[]?[];
+
+public type Varray record {|
+    string name;
+    ArrayValueType? elements;
+|};
+```
+
+here, `oracledb:Varray` has two fields to set the type name and elements of the varray. In OracleDB, a `VARRAY` type can be created as follows.
+
+```roomsql
+CREATE OR REPLACE TYPE CharArrayType AS VARRAY(6) OF VARCHAR(100);
+
+CREATE TABLE TestVarrayTable(
+       PK               NUMBER GENERATED ALWAYS AS IDENTITY,
+       COL_CHARARR      CharArrayType,
+       PRIMARY KEY(PK)
+);
+```
+In ballerina, `oracledb:Varray` can be used to pass values for `VARRAY` data type as follows.
+
+```ballerina
+string?[] charArray = [null, "Hello", "World"];
+Varray charVarray = { name:"CharArrayType", elements: charArray };
 ```
 
 >**Note:** The default thread pool size used in Ballerina is: `the number of processors available * 2`. You can configure the thread pool size by using the `BALLERINA_MAX_POOL_SIZE` environment variable.
