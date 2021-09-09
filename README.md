@@ -1,17 +1,17 @@
 Ballerina OracleDB Library
 ===================
 
-  [![Build](https://github.com/ballerina-platform/module-ballerinax-oracledb/workflows/Build/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions?query=workflow%3ABuild)
+  [![Build](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/build-timestamped-master.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/build-timestamped-master.yml)
   [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-oracledb.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/commits/master)
   [![Github issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-standard-library/module/oracledb.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-standard-library/labels/module%2Foracledb)
   [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
   [![codecov](https://codecov.io/gh/ballerina-platform/module-ballerinax-oracledb/branch/master/graph/badge.svg)](https://codecov.io/gh/ballerina-platform/module-ballerinax-oracledb)
 
-The OracleDB library is one of the standard library packages of the<a target="_blank" href="https://ballerina.io/"> Ballerina</a> language.
+The OracleDB library is one of the external library packages of the <a target="_blank" href="https://ballerina.io/"> Ballerina</a> language.
 
-This provides the functionality required to access and manipulate data stored in an OracleDB database.  
+This provides the functionality required to access and manipulate data stored in an Oracle database.
 
-For more information on the operations supported by the `oracledb:Client`, which includes the below, go to the [OracleDB Package](https://ballerina.io/learn/api-docs/ballerina/oracledb/).
+For more information on the operations supported by the `oracledb:Client`, which include the below, go to [The `oracledb` package](https://docs.central.ballerina.io/ballerinax/oracledb/latest).
 
 - Pooling connections
 - Querying data
@@ -22,9 +22,9 @@ For more information on the operations supported by the `oracledb:Client`, which
 - Executing stored procedures
 - Closing the client
 
-## Issues and Projects 
+## Issues and Projects
 
-The **Issues** and **Projects** tabs are disabled for this repository as this is part of the Ballerina Standard Library. To report bugs, request new features, start new discussions, view project boards, etc., please visit the Ballerina Standard Library [parent repository](https://github.com/ballerina-platform/ballerina-standard-library).
+Issues and Projects tabs are disabled for this repository as this is part of the Ballerina Standard Library. To report bugs, request new features, start new discussions, view project boards, etc. please visit Ballerina Standard Library [parent repository](https://github.com/ballerina-platform/ballerina-standard-library).
 
 This repository only contains the source code for the package.
 
@@ -37,9 +37,9 @@ This repository only contains the source code for the package.
    * [OpenJDK](http://openjdk.java.net/install/index.html)
 
 2. Download and install [Docker](https://www.docker.com/get-started).
-   
+
 3. Export your Github Personal access token with the read package permissions as follows.
-        
+
         export packageUser=<Username>
         export packagePAT=<Personal access token>
 
@@ -50,7 +50,7 @@ Execute the commands below to build from the source.
 1. To build the library:
 
         ./gradlew clean build
-        
+
 2. To run the integration tests:
 
         ./gradlew clean test
@@ -68,8 +68,14 @@ Execute the commands below to build from the source.
    ---| ---
    connection | connection-init
    pool | pool
-   execute | execute-basic<br>insert-time<br>insert-object<br>insert-varray
-   query | query-simple-params<br>query-numeric-params<br>query-complex-params
+   transaction | local-transaction
+   execute | execute-basic <br> execute-params
+   batch-execute | batch-execute
+   query | query-simple-params<br>query-complex-params
+   procedures | procedures
+   datetime | datetime
+   custom-object | custom-object
+   custom-varray | custom-varray
 
 5. To disable some specific groups during the test:
 
@@ -78,14 +84,28 @@ Execute the commands below to build from the source.
 6. To debug the tests:
 
         ./gradlew clean build -Pdebug=<port>
+        ./gradlew clean test -Pdebug=<port>
 
 7. To debug the package with the Ballerina language:
 
-        ./gradlew clean build -PbalJavaDebug=<port>     
+        ./gradlew clean build -PbalJavaDebug=<port>
+        ./gradlew clean test -PbalJavaDebug=<port>
+
+8. Publish the ZIP artifact to the local `.m2` repository:
+
+        ./gradlew clean build publishToMavenLocal
+
+9. Publish the generated artifacts to the local Ballerina central repository:
+
+        ./gradlew clean build -PpublishToLocalCentral=true
+
+10. Publish the generated artifacts to the Ballerina central repository:
+
+        ./gradlew clean build -PpublishToCentral=true
 
 ## Contributing to Ballerina
 
-As an open-source project, Ballerina welcomes contributions from the community. 
+As an open source project, Ballerina welcomes contributions from the community.
 
 For more information, go to the [contribution guidelines](https://github.com/ballerina-platform/ballerina-lang/blob/master/CONTRIBUTING.md).
 
@@ -95,6 +115,5 @@ All contributors are encouraged to read the [Ballerina Code of Conduct](https://
 
 ## Useful Links
 
-* Discuss about code changes of the Ballerina project in [ballerina-dev@googlegroups.com](mailto:ballerina-dev@googlegroups.com).
 * Chat live with us via our [Slack channel](https://ballerina.io/community/slack/).
 * Post all technical questions on Stack Overflow with the [#ballerina](https://stackoverflow.com/questions/tagged/ballerina) tag.
