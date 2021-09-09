@@ -253,12 +253,12 @@ type ArrayRecordType2 record {
 isolated function selectVarrayHavingNullElementsWithRecordType() returns error? {
     ArrayRecordType2 arrayRecordInstance = {
         pk : 4,
-        col_chararr : [null, null],
-        col_bytearr : [null, null],
-        col_intarr : [null, null],
-        col_boolarr : [null, null],
-        col_floatarr : [null, null],
-        col_decimalarr : [null, null]
+        col_chararr : [(), ()],
+        col_bytearr : [(), ()],
+        col_intarr : [(), ()],
+        col_boolarr : [(), ()],
+        col_floatarr : [(), ()],
+        col_decimalarr : [(), ()]
     };
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<ArrayRecordType2, error?> streamData = oracledbClient->query(
@@ -289,12 +289,12 @@ isolated function selectVarrayHavingNullElementsWithRecordType() returns error? 
 isolated function selectVarrayHavingMixElementsWithRecordType() returns error? {
     ArrayRecordType2 arrayRecordInstance = {
         pk : 5,
-        col_chararr : [null, "Hello"],
-        col_bytearr : [null, [1, 2]],
-        col_intarr : [null, 1],
-        col_boolarr : [null, true],
-        col_floatarr : [null, 34],
-        col_decimalarr : [null, 34.2]
+        col_chararr : [(), "Hello"],
+        col_bytearr : [(), [1, 2]],
+        col_intarr : [(), 1],
+        col_boolarr : [(), true],
+        col_floatarr : [(), 34],
+        col_decimalarr : [(), 34.2]
     };
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<ArrayRecordType2, error?> streamData = oracledbClient->query(
