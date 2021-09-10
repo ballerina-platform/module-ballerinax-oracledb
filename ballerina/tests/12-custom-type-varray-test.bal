@@ -171,6 +171,26 @@ isolated function insertVarrayWithMixElements() returns sql:Error? {
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
+// insert more elements than max varray size
+@test:Config {
+   groups:["custom-varray"],
+   dependsOn: [insertVarrayWithNullElements]
+}
+isolated function insertVarrayWithMoreElements() returns sql:Error? {
+    string?[] charArray = ["This", "will", "be", "a", "lengthy", "sentence", "with", "each", "words", "are", "seperated"];
+
+    VarrayValue charVarray = new({ name:"CharArrayType", elements: charArray });
+
+    sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable (COL_CHARARR) values (${charVarray})`;
+    sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
+    if result is sql:DatabaseError {
+       test:assertTrue(result.message().includes("Error while executing SQL query: insert into TestVarrayTable " +
+       "(COL_CHARARR) values ( ? ). Exceeded maximum VARRAY limit ."));
+    } else {
+       test:assertFail("Database Error expected.");
+    }
+}
+
 // insert direct array types
 @test:Config {
    groups:["custom-varray"],
