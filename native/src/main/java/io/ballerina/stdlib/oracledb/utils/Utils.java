@@ -24,6 +24,7 @@ import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BValue;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.sql.exception.DataError;
+import io.ballerina.stdlib.sql.exception.UnsupportedTypeError;
 import oracle.jdbc.OracleConnection;
 
 import java.sql.Connection;
@@ -168,7 +169,7 @@ public class Utils {
         } else {
             valueName = value.getClass().getName();
         }
-        return new DataError(String.format("Invalid parameter: %s is passed as value for SQL type: %s",
+        return new UnsupportedTypeError(String.format("Invalid parameter: %s is passed as value for SQL type: %s",
                 valueName, sqlType));
     }
 

@@ -390,7 +390,9 @@ isolated function selectTimestampWithInvalidReturnType() returns error? {
     record {}|error? data = queryClient(sqlQuery, InvalidTimestampReturnType);
     test:assertTrue(data is error);
     if data is sql:ApplicationError {
-        test:assertTrue(data.message().includes("Unsupported Ballerina type:InvalidTimestampRecord for SQL Timestamp data type."));
+        test:assertEquals(data.message(),
+                    "Error when iterating the SQL result. The ballerina type expected for 'SQL Timestamp' type " +
+                    "are '[time:Civil, tine:Date]' but found type 'InvalidTimestampRecord'.");
     } else {
         test:assertFail("ApplicationError Error expected.");
     }

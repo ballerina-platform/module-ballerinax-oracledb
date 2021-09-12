@@ -48,7 +48,7 @@ function queryInvalidRecordParam() {
     record {}|error? result = queryClient(sqlQuery);
     test:assertTrue(result is error);
     if result is sql:ApplicationError {
-        test:assertTrue(result.message().includes("Unsupported type passed in column index: 1"));
+        test:assertEquals(result.message(), "ParameterizedQuery parameter 1 is of unsupported type 'InvalidRecord'.");
     } else {
         test:assertFail("ApplicationError Error expected.");
     }

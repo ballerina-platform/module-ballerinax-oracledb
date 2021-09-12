@@ -30,16 +30,18 @@ import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.oracledb.utils.ModuleUtils;
-import io.ballerina.stdlib.sql.exception.ApplicationError;
 import io.ballerina.stdlib.sql.exception.DataError;
+import io.ballerina.stdlib.sql.exception.FieldMismatchError;
+import io.ballerina.stdlib.sql.exception.TypeMismatchError;
+import io.ballerina.stdlib.sql.exception.UnsupportedTypeError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor;
 import io.ballerina.stdlib.sql.utils.ColumnDefinition;
-import io.ballerina.stdlib.sql.utils.ErrorGenerator;
 import io.ballerina.stdlib.sql.utils.Utils;
 import oracle.jdbc.OracleTypes;
 
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
+import java.sql.JDBCType;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
@@ -75,71 +77,65 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
 
     @Override
     protected BMap<BString, Object> createUserDefinedType(Struct structValue, StructureType structType)
-            throws DataError {
+            throws DataError, SQLException {
         if (structValue == null) {
             return null;
         }
         Field[] internalStructFields = structType.getFields().values().toArray(new Field[0]);
         BMap<BString, Object> struct = ValueCreator.createMapValue(structType);
-        try {
-            Object[] dataArray = structValue.getAttributes();
-            if (dataArray != null) {
-                if (dataArray.length != internalStructFields.length) {
-                    throw new DataError("specified record and the returned SQL Struct field counts " +
-                            "are different, and hence not compatible");
-                }
-                int index = 0;
-                for (Field internalField : internalStructFields) {
-                    int type = internalField.getFieldType().getTag();
-                    BString fieldName = fromString(internalField.getFieldName());
-                    Object value = dataArray[index];
-                    switch (type) {
-                        case TypeTags.INT_TAG:
-                            if (value instanceof BigDecimal) {
-                                struct.put(fieldName, ((BigDecimal) value).intValue());
-                            } else {
-                                struct.put(fieldName, value);
-                            }
-                            break;
-                        case TypeTags.FLOAT_TAG:
-                            if (value instanceof BigDecimal) {
-                                struct.put(fieldName, ((BigDecimal) value).doubleValue());
-                            } else {
-                                struct.put(fieldName, value);
-                            }
-                            break;
-                        case TypeTags.DECIMAL_TAG:
-                            if (value instanceof BigDecimal) {
-                                struct.put(fieldName, ValueCreator.createDecimalValue((BigDecimal) value));
-                            } else {
-                                struct.put(fieldName, value);
-                            }
-                            break;
-                        case TypeTags.STRING_TAG:
-                            struct.put(fieldName, StringUtils.fromString((String) value));
-                            break;
-                        case TypeTags.BOOLEAN_TAG:
-                            if (value instanceof BigDecimal) {
-                                struct.put(fieldName, ((BigDecimal) value).intValue() == 1);
-                            } else {
-                                struct.put(fieldName, ((int) value) == 1);
-                            }
-                            break;
-                        case TypeTags.OBJECT_TYPE_TAG:
-                        case TypeTags.RECORD_TYPE_TAG:
-                            struct.put(fieldName,
-                                    createUserDefinedType((Struct) value,
-                                            (StructureType) internalField.getFieldType()));
-                            break;
-                        default:
-                            createUserDefinedTypeSubtype(internalField, structType);
-                    }
-                    ++index;
-                }
+        Object[] dataArray = structValue.getAttributes();
+        if (dataArray != null) {
+            if (dataArray.length != internalStructFields.length) {
+                throw new FieldMismatchError(structType.getName(), internalStructFields.length, dataArray.length);
             }
-        } catch (SQLException e) {
-            throw new DataError(String.format("Error while retrieving data to create %s record.",
-                    structType.getName()), e);
+            int index = 0;
+            for (Field internalField : internalStructFields) {
+                int type = internalField.getFieldType().getTag();
+                BString fieldName = fromString(internalField.getFieldName());
+                Object value = dataArray[index];
+                switch (type) {
+                    case TypeTags.INT_TAG:
+                        if (value instanceof BigDecimal) {
+                            struct.put(fieldName, ((BigDecimal) value).intValue());
+                        } else {
+                            struct.put(fieldName, value);
+                        }
+                        break;
+                    case TypeTags.FLOAT_TAG:
+                        if (value instanceof BigDecimal) {
+                            struct.put(fieldName, ((BigDecimal) value).doubleValue());
+                        } else {
+                            struct.put(fieldName, value);
+                        }
+                        break;
+                    case TypeTags.DECIMAL_TAG:
+                        if (value instanceof BigDecimal) {
+                            struct.put(fieldName, ValueCreator.createDecimalValue((BigDecimal) value));
+                        } else {
+                            struct.put(fieldName, value);
+                        }
+                        break;
+                    case TypeTags.STRING_TAG:
+                        struct.put(fieldName, StringUtils.fromString((String) value));
+                        break;
+                    case TypeTags.BOOLEAN_TAG:
+                        if (value instanceof BigDecimal) {
+                            struct.put(fieldName, ((BigDecimal) value).intValue() == 1);
+                        } else {
+                            struct.put(fieldName, ((int) value) == 1);
+                        }
+                        break;
+                    case TypeTags.OBJECT_TYPE_TAG:
+                    case TypeTags.RECORD_TYPE_TAG:
+                        struct.put(fieldName,
+                                createUserDefinedType((Struct) value,
+                                        (StructureType) internalField.getFieldType()));
+                        break;
+                    default:
+                        createUserDefinedTypeSubtype(internalField, structType);
+                }
+                ++index;
+            }
         }
         return struct;
     }
@@ -159,36 +155,33 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             case OracleTypes.TIMESTAMPLTZ:
                 return processTimestampWithTimezoneResult(resultSet, columnIndex, sqlType, ballerinaType);
             default:
-                throw new DataError(String.format("Unsupported SQL type %s", columnDefinition.getSqlName()));
+                throw new UnsupportedTypeError(JDBCType.valueOf(sqlType).getName(), columnIndex);
         }
     }
 
     @Override
     public Object processCustomOutParameters(
-            CallableStatement statement, int paramIndex, int sqlType) throws DataError {
+            CallableStatement statement, int paramIndex, int sqlType) throws DataError, SQLException {
         switch (sqlType) {
             case OracleTypes.INTERVALDS:
             case OracleTypes.INTERVALYM:
                 return processInterval(statement, paramIndex);
             default:
-                throw new DataError(String.format("Unsupported SQL type '%d' when reading Procedure call " +
-                        "Out parameter of index '%d'.", sqlType, paramIndex));
+                throw new UnsupportedTypeError(JDBCType.valueOf(sqlType).getName(), paramIndex);
         }
     }
 
     @Override
-    public Object convertCustomOutParameter(Object value, String outParamObjectName, int sqlType, Type ballerinaType) {
-        try {
-            switch (outParamObjectName) {
-                case Constants.Types.OutParameterTypes.INTERVAL_DAY_TO_SECOND:
-                    return convertInterval((String) value, sqlType, ballerinaType, "INTERVALDS");
-                case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH:
-                    return convertInterval((String) value, sqlType, ballerinaType, "INTERVALYM");
-                default:
-                    return ErrorGenerator.getSQLApplicationError(String.format("Unsupported SQL type %d", sqlType));
-            }
-        } catch (ApplicationError e) {
-            return ErrorGenerator.getSQLApplicationError(e.getMessage());
+    public Object convertCustomOutParameter(Object value, String outParamObjectName, int sqlType, Type ballerinaType)
+            throws DataError {
+        switch (outParamObjectName) {
+            case Constants.Types.OutParameterTypes.INTERVAL_DAY_TO_SECOND:
+                return convertInterval((String) value, sqlType, ballerinaType, "INTERVALDS");
+            case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH:
+                return convertInterval((String) value, sqlType, ballerinaType, "INTERVALYM");
+            default:
+                throw new UnsupportedTypeError(String.format(
+                       "ParameterizedCallQuery consists of a parameter of unsupported type '%s'.", outParamObjectName));
         }
     }
 
@@ -208,8 +201,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                             && timestamp instanceof Timestamp) {
                         return Utils.createDateRecord(new java.sql.Date(timestamp.getTime()));
                     } else {
-                        throw new DataError(String.format("Unsupported Ballerina type:%s for SQL Timestamp data type.",
-                                type.getName()));
+                        throw new TypeMismatchError("SQL Timestamp", type.getName(),
+                                new String[]{"time:Civil", "tine:Date"});
                     }
                 case TypeTags.INT_TAG:
                     return timestamp.getTime();
@@ -220,13 +213,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         return null;
     }
 
-    private Object processInterval(CallableStatement statement, int paramIndex) throws DataError {
-        try {
-            return statement.getString(paramIndex);
-        } catch (SQLException e) {
-            throw new DataError(String.format("Error when reading Procedure call " +
-                    "Out parameter of index '%d'.", paramIndex));
-        }
+    private Object processInterval(CallableStatement statement, int paramIndex) throws SQLException {
+        return statement.getString(paramIndex);
     }
 
     private Object processIntervalResult(ResultSet resultSet, int columnIndex, int sqlType, Type ballerinaType,
@@ -290,10 +278,10 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                             return intervalMap;
                         }
                     }
-                    throw new DataError(String.format("Unsupported Ballerina type:%s for %s data type.",
-                            ballerinaType.getName(), sqlTypeName));
+                    throw new TypeMismatchError(sqlTypeName, ballerinaType.getName(),
+                            new String[]{"oracle:IntervalYearToMonth", "oracle:IntervalDayToSecond"});
                 default:
-                    throw new DataError(String.format("%s field cannot be converted to ballerina type : %s",
+                    throw new UnsupportedTypeError(String.format("%s field cannot be converted to ballerina type : %s",
                             sqlTypeName, ballerinaType.getName()));
             }
         } else {

@@ -26,6 +26,7 @@ import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
 import io.ballerina.stdlib.oracledb.utils.Utils;
 import io.ballerina.stdlib.sql.exception.DataError;
+import io.ballerina.stdlib.sql.exception.UnsupportedTypeError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultStatementParameterProcessor;
 import oracle.jdbc.OracleTypes;
 
@@ -86,7 +87,8 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 sqlTypeValue = OracleTypes.INTERVALYM;
                 break;
             default:
-                throw new DataError(String.format("Unsupported OutParameter type: %s", sqlType));
+                throw new UnsupportedTypeError(String.format(
+                        "ParameterizedCallQuery consists of a parameter of unsupported type '%s'.", sqlType));
         }
         return sqlTypeValue;
     }
@@ -117,7 +119,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 setIntervalDayToSecond(preparedStatement, index, value);
                 return returnType ? OracleTypes.INTERVALDS : 0;
             default:
-                throw new DataError(String.format("Unsupported type passed in column index: %d", index));
+                throw new UnsupportedTypeError(recordName, index);
         }
     }
 
