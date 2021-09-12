@@ -264,8 +264,8 @@ isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1");
     record {}|error? returnData = streamData.next();
     if (returnData is sql:ApplicationError) {
-        test:assertTrue(returnData.message().includes("specified record and the returned SQL Struct field counts " +
-                            "are different, and hence not compatible"), "Incorrect error message");
+        test:assertEquals(returnData.message(), "Error when iterating the SQL result. Record 'MismatchObjectRecord' " +
+          "field count 3 and the returned SQL Struct field count 4 are different.");
     } else {
         test:assertFail("Querying custom type with rowType mismatching field count should fail with " +
                             "sql:ApplicationError");

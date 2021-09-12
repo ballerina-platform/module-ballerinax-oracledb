@@ -28,7 +28,9 @@ import io.ballerina.runtime.api.values.BDecimal;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.oracledb.Constants;
+import io.ballerina.stdlib.sql.exception.ConversionError;
 import io.ballerina.stdlib.sql.exception.DataError;
+import io.ballerina.stdlib.sql.exception.UnsupportedTypeError;
 
 import java.math.BigDecimal;
 import java.sql.Array;
@@ -121,7 +123,8 @@ public class ConverterUtils {
         } catch (SQLException e) {
             throw(e);
         } catch (Exception e) {
-            throw new DataError("The array contains elements of unmappable types.");
+            // This is to catch NumberFormatException that can be thrown
+            throw new ConversionError("The array contains elements of unmappable types.", e);
         }
     }
 
@@ -204,7 +207,7 @@ public class ConverterUtils {
             case TypeTags.ANYDATA_TAG:
                 return getAnydataArrayData(bValue);
             default:
-                throw new DataError("Unsupported data type for array specified for struct parameter");
+                throw new UnsupportedTypeError("Unsupported data type for array specified for struct parameter");
         }
     }
 
@@ -271,7 +274,7 @@ public class ConverterUtils {
             } else if (element instanceof BArray) {
                 arrayData[i] = getAnydataArrayData(element);
             } else {
-                throw new DataError("The array contains elements of unmappable types.");
+                throw new UnsupportedTypeError("The array contains elements of unmappable types.");
             }
         }
         return arrayData;
