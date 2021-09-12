@@ -202,7 +202,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                         return Utils.createDateRecord(new java.sql.Date(timestamp.getTime()));
                     } else {
                         throw new TypeMismatchError("SQL Timestamp", type.getName(),
-                                new String[]{"time:Civil", "tine:Date"});
+                                new String[]{"time:Civil", "time:Date"});
                     }
                 case TypeTags.INT_TAG:
                     return timestamp.getTime();
