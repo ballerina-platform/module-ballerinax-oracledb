@@ -176,7 +176,7 @@ public class Utils {
 
     public static void throwUnsupportedArrayTypeError(BArray value) throws DataError {
         throw new UnsupportedTypeError(String.format("OracleDB module can only handle varray data types where both" +
-                        " type name and elements are expected. Unsupported varray type :%s passed as an array type",
+                        " type name and elements are expected. Unsupported varray type '%s' passed as an array type",
                 value.getType().toString()));
     }
 

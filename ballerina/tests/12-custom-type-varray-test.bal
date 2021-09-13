@@ -207,14 +207,14 @@ isolated function insertDirectArrayTypes() returns sql:Error? {
     sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable(COL_CHARARR) values(${charArray})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Unsupported varray type :string[] passed as an array type"));
+       test:assertTrue(result.message().includes("Unsupported varray type 'string[]' passed as an array type"));
     } else {
        test:assertFail("Database Error expected.");
     }
     insertQuery = `insert into TestVarrayTable(COL_BYTEARR) values(${arrayOfByteArray})`;
     result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Unsupported varray type :byte[][] passed as an array type"));
+       test:assertTrue(result.message().includes("Unsupported varray type 'byte[][]' passed as an array type"));
     } else {
        test:assertFail("Database Error expected.");
     }
@@ -229,28 +229,28 @@ isolated function insertDirectArrayTypes() returns sql:Error? {
     insertQuery = `insert into TestVarrayTable(COL_INTARR) values(${intArray})`;
     result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Unsupported varray type :int[] passed as an array type"));
+       test:assertTrue(result.message().includes("Unsupported varray type 'int[]' passed as an array type"));
     } else {
        test:assertFail("Database Error expected.");
     }
     insertQuery = `insert into TestVarrayTable(COL_BOOLARR) values(${boolArray})`;
     result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Unsupported varray type :boolean[] passed as an array type"));
+       test:assertTrue(result.message().includes("Unsupported varray type 'boolean[]' passed as an array type"));
     } else {
        test:assertFail("Database Error expected.");
     }
     insertQuery = `insert into TestVarrayTable(COL_FLOATARR) values(${floatArray})`;
     result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Unsupported varray type :float[] passed as an array type"));
+       test:assertTrue(result.message().includes("Unsupported varray type 'float[]' passed as an array type"));
     } else {
        test:assertFail("Database Error expected.");
     }
     insertQuery = `insert into TestVarrayTable(COL_DECIMALARR) values(${decimalArray})`;
     result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Unsupported varray type :decimal[] passed as an array type"));
+       test:assertTrue(result.message().includes("Unsupported varray type 'decimal[]' passed as an array type"));
     } else {
        test:assertFail("Database Error expected.");
     }
