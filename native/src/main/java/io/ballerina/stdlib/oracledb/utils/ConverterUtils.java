@@ -192,7 +192,7 @@ public class ConverterUtils {
                 }
                 return typedArray;
             default:
-                throw new DataError(String.format("Cannot cast varray to type: %s", type));
+                throw new UnsupportedTypeError(String.format("Cannot cast varray to type: %s", type));
         }
     }
 
@@ -210,7 +210,7 @@ public class ConverterUtils {
             }
             return stringDataArray;
         } else {
-            throw new DataError(String.format("Cannot cast varray to type: %s", type));
+            throw new UnsupportedTypeError(String.format("Cannot cast varray to type: %s", type));
         }
     }
 
@@ -229,7 +229,7 @@ public class ConverterUtils {
             }
             return byteDataArray;
         } else {
-            throw new DataError(String.format("Cannot cast varray to type: %s", type));
+            throw new UnsupportedTypeError(String.format("Cannot cast varray to type: %s", type));
         }
     }
 
