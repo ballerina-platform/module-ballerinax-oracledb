@@ -39,6 +39,7 @@ import io.ballerina.stdlib.sql.exception.UnsupportedTypeError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor;
 import io.ballerina.stdlib.sql.utils.ColumnDefinition;
 import io.ballerina.stdlib.sql.utils.Utils;
+import oracle.jdbc.OracleResultSet;
 import oracle.jdbc.OracleTypes;
 
 import java.math.BigDecimal;
@@ -368,5 +369,12 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             }
             return ValueCreator.createDecimalValue(value);
         }
+    }
+
+    @Override
+    public Object processStructResult(ResultSet resultSet, int columnIndex, int sqlType, Type ballerinaType)
+            throws DataError, SQLException {
+        Struct structData = resultSet.unwrap(OracleResultSet.class).getSTRUCT(columnIndex);
+        return convertStruct(structData, sqlType, ballerinaType);
     }
 }

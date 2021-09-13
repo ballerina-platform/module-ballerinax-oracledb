@@ -68,6 +68,11 @@ public type Varray record {|
     ArrayValueType? elements;
 |};
 
+public type NestedTableType record {|
+    string name;
+    ArrayValueType? elements;
+|};
+
 # Represents OBJECT TYPE Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
@@ -88,6 +93,15 @@ public distinct class VarrayValue {
     public Varray? value;
 
     public isolated function init(Varray? value = ()) {
+        self.value = value;
+    }
+}
+
+public distinct class NestedTableValue {
+    *sql:TypedValue;
+    public NestedTableType? value;
+
+    public isolated function init(NestedTableType? value = ()) {
         self.value = value;
     }
 }

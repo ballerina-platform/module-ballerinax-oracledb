@@ -66,6 +66,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 setOracleObject(connection, preparedStatement, index, value);
                 break;
             case Constants.Types.CustomTypes.VARRAY:
+            case Constants.Types.CustomTypes.NESTED_TABLE:
                 setVarray(connection, preparedStatement, index, value);
                 break;
             default:
