@@ -58,8 +58,8 @@ public type ObjectType record {|
 # Represents ballerina typed array.
 type ArrayValueType string?[]|int?[]|boolean?[]|float?[]|decimal?[]|byte[]?[];
 
-# An ordered set of data elements with a variable size. All elements of a given array are of the same data
-# type.
+# An ordered set of data elements with a variable size but maximum size is defined. All elements of a given array are
+# of the same data type with null value support.
 #
 # + name - Name of the varray
 # + elements - Elements of the Varray
@@ -68,6 +68,10 @@ public type Varray record {|
     ArrayValueType? elements;
 |};
 
+# An ordered set of data elements with a variable size.
+#
+# + name - Name of the varray
+# + elements - Elements of the Varray
 public type NestedTableType record {|
     string name;
     ArrayValueType? elements;
@@ -97,6 +101,9 @@ public distinct class VarrayValue {
     }
 }
 
+# Represents Nested Table Oracle DB field.
+#
+# + value - Value of parameter passed into the SQL statement
 public distinct class NestedTableValue {
     *sql:TypedValue;
     public NestedTableType? value;
