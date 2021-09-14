@@ -18,8 +18,11 @@
 
 package io.ballerina.stdlib.oracledb.parameterprocessor;
 
+import io.ballerina.runtime.api.PredefinedTypes;
 import io.ballerina.runtime.api.TypeTags;
+import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.api.types.ArrayType;
 import io.ballerina.runtime.api.types.Field;
 import io.ballerina.runtime.api.types.StructureType;
 import io.ballerina.runtime.api.types.Type;
@@ -30,7 +33,6 @@ import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.oracledb.Constants;
-import io.ballerina.stdlib.oracledb.utils.ConverterUtils;
 import io.ballerina.stdlib.oracledb.utils.ModuleUtils;
 import io.ballerina.stdlib.sql.exception.DataError;
 import io.ballerina.stdlib.sql.exception.FieldMismatchError;
@@ -61,6 +63,8 @@ import static io.ballerina.runtime.api.utils.StringUtils.fromString;
  * @since 0.1.0
  */
 public class OracleDBResultParameterProcessor extends DefaultResultParameterProcessor {
+    private static final ArrayType BYTE_ARRAY_TYPE = TypeCreator.createArrayType(
+            TypeCreator.createArrayType(PredefinedTypes.TYPE_BYTE));
     private static final OracleDBResultParameterProcessor instance = new OracleDBResultParameterProcessor();
     private static final BObject iteratorObject = ValueCreator.createObjectValue(
             ModuleUtils.getModule(), Constants.CUSTOM_RESULT_ITERATOR_OBJECT);
@@ -192,11 +196,11 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         String elementType = firstNonNullElement.getClass().getCanonicalName();
         switch (elementType) {
             case io.ballerina.stdlib.sql.Constants.Classes.BIG_DECIMAL:
-                return ConverterUtils.convertBigDecimalArrayToBallerinaType(this, dataArray, type, containsNull);
+                return convertBigDecimalArrayToBallerinaType(dataArray, type, containsNull);
             case io.ballerina.stdlib.sql.Constants.Classes.STRING:
-                return ConverterUtils.convertStringArrayToBallerinaType(this, dataArray, type, containsNull);
+                return convertStringArrayToBallerinaType(dataArray, type, containsNull);
             case io.ballerina.stdlib.sql.Constants.Classes.BYTE:
-                return ConverterUtils.convertByteArrayToBallerinaType(this, dataArray, type, containsNull);
+                return convertByteArrayToBallerinaType(dataArray, type, containsNull);
             default:
                 return containsNull ?
                         super.createAndPopulateBBRefValueArray(firstNonNullElement, dataArray, type, array) :
@@ -331,6 +335,83 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             }
         } else {
             return null;
+        }
+    }
+
+    private BArray convertBigDecimalArrayToBallerinaType(Object[] dataArray, Type type, boolean containsNull)
+            throws DataError {
+        BArray typedArray;
+        switch (type.toString()) {
+            case Constants.Types.BallerinaArrayTypes.OPTIONAL_INT:
+            case io.ballerina.stdlib.sql.Constants.ArrayTypes.INTEGER:
+                typedArray = containsNull ? createEmptyBBRefValueArray(PredefinedTypes.TYPE_INT) :
+                        ValueCreator.createArrayValue(io.ballerina.stdlib.sql.utils.Utils.INT_ARRAY);
+                for (int i = 0; i < dataArray.length; i++) {
+                    typedArray.add(i, dataArray[i] != null ? ((BigDecimal) dataArray[i]).longValue() : null);
+                }
+                return typedArray;
+            case Constants.Types.BallerinaArrayTypes.OPTIONAL_FLOAT:
+            case io.ballerina.stdlib.sql.Constants.ArrayTypes.FLOAT:
+                typedArray = containsNull ? createEmptyBBRefValueArray(PredefinedTypes.TYPE_FLOAT) :
+                        ValueCreator.createArrayValue(io.ballerina.stdlib.sql.utils.Utils.FLOAT_ARRAY);
+                for (int i = 0; i < dataArray.length; ++i) {
+                    typedArray.add(i, dataArray[i] != null ? ((BigDecimal) dataArray[i]).doubleValue() : null);
+                }
+                return typedArray;
+            case Constants.Types.BallerinaArrayTypes.OPTIONAL_DECIMAL:
+            case io.ballerina.stdlib.sql.Constants.ArrayTypes.DECIMAL:
+            case Constants.Types.BallerinaArrayTypes.ANYDATA:
+                typedArray = containsNull ? createEmptyBBRefValueArray(PredefinedTypes.TYPE_DECIMAL) :
+                        ValueCreator.createArrayValue(io.ballerina.stdlib.sql.utils.Utils.DECIMAL_ARRAY);
+                for (int i = 0; i < dataArray.length; ++i) {
+                    typedArray.add(i, dataArray[i] != null ?
+                            ValueCreator.createDecimalValue((BigDecimal) dataArray[i]) : null);
+                }
+                return typedArray;
+            case Constants.Types.BallerinaArrayTypes.OPTIONAL_BOOLEAN:
+            case io.ballerina.stdlib.sql.Constants.ArrayTypes.BOOLEAN:
+                typedArray = containsNull ? createEmptyBBRefValueArray(PredefinedTypes.TYPE_BOOLEAN) :
+                        ValueCreator.createArrayValue(io.ballerina.stdlib.sql.utils.Utils.BOOLEAN_ARRAY);
+                for (int i = 0; i < dataArray.length; ++i) {
+                    typedArray.add(i, dataArray[i] != null ? dataArray[i].equals(BigDecimal.ONE) : null);
+                }
+                return typedArray;
+            default:
+                throw new UnsupportedTypeError(String.format("Cannot cast array to type: %s", type));
+        }
+    }
+
+    private BArray convertStringArrayToBallerinaType(Object[] dataArray, Type type, boolean containsNull)
+            throws DataError {
+        if (type.toString().equals(Constants.Types.BallerinaArrayTypes.OPTIONAL_STRING) ||
+                type.toString().equals(io.ballerina.stdlib.sql.Constants.ArrayTypes.STRING) ||
+                type.toString().equals(Constants.Types.BallerinaArrayTypes.ANYDATA)) {
+            BArray stringDataArray = containsNull ? createEmptyBBRefValueArray(PredefinedTypes.TYPE_STRING) :
+                    ValueCreator.createArrayValue(io.ballerina.stdlib.sql.utils.Utils.STRING_ARRAY);
+            for (int i = 0; i < dataArray.length; i++) {
+                stringDataArray.append(dataArray[i] != null ? fromString(dataArray[i].toString()) : null);
+            }
+            return stringDataArray;
+        } else {
+            throw new UnsupportedTypeError(String.format("Cannot cast array to type: %s", type));
+        }
+    }
+
+    private BArray convertByteArrayToBallerinaType(Object[] dataArray, Type type, boolean containsNull)
+            throws DataError {
+        if (type.toString().equals(Constants.Types.BallerinaArrayTypes.OPTIONAL_BYTE) ||
+                type.toString().equals(io.ballerina.stdlib.sql.Constants.ArrayTypes.BYTE) ||
+                type.toString().equals(Constants.Types.BallerinaArrayTypes.ANYDATA)) {
+            BArray byteDataArray = containsNull ? createEmptyBBRefValueArray(TypeCreator.
+                    createArrayType(PredefinedTypes.TYPE_BYTE)) :
+                    ValueCreator.createArrayValue(BYTE_ARRAY_TYPE);
+            for (int i = 0; i < dataArray.length; i++) {
+                byteDataArray.add(i,
+                        dataArray[i] != null ? ValueCreator.createArrayValue((byte[]) dataArray[i]) : null);
+            }
+            return byteDataArray;
+        } else {
+            throw new UnsupportedTypeError(String.format("Cannot cast array to type: %s", type));
         }
     }
 
