@@ -1,0 +1,23 @@
+[package]
+org = "ballerinax"
+name = "oracledb"
+version = "@toml.version@"
+distribution = "slbeta3"
+
+[[platform.java11.dependency]]
+path = "../native/build/libs/oracledb-native-@project.version@.jar"
+
+[[platform.java11.dependency]]
+path = "./lib/sql-native-@stdlib.sql.native.version@.jar"
+
+[[platform.java11.dependency]]
+path = "./lib/ojdbc8-@oracledb.driver.version@.jar"
+scope = "testOnly"
+
+[[platform.java11.dependency]]
+path = "./lib/xdb-@oracle.xdb.version@.jar"
+scope = "testOnly"
+
+[[platform.java11.dependency]]
+path = "./lib/xmlparserv2-@oracle.xmlparserv2.version@.jar"
+scope = "testOnly"
