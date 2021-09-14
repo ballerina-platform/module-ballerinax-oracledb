@@ -428,3 +428,46 @@ isolated function selectFromZeroLevelNestedTable() returns error? {
     };
     test:assertEquals(value, expectedData, "Expected data mismatched.");
 }
+
+@test:Config {
+   groups:["nested-table"],
+   dependsOn: [insertToNestedTable]
+}
+isolated function insertNestedTableNull() returns error? {
+    int pk = 3;
+    NestedTableValue students = new();
+    NestedTableValue grades = new();
+    sql:ParameterizedQuery insertQuery = `INSERT INTO NestedClassTable(pk, col_students, col_grades)
+            VALUES (${pk}, ${students}, ${grades})`;
+    sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
+    if result is sql:ApplicationError {
+       test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: varray"));
+    } else {
+       test:assertFail("Database Error expected.");
+    }
+}
+
+type InvalidIntTypeNestedTable record {
+    int pk;
+    int[] col_students;
+};
+
+@test:Config {
+    groups:["nested-table"],
+    dependsOn: [insertNestedTableNull]
+}
+isolated function selectNestedTableWithInvalidIntType() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<InvalidIntTypeNestedTable, sql:Error?> streamData = oracledbClient->query(
+        `SELECT pk, col_students FROM NestedClassTable WHERE pk = 1`);
+    record {}|error? returnData =  streamData.next();
+    check streamData.close();
+    check oracledbClient.close();
+    if returnData is sql:ApplicationError {
+        test:assertTrue(returnData.message().includes("Cannot cast array to type: int[]"),
+            "Incorrect error message");
+    } else {
+        test:assertFail("Querying varray with invalid array type should fail with " +
+                            "sql:ApplicationError");
+    }
+}

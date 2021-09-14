@@ -460,7 +460,7 @@ isolated function selectVarrayWithInvalidIntType() returns error? {
     check streamData.close();
     check oracledbClient.close();
     if returnData is sql:ApplicationError {
-        test:assertTrue(returnData.message().includes("Cannot cast varray to type: int[]"),
+        test:assertTrue(returnData.message().includes("Cannot cast array to type: int[]"),
             "Incorrect error message");
     } else {
         test:assertFail("Querying varray with invalid array type should fail with " +
@@ -485,7 +485,7 @@ isolated function selectVarrayWithInvalidStringType() returns error? {
     check streamData.close();
     check oracledbClient.close();
     if returnData is sql:ApplicationError {
-        test:assertTrue(returnData.message().includes("Cannot cast varray to type: string[]"),
+        test:assertTrue(returnData.message().includes("Cannot cast array to type: string[]"),
             "Incorrect error message");
     } else {
         test:assertFail("Querying varray with invalid array type should fail with " +
@@ -510,7 +510,7 @@ isolated function selectVarrayWithInvalidByteType() returns error? {
     check streamData.close();
     check oracledbClient.close();
     if returnData is sql:ApplicationError {
-        test:assertTrue(returnData.message().includes("Cannot cast varray to type: byte[][]"),
+        test:assertTrue(returnData.message().includes("Cannot cast array to type: byte[][]"),
             "Incorrect error message");
     } else {
         test:assertFail("Querying varray with invalid array type should fail with " +
@@ -535,7 +535,7 @@ isolated function selectVarrayWithInvalidStringType2() returns error? {
     check streamData.close();
     check oracledbClient.close();
     if returnData is sql:ApplicationError {
-        test:assertTrue(returnData.message().includes("Cannot cast varray to type: string[]"),
+        test:assertTrue(returnData.message().includes("Cannot cast array to type: string[]"),
             "Incorrect error message");
     } else {
         test:assertFail("Querying varray with invalid array type should fail with " +
