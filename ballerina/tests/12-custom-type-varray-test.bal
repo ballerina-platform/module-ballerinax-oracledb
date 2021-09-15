@@ -382,7 +382,7 @@ type ArrayRecordType record {
 
 @test:Config {
     groups:["custom-varray"],
-    dependsOn: [insertVarray]
+    dependsOn: [selectVarrayWithoutRecordType]
 }
 isolated function selectVarrayWithRecordType() returns error? {
     ArrayRecordType arrayRecordInstance = {
@@ -450,7 +450,7 @@ type InvalidIntTypeArray record {
 
 @test:Config {
     groups:["custom-varray"],
-    dependsOn: [insertVarray]
+    dependsOn: [selectVarrayWithRecordType]
 }
 isolated function selectVarrayWithInvalidIntType() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
@@ -475,7 +475,7 @@ type InvalidStringTypeArray record {
 
 @test:Config {
     groups:["custom-varray"],
-    dependsOn: [insertVarray]
+    dependsOn: [selectVarrayWithInvalidIntType]
 }
 isolated function selectVarrayWithInvalidStringType() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
@@ -500,7 +500,7 @@ type InvalidByteTypeArray record {
 
 @test:Config {
     groups:["custom-varray"],
-    dependsOn: [insertVarray]
+    dependsOn: [selectVarrayWithInvalidStringType]
 }
 isolated function selectVarrayWithInvalidByteType() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
@@ -525,7 +525,7 @@ type InvalidStringTypeArray2 record {
 
 @test:Config {
     groups:["custom-varray"],
-    dependsOn: [insertVarray]
+    dependsOn: [selectVarrayWithInvalidByteType]
 }
 isolated function selectVarrayWithInvalidStringType2() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);

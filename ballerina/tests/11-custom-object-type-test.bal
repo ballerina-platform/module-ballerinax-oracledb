@@ -409,7 +409,8 @@ type ReturnZeroLevelNestedClassTable record {
 };
 
 @test:Config {
-    groups: ["nested-table"]
+    groups: ["nested-table"],
+    dependsOn: [insertToNestedTable]
 }
 isolated function selectFromZeroLevelNestedTable() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
