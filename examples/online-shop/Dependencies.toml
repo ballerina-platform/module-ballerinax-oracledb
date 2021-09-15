@@ -1,0 +1,11 @@
+[[dependency]]
+org = "ballerinax"
+name = "oracledb"
+version = "1.0.0"
+repository = "local"
+
+[[dependency]]
+org = "ballerina"
+name = "sql"
+version = "1.0.0"
+repository = "local"
