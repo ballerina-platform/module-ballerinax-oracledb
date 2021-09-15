@@ -385,19 +385,19 @@ isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
     groups: ["nested-table"]
 }
 isolated function insertToNestedTable() returns error? {
-        string[] nameAtt = ["Smith", "John", "Arya", "Stark"];
-        NestedTableValue students = new({name: "NestedNameTable", elements: nameAtt});
-        int[] gradesAtt = [67, 45, 78, 86];
-        NestedTableValue grades = new({name: "NestedGradeTable", elements: gradesAtt});
-        int total = 4;
-        int pk = 2;
-        string teacher = "Kate Anderson";
-        sql:ParameterizedQuery insertQuery = `INSERT INTO NestedClassTable(pk, col_teacher, col_students, col_grades, col_total)
-                VALUES (${pk}, ${teacher}, ${students}, ${grades}, ${total})`;
-        sql:ExecutionResult result = check executeQuery(insertQuery);
-        test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-        var insertId = result.lastInsertId;
-        test:assertTrue(insertId is string, "Last Insert id should be string");
+    string[] nameAtt = ["Smith", "John", "Arya", "Stark"];
+    NestedTableValue students = new({name: "NestedNameTable", elements: nameAtt});
+    int[] gradesAtt = [67, 45, 78, 86];
+    NestedTableValue grades = new({name: "NestedGradeTable", elements: gradesAtt});
+    int total = 4;
+    int pk = 2;
+    string teacher = "Kate Anderson";
+    sql:ParameterizedQuery insertQuery = `INSERT INTO NestedClassTable(pk, col_teacher, col_students, col_grades, col_total)
+            VALUES (${pk}, ${teacher}, ${students}, ${grades}, ${total})`;
+    sql:ExecutionResult result = check executeQuery(insertQuery);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    var insertId = result.lastInsertId;
+    test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
 type ReturnZeroLevelNestedClassTable record {
