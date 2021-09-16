@@ -66,8 +66,10 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 setOracleObject(connection, preparedStatement, index, value);
                 break;
             case Constants.Types.CustomTypes.VARRAY:
+                setArray(connection, preparedStatement, index, value, "varray");
+                break;
             case Constants.Types.CustomTypes.NESTED_TABLE:
-                setVarray(connection, preparedStatement, index, value);
+                setArray(connection, preparedStatement, index, value, "nested table");
                 break;
             default:
                 throw Utils.throwInvalidParameterError(value, sqlType);
@@ -183,10 +185,11 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         preparedStatement.setObject(index, oracleObject);
     }
 
-    private void setVarray(Connection connection, PreparedStatement preparedStatement, int index, Object value)
+    private void setArray(Connection connection, PreparedStatement preparedStatement, int index, Object value,
+                           String type)
             throws SQLException, DataError {
         if (value == null) {
-            throw Utils.throwInvalidParameterError(null, "varray");
+            throw Utils.throwInvalidParameterError(null, type);
         }
         Array oracleArray = ConverterUtils.convertVarray(connection, value);
         preparedStatement.setArray(index, oracleArray);

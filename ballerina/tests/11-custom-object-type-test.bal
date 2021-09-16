@@ -442,7 +442,7 @@ isolated function insertNestedTableNull() returns error? {
             VALUES (${pk}, ${students}, ${grades})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: varray"));
+       test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: nested table"));
     } else {
        test:assertFail("Database Error expected.");
     }
