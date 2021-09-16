@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerina/http;
-import ballerina/sql;
+//import ballerina/sql;
 import ballerinax/oracledb;
 import ballerina/time;
 
@@ -28,30 +28,64 @@ const string DATABASE = "ORCLCDB.localdomain";
 oracledb:Client dbClient = check new(host = HOST, user = USER, password = PASSWORD, port = PORT, database = DATABASE);
 listener http:Listener onlineShopListener = new (9090);
 
-public type Customer record {
-    decimal customer_id;
-    string name;
-    string address;
-    string credit_limit;
-    string website;
-};
+service /onlineshop on onlineShopListener {
+    resource function get employees() return Employee[]|error? {
+        Employee[] employees = [];
+         stream<Employee, error?> resultStream = dbClient->query(`SELECT * FROM EMPLOYEES`);
+         _ = check resultStream.forEach(function(Employee employee) {
+            employees.push(employee);
+         });
+         check resultStream.close();
+         return employees;
+    }
 
-public type Order record {
-    decimal order_id;
-    decimal customer_id;
-    string status;
-    decimal salesman_id;
-    time:Civil order_date;
-};
+    resource function get products() return Product[]|error? {
+        Product[] products = [];
+         stream<Product, error?> resultStream = dbClient->query(`SELECT * FROM PRODUCTS`);
+         _ = check resultStream.forEach(function(Product product) {
+            products.push(product);
+         });
+         check resultStream.close();
+         return products;
+    }
 
-service /online-shop on onlineShopListener {
-    resource function get customers() returns Customer[]|error {
+    resource function get customers() returns Customer[]|error? {
         Customer[] customers = [];
-        stream<Customer, error?> resultStream = check dbClient->query(`SELECT * FROM CUSTOMERS`);
-        check resultStream.forEach(function(Customer customer) {
+        stream<Customer, error?> resultStream = dbClient->query(`SELECT * FROM CUSTOMERS`);
+        _ = check resultStream.forEach(function(Customer customer) {
            customers.push(customer);
         });
         check resultStream.close();
         return customers;
+    }
+
+    resource function get orders() returns Order[]|error? {
+        Order[] orders = [];
+        stream<Order, error?> resultStream = dbClient->query(`SELECT * FROM ORDERS`);
+        _ = check resultStream.forEach(function(Order order) {
+           orders.push(order);
+        });
+        check resultStream.close();
+        return orders;
+    }
+
+    resource function get orders() returns OrderItem[]|error? {
+        OrderItem[] orderItems = [];
+        stream<OrderItem, error?> resultStream = dbClient->query(`SELECT * FROM ORDER_ITEMS`);
+        _ = check resultStream.forEach(function(OrderItem orderItem) {
+           orderItems.push(orderItem);
+        });
+        check resultStream.close();
+        return orderItems;
+    }
+
+    resource function get contacts() returns Contact[]|error? {
+        Contact[] contacts = [];
+        stream<Contact, error?> resultStream = dbClient->query(`SELECT * FROM CONTACTS`);
+        _ = check resultStream.forEach(function(Contact contact) {
+           contacts.push(contact);
+        });
+        check resultStream.close();
+        return contacts;
     }
 }

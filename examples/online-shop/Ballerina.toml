@@ -9,12 +9,6 @@ name = "oracledb"
 version = "1.0.0"
 repository = "local"
 
-[[dependency]]
-org = "ballerina"
-name = "sql"
-version = "1.0.0"
-repository = "local"
-
 [[platform.java11.dependency]]
 path = "./../../ballerina/lib/ojdbc8-12.2.0.1.jar"
 
