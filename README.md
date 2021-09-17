@@ -3,9 +3,9 @@ Ballerina OracleDB Library
 
   [![Build](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/build-timestamped-master.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/build-timestamped-master.yml)
   [![Trivy](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/trivy-scan.yml)
-  [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-oracledb.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/commits/master)
+  [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-oracledb.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/commits/main)
   [![Github issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-standard-library/module/oracledb.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-standard-library/labels/module%2Foracledb)
-  [![codecov](https://codecov.io/gh/ballerina-platform/module-ballerinax-oracledb/branch/master/graph/badge.svg)](https://codecov.io/gh/ballerina-platform/module-ballerinax-oracledb)
+  [![codecov](https://codecov.io/gh/ballerina-platform/module-ballerinax-oracledb/branch/main/graph/badge.svg)](https://codecov.io/gh/ballerina-platform/module-ballerinax-oracledb)
 
 The OracleDB library is one of the external library packages of the <a target="_blank" href="https://ballerina.io/"> Ballerina</a> language.
 
@@ -63,7 +63,8 @@ Execute the commands below to build from the source.
 
         ./gradlew clean build -Pgroups=<Comma separated groups/test cases>
 
-   **Tip:** The following groups of test cases are available.<br>
+   **Tip:** The following groups of test cases are available.
+
    Groups | Test Cases
    ---| ---
    connection | connection-init
