@@ -92,3 +92,23 @@ CREATE TABLE TestVarrayTable(
        COL_DECIMALARR   DecimalArrayType,
        PRIMARY KEY(PK)
 );
+/
+
+CREATE OR REPLACE TYPE NestedNameTable IS TABLE OF VARCHAR2(10);
+/
+
+CREATE OR REPLACE TYPE NestedGradeTable IS TABLE OF INTEGER;
+/
+
+CREATE TABLE NestedClassTable(
+        PK              NUMBER,
+        COL_TEACHER     VARCHAR2(30),
+        COL_STUDENTS    NestedNameTable,
+        COL_GRADES      NestedGradeTable,
+        COL_TOTAL       INTEGER,
+        PRIMARY KEY(PK)
+) NESTED TABLE COL_STUDENTS STORE AS tbl_students NESTED TABLE COL_GRADES STORE AS tbl_grades;
+/
+
+INSERT INTO NestedClassTable(PK,COL_TEACHER, COL_STUDENTS, COL_GRADES, COL_TOTAL)
+        VALUES (1, 'Kate Johnson', NestedNameTable('John', 'Smith', 'Arya', 'Stark', 'Conan'), NestedGradeTable(78, 56, 23, 68, 87), 5);
