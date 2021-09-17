@@ -2,9 +2,9 @@ Ballerina OracleDB Library
 ===================
 
   [![Build](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/build-timestamped-master.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/build-timestamped-master.yml)
+  [![Trivy](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/trivy-scan.yml)
   [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-oracledb.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/commits/master)
   [![Github issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-standard-library/module/oracledb.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-standard-library/labels/module%2Foracledb)
-  [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
   [![codecov](https://codecov.io/gh/ballerina-platform/module-ballerinax-oracledb/branch/master/graph/badge.svg)](https://codecov.io/gh/ballerina-platform/module-ballerinax-oracledb)
 
 The OracleDB library is one of the external library packages of the <a target="_blank" href="https://ballerina.io/"> Ballerina</a> language.
