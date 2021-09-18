@@ -15,9 +15,7 @@
 // under the License.
 
 import ballerina/http;
-//import ballerina/sql;
 import ballerinax/oracledb;
-import ballerina/time;
 
 const string USER = "balUser";
 const string PASSWORD = "balpass";
@@ -25,11 +23,12 @@ const string HOST = "localhost";
 const int PORT = 1521;
 const string DATABASE = "ORCLCDB.localdomain";
 
-oracledb:Client dbClient = check new(host = HOST, user = USER, password = PASSWORD, port = PORT, database = DATABASE);
+final oracledb:Client dbClient = check new(host = HOST, user = USER, password = PASSWORD, port = PORT,
+    database = DATABASE, connectionPool = {maxOpenConnections: 3, minIdleConnections: 1});
 listener http:Listener onlineShopListener = new (9090);
 
 service /onlineshop on onlineShopListener {
-    resource function get employees() return Employee[]|error? {
+    resource function get employees() returns Employee[]|error? {
         Employee[] employees = [];
          stream<Employee, error?> resultStream = dbClient->query(`SELECT * FROM EMPLOYEES`);
          _ = check resultStream.forEach(function(Employee employee) {
@@ -39,14 +38,32 @@ service /onlineshop on onlineShopListener {
          return employees;
     }
 
-    resource function get products() return Product[]|error? {
+    resource function get employees/[decimal id]() returns Employee|error? {
+        stream<Employee, error?> resultStream = dbClient->query(`SELECT * FROM EMPLOYEES WHERE EMPLOYEE_ID = ${id}`);
+        record {|Employee value;|}? data = check resultStream.next();
+        check resultStream.close();
+        return data?.value;
+    }
+
+    resource function get totalemployeesCount() returns int|error? {
+        return check dbClient->queryRow(`SELECT COUNT(*) FROM EMPLOYEES`, int);
+    }
+
+    resource function get products() returns Product[]|error? {
         Product[] products = [];
-         stream<Product, error?> resultStream = dbClient->query(`SELECT * FROM PRODUCTS`);
-         _ = check resultStream.forEach(function(Product product) {
-            products.push(product);
-         });
-         check resultStream.close();
-         return products;
+        stream<Product, error?> resultStream = dbClient->query(`SELECT * FROM PRODUCTS`);
+        _ = check resultStream.forEach(function(Product product) {
+           products.push(product);
+        });
+        check resultStream.close();
+        return products;
+    }
+
+    resource function get products/[decimal id]() returns Product|error? {
+        stream<Product, error?> resultStream = dbClient->query(`SELECT * FROM PRODUCTS WHERE PRODUCT_ID = ${id}`);
+        record {|Product value;|}? data = check resultStream.next();
+        check resultStream.close();
+        return data?.value;
     }
 
     resource function get customers() returns Customer[]|error? {
@@ -59,6 +76,13 @@ service /onlineshop on onlineShopListener {
         return customers;
     }
 
+    resource function get customers/[decimal id]() returns Customer|error? {
+        stream<Customer, error?> resultStream = dbClient->query(`SELECT * FROM CUSTOMERS WHERE CUSTOMER_ID = ${id}`);
+        record {|Customer value;|}? data = check resultStream.next();
+        check resultStream.close();
+        return data?.value;
+    }
+
     resource function get orders() returns Order[]|error? {
         Order[] orders = [];
         stream<Order, error?> resultStream = dbClient->query(`SELECT * FROM ORDERS`);
@@ -69,9 +93,26 @@ service /onlineshop on onlineShopListener {
         return orders;
     }
 
-    resource function get orders() returns OrderItem[]|error? {
+    resource function get orders/[decimal id]() returns Order|error? {
+        stream<Order, error?> resultStream = dbClient->query(`SELECT * FROM ORDERS WHERE ORDER_ID = ${id}`);
+        record {|Order value;|}? data = check resultStream.next();
+        check resultStream.close();
+        return data?.value;
+    }
+
+    resource function get orderItems() returns OrderItem[]|error? {
         OrderItem[] orderItems = [];
         stream<OrderItem, error?> resultStream = dbClient->query(`SELECT * FROM ORDER_ITEMS`);
+        _ = check resultStream.forEach(function(OrderItem orderItem) {
+           orderItems.push(orderItem);
+        });
+        check resultStream.close();
+        return orderItems;
+    }
+
+    resource function get orderItemsByOrderId/[decimal id]() returns OrderItem[]|error? {
+        OrderItem[] orderItems = [];
+        stream<OrderItem, error?> resultStream = dbClient->query(`SELECT * FROM ORDER_ITEMS WHERE ORDER_ID = ${id}`);
         _ = check resultStream.forEach(function(OrderItem orderItem) {
            orderItems.push(orderItem);
         });
@@ -87,5 +128,22 @@ service /onlineshop on onlineShopListener {
         });
         check resultStream.close();
         return contacts;
+    }
+
+    resource function get contactsByCustomerId/[decimal id]() returns Contact[]|error? {
+        Contact[] contacts = [];
+        stream<Contact, error?> resultStream = dbClient->query(`SELECT * FROM CONTACTS WHERE CUSTOMER_ID = ${id}`);
+        _ = check resultStream.forEach(function(Contact contact) {
+           contacts.push(contact);
+        });
+        check resultStream.close();
+        return contacts;
+    }
+
+    resource function get contacts/[decimal id]() returns Contact|error? {
+        stream<Contact, error?> resultStream = dbClient->query(`SELECT * FROM CONTACTS WHERE CONTACT_ID = ${id}`);
+        record {|Contact value;|}? data = check resultStream.next();
+        check resultStream.close();
+        return data?.value;
     }
 }

@@ -113,7 +113,7 @@ ALTER TABLE orders DISABLE CONSTRAINT fk_orders_employees;
 ALTER TABLE order_items DISABLE CONSTRAINT fk_order_items_products;
 ALTER TABLE order_items DISABLE CONSTRAINT fk_order_items_orders;
 
-REM INSERTING into EMPLOYEES
+REM INSERTING into balUser.EMPLOYEES
 SET DEFINE OFF;
 Insert into balUser.EMPLOYEES (EMPLOYEE_ID,FIRST_NAME,LAST_NAME,EMAIL,PHONE,HIRE_DATE,MANAGER_ID,JOB_TITLE) values (1,'Tommy','Bailey','tommy.bailey@example.com','515.123.4567',to_date('17-JUN-16','DD-MON-RR'),null,'President');
 Insert into balUser.EMPLOYEES (EMPLOYEE_ID,FIRST_NAME,LAST_NAME,EMAIL,PHONE,HIRE_DATE,MANAGER_ID,JOB_TITLE) values (46,'Ava','Sullivan','ava.sullivan@example.com','011.44.1344.429268',to_date('01-OCT-16','DD-MON-RR'),1,'Sales Manager');
