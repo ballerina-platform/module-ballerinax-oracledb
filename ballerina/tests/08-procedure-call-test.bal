@@ -160,7 +160,8 @@ isolated function testCallWithStringTypesInOutParams() returns error? {
 }
 
 @test:Config {
-    groups: ["procedures"]
+    groups: ["procedures"],
+    dependsOn: [testCallWithStringTypesInOutParams]
 }
 isolated function testCallWithNumericTypesOutParams() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
@@ -188,7 +189,8 @@ isolated function testCallWithNumericTypesOutParams() returns error? {
 type Xml xml;
 
 @test:Config {
-    groups: ["procedures"]
+    groups: ["procedures"],
+    dependsOn: [testCallWithNumericTypesOutParams]
 }
 isolated function testCallWithComplexTypesOutParams() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
@@ -211,7 +213,8 @@ distinct class RandomOutParameter {
 }
 
 @test:Config {
-    groups: ["procedures"]
+    groups: ["procedures"],
+    dependsOn: [testCallWithComplexTypesOutParams]
 }
 isolated function testCallWithRandomOutParams() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
@@ -225,7 +228,8 @@ isolated function testCallWithRandomOutParams() returns error? {
 }
 
 @test:Config {
-    groups: ["procedures"]
+    groups: ["procedures"],
+    dependsOn: [testCallWithRandomOutParams]
 }
 isolated function testCallWithDateTimesOutParams() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);

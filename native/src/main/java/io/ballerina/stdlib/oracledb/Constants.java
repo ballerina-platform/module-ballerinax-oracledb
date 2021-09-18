@@ -181,6 +181,7 @@ public final class Constants {
 
             public static final String OBJECT = "ObjectTypeValue";
             public static final String VARRAY = "VarrayValue";
+            public static final String NESTED_TABLE = "NestedTableValue";
         }
 
         /**

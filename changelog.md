@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- [Add Nested Table support](https://github.com/ballerina-platform/ballerina-standard-library/issues/1665)
 - [Add mix array type support](https://github.com/ballerina-platform/ballerina-standard-library/issues/1816)
 - [Add Interval support](https://github.com/ballerina-platform/ballerina-standard-library/issues/1763)
 - [Add SSL support](https://github.com/ballerina-platform/ballerina-standard-library/issues/1672)

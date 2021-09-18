@@ -16,7 +16,6 @@
 import ballerina/sql;
 import ballerina/test;
 
-
 @test:Config {
     groups:["custom-object"]
 }
@@ -209,6 +208,7 @@ isolated function selectObjectType() returns error? {
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1" );
     record {|ObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
+    check oracledbClient.close();
     ObjectRecordType? value = data?.value;
     if (value is ()) {
         test:assertFail("Returned data is nil");
@@ -225,7 +225,6 @@ isolated function selectObjectType() returns error? {
         test:assertTrue(objRecord["decimal_attr"] - <decimal>34.23 < delta);
         test:assertTrue(objRecord["decimal_attr"] - <decimal>34.23 > -delta);
     }
-    check oracledbClient.close();
 }
 
 @test:Config {
@@ -238,9 +237,9 @@ isolated function selectObjectTypeNull() returns error? {
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 15");
     record {|ObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
+    check oracledbClient.close();
     ObjectRecordType? value = data?.value;
     test:assertEquals(value, (), "Returned data should be nil");
-    check oracledbClient.close();
 }
 
 type MismatchObjectRecord record {
@@ -263,6 +262,8 @@ isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
     stream<MismatchObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1");
     record {}|error? returnData = streamData.next();
+    check streamData.close();
+    check oracledbClient.close();
     if (returnData is sql:ApplicationError) {
         test:assertEquals(returnData.message(), "Error when iterating the SQL result. Record 'MismatchObjectRecord' " +
           "field count 3 and the returned SQL Struct field count 4 are different.");
@@ -270,8 +271,6 @@ isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
         test:assertFail("Querying custom type with rowType mismatching field count should fail with " +
                             "sql:ApplicationError");
     }
-    check streamData.close();
-    check oracledbClient.close();
 }
 
 type BoolObjectRecord record {
@@ -296,6 +295,7 @@ isolated function selectObjectTypeWithBoolean() returns error? {
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 2");
     record {|BoolObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
+    check oracledbClient.close();
     BoolObjectRecordType? value = data?.value;
     if (value is ()) {
         test:assertFail("Returned data is nil");
@@ -306,7 +306,6 @@ isolated function selectObjectTypeWithBoolean() returns error? {
         BoolObjectRecord objRecord = value["col_object"];
         test:assertEquals(objRecord["int_attr"], true);
     }
-    check oracledbClient.close();
 }
 
 type NestedObjectRecord record {
@@ -329,6 +328,7 @@ isolated function selectObjectTypeWithNestedType() returns error? {
         "SELECT pk, col_nested_object FROM TestNestedObjectTypeTable WHERE pk = 1");
     record {|NestedObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
+    check oracledbClient.close();
     NestedObjectRecordType? value = data?.value;
     if (value is ()) {
         test:assertFail("Returned data is nil");
@@ -347,7 +347,6 @@ isolated function selectObjectTypeWithNestedType() returns error? {
         test:assertTrue(objRecord["decimal_attr"] - <decimal>34.23 < delta);
         test:assertTrue(objRecord["decimal_attr"] - <decimal>34.23 > -delta);
     }
-    check oracledbClient.close();
 }
 
 type InvalidObjectRecord record {
@@ -371,6 +370,8 @@ isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
     stream<InvalidObjectRecordType, error?> streamData = oracledbClient->query(
         "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1");
     record {}|error? returnData = streamData.next();
+    check streamData.close();
+    check oracledbClient.close();
     if (returnData is sql:ApplicationError) {
         test:assertTrue(returnData.message().includes("Error while retrieving data for unsupported type"),
             "Incorrect error message");
@@ -378,6 +379,96 @@ isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
         test:assertFail("Querying custom type with invalid record field type should fail with " +
                             "sql:ApplicationError");
     }
+}
+
+@test:Config {
+    groups: ["nested-table"]
+}
+isolated function insertToNestedTable() returns error? {
+    string[] nameAtt = ["Smith", "John", "Arya", "Stark"];
+    NestedTableValue students = new({name: "NestedNameTable", elements: nameAtt});
+    int[] gradesAtt = [67, 45, 78, 86];
+    NestedTableValue grades = new({name: "NestedGradeTable", elements: gradesAtt});
+    int total = 4;
+    int pk = 2;
+    string teacher = "Kate Anderson";
+    sql:ParameterizedQuery insertQuery = `INSERT INTO NestedClassTable(pk, col_teacher, col_students, col_grades, col_total)
+            VALUES (${pk}, ${teacher}, ${students}, ${grades}, ${total})`;
+    sql:ExecutionResult result = check executeQuery(insertQuery);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    var insertId = result.lastInsertId;
+    test:assertTrue(insertId is string, "Last Insert id should be string");
+}
+
+type ReturnZeroLevelNestedClassTable record {
+    int pk;
+    string col_teacher;
+    string[] col_students;
+    decimal[] col_grades;
+    int col_total;
+};
+
+@test:Config {
+    groups: ["nested-table"],
+    dependsOn: [insertToNestedTable]
+}
+isolated function selectFromZeroLevelNestedTable() returns error? {
+    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<ReturnZeroLevelNestedClassTable, error?> streamData = oracledbClient->query(
+        `SELECT * FROM NestedClassTable WHERE pk = 1`);
+    record {|ReturnZeroLevelNestedClassTable value;|}? returnData = check streamData.next();
+    ReturnZeroLevelNestedClassTable? value = returnData?.value;
     check streamData.close();
     check oracledbClient.close();
+    ReturnZeroLevelNestedClassTable expectedData = {
+         pk: 1,
+         col_teacher: "Kate Johnson",
+         col_students: ["John","Smith","Arya","Stark","Conan"],
+         col_grades: [78, 56, 23, 68, 87],
+         col_total: 5
+    };
+    test:assertEquals(value, expectedData, "Expected data mismatched.");
+}
+
+@test:Config {
+   groups:["nested-table"],
+   dependsOn: [insertToNestedTable]
+}
+isolated function insertNestedTableNull() returns error? {
+    int pk = 3;
+    NestedTableValue students = new();
+    NestedTableValue grades = new();
+    sql:ParameterizedQuery insertQuery = `INSERT INTO NestedClassTable(pk, col_students, col_grades)
+            VALUES (${pk}, ${students}, ${grades})`;
+    sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
+    if result is sql:ApplicationError {
+       test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: nested table"));
+    } else {
+       test:assertFail("Database Error expected.");
+    }
+}
+
+type InvalidIntTypeNestedTable record {
+    int pk;
+    int[] col_students;
+};
+
+@test:Config {
+    groups:["nested-table"],
+    dependsOn: [insertNestedTableNull]
+}
+isolated function selectNestedTableWithInvalidIntType() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    stream<InvalidIntTypeNestedTable, sql:Error?> streamData = oracledbClient->query(
+        `SELECT pk, col_students FROM NestedClassTable WHERE pk = 1`);
+    record {}|error? returnData =  streamData.next();
+    check streamData.close();
+    check oracledbClient.close();
+    if returnData is sql:ApplicationError {
+        test:assertTrue(returnData.message().includes("Cannot cast array to type: int[]"),
+            "Incorrect error message");
+    } else {
+        test:assertFail("Querying varray with invalid array type should fail with " +
+                            "sql:ApplicationError");
+    }
 }
