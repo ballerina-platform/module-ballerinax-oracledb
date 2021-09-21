@@ -1,4 +1,5 @@
 import ballerina/time;
+import ballerinax/oracledb;
 
 public type Customer record {
     decimal customer_id;
@@ -48,6 +49,7 @@ public type OrderItem record {
     decimal product_id;
     decimal quantity;
     decimal unit_price;
+    oracledb:IntervalYearToMonth? warranty_period;
 };
 
 public type Contact record {
