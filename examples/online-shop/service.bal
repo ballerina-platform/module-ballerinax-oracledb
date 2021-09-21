@@ -18,17 +18,16 @@ import ballerina/http;
 import ballerinax/oracledb;
 import ballerina/sql;
 
-configurable string USER = "balUser";
-configurable string PASSWORD = "balpass";
-configurable string HOST = "localhost";
-configurable int PORT = 1521;
-configurable string DATABASE = "ORCLCDB.localdomain";
+configurable string USER = ?;
+configurable string PASSWORD = ?;
+configurable string HOST = ?;
+configurable int PORT = ?;
+configurable string DATABASE = ?;
 
 final oracledb:Client dbClient = check new(host = HOST, user = USER, password = PASSWORD, port = PORT,
     database = DATABASE, connectionPool = {maxOpenConnections: 3, minIdleConnections: 1});
-listener http:Listener onlineShopListener = new (9090);
 
-service /onlineshop on onlineShopListener {
+service /onlineshop on new http:Listener(9090) {
     resource function get employees() returns Employee[]|error? {
         Employee[] employees = [];
          stream<Employee, error?> resultStream = dbClient->query(`SELECT * FROM EMPLOYEES`);
@@ -61,6 +60,19 @@ service /onlineshop on onlineShopListener {
         return check dbClient->queryRow(`SELECT * FROM PRODUCTS WHERE PRODUCT_ID = ${id}`, Product);
     }
 
+    resource function get products/count() returns int|error? {
+        return check dbClient->queryRow(`SELECT COUNT(*) FROM PRODUCTS`, int);
+    }
+
+    resource function put products/[int id](@http:Payload Product product) returns string|error? {
+        oracledb:VarrayValue reviewArray = new ({name: "ReviewArrayType", elements: product.reviews});
+        sql:ParameterizedQuery query = `UPDATE PRODUCTS SET PRODUCT_NAME = ${product.product_name},
+        DESCRIPTION = ${product.description}, STANDARD_COST = ${product.standard_cost},
+        LIST_PRICE = ${product.list_price}, REVIEWS = ${reviewArray} where PRODUCT_ID = ${id}`;
+        sql:ExecutionResult result = check dbClient->execute(query);
+        return result.lastInsertId.toString();
+    }
+
     resource function get customers() returns Customer[]|error? {
         Customer[] customers = [];
         stream<Customer, error?> resultStream = dbClient->query(`SELECT * FROM CUSTOMERS`);
@@ -75,6 +87,10 @@ service /onlineshop on onlineShopListener {
         return check dbClient->queryRow(`SELECT * FROM CUSTOMERS WHERE CUSTOMER_ID = ${id}`, Customer);
     }
 
+    resource function get customers/count() returns int|error? {
+        return check dbClient->queryRow(`SELECT COUNT(*) FROM CUSTOMERS`, int);
+    }
+
     resource function post customers(@http:Payload CustomerInput customer) returns string|error? {
         sql:ParameterizedQuery query = `INSERT INTO CUSTOMERS (NAME,ADDRESS,CREDIT_LIMIT,WEBSITE) VALUES
         (${customer.name}, ${customer.address}, ${customer.credit_limit}, ${customer.website})`;
@@ -87,9 +103,9 @@ service /onlineshop on onlineShopListener {
         return result.affectedRowCount.toString();
     }
 
-    resource function update customers(@http:Payload Customer customer) returns string|error? {
+    resource function put customers/[int id](@http:Payload Customer customer) returns string|error? {
         sql:ParameterizedQuery query = `UPDATE CUSTOMERS SET NAME = ${customer.name}, ADDRESS = ${customer.address},
-        CREDIT_LIMIT = ${customer.credit_limit},WEBSITE = ${customer.website} where CUSTOMER_ID = ${customer.customer_id}`;
+        CREDIT_LIMIT = ${customer.credit_limit},WEBSITE = ${customer.website} where CUSTOMER_ID = ${id}`;
         sql:ExecutionResult result = check dbClient->execute(query);
         return result.lastInsertId.toString();
     }
@@ -108,6 +124,10 @@ service /onlineshop on onlineShopListener {
         return check dbClient->queryRow(`SELECT * FROM ORDERS WHERE ORDER_ID = ${id}`, Order);
     }
 
+    resource function get orders/count() returns int|error? {
+        return check dbClient->queryRow(`SELECT COUNT(*) FROM ORDERS`, int);
+    }
+
     resource function get orderitems() returns OrderItem[]|error? {
         OrderItem[] orderItems = [];
         stream<OrderItem, error?> resultStream = dbClient->query(`SELECT * FROM ORDER_ITEMS`);
@@ -118,6 +138,10 @@ service /onlineshop on onlineShopListener {
         return orderItems;
     }
 
+    resource function get orderitems/count() returns int|error? {
+        return check dbClient->queryRow(`SELECT COUNT(*) FROM ORDER_ITEMS`, int);
+    }
+
     resource function get orders/[int id]/items() returns OrderItem[]|error? {
         OrderItem[] orderItems = [];
         stream<OrderItem, error?> resultStream = dbClient->query(`SELECT * FROM ORDER_ITEMS WHERE ORDER_ID = ${id}`);
@@ -126,6 +150,10 @@ service /onlineshop on onlineShopListener {
         });
         check resultStream.close();
         return orderItems;
+    }
+
+    resource function get orders/[int id]/items/count() returns int|error? {
+        return check dbClient->queryRow(`SELECT COUNT(*) FROM ORDER_ITEMS WHERE ORDER_ID = ${id}`, int);
     }
 
     resource function get contacts() returns Contact[]|error? {
@@ -150,5 +178,9 @@ service /onlineshop on onlineShopListener {
 
     resource function get contacts/[int id]() returns Contact|error? {
         return check dbClient->queryRow(`SELECT * FROM CONTACTS WHERE CONTACT_ID = ${id}`, Contact);
+    }
+
+    resource function get contacts/count() returns int|error? {
+        return check dbClient->queryRow(`SELECT COUNT(*) FROM CONTACTS`, int);
     }
 }

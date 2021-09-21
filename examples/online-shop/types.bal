@@ -57,6 +57,7 @@ public type Product record {
     string? description;
     decimal? standard_cost;
     decimal? list_price;
+    int?[] reviews;
 };
 
 public type OrderItem record {
