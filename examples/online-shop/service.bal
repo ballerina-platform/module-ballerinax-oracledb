@@ -39,11 +39,13 @@ service /onlineshop on new http:Listener(9090) {
     }
 
     resource function get employees/[int id]() returns Employee|error? {
-        return check dbClient->queryRow(`SELECT * FROM EMPLOYEES WHERE EMPLOYEE_ID = ${id}`, Employee);
+        Employee employee = check dbClient->queryRow(`SELECT * FROM EMPLOYEES WHERE EMPLOYEE_ID = ${id}`);
+        return employee;
     }
 
     resource function get employees/count() returns int|error? {
-        return check dbClient->queryRow(`SELECT COUNT(*) FROM EMPLOYEES`, int);
+        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM EMPLOYEES`);
+        return count;
     }
 
     resource function get products() returns Product[]|error? {
@@ -57,11 +59,13 @@ service /onlineshop on new http:Listener(9090) {
     }
 
     resource function get products/[int id]() returns Product|error? {
-        return check dbClient->queryRow(`SELECT * FROM PRODUCTS WHERE PRODUCT_ID = ${id}`, Product);
+        Product product = check dbClient->queryRow(`SELECT * FROM PRODUCTS WHERE PRODUCT_ID = ${id}`);
+        return product;
     }
 
     resource function get products/count() returns int|error? {
-        return check dbClient->queryRow(`SELECT COUNT(*) FROM PRODUCTS`, int);
+        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM PRODUCTS`);
+        return count;
     }
 
     resource function put products/[int id](@http:Payload Product product) returns string|error? {
@@ -84,11 +88,13 @@ service /onlineshop on new http:Listener(9090) {
     }
 
     resource function get customers/[int id]() returns Customer|error? {
-        return check dbClient->queryRow(`SELECT * FROM CUSTOMERS WHERE CUSTOMER_ID = ${id}`, Customer);
+        Customer customer = check dbClient->queryRow(`SELECT * FROM CUSTOMERS WHERE CUSTOMER_ID = ${id}`);
+        return customer;
     }
 
     resource function get customers/count() returns int|error? {
-        return check dbClient->queryRow(`SELECT COUNT(*) FROM CUSTOMERS`, int);
+        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM CUSTOMERS`);
+        return count;
     }
 
     resource function post customers(@http:Payload CustomerInput customer) returns string|error? {
@@ -121,11 +127,13 @@ service /onlineshop on new http:Listener(9090) {
     }
 
     resource function get orders/[int id]() returns Order|error? {
-        return check dbClient->queryRow(`SELECT * FROM ORDERS WHERE ORDER_ID = ${id}`, Order);
+        Order order = check dbClient->queryRow(`SELECT * FROM ORDERS WHERE ORDER_ID = ${id}`);
+        return order;
     }
 
     resource function get orders/count() returns int|error? {
-        return check dbClient->queryRow(`SELECT COUNT(*) FROM ORDERS`, int);
+        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM ORDERS`);
+        return count;
     }
 
     resource function get orderitems() returns OrderItem[]|error? {
@@ -139,7 +147,8 @@ service /onlineshop on new http:Listener(9090) {
     }
 
     resource function get orderitems/count() returns int|error? {
-        return check dbClient->queryRow(`SELECT COUNT(*) FROM ORDER_ITEMS`, int);
+        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM ORDER_ITEMS`);
+        return count;
     }
 
     resource function get orders/[int id]/items() returns OrderItem[]|error? {
@@ -153,7 +162,8 @@ service /onlineshop on new http:Listener(9090) {
     }
 
     resource function get orders/[int id]/items/count() returns int|error? {
-        return check dbClient->queryRow(`SELECT COUNT(*) FROM ORDER_ITEMS WHERE ORDER_ID = ${id}`, int);
+        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM ORDER_ITEMS WHERE ORDER_ID = ${id}`);
+        return count;
     }
 
     resource function get contacts() returns Contact[]|error? {
@@ -177,10 +187,12 @@ service /onlineshop on new http:Listener(9090) {
     }
 
     resource function get contacts/[int id]() returns Contact|error? {
-        return check dbClient->queryRow(`SELECT * FROM CONTACTS WHERE CONTACT_ID = ${id}`, Contact);
+        Contact contact = check dbClient->queryRow(`SELECT * FROM CONTACTS WHERE CONTACT_ID = ${id}`);
+        return contact;
     }
 
     resource function get contacts/count() returns int|error? {
-        return check dbClient->queryRow(`SELECT COUNT(*) FROM CONTACTS`, int);
+        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM CONTACTS`);
+        return count;
     }
 }

@@ -1,11 +1,11 @@
 # Ballerina OracleDB module Example use case
 
-## overview 
+## Overview 
 This example demonstrates how to use the ballerina oracledb module to execute, query and call etc. in an oracle database. 
 
 ## Implementation
 
-These are HTTP RESTful services that are used to insert, create, and retrieve data of a sample database.
+These are HTTP RESTful services used to insert, create, and retrieve data of a sample database.
 
 ## Prerequisite
 
@@ -43,7 +43,6 @@ These are HTTP RESTful services that are used to insert, create, and retrieve da
         artifactId = "xmlparserv2"
         version = "12.2.0.1"
         ```
-
 
 * *Initial schema, table creation and data insertion*
 
