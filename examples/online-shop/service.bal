@@ -16,12 +16,13 @@
 
 import ballerina/http;
 import ballerinax/oracledb;
+import ballerina/sql;
 
-const string USER = "balUser";
-const string PASSWORD = "balpass";
-const string HOST = "localhost";
-const int PORT = 1521;
-const string DATABASE = "ORCLCDB.localdomain";
+configurable string USER = "balUser";
+configurable string PASSWORD = "balpass";
+configurable string HOST = "localhost";
+configurable int PORT = 1521;
+configurable string DATABASE = "ORCLCDB.localdomain";
 
 final oracledb:Client dbClient = check new(host = HOST, user = USER, password = PASSWORD, port = PORT,
     database = DATABASE, connectionPool = {maxOpenConnections: 3, minIdleConnections: 1});
@@ -38,14 +39,11 @@ service /onlineshop on onlineShopListener {
          return employees;
     }
 
-    resource function get employees/[decimal id]() returns Employee|error? {
-        stream<Employee, error?> resultStream = dbClient->query(`SELECT * FROM EMPLOYEES WHERE EMPLOYEE_ID = ${id}`);
-        record {|Employee value;|}? data = check resultStream.next();
-        check resultStream.close();
-        return data?.value;
+    resource function get employees/[int id]() returns Employee|error? {
+        return check dbClient->queryRow(`SELECT * FROM EMPLOYEES WHERE EMPLOYEE_ID = ${id}`, Employee);
     }
 
-    resource function get totalemployeesCount() returns int|error? {
+    resource function get employees/count() returns int|error? {
         return check dbClient->queryRow(`SELECT COUNT(*) FROM EMPLOYEES`, int);
     }
 
@@ -59,11 +57,8 @@ service /onlineshop on onlineShopListener {
         return products;
     }
 
-    resource function get products/[decimal id]() returns Product|error? {
-        stream<Product, error?> resultStream = dbClient->query(`SELECT * FROM PRODUCTS WHERE PRODUCT_ID = ${id}`);
-        record {|Product value;|}? data = check resultStream.next();
-        check resultStream.close();
-        return data?.value;
+    resource function get products/[int id]() returns Product|error? {
+        return check dbClient->queryRow(`SELECT * FROM PRODUCTS WHERE PRODUCT_ID = ${id}`, Product);
     }
 
     resource function get customers() returns Customer[]|error? {
@@ -76,11 +71,27 @@ service /onlineshop on onlineShopListener {
         return customers;
     }
 
-    resource function get customers/[decimal id]() returns Customer|error? {
-        stream<Customer, error?> resultStream = dbClient->query(`SELECT * FROM CUSTOMERS WHERE CUSTOMER_ID = ${id}`);
-        record {|Customer value;|}? data = check resultStream.next();
-        check resultStream.close();
-        return data?.value;
+    resource function get customers/[int id]() returns Customer|error? {
+        return check dbClient->queryRow(`SELECT * FROM CUSTOMERS WHERE CUSTOMER_ID = ${id}`, Customer);
+    }
+
+    resource function post customers(@http:Payload CustomerInput customer) returns string|error? {
+        sql:ParameterizedQuery query = `INSERT INTO CUSTOMERS (NAME,ADDRESS,CREDIT_LIMIT,WEBSITE) VALUES
+        (${customer.name}, ${customer.address}, ${customer.credit_limit}, ${customer.website})`;
+        sql:ExecutionResult result = check dbClient->execute(query);
+        return result.lastInsertId.toString();
+    }
+
+    resource function delete customers/[int id]() returns string|error? {
+        sql:ExecutionResult result = check dbClient->execute(`DELETE FROM CUSTOMERS WHERE CUSTOMER_ID = ${id}`);
+        return result.affectedRowCount.toString();
+    }
+
+    resource function update customers(@http:Payload Customer customer) returns string|error? {
+        sql:ParameterizedQuery query = `UPDATE CUSTOMERS SET NAME = ${customer.name}, ADDRESS = ${customer.address},
+        CREDIT_LIMIT = ${customer.credit_limit},WEBSITE = ${customer.website} where CUSTOMER_ID = ${customer.customer_id}`;
+        sql:ExecutionResult result = check dbClient->execute(query);
+        return result.lastInsertId.toString();
     }
 
     resource function get orders() returns Order[]|error? {
@@ -93,14 +104,11 @@ service /onlineshop on onlineShopListener {
         return orders;
     }
 
-    resource function get orders/[decimal id]() returns Order|error? {
-        stream<Order, error?> resultStream = dbClient->query(`SELECT * FROM ORDERS WHERE ORDER_ID = ${id}`);
-        record {|Order value;|}? data = check resultStream.next();
-        check resultStream.close();
-        return data?.value;
+    resource function get orders/[int id]() returns Order|error? {
+        return check dbClient->queryRow(`SELECT * FROM ORDERS WHERE ORDER_ID = ${id}`, Order);
     }
 
-    resource function get orderItems() returns OrderItem[]|error? {
+    resource function get orderitems() returns OrderItem[]|error? {
         OrderItem[] orderItems = [];
         stream<OrderItem, error?> resultStream = dbClient->query(`SELECT * FROM ORDER_ITEMS`);
         _ = check resultStream.forEach(function(OrderItem orderItem) {
@@ -110,7 +118,7 @@ service /onlineshop on onlineShopListener {
         return orderItems;
     }
 
-    resource function get orderItemsByOrderId/[decimal id]() returns OrderItem[]|error? {
+    resource function get orders/[int id]/items() returns OrderItem[]|error? {
         OrderItem[] orderItems = [];
         stream<OrderItem, error?> resultStream = dbClient->query(`SELECT * FROM ORDER_ITEMS WHERE ORDER_ID = ${id}`);
         _ = check resultStream.forEach(function(OrderItem orderItem) {
@@ -130,7 +138,7 @@ service /onlineshop on onlineShopListener {
         return contacts;
     }
 
-    resource function get contactsByCustomerId/[decimal id]() returns Contact[]|error? {
+    resource function get customers/[int id]/contacts() returns Contact[]|error? {
         Contact[] contacts = [];
         stream<Contact, error?> resultStream = dbClient->query(`SELECT * FROM CONTACTS WHERE CUSTOMER_ID = ${id}`);
         _ = check resultStream.forEach(function(Contact contact) {
@@ -140,10 +148,7 @@ service /onlineshop on onlineShopListener {
         return contacts;
     }
 
-    resource function get contacts/[decimal id]() returns Contact|error? {
-        stream<Contact, error?> resultStream = dbClient->query(`SELECT * FROM CONTACTS WHERE CONTACT_ID = ${id}`);
-        record {|Contact value;|}? data = check resultStream.next();
-        check resultStream.close();
-        return data?.value;
+    resource function get contacts/[int id]() returns Contact|error? {
+        return check dbClient->queryRow(`SELECT * FROM CONTACTS WHERE CONTACT_ID = ${id}`, Contact);
     }
 }
