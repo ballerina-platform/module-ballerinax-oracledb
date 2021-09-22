@@ -3,6 +3,13 @@
 ## Overview 
 This example demonstrates how to use the ballerina oracledb module to execute, query and call etc. in an oracle database. 
 
+Here a sample database is used to demonstrate the functionalities. This sample database models an imaginary shop that sells
+computer hardware and database have six tables namely `CUSTOMERS`, `CONTACTS`, `EMPLOYEES`, `PRODUCTS`, `ORDERS` and `ORDERITEMS`.
+
+The shop have customer information including name, address etc. with their respective contact details. It also maintains an employee list
+of the shop. Once a customer place an order with different order items chose from the products list, the shop can follow and update 
+the order status to several stages like `Pending`, `Shipped` or `Cancelled`.
+
 ## Implementation
 
 These are HTTP RESTful services used to insert, create, and retrieve data of a sample database.
