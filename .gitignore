@@ -52,3 +52,7 @@ lib/
 .project
 .settings
 .vscode
+
+#Examples
+examples/**/Dependencies.toml
+examples/**/Config.toml
