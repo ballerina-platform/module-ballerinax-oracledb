@@ -110,7 +110,7 @@ isolated function testGetPrimitiveTypesRecord() returns error? {
     int|error queryResult = oracledbClient->queryRow(sqlQuery);
     if queryResult is error {
         test:assertTrue(queryResult is sql:TypeMismatchError, "Incorrect error type");
-        test:assertEquals(queryResult.message(), "Expected type to be 'int' but found 'record{}'");
+        test:assertEquals(queryResult.message(), "Expected type to be 'int' but found 'record{}'.");
     } else {
         test:assertFail("Expected error when query result contains multiple columns.");
     }
