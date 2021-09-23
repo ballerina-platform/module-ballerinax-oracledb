@@ -49,10 +49,9 @@ public isolated client class Client {
 
     # Queries the database with the query provided by the user, and returns the result as stream.
     #
-    # + sqlQuery - The query, which needs to be executed as a `string` or `ParameterizedQuery` when the SQL query has
-    #              params to be passed in
+    # + sqlQuery - The query, which needs to be executed as an `sql:ParameterizedQuery`. Usage of `string` is depreciated
     # + rowType - The `typedesc` of the record that should be returned as a result. If this is not provided, the default
-    #             column names of the query result set will be used for the record attributes.
+    #             column names of the query result set will be used for the record attributes
     # + return - Stream of records in the type of `rowType`
     remote isolated function query(string|sql:ParameterizedQuery sqlQuery, typedesc<record {}> rowType = <>)
     returns stream <rowType, sql:Error?> = @java:Method {
@@ -76,9 +75,9 @@ public isolated client class Client {
 
     # Executes the DDL or DML SQL queries provided by the user and returns a summary of the execution.
     #
-    # + sqlQuery - The DDL or DML query such as INSERT, DELETE, UPDATE, etc. as a `string` or `ParameterizedQuery`
-    #              when the query has params to be passed in
-    # + return - Summary of the SQL update query as an `ExecutionResult` or returns an `Error`
+    # + sqlQuery - The DDL or DML query such as INSERT, DELETE, UPDATE, etc. as an `sql:ParameterizedQuery`.
+    #              Usage of `string` is depreciated
+    # + return - Summary of the SQL update query as an `sql:ExecutionResult` or returns an `sql:Error`
     #            if any error occurred when executing the query
     remote isolated function execute(string|sql:ParameterizedQuery sqlQuery)
     returns sql:ExecutionResult|sql:Error = @java:Method {
@@ -106,10 +105,10 @@ public isolated client class Client {
 
     # Executes a SQL stored procedure and returns the result as a stream and the execution summary.
     #
-    # + sqlQuery - The query to execute the SQL stored procedure
+    # + sqlQuery - The query to execute the SQL stored procedure as an `sql:ParameterizedQuery`.Usage of `string` is depreciated
     # + rowTypes - The array of `typedesc` of the records that should be returned as a result. If this is not provided,
     #              the default column names of the query result set will be used for the record attributes
-    # + return - Summary of the execution is returned in a `ProcedureCallResult` or an `sql:Error`
+    # + return - Summary of the execution is returned in a `sql:ProcedureCallResult` or an `sql:Error`
     remote isolated function call(string|sql:ParameterizedCallQuery sqlQuery,
     typedesc<record {}>[] rowTypes = []) returns sql:ProcedureCallResult|sql:Error = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.nativeimpl.CallProcessor",
