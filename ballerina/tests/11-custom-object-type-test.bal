@@ -205,7 +205,7 @@ type ObjectRecordType record {
 isolated function selectObjectType() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<ObjectRecordType, error?> streamData = oracledbClient->query(
-        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1" );
+        `SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1`);
     record {|ObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
     check oracledbClient.close();
@@ -234,7 +234,7 @@ isolated function selectObjectType() returns error? {
 isolated function selectObjectTypeNull() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<ObjectRecordType, error?> streamData = oracledbClient->query(
-        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 15");
+        `SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 15`);
     record {|ObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
     check oracledbClient.close();
@@ -260,7 +260,7 @@ type MismatchObjectRecordType record {
 isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<MismatchObjectRecordType, error?> streamData = oracledbClient->query(
-        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1");
+        `SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1`);
     record {}|error? returnData = streamData.next();
     check streamData.close();
     check oracledbClient.close();
@@ -292,7 +292,7 @@ type BoolObjectRecordType record {
 isolated function selectObjectTypeWithBoolean() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<BoolObjectRecordType, error?> streamData = oracledbClient->query(
-        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 2");
+        `SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 2`);
     record {|BoolObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
     check oracledbClient.close();
@@ -325,7 +325,7 @@ type NestedObjectRecordType record {
 isolated function selectObjectTypeWithNestedType() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<NestedObjectRecordType, error?> streamData = oracledbClient->query(
-        "SELECT pk, col_nested_object FROM TestNestedObjectTypeTable WHERE pk = 1");
+        `SELECT pk, col_nested_object FROM TestNestedObjectTypeTable WHERE pk = 1`);
     record {|NestedObjectRecordType value;|}? data = check streamData.next();
     check streamData.close();
     check oracledbClient.close();
@@ -368,7 +368,7 @@ type InvalidObjectRecordType record {
 isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<InvalidObjectRecordType, error?> streamData = oracledbClient->query(
-        "SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1");
+        `SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1`);
     record {}|error? returnData = streamData.next();
     check streamData.close();
     check oracledbClient.close();
