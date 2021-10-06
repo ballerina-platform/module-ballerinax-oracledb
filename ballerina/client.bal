@@ -168,6 +168,10 @@ type ClientConfiguration record {|
     sql:ConnectionPool? connectionPool;
 |};
 
+isolated function closedStreamInvocationError() returns sql:Error {
+    return error sql:ApplicationError("Stream is closed. Therefore, no operations are allowed further on the stream.");
+}
+
 isolated function createClient(Client 'client, ClientConfiguration clientConfig, sql:ConnectionPool globalConnPool)
 returns sql:Error? = @java:Method {
     'class: "io.ballerina.stdlib.oracledb.nativeimpl.ClientProcessor"
@@ -176,4 +180,20 @@ returns sql:Error? = @java:Method {
 isolated function nativeBatchExecute(Client sqlClient, sql:ParameterizedQuery[] sqlQueries)
 returns sql:ExecutionResult[]|sql:Error = @java:Method {
     'class: "io.ballerina.stdlib.oracledb.nativeimpl.ExecuteProcessor"
+} external;
+
+isolated function getBytes(BFileIterator bFileIterator) returns byte[]|sql:Error = @java:Method {
+    'class: "io.ballerina.stdlib.oracledb.utils.BFileUtils"
+} external;
+
+isolated function isBFileExists(BFile bfile) returns boolean = @java:Method {
+    'class: "io.ballerina.stdlib.oracledb.utils.BFileUtils"
+} external;
+
+isolated function bfileReadBytes(BFile bfile) returns byte[]|sql:Error? = @java:Method {
+    'class: "io.ballerina.stdlib.oracledb.utils.BFileUtils"
+} external;
+
+isolated function bfileReadBlockAsStream(BFile bfile, int bufferSize) returns stream<byte[], error?> = @java:Method {
+    'class: "io.ballerina.stdlib.oracledb.utils.BFileUtils"
 } external;

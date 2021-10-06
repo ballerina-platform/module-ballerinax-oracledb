@@ -41,6 +41,7 @@ import io.ballerina.stdlib.sql.exception.UnsupportedTypeError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor;
 import io.ballerina.stdlib.sql.utils.ColumnDefinition;
 import io.ballerina.stdlib.sql.utils.Utils;
+import oracle.jdbc.OracleBfile;
 import oracle.jdbc.OracleResultSet;
 import oracle.jdbc.OracleTypes;
 
@@ -162,6 +163,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             case OracleTypes.TIMESTAMPTZ:
             case OracleTypes.TIMESTAMPLTZ:
                 return processTimestampWithTimezoneResult(resultSet, columnIndex, sqlType, ballerinaType);
+            case OracleTypes.BFILE:
+                return processBfileResult(resultSet, columnIndex, sqlType, ballerinaType);
             default:
                 throw new UnsupportedTypeError(JDBCType.valueOf(sqlType).getName(), columnIndex);
         }
@@ -272,6 +275,12 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         return convertInterval(intervalString, sqlType, ballerinaType, sqlTypeName);
     }
 
+    private Object processBfileResult(ResultSet resultSet, int columnIndex, int sqlType, Type ballerinaType)
+            throws DataError, SQLException {
+        OracleBfile bfile = resultSet.unwrap(OracleResultSet.class).getBFILE(columnIndex);
+        return convertBFile(bfile, columnIndex, sqlType, ballerinaType);
+    }
+
     private Object convertInterval(String interval, int sqlType, Type ballerinaType, String sqlTypeName)
             throws DataError {
         if (interval != null) {
@@ -336,6 +345,31 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         } else {
             return null;
         }
+    }
+
+    private Object convertBFile(OracleBfile bfile, int columnIndex, int sqlType, Type ballerinaType) throws DataError,
+            SQLException {
+        if (bfile != null) {
+            switch (ballerinaType.getTag()) {
+                case TypeTags.OBJECT_TYPE_TAG:
+                case TypeTags.RECORD_TYPE_TAG:
+                    if (ballerinaType.getName().equalsIgnoreCase(Constants.Types.BFILE_RECORD)) {
+                        BMap<BString, Object> bFileMap = ValueCreator
+                                .createRecordValue(ModuleUtils.getModule(),
+                                        Constants.Types.BFILE_RECORD);
+                        bFileMap.put(StringUtils.fromString(Constants.Types.BFile.NAME),
+                                StringUtils.fromString(bfile.getName()));
+                        bFileMap.put(StringUtils.fromString(Constants.Types.BFile.LENGTH), bfile.length());
+                        bFileMap.addNativeData(Constants.ORACLEBFILE_NATIVE_DATA_FIELD, bfile);
+                        return bFileMap;
+                    }
+                    throw new TypeMismatchError(Constants.Types.OracleDbTypes.BFILE, ballerinaType.getName(),
+                            "oracledb:BFile");
+                default:
+                    throw new TypeMismatchError(Constants.Types.OracleDbTypes.BFILE, ballerinaType.getName());
+            }
+        }
+        return null;
     }
 
     private BArray convertBigDecimalArrayToBallerinaType(Object[] dataArray, Type type, boolean containsNull)

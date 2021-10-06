@@ -77,6 +77,16 @@ public type NestedTableType record {|
     ArrayValueType? elements;
 |};
 
+//public type BFileLocator record {|
+//   string directory;
+//   string fileName;
+//|};
+
+public type BFile record {
+   string name;
+   int length;
+};
+
 # Represents OBJECT TYPE Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
@@ -165,4 +175,54 @@ public class CustomResultIterator {
         'class: "io.ballerina.stdlib.oracledb.utils.ProcedureCallResultUtils",
         paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
     } external;
+}
+
+public class BFileIterator {
+    private boolean isClosed = false;
+    private sql:Error? err;
+    private int bufferSize;
+    private int fileLength;
+    private int position = 1;
+
+    isolated function init(int bufferSize, int fileLength, sql:Error? err = ()) {
+        self.bufferSize = bufferSize;
+        self.fileLength = fileLength;
+        self.err = err;
+    }
+
+    public isolated function next() returns record {|byte[] value;|}|sql:Error? {
+        if self.isClosed {
+             return closedStreamInvocationError();
+        }
+        if (self.err is sql:Error) {
+            return self.err;
+        } else {
+            byte[]|sql:Error result;
+            if self.position <= self.fileLength {
+                result = getBytes(self);
+                if result is byte[] {
+                    record {|
+                        byte[] value;
+                    |} streamRecord = {value: result};
+                    return streamRecord;
+                } else if result is sql:Error {
+                    self.err = result;
+                    self.close();
+                    return self.err;
+                } else {
+                    self.close();
+                    return result;
+                }
+            } else {
+                self.close();
+                return ();
+            }
+        }
+    }
+
+    public isolated function close() {
+        if (!self.isClosed) {
+            self.isClosed = true;
+        }
+    }
 }

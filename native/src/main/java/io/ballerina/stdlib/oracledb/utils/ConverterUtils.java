@@ -143,6 +143,12 @@ public class ConverterUtils {
         return Utils.getOracleConnection(connection).createARRAY(name, varray);
     }
 
+    public static String[] getBFileLocatorData(Object value) throws DataError, SQLException {
+        Map<String, Object> fields = getRecordData(value, Constants.Types.OracleDbTypes.BFILE);
+        return new String[]{ (String) fields.get(Constants.Types.BFileLocator.DIRECTORY),
+                (String) fields.get(Constants.Types.BFileLocator.FILENAME)};
+    }
+
     private static Map<String, Object> getRecordData(Object value, String sqlType)
             throws DataError {
         Type type = TypeUtils.getType(value);

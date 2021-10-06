@@ -16,6 +16,6 @@
 # under the License.
 #
 [ballerina.sql]
-maxOpenConnections=10
+maxOpenConnections=13
 maxConnectionLifeTime=2000.0
 minIdleConnections=5

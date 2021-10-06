@@ -27,7 +27,8 @@ isolated function querySingleNumber() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [querySingleNumber]
 }
 isolated function querySingleString() returns error? {
     string col_varchar2 = "Hello world";
@@ -74,7 +75,8 @@ isolated function querySingleNumberParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [querySingleNumberParam]
 }
 isolated function queryDoubleNumberParam() returns error? {
     int id = 1;
@@ -84,7 +86,8 @@ isolated function queryDoubleNumberParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryDoubleNumberParam]
 }
 isolated function queryFloatParam() returns error? {
     int id = 1;
@@ -95,7 +98,8 @@ isolated function queryFloatParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+     dependsOn: [queryFloatParam]
 }
 isolated function queryBinaryFloatParam() returns error? {
     int id = 1;
@@ -106,7 +110,8 @@ isolated function queryBinaryFloatParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryBinaryFloatParam]
 }
 isolated function queryBinaryDoubleParam() returns error? {
     int id = 1;
@@ -154,7 +159,8 @@ isolated function validateNumericSimpleQueryTableResult(record{}? returnData) {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryInvalidValueParam]
 }
 isolated function queryVarchar2Param() returns error? {
     int id = 1;
@@ -165,7 +171,8 @@ isolated function queryVarchar2Param() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryVarchar2Param]
 }
 isolated function queryVarcharParam() returns error? {
     int id = 1;
@@ -176,7 +183,8 @@ isolated function queryVarcharParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryVarcharParam]
 }
 isolated function queryNVarchar2Param() returns error? {
     int id = 1;
@@ -198,7 +206,8 @@ isolated function queryAnsiCharacterVarParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryAnsiCharacterVarParam]
 }
 isolated function queryAnsiNationalCharacterVarParam() returns error? {
     int id = 1;
@@ -209,7 +218,8 @@ isolated function queryAnsiNationalCharacterVarParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryAnsiNationalCharacterVarParam]
 }
 isolated function queryAnsiNationalCharVarParam() returns error? {
     int id = 1;
@@ -220,7 +230,8 @@ isolated function queryAnsiNationalCharVarParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryAnsiNationalCharVarParam]
 }
 isolated function queryAnsiNCharVarParam() returns error? {
     int id = 1;
@@ -231,7 +242,8 @@ isolated function queryAnsiNCharVarParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryAnsiNCharVarParam]
 }
 isolated function queryAnsiNumericParam() returns error? {
     int id = 1;
@@ -242,7 +254,8 @@ isolated function queryAnsiNumericParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryAnsiNumericParam]
 }
 isolated function queryAnsiDecimalParam() returns error? {
     int id = 1;
@@ -253,7 +266,8 @@ isolated function queryAnsiDecimalParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryAnsiDecimalParam]
 }
 isolated function queryAnsiIntegerParam() returns error? {
     int id = 1;
@@ -264,7 +278,8 @@ isolated function queryAnsiIntegerParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryAnsiIntegerParam]
 }
 isolated function queryAnsiIntParam() returns error? {
     int id = 1;
@@ -274,7 +289,8 @@ isolated function queryAnsiIntParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryAnsiIntParam]
 }
 isolated function queryAnsiSmallIntParam() returns error? {
     int id = 1;
@@ -285,7 +301,8 @@ isolated function queryAnsiSmallIntParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryAnsiSmallIntParam]
 }
 isolated function queryAnsiFloatParam() returns error? {
     int id = 1;
@@ -296,7 +313,8 @@ isolated function queryAnsiFloatParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryAnsiFloatParam]
 }
 isolated function queryAnsiDoublePrecisionParam() returns error? {
     int id = 1;
@@ -307,7 +325,8 @@ isolated function queryAnsiDoublePrecisionParam() returns error? {
 }
 
 @test:Config {
-    groups: ["query", "query-simple-params"]
+    groups: ["query", "query-simple-params"],
+    dependsOn: [queryAnsiDoublePrecisionParam]
 }
 isolated function queryAnsiRealParam() returns error? {
     int id = 1;
