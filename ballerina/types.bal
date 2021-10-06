@@ -177,6 +177,8 @@ public class CustomResultIterator {
     } external;
 }
 
+# The BFile iterator object that is used to iterate through the BFile and provide byte array for given buffer size.
+#
 public class BFileIterator {
     private boolean isClosed = false;
     private sql:Error? err;
