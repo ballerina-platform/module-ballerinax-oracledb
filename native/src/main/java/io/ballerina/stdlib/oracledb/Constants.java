@@ -161,7 +161,6 @@ public final class Constants {
 
         public static final String INTERVAL_YEAR_TO_MONTH_RECORD = "IntervalYearToMonth";
         public static final String INTERVAL_DAY_TO_SECOND_RECORD = "IntervalDayToSecond";
-        public static final String BFILE_LOCATOR_RECORD = "BFileLocator";
         public static final String BFILE_RECORD = "BFile";
 
         /**
@@ -248,17 +247,6 @@ public final class Constants {
 
             public static final String NAME = "name";
             public static final String ELEMENTS = "elements";
-        }
-
-        /**
-         * Constants related to the attributes of BFileLocator Oracle DB type.
-         */
-        public static final class BFileLocator {
-
-            private BFileLocator() {}
-
-            public static final String DIRECTORY = "directory";
-            public static final String FILENAME = "fileName";
         }
 
         /**

@@ -77,11 +77,10 @@ public type NestedTableType record {|
     ArrayValueType? elements;
 |};
 
-//public type BFileLocator record {|
-//   string directory;
-//   string fileName;
-//|};
-
+# Represents the BFILE data type in Oracle Database.
+#
+# + name - Name of bfile
+# + length - length of the pointed file
 public type BFile record {
    string name;
    int length;
@@ -207,13 +206,10 @@ public class BFileIterator {
                         byte[] value;
                     |} streamRecord = {value: result};
                     return streamRecord;
-                } else if result is sql:Error {
+                } else {
                     self.err = result;
                     self.close();
                     return self.err;
-                } else {
-                    self.close();
-                    return result;
                 }
             } else {
                 self.close();

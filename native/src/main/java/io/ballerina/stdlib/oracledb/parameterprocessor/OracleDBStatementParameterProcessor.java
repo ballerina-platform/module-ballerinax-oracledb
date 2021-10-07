@@ -158,9 +158,6 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             case Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD:
                 setIntervalDayToSecond(preparedStatement, index, value);
                 return returnType ? OracleTypes.INTERVALDS : 0;
-            case Constants.Types.BFILE_LOCATOR_RECORD:
-                setBFileLocator(connection, preparedStatement, index, value);
-                return returnType ? OracleTypes.BFILE : 0;
             default:
                 throw new UnsupportedTypeError(recordName, index);
         }
@@ -177,18 +174,6 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         String intervalYToM = ConverterUtils.convertIntervalDayToSecond(value);
         preparedStatement.setString(index, intervalYToM);
 
-    }
-
-    private void setBFileLocator(Connection connection, PreparedStatement preparedStatement,
-                                 int index, Object value) throws SQLException, DataError {
-        if (value == null) {
-            throw Utils.throwInvalidParameterError(null, Constants.Types.OracleDbTypes.BFILE);
-        }
-        String[] locatorData = ConverterUtils.getBFileLocatorData(value);
-        if (locatorData[0] == null || locatorData[2] == null) {
-        throw Utils.throwInvalidParameterError(null, Constants.Types.OracleDbTypes.BFILE);
-        }
-        //TODO: check whether that BFILE can be created using directory and fileName fields.
     }
 
     private void setOracleObject(Connection connection, PreparedStatement preparedStatement, int index, Object value)

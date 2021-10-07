@@ -552,7 +552,7 @@ sql:ExecutionResult result = check dbClient->execute(updateQuery);
 
 ##### Reading BFILE data
 
-`oracledb:BFile` type is used to get a valid `BFILE` data from the Oracle Database and `oracledb` module provides three functions to perform file operations for `BFILE` data type. This sample demonstrates those three function usages as follows,
+`oracledb:BFile` type is used to get valid `BFILE` data from the Oracle Database and `oracledb` module provides three functions to perform file operations for `BFILE` data type. This sample demonstrates those three function usages as follows,
 
 ```ballerina
 // define the request type for query method.
