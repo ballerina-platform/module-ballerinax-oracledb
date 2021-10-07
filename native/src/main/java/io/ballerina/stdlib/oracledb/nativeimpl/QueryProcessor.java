@@ -42,7 +42,7 @@ public class QueryProcessor {
      * @param recordType type description of the result record
      * @return result stream or error
      */
-    public static BStream nativeQuery(Environment env, BObject client, Object paramSQLString,
+    public static BStream nativeQuery(Environment env, BObject client, BObject paramSQLString,
                                       BTypedesc recordType) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();

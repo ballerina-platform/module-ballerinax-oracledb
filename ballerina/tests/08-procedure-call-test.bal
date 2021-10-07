@@ -269,7 +269,7 @@ isolated function testCallWithDateTimesOutParams() returns error? {
     check oracledbClient.close();
 }
 
-isolated function callQueryClient(Client oracledbClient, @untainted string|sql:ParameterizedQuery sqlQuery)
+isolated function callQueryClient(Client oracledbClient, sql:ParameterizedQuery sqlQuery)
 returns @tainted record {}|error {
     stream<record {}, error?> streamData = oracledbClient->query(sqlQuery);
     record {|record {} value;|}? data = check streamData.next();
