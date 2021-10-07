@@ -23,8 +23,22 @@ The BFILE data type enables read-only support of large binary files. You cannot 
 
 The purpose of this proposal is to implement the BFILE support in `oracledb` module. Functionalities provided through this support are
 
+- Pass BFILE Locator information to queries for create and update operations in the Oracle Database.
 - Ballerina type to indicate BFILE datatype in queries
 - Perform file operations on the external files stored as BFILE in Oracle  DB such as reading, etc.
+
+For Passing BFile Locator information, an `sql:ParameterizedQuery` can be used as following, 
+
+```ballerina
+string directory = "BFILE_DIR";
+string fileName = "bfile.txt";
+sql:ParameterizedQuery query = `INSERT INTO TestBFileTable(pk, col_bfile) VALUES (1, BFILENAME(${directory}, ${fileName}))`;
+sql:ExecutionResult result = check dbClient->execute(query);
+
+string newFileName = "newFile.txt";
+sql:ParameterizedQuery updateQuery = `UPDATE TestBFileTable SET col_bfile = BFILENAME(${directory}, ${newFileName}) WHERE pk = 1`;
+sql:ExecutionResult result = check dbClient->execute(updateQuery);
+```
 
 Proposed ballerina record for the oracle specific BFILE data type,
 
