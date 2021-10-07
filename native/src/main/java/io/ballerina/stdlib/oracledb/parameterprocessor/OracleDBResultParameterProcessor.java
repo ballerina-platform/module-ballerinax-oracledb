@@ -39,7 +39,7 @@ import io.ballerina.stdlib.sql.exception.FieldMismatchError;
 import io.ballerina.stdlib.sql.exception.TypeMismatchError;
 import io.ballerina.stdlib.sql.exception.UnsupportedTypeError;
 import io.ballerina.stdlib.sql.parameterprocessor.DefaultResultParameterProcessor;
-import io.ballerina.stdlib.sql.utils.ColumnDefinition;
+import io.ballerina.stdlib.sql.utils.PrimitiveTypeColumnDefinition;
 import io.ballerina.stdlib.sql.utils.Utils;
 import oracle.jdbc.OracleResultSet;
 import oracle.jdbc.OracleTypes;
@@ -150,7 +150,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
 
     @Override
     public Object processCustomTypeFromResultSet(ResultSet resultSet, int columnIndex,
-                                                 ColumnDefinition columnDefinition)
+                                                 PrimitiveTypeColumnDefinition columnDefinition)
             throws DataError, SQLException {
         int sqlType = columnDefinition.getSqlType();
         Type ballerinaType = columnDefinition.getBallerinaType();
@@ -158,7 +158,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             case OracleTypes.INTERVALDS:
             case OracleTypes.INTERVALYM:
                 return processIntervalResult(resultSet, columnIndex, sqlType, ballerinaType,
-                        columnDefinition.getSqlName());
+                        columnDefinition.getSqlTypeName());
             case OracleTypes.TIMESTAMPTZ:
             case OracleTypes.TIMESTAMPLTZ:
                 return processTimestampWithTimezoneResult(resultSet, columnIndex, sqlType, ballerinaType);
