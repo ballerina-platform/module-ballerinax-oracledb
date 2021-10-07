@@ -39,7 +39,7 @@ public class ExecuteProcessor {
      * @param paramSQLString array of SQL string for the execute statement
      * @return execution result or error
      */
-    public static Object nativeExecute(Environment env, BObject client, Object paramSQLString) {
+    public static Object nativeExecute(Environment env, BObject client, BObject paramSQLString) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();
         return io.ballerina.stdlib.sql.nativeimpl.ExecuteProcessor.nativeExecute(env, client, paramSQLString,

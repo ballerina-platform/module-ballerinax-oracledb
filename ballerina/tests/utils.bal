@@ -72,7 +72,7 @@ isolated function dropTypeIfExists(string typename, Client oracledbClient) retur
     return result;
 }
 
-isolated function queryClient(string|sql:ParameterizedQuery sqlQuery, typedesc<record {}>? resultType = ())
+isolated function queryClient(sql:ParameterizedQuery sqlQuery, typedesc<record {}>? resultType = ())
 returns record {}|error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     stream<record {}, error?> streamData;
@@ -88,7 +88,7 @@ returns record {}|error? {
     return value;
 }
 
-isolated function executeQuery(string|sql:ParameterizedQuery sqlQuery) returns sql:ExecutionResult|sql:Error {
+isolated function executeQuery(sql:ParameterizedQuery sqlQuery) returns sql:ExecutionResult|sql:Error {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute(sqlQuery);
     check oracledbClient.close();
