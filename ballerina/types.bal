@@ -162,7 +162,6 @@ public distinct class IntervalDayToSecondOutParameter {
 }
 
 # The class with custom implementations for nextResult and getNextQueryResult in the connector modules.
-#
 public class CustomResultIterator {
     public isolated function nextResult(sql:ResultIterator iterator) returns record {}|sql:Error? = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.utils.RecordIteratorUtils",
@@ -177,7 +176,6 @@ public class CustomResultIterator {
 }
 
 # The BFile iterator object that is used to iterate through the BFile and provide byte array for given buffer size.
-#
 public class BFileIterator {
     private boolean isClosed = false;
     private sql:Error? err;

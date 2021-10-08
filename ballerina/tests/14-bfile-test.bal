@@ -211,7 +211,8 @@ isolated function checkBfileReadBytesMethodForInvalidBFile() returns error? {
     BFile bfile = {name:"bfile.txt", length:83};
     byte[]|sql:Error? value = bfileReadBytes(bfile);
     if value is sql:ApplicationError {
-        test:assertTrue(value.message().includes("Invalid BFile received. Hence can not read."));
+        test:assertTrue(value.message().includes("Provided BFile: bfile.txt does not contain a pointer or contains an invalid " +
+                "pointer to a remote file."));
     } else {
         test:assertFail("ApplicationError Error expected");
     }
@@ -227,8 +228,8 @@ isolated function checkBfileReadBlockAsStreamMethodForInvalidBFile() returns err
     stream<byte[], error?> streamArray = bfileReadBlockAsStream(bfile, 20);
     record {|byte[] value;|}|error? value = streamArray.next();
     if value is sql:Error {
-        test:assertTrue(value.message().includes("Error while creating the stream. Invalid BFile received. Hence can " +
-        "not create a stream from it."));
+        test:assertTrue(value.message().includes("Provided BFile: bfile.txt does not contain a pointer or contains an invalid " +
+                "pointer to a remote file."));
     } else {
         test:assertFail("ApplicationError Error expected");
     }

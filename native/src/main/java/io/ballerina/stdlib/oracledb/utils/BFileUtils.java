@@ -61,7 +61,10 @@ public class BFileUtils {
                 bfile.closeFile();
                 return ValueCreator.createArrayValue(bytes);
             } else {
-                return ErrorGenerator.getSQLApplicationError("Invalid BFile received. Hence can not read.");
+                return ErrorGenerator.getSQLApplicationError(String.format("Provided BFile: %s does not contain a " +
+                                "pointer or contains an invalid pointer to a remote file. Hence can not perform any " +
+                                "read operations on it",
+                        bFileMap.getStringValue(StringUtils.fromString(Constants.Types.BFile.NAME))));
             }
         } catch (SQLException ex) {
             return ErrorGenerator.
@@ -81,7 +84,9 @@ public class BFileUtils {
                         TypeCreator.createUnionType(PredefinedTypes.TYPE_ERROR, PredefinedTypes.TYPE_NULL)),
                         bFileIterator);
             } else {
-                SQLException ex = new SQLException("Invalid BFile received. Hence can not create a stream from it.");
+                SQLException ex = new SQLException(String.format("Provided BFile: %s does not contain a pointer or " +
+                                "contains an invalid pointer to a remote file. Hence can not create a stream from it.",
+                        bFileMap.getStringValue(StringUtils.fromString(Constants.Types.BFile.NAME))));
                 BError errorValue = ErrorGenerator.getSQLError(ex, "Error while creating the stream. ");
                 return getErrorStream(errorValue);
             }
