@@ -20,3 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add code examples for oracle specific data types to Package.md.
 - Select functionality for VArrays and Object Types.
 - Upgrade ojdbc driver version from 12 to 19.
+
+### Changed
+- [Remove support for string parameter in SQL APIs](https://github.com/ballerina-platform/ballerina-standard-library/issues/2010)

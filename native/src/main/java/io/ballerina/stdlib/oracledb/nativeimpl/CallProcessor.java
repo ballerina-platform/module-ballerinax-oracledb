@@ -42,7 +42,7 @@ public class CallProcessor {
      * @param recordTypes type description of the result record
      * @return procedure call result or error
      */
-    public static Object nativeCall(Environment env, BObject client, Object paramSQLString, BArray recordTypes) {
+    public static Object nativeCall(Environment env, BObject client, BObject paramSQLString, BArray recordTypes) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();
         DefaultResultParameterProcessor resultParametersProcessor = OracleDBResultParameterProcessor
