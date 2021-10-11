@@ -118,8 +118,8 @@ CREATE OR REPLACE DIRECTORY BFILE_TEST_DIR as '/home/oracle/bfile-sample';
 /
 
 CREATE TABLE bfile_test_table(
-        pk NUMBER,
+        id NUMBER,
         col_bfile  BFILE,
-        PRIMARY KEY(pk)
+        PRIMARY KEY(id)
 );
 

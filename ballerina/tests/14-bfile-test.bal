@@ -30,7 +30,7 @@ isolated function insertValidBFileLocator() returns sql:Error? {
 }
 
 type BFileRequestType record {
-    decimal pk;
+    decimal id;
     BFile col_bfile;
 };
 
@@ -39,11 +39,11 @@ type BFileRequestType record {
     dependsOn:[insertValidBFileLocator]
 }
 isolated function getValidBFileWithRequestType() returns error? {
-    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where pk = 1`;
+    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where id = 1`;
     record {}? value = check queryClient(sqlQuery, BFileRequestType);
     BFile bfile = {name:"bfile.txt", length:83};
     if value is record {} {
-        test:assertEquals(<decimal> 1, value["pk"], "Expected pk did not match.");
+        test:assertEquals(<decimal> 1, value["id"], "Expected id did not match.");
         test:assertEquals(bfile, value["col_bfile"], "Expected Bfile did not match.");
     } else {
         test:assertFail("Value is Error");
@@ -60,10 +60,10 @@ isolated function insertNullBFileLocator() returns error? {
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     var insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
-    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where pk = 2`;
+    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where id = 2`;
     record {}? value = check queryClient(sqlQuery, BFileRequestType);
     if value is record {} {
-        test:assertEquals(<decimal> 2, value["pk"], "Expected pk did not match.");
+        test:assertEquals(<decimal> 2, value["id"], "Expected id did not match.");
         test:assertEquals((), value["col_bfile"], "Expected Bfile did not match.");
     } else {
         test:assertFail("Value is Error");
@@ -76,7 +76,7 @@ type InvalidBFile record {
 };
 
 type BFileRequestType2 record {
-    decimal pk;
+    decimal id;
     InvalidBFile col_bfile;
 };
 
@@ -85,7 +85,7 @@ type BFileRequestType2 record {
     dependsOn:[insertNullBFileLocator]
 }
 isolated function getValidBFileWithInvalidRequestType() returns error? {
-    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where pk = 1`;
+    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where id = 1`;
     record {}|error? value = queryClient(sqlQuery, BFileRequestType2);
     test:assertTrue(value is sql:ApplicationError);
     if value is sql:ApplicationError {
@@ -103,7 +103,7 @@ isolated function getValidBFileWithInvalidRequestType() returns error? {
 isolated function checkIsFileExistsMethod() returns error? {
     sql:ConnectionPool pool = {maxOpenConnections: 1, minIdleConnections: 1};
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
-    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where pk = 1`;
+    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where id = 1`;
     stream<BFileRequestType, error?> streamData = oracledbClient->query(sqlQuery);
     record {|BFileRequestType value;|}? data = check streamData.next();
     BFileRequestType? value = data?.value;
@@ -124,7 +124,7 @@ isolated function checkIsFileExistsMethod() returns error? {
 isolated function checkBfileReadBytesMethod() returns error? {
     sql:ConnectionPool pool = {maxOpenConnections: 1, minIdleConnections: 1};
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
-    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where pk = 1`;
+    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where id = 1`;
     stream<BFileRequestType, error?> streamData = oracledbClient->query(sqlQuery);
     record {|BFileRequestType value;|}? data = check streamData.next();
     BFileRequestType? value = data?.value;
@@ -150,7 +150,7 @@ isolated function checkBfileReadBytesMethod() returns error? {
 isolated function checkBfileReadBlockAsStreamMethod() returns error? {
     sql:ConnectionPool pool = {maxOpenConnections: 1, minIdleConnections: 1};
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
-    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where pk = 1`;
+    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where id = 1`;
     stream<BFileRequestType, error?> streamData = oracledbClient->query(sqlQuery);
     record {|BFileRequestType value;|}? data = check streamData.next();
     BFileRequestType? value = data?.value;
