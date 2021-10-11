@@ -22,10 +22,8 @@ import io.ballerina.runtime.api.PredefinedTypes;
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.utils.StringUtils;
-import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
-import io.ballerina.runtime.api.values.BStream;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.sql.exception.ApplicationError;
@@ -72,7 +70,7 @@ public class BFileUtils {
         }
     }
 
-    public static BStream bfileReadBlockAsStream(BMap<BString, Object> bFileMap, int bufferSize) {
+    public static Object bfileReadBlockAsStream(BMap<BString, Object> bFileMap, int bufferSize) {
         try {
             Object bfileObj = bFileMap.getNativeData(Constants.ORACLEBFILE_NATIVE_DATA_FIELD);
             if (bfileObj instanceof OracleBfile && ((OracleBfile) bfileObj).fileExists()) {
@@ -87,12 +85,10 @@ public class BFileUtils {
                 SQLException ex = new SQLException(String.format("Provided BFile: %s does not contain a pointer or " +
                                 "contains an invalid pointer to a remote file. Hence can not create a stream from it.",
                         bFileMap.getStringValue(StringUtils.fromString(Constants.Types.BFile.NAME))));
-                BError errorValue = ErrorGenerator.getSQLError(ex, "Error while creating the stream. ");
-                return getErrorStream(errorValue);
+                return ErrorGenerator.getSQLError(ex, "Error while creating the stream. ");
             }
         } catch (SQLException ex) {
-            BError errorValue = ErrorGenerator.getSQLError(ex, "Error while creating the stream. ");
-            return getErrorStream(errorValue);
+            return ErrorGenerator.getSQLError(ex, "Error while creating the stream. ");
         }
     }
 
@@ -120,12 +116,5 @@ public class BFileUtils {
             return ErrorGenerator.
                     getSQLApplicationError(new ApplicationError("Error occurred when reading the BFile.", ex));
         }
-    }
-
-    private static BStream getErrorStream(BError errorValue) {
-        return ValueCreator.createStreamValue(TypeCreator.createStreamType(TypeCreator.
-                        createArrayType(PredefinedTypes.TYPE_BYTE), TypeCreator.createUnionType(
-                                PredefinedTypes.TYPE_ERROR, PredefinedTypes.TYPE_NULL)), ValueCreator.
-                createObjectValue(ModuleUtils.getModule(), Constants.BFILE_ITERATOR_OBJECT,  0L, 0L, errorValue));
     }
 }

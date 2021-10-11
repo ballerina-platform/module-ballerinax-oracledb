@@ -147,7 +147,7 @@ isolated function checkBfileReadBytesMethod() returns error? {
     groups:["bfile"],
     dependsOn:[checkBfileReadBytesMethod]
 }
-isolated function checkBfileReadBlockAsStreamMethod() returns error? {
+isolated function checkBfileReadBlockAsStreamMethod() returns error|sql:Error? {
     sql:ConnectionPool pool = {maxOpenConnections: 1, minIdleConnections: 1};
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT, connectionPool = pool);
     sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where id = 1`;
@@ -156,7 +156,7 @@ isolated function checkBfileReadBlockAsStreamMethod() returns error? {
     BFileRequestType? value = data?.value;
     if value is BFileRequestType {
         BFile bfile = <BFile> value["col_bfile"];
-        stream<byte[], error?> streamArray = bfileReadBlockAsStream(bfile, 20);
+        stream<byte[], error?> streamArray = check bfileReadBlockAsStream(bfile, 20);
         record {|byte[] value;|}? data1 = check streamArray.next();
         byte[]? actual1 = data1?.value;
         byte[] expected1 = <byte[]> [84,104,105,115,32,105,115,32,97,32,115,97,109,112,108,101,32,116,101,120];
@@ -225,10 +225,9 @@ isolated function checkBfileReadBytesMethodForInvalidBFile() returns error? {
 }
 isolated function checkBfileReadBlockAsStreamMethodForInvalidBFile() returns error? {
     BFile bfile = {name:"bfile.txt", length:83};
-    stream<byte[], error?> streamArray = bfileReadBlockAsStream(bfile, 20);
-    record {|byte[] value;|}|error? value = streamArray.next();
-    if value is sql:Error {
-        test:assertTrue(value.message().includes("Provided BFile: bfile.txt does not contain a pointer or contains an invalid " +
+    stream<byte[], error?>|sql:Error streamArray = bfileReadBlockAsStream(bfile, 20);
+    if streamArray is sql:Error {
+        test:assertTrue(streamArray.message().includes("Provided BFile: bfile.txt does not contain a pointer or contains an invalid " +
                 "pointer to a remote file."));
     } else {
         test:assertFail("ApplicationError Error expected");

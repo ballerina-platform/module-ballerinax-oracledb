@@ -193,6 +193,6 @@ isolated function bfileReadBytes(BFile bfile) returns byte[]|sql:Error? = @java:
     'class: "io.ballerina.stdlib.oracledb.utils.BFileUtils"
 } external;
 
-isolated function bfileReadBlockAsStream(BFile bfile, int bufferSize) returns stream<byte[], error?> = @java:Method {
+isolated function bfileReadBlockAsStream(BFile bfile, int bufferSize) returns stream<byte[], error?>|sql:Error = @java:Method {
     'class: "io.ballerina.stdlib.oracledb.utils.BFileUtils"
 } external;
