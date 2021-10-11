@@ -16,18 +16,18 @@
 import ballerina/sql;
 import ballerina/test;
 
-@test:Config {
-    groups:["bfile"]
-}
-isolated function insertValidBFileLocator() returns sql:Error? {
-    string directory = "BFILE_TEST_DIR";
-    string fileName = "bfile.txt";
-    sql:ParameterizedQuery insertQuery = `INSERT INTO bfile_test_table VALUES (1, BFILENAME(${directory}, ${fileName}))`;
-    sql:ExecutionResult result = check executeQuery(insertQuery);
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
-    test:assertTrue(insertId is string, "Last Insert id should be string");
-}
+//@test:Config {
+//    groups:["bfile"]
+//}
+//isolated function insertValidBFileLocator() returns sql:Error? {
+//    string directory = "BFILE_TEST_DIR";
+//    string fileName = "bfile.txt";
+//    sql:ParameterizedQuery insertQuery = `INSERT INTO bfile_test_table VALUES (1, BFILENAME(${directory}, ${fileName}))`;
+//    sql:ExecutionResult result = check executeQuery(insertQuery);
+//    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+//    var insertId = result.lastInsertId;
+//    test:assertTrue(insertId is string, "Last Insert id should be string");
+//}
 
 type BFileRequestType record {
     decimal id;
@@ -35,8 +35,8 @@ type BFileRequestType record {
 };
 
 @test:Config {
-    groups:["bfile"],
-    dependsOn:[insertValidBFileLocator]
+    groups:["bfile"]
+    //dependsOn:[insertValidBFileLocator]
 }
 isolated function getValidBFileWithRequestType() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where id = 1`;
@@ -50,25 +50,25 @@ isolated function getValidBFileWithRequestType() returns error? {
     }
 }
 
-@test:Config {
-    groups:["bfile"],
-    dependsOn:[getValidBFileWithRequestType]
-}
-isolated function insertNullBFileLocator() returns error? {
-    sql:ParameterizedQuery insertQuery = `INSERT INTO bfile_test_table VALUES (2, NULL)`;
-    sql:ExecutionResult result = check executeQuery(insertQuery);
-    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
-    test:assertTrue(insertId is string, "Last Insert id should be string");
-    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where id = 2`;
-    record {}? value = check queryClient(sqlQuery, BFileRequestType);
-    if value is record {} {
-        test:assertEquals(<decimal> 2, value["id"], "Expected id did not match.");
-        test:assertEquals((), value["col_bfile"], "Expected Bfile did not match.");
-    } else {
-        test:assertFail("Value is Error");
-    }
-}
+//@test:Config {
+//    groups:["bfile"],
+//    dependsOn:[getValidBFileWithRequestType]
+//}
+//isolated function insertNullBFileLocator() returns error? {
+//    sql:ParameterizedQuery insertQuery = `INSERT INTO bfile_test_table VALUES (2, NULL)`;
+//    sql:ExecutionResult result = check executeQuery(insertQuery);
+//    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+//    var insertId = result.lastInsertId;
+//    test:assertTrue(insertId is string, "Last Insert id should be string");
+//    sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where id = 2`;
+//    record {}? value = check queryClient(sqlQuery, BFileRequestType);
+//    if value is record {} {
+//        test:assertEquals(<decimal> 2, value["id"], "Expected id did not match.");
+//        test:assertEquals((), value["col_bfile"], "Expected Bfile did not match.");
+//    } else {
+//        test:assertFail("Value is Error");
+//    }
+//}
 
 type InvalidBFile record {
     string name;
@@ -81,8 +81,8 @@ type BFileRequestType2 record {
 };
 
 @test:Config {
-    groups:["bfile"],
-    dependsOn:[insertNullBFileLocator]
+    groups:["bfile"]
+    //dependsOn:[insertNullBFileLocator]
 }
 isolated function getValidBFileWithInvalidRequestType() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT * FROM bfile_test_table where id = 1`;

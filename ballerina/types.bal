@@ -178,47 +178,45 @@ public class CustomResultIterator {
 # The BFile iterator object that is used to iterate through the BFile and provide byte array for given buffer size.
 public class BFileIterator {
     private boolean isClosed = false;
-    private sql:Error? err;
     private int bufferSize;
     private int fileLength;
     private int position = 1;
 
-    isolated function init(int bufferSize, int fileLength, sql:Error? err = ()) {
+    isolated function init(int bufferSize, int fileLength) {
         self.bufferSize = bufferSize;
         self.fileLength = fileLength;
-        self.err = err;
     }
 
     public isolated function next() returns record {|byte[] value;|}|sql:Error? {
         if self.isClosed {
              return closedStreamInvocationError();
-        }
-        if (self.err is sql:Error) {
-            return self.err;
         } else {
-            byte[]|sql:Error result;
+            error? closeErrorIgnored = ();
             if self.position <= self.fileLength {
-                result = getBytes(self);
+            byte[]|sql:Error result = getBytes(self);
                 if result is byte[] {
                     record {|
                         byte[] value;
                     |} streamRecord = {value: result};
                     return streamRecord;
                 } else {
-                    self.err = result;
-                    self.close();
-                    return self.err;
+                    closeErrorIgnored = self.close();
+                    return result;
                 }
             } else {
-                self.close();
+                closeErrorIgnored = self.close();
                 return ();
             }
         }
     }
 
-    public isolated function close() {
-        if (!self.isClosed) {
-            self.isClosed = true;
+    public isolated function close() returns sql:Error? {
+        if !self.isClosed {
+            sql:Error? e = closeBFile(self);
+            if e is () {
+                self.isClosed = true;
+            }
+            return e;
         }
     }
 }

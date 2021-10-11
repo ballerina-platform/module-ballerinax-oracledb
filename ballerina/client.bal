@@ -185,6 +185,10 @@ isolated function getBytes(BFileIterator bFileIterator) returns byte[]|sql:Error
     'class: "io.ballerina.stdlib.oracledb.utils.BFileUtils"
 } external;
 
+isolated function closeBFile(BFileIterator bFileIterator) returns sql:Error? = @java:Method {
+    'class: "io.ballerina.stdlib.oracledb.utils.BFileUtils"
+} external;
+
 isolated function isBFileExists(BFile bfile) returns boolean = @java:Method {
     'class: "io.ballerina.stdlib.oracledb.utils.BFileUtils"
 } external;

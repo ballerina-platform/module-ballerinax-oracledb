@@ -30,6 +30,7 @@ public final class Constants {
     private Constants() {}
 
     public static final String ORACLEBFILE_NATIVE_DATA_FIELD = "OracleBFile";
+    public static final String ORACLEBFILE_STREAM_DATA_FIELD = "InputStream";
     public static final String BFILE_ITERATOR_OBJECT = "BFileIterator";
 
     /**
