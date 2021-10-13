@@ -77,6 +77,15 @@ public type NestedTableType record {|
     ArrayValueType? elements;
 |};
 
+# Represents the BFILE data type in Oracle Database.
+#
+# + name - Name of bfile
+# + length - length of the pointed file
+public type BFile record {
+   string name;
+   int length;
+};
+
 # Represents OBJECT TYPE Oracle DB field.
 #
 # + value - Value of parameter passed into the SQL statement
@@ -153,7 +162,6 @@ public distinct class IntervalDayToSecondOutParameter {
 }
 
 # The class with custom implementations for nextResult and getNextQueryResult in the connector modules.
-#
 public class CustomResultIterator {
     public isolated function nextResult(sql:ResultIterator iterator) returns record {}|sql:Error? = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.utils.RecordIteratorUtils",
@@ -165,4 +173,50 @@ public class CustomResultIterator {
         'class: "io.ballerina.stdlib.oracledb.utils.ProcedureCallResultUtils",
         paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
     } external;
+}
+
+# The BFile iterator object that is used to iterate through the BFile and provide byte array for given buffer size.
+public class BFileIterator {
+    private boolean isClosed = false;
+    private int bufferSize;
+    private int fileLength;
+    private int position = 1;
+
+    isolated function init(int bufferSize, int fileLength) {
+        self.bufferSize = bufferSize;
+        self.fileLength = fileLength;
+    }
+
+    public isolated function next() returns record {|byte[] value;|}|sql:Error? {
+        if self.isClosed {
+             return closedStreamInvocationError();
+        } else {
+            error? closeErrorIgnored = ();
+            if self.position <= self.fileLength {
+            byte[]|sql:Error result = getBytes(self);
+                if result is byte[] {
+                    record {|
+                        byte[] value;
+                    |} streamRecord = {value: result};
+                    return streamRecord;
+                } else {
+                    closeErrorIgnored = self.close();
+                    return result;
+                }
+            } else {
+                closeErrorIgnored = self.close();
+                return ();
+            }
+        }
+    }
+
+    public isolated function close() returns sql:Error? {
+        if !self.isClosed {
+            sql:Error? e = closeBFile(self);
+            if e is () {
+                self.isClosed = true;
+            }
+            return e;
+        }
+    }
 }

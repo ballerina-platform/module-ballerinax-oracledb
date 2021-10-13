@@ -112,3 +112,14 @@ CREATE TABLE NestedClassTable(
 
 INSERT INTO NestedClassTable(PK,COL_TEACHER, COL_STUDENTS, COL_GRADES, COL_TOTAL)
         VALUES (1, 'Kate Johnson', NestedNameTable('John', 'Smith', 'Arya', 'Stark', 'Conan'), NestedGradeTable(78, 56, 23, 68, 87), 5);
+/
+
+CREATE OR REPLACE DIRECTORY BFILE_TEST_DIR as '/home/oracle/bfile-sample';
+/
+
+CREATE TABLE bfile_test_table(
+        id NUMBER,
+        col_bfile  BFILE,
+        PRIMARY KEY(id)
+);
+
