@@ -102,7 +102,7 @@ task buildExamples {
     }
 }
 
-copyDistribution.dependsOn ":java.oracledb-ballerina:build"
+copyDistribution.dependsOn ":oracledb-ballerina:build"
 copyPackageBala.dependsOn copyDistribution
 testExamples.dependsOn copyPackageBala
 test.dependsOn testExamples
