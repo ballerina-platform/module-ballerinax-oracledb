@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Dockerfile using dockerhub repository image
-ARG REPO_LOCATION=lahirusamith/oracle-enterprise
+ARG REPO_LOCATION=niveathika/oracle-enterprise
 ARG BASE_VERSION=12.2.0.1-slim
 FROM ${REPO_LOCATION}:${BASE_VERSION}
 
