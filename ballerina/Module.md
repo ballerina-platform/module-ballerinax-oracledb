@@ -223,8 +223,8 @@ The `CREATE` statement is executed via the `execute` remote function of the clie
 // Create the ‘Students’ table with the  ‘id’, 'name', and ‘age’ fields.
 sql:ExecutionResult result = 
                 check dbClient->execute(`CREATE TABLE student (
-                                           id INT AUTO_INCREMENT,
-                                           age INT, 
+                                           id NUMBER GENERATED ALWAYS AS IDENTITY,,
+                                           age NUMBER, 
                                            name VARCHAR(255), 
                                            PRIMARY KEY (id)
                                          )`);
