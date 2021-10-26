@@ -22,34 +22,8 @@ apply plugin: 'java'
 
 description = 'Ballerina - OracleDB Examples'
 
-def ballerinaModulePath = "${project.rootDir}/ballerina/"
-def ballerinaDistPath = "${ballerinaModulePath}/build/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}"
-def ballerinaDist = "${buildDir}/target/ballerina-distribution"
+def ballerinaDist = "${project.rootDir}/target/ballerina-runtime"
 def examples = ["online-shop"]
-
-task copyDistribution(type: Copy) {
-    from ballerinaDistPath
-    into ballerinaDist
-}
-
-task copyPackageBala {
-    doLast {
-        copy {
-            from "${ballerinaModulePath}/build/cache_parent"
-            into "${ballerinaDist}/repo"
-            copy {
-                into("bala/ballerina") {
-                    from "bala/ballerina"
-                }
-            }
-            copy {
-                into("cache/ballerina/") {
-                    from "cache/ballerina"
-                }
-            }
-        }
-    }
-}
 
 clean {
     examples.forEach { example ->
@@ -102,9 +76,7 @@ task buildExamples {
     }
 }
 
-copyDistribution.dependsOn ":oracledb-ballerina:build"
-copyPackageBala.dependsOn copyDistribution
-testExamples.dependsOn copyPackageBala
+testExamples.dependsOn ":oracledb-ballerina:build"
+buildExamples.dependsOn ":oracledb-ballerina:build"
 test.dependsOn testExamples
-buildExamples.dependsOn copyPackageBala
 build.dependsOn buildExamples
