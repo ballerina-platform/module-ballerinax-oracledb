@@ -18,13 +18,14 @@ jobs:
         env:
           packageUser: ${{ github.actor }}
           packagePAT: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew build -x check -x test
+        run: ./gradlew build -x check -x test -x :oracledb-examples:build
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
           scan-ref: '/github/workspace/ballerina/lib'
           format: 'table'
+          timeout: '10m0s'
           exit-code: '1'
       - name: Publish artifact
         env:
