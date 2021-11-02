@@ -232,9 +232,9 @@ function testWithOptionsWithErroneousSSLCorrectPort() returns error? {
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
         test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
-        "IO Error: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException"));
+        "IO Error:"));
     } else {
-        test:assertFail("Error ApplicatonError expected");
+        test:assertFail("Application Error expected");
     }
 }
 
