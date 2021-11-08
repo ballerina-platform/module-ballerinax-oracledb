@@ -116,53 +116,53 @@ service /onlineshop on new http:Listener(9090) {
         return result.lastInsertId.toString();
     }
 
-    resource function get orders() returns Order[]|error? {
-        Order[] orders = [];
-        stream<Order, error?> resultStream = dbClient->query(`SELECT * FROM ORDERS`);
-        _ = check resultStream.forEach(function(Order order) {
-           orders.push(order);
+    resource function get purchases() returns Purchase[]|error? {
+        Purchase[] purchases = [];
+        stream<Purchase, error?> resultStream = dbClient->query(`SELECT * FROM PURCHASES`);
+        _ = check resultStream.forEach(function(Purchase purchase) {
+           purchases.push(purchase);
         });
         check resultStream.close();
-        return orders;
+        return purchases;
     }
 
-    resource function get orders/[int id]() returns Order|error? {
-        Order order = check dbClient->queryRow(`SELECT * FROM ORDERS WHERE ORDER_ID = ${id}`);
-        return order;
+    resource function get purchases/[int id]() returns Purchase|error? {
+        Purchase purchase = check dbClient->queryRow(`SELECT * FROM PURCHASES WHERE PURCHASE_ID = ${id}`);
+        return purchase;
     }
 
-    resource function get orders/count() returns int|error? {
-        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM ORDERS`);
+    resource function get purchases/count() returns int|error? {
+        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM PURCHASES`);
         return count;
     }
 
-    resource function get orderitems() returns OrderItem[]|error? {
-        OrderItem[] orderItems = [];
-        stream<OrderItem, error?> resultStream = dbClient->query(`SELECT * FROM ORDER_ITEMS`);
-        _ = check resultStream.forEach(function(OrderItem orderItem) {
-           orderItems.push(orderItem);
+    resource function get purchaseitems() returns PurchaseItem[]|error? {
+        PurchaseItem[] purchaseItems = [];
+        stream<PurchaseItem, error?> resultStream = dbClient->query(`SELECT * FROM PURCHASE_ITEMS`);
+        _ = check resultStream.forEach(function(PurchaseItem purchaseItem) {
+           purchaseItems.push(purchaseItem);
         });
         check resultStream.close();
-        return orderItems;
+        return purchaseItems;
     }
 
-    resource function get orderitems/count() returns int|error? {
-        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM ORDER_ITEMS`);
+    resource function get purchaseitems/count() returns int|error? {
+        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM PURCHASE_ITEMS`);
         return count;
     }
 
-    resource function get orders/[int id]/items() returns OrderItem[]|error? {
-        OrderItem[] orderItems = [];
-        stream<OrderItem, error?> resultStream = dbClient->query(`SELECT * FROM ORDER_ITEMS WHERE ORDER_ID = ${id}`);
-        _ = check resultStream.forEach(function(OrderItem orderItem) {
-           orderItems.push(orderItem);
+    resource function get purchases/[int id]/items() returns PurchaseItem[]|error? {
+        PurchaseItem[] purchaseItems = [];
+        stream<PurchaseItem, error?> resultStream = dbClient->query(`SELECT * FROM PURCHASE_ITEMS WHERE PURCHASE_ID = ${id}`);
+        _ = check resultStream.forEach(function(PurchaseItem purchaseItem) {
+           purchaseItems.push(purchaseItem);
         });
         check resultStream.close();
-        return orderItems;
+        return purchaseItems;
     }
 
-    resource function get orders/[int id]/items/count() returns int|error? {
-        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM ORDER_ITEMS WHERE ORDER_ID = ${id}`);
+    resource function get purchases/[int id]/items/count() returns int|error? {
+        int count = check dbClient->queryRow(`SELECT COUNT(*) FROM PURCHASE_ITEMS WHERE PURCHASE_ID = ${id}`);
         return count;
     }
 
