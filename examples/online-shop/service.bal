@@ -31,7 +31,7 @@ service /onlineshop on new http:Listener(9090) {
     resource function get employees() returns Employee[]|error? {
         Employee[] employees = [];
          stream<Employee, error?> resultStream = dbClient->query(`SELECT * FROM EMPLOYEES`);
-         _ = check resultStream.forEach(function(Employee employee) {
+         check resultStream.forEach(function(Employee employee) {
             employees.push(employee);
          });
          check resultStream.close();
@@ -51,7 +51,7 @@ service /onlineshop on new http:Listener(9090) {
     resource function get products() returns Product[]|error? {
         Product[] products = [];
         stream<Product, error?> resultStream = dbClient->query(`SELECT * FROM PRODUCTS`);
-        _ = check resultStream.forEach(function(Product product) {
+        check resultStream.forEach(function(Product product) {
            products.push(product);
         });
         check resultStream.close();
@@ -80,7 +80,7 @@ service /onlineshop on new http:Listener(9090) {
     resource function get customers() returns Customer[]|error? {
         Customer[] customers = [];
         stream<Customer, error?> resultStream = dbClient->query(`SELECT * FROM CUSTOMERS`);
-        _ = check resultStream.forEach(function(Customer customer) {
+        check resultStream.forEach(function(Customer customer) {
            customers.push(customer);
         });
         check resultStream.close();
@@ -119,7 +119,7 @@ service /onlineshop on new http:Listener(9090) {
     resource function get purchases() returns Purchase[]|error? {
         Purchase[] purchases = [];
         stream<Purchase, error?> resultStream = dbClient->query(`SELECT * FROM PURCHASES`);
-        _ = check resultStream.forEach(function(Purchase purchase) {
+        check resultStream.forEach(function(Purchase purchase) {
            purchases.push(purchase);
         });
         check resultStream.close();
@@ -139,7 +139,7 @@ service /onlineshop on new http:Listener(9090) {
     resource function get purchaseitems() returns PurchaseItem[]|error? {
         PurchaseItem[] purchaseItems = [];
         stream<PurchaseItem, error?> resultStream = dbClient->query(`SELECT * FROM PURCHASE_ITEMS`);
-        _ = check resultStream.forEach(function(PurchaseItem purchaseItem) {
+        check resultStream.forEach(function(PurchaseItem purchaseItem) {
            purchaseItems.push(purchaseItem);
         });
         check resultStream.close();
@@ -154,7 +154,7 @@ service /onlineshop on new http:Listener(9090) {
     resource function get purchases/[int id]/items() returns PurchaseItem[]|error? {
         PurchaseItem[] purchaseItems = [];
         stream<PurchaseItem, error?> resultStream = dbClient->query(`SELECT * FROM PURCHASE_ITEMS WHERE PURCHASE_ID = ${id}`);
-        _ = check resultStream.forEach(function(PurchaseItem purchaseItem) {
+        check resultStream.forEach(function(PurchaseItem purchaseItem) {
            purchaseItems.push(purchaseItem);
         });
         check resultStream.close();
@@ -169,7 +169,7 @@ service /onlineshop on new http:Listener(9090) {
     resource function get contacts() returns Contact[]|error? {
         Contact[] contacts = [];
         stream<Contact, error?> resultStream = dbClient->query(`SELECT * FROM CONTACTS`);
-        _ = check resultStream.forEach(function(Contact contact) {
+        check resultStream.forEach(function(Contact contact) {
            contacts.push(contact);
         });
         check resultStream.close();
@@ -179,7 +179,7 @@ service /onlineshop on new http:Listener(9090) {
     resource function get customers/[int id]/contacts() returns Contact[]|error? {
         Contact[] contacts = [];
         stream<Contact, error?> resultStream = dbClient->query(`SELECT * FROM CONTACTS WHERE CUSTOMER_ID = ${id}`);
-        _ = check resultStream.forEach(function(Contact contact) {
+        check resultStream.forEach(function(Contact contact) {
            contacts.push(contact);
         });
         check resultStream.close();
