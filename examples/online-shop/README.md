@@ -4,11 +4,11 @@
 This example demonstrates how to use the Ballerina `oracledb` module to execute, query, and call etc. in an Oracle database. 
 
 Here, a sample database is used to demonstrate the functionalities. This sample database models an imaginary shop that sells
-computer hardware, and the database has six tables namely, `CUSTOMERS`, `CONTACTS`, `EMPLOYEES`, `PRODUCTS`, `ORDERS`, and `ORDERITEMS`.
+computer hardware, and the database has six tables namely, `CUSTOMERS`, `CONTACTS`, `EMPLOYEES`, `PRODUCTS`, `PURCHASES`, and `PURCHASEITEMS`.
 
 The shop has customer information including the name, address, etc. with their respective contact details. It also maintains an employee list
-of the shop. Once a customer places an order with different order items chosen from the products list, the shop can follow up and update 
-the order status in several stages like `Pending`, `Shipped`, or `Cancelled`.
+of the shop. Once a customer places a purchase with different purchase items chosen from the products list, the shop can follow up and update 
+the purchase status in several stages like `Pending`, `Shipped`, or `Cancelled`.
 
 ## Implementation
 

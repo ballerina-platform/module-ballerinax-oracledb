@@ -40,7 +40,6 @@ isolated function insertIntoNumericTable1() returns sql:Error? {
 }
 isolated function insertIntoNumericTable2() returns sql:Error? {
     int id = 4;
-    int col_number = 4;
     sql:ParameterizedQuery sqlQuery = `INSERT INTO NumericTypesTable (id) VALUES(${id})`;
     validateResult(check executeQuery(sqlQuery), 1, 1);
 }

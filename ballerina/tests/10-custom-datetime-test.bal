@@ -147,8 +147,6 @@ isolated function selectAllDateTimeDatatypesWithReturnType() returns error? {
     record{}? data = check queryClient(sqlQuery, DateTimeReturnTypes);
     time:Civil dateTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
     time:Date dateOnlyTypeRecord = {year: 2020, month: 1, day: 5};
-    int col_date_only_as_int = 1578162600000;
-    time:Utc dateOnlyAsUtc = [1578162600, 0];
     time:Civil timestampTypeRecord = {year: 2020, month: 1, day: 5, hour: 10, minute: 35, second: 10};
     time:Civil timestampTzTypeRecord = {utcOffset: {hours: 5, minutes: 30}, timeAbbrev: "+05:30", year: 2020,
                                         month: 1, day: 5, hour: 10, minute: 35, second: 10};

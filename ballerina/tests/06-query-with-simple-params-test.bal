@@ -78,7 +78,6 @@ isolated function querySingleNumberParam() returns error? {
 }
 isolated function queryDoubleNumberParam() returns error? {
     int id = 1;
-    sql:DecimalValue col_number = new(1);
     sql:ParameterizedQuery sqlQuery = `SELECT * from NumericSimpleQueryTable WHERE id = ${id}`;
     validateNumericSimpleQueryTableResult(check queryClient(sqlQuery));
 }

@@ -39,7 +39,7 @@ type StringDataSingle record {
 @test:Config {
     groups: ["procedures"]
 }
-isolated function testCallWithStringTypes() returns @tainted record {}|error? {
+isolated function testCallWithStringTypes() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ProcedureCallResult ret = check oracledbClient->call(`{call InsertStringData(2,'test0', 'test1', 'test2',
         'test3', 'test4')}`);
@@ -270,7 +270,7 @@ isolated function testCallWithDateTimesOutParams() returns error? {
 }
 
 isolated function callQueryClient(Client oracledbClient, sql:ParameterizedQuery sqlQuery)
-returns @tainted record {}|error {
+returns record {}|error {
     stream<record {}, error?> streamData = oracledbClient->query(sqlQuery);
     record {|record {} value;|}? data = check streamData.next();
     check streamData.close();

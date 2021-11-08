@@ -32,12 +32,12 @@ public type CustomerInput record {
     string? website;
 };
 
-public type Order record {
-    decimal order_id;
+public type Purchase record {
+    decimal purchase_id;
     decimal customer_id;
     string status;
     decimal? salesman_id;
-    time:Civil order_date;
+    time:Civil purchase_date;
 };
 
 public type Employee record {
@@ -60,8 +60,8 @@ public type Product record {
     int?[] reviews;
 };
 
-public type OrderItem record {
-    decimal order_id;
+public type PurchaseItem record {
+    decimal purchase_id;
     decimal item_id;
     decimal product_id;
     decimal quantity;
