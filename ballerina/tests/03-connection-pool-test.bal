@@ -263,7 +263,7 @@ returns error? {
 }
 
 function testLocalSharedConnectionPoolStopInitInterleaveHelper2(sql:ConnectionPool pool)
-returns @tainted int|error {
+returns int|error {
   runtime:sleep(10);
   Client oracleDbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT, options, pool);
   var dt = oracleDbClient->query(`SELECT COUNT(*) as val from PoolCustomers where registrationID = 1`, Result);
@@ -322,7 +322,7 @@ function testShutDownSharedConnectionPool() returns sql:Error? {
 
   // This should fail because this client is stopped.
   var result5 = oracleDbClient2->query(`select count(*) as val from PoolCustomers where registrationID = 2`, Result);
-  int|error retVal5 = getReturnValue(result4);
+  int|error retVal5 = getReturnValue(result5);
 
   test:assertEquals(retVal1, 1);
   test:assertEquals(retVal2, 1);
