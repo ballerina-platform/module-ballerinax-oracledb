@@ -23,9 +23,9 @@ string errorDB = "ERROR_DB";
     groups: ["error"]
 }
 function TestAuthenticationError() {
-    Client|error dbClient = new(HOST, USER, "PASSWORD", DATABASE, PORT);
+    Client|error dbClient = new (HOST, USER, "PASSWORD", DATABASE, PORT);
     test:assertTrue(dbClient is sql:ApplicationError);
-    sql:ApplicationError sqlerror = <sql:ApplicationError> dbClient;
+    sql:ApplicationError sqlerror = <sql:ApplicationError>dbClient;
     test:assertTrue(strings:includes(sqlerror.message(), "invalid username/password"), sqlerror.message());
 }
 
@@ -33,9 +33,9 @@ function TestAuthenticationError() {
     groups: ["error"]
 }
 function TestLinkFailure() {
-    Client|error dbClient = new("HOST", USER, PASSWORD, DATABASE, PORT);
+    Client|error dbClient = new ("HOST", USER, PASSWORD, DATABASE, PORT);
     test:assertTrue(dbClient is sql:ApplicationError);
-    sql:ApplicationError sqlerror = <sql:ApplicationError> dbClient;
+    sql:ApplicationError sqlerror = <sql:ApplicationError>dbClient;
     test:assertTrue(strings:includes(sqlerror.message(), " IO Error: The Network Adapter could not establish " +
                 "the connection "), sqlerror.message());
 }
@@ -46,7 +46,7 @@ function TestLinkFailure() {
 function TestInvalidDB() {
     Client|error dbClient = new (HOST, USER, PASSWORD, "errorD", PORT);
     test:assertTrue(dbClient is sql:ApplicationError);
-    sql:ApplicationError sqlerror = <sql:ApplicationError> dbClient;
+    sql:ApplicationError sqlerror = <sql:ApplicationError>dbClient;
     test:assertTrue(strings:includes(sqlerror.message(), "TNS:listener does not currently know of service requested " +
                 "in connect descriptor"), sqlerror.message());
 }
@@ -56,11 +56,11 @@ function TestInvalidDB() {
 }
 function TestConnectionClose() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT string_type from ErrorTable WHERE row_id = 1`;
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     check dbClient.close();
     string|error stringVal = dbClient->queryRow(sqlQuery);
     test:assertTrue(stringVal is sql:ApplicationError);
-    sql:ApplicationError sqlerror = <sql:ApplicationError> stringVal;
+    sql:ApplicationError sqlerror = <sql:ApplicationError>stringVal;
     test:assertEquals(sqlerror.message(), "SQL Client is already closed, hence further operations are not allowed",
                 sqlerror.message());
 }
@@ -70,12 +70,12 @@ function TestConnectionClose() returns error? {
 }
 function TestInvalidTableName() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT string_type from Data WHERE row_id = 1`;
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     string|error stringVal = dbClient->queryRow(sqlQuery);
     check dbClient.close();
     test:assertTrue(stringVal is sql:DatabaseError);
-    error sqlerror = <error> stringVal;
-     test:assertTrue(strings:includes(sqlerror.message(), "table or view does not exist"), sqlerror.message());
+    error sqlerror = <error>stringVal;
+    test:assertTrue(strings:includes(sqlerror.message(), "table or view does not exist"), sqlerror.message());
 }
 
 @test:Config {
@@ -83,11 +83,11 @@ function TestInvalidTableName() returns error? {
 }
 function TestInvalidFieldName() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT string_type from ErrorTable WHERE id = 1`;
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     string|error stringVal = dbClient->queryRow(sqlQuery);
     check dbClient.close();
     test:assertTrue(stringVal is sql:DatabaseError);
-    sql:DatabaseError sqlerror = <sql:DatabaseError> stringVal;
+    sql:DatabaseError sqlerror = <sql:DatabaseError>stringVal;
     test:assertTrue(strings:includes(sqlerror.message(), "\"ID\": invalid identifier"), sqlerror.message());
 }
 
@@ -95,11 +95,11 @@ function TestInvalidFieldName() returns error? {
     groups: ["error"]
 }
 function TestInvalidColumnType() returns error? {
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult|error result = dbClient->execute(
                                                     `CREATE TABLE TestCreateTable(studentID Point,LastName string)`);
     check dbClient.close();
-    sql:DatabaseError sqlerror = <sql:DatabaseError> result;
+    sql:DatabaseError sqlerror = <sql:DatabaseError>result;
     test:assertTrue(strings:includes(sqlerror.message(), "invalid datatype"), sqlerror.message());
 }
 
@@ -107,13 +107,13 @@ function TestInvalidColumnType() returns error? {
     groups: ["error"]
 }
 function TestNullValue() returns error? {
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     _ = check dbClient->execute(`CREATE TABLE TestCreateTable(studentID NUMBER not null, LastName VARCHAR(50))`);
     sql:ParameterizedQuery insertQuery = `Insert into TestCreateTable (studentID, LastName) values (null,'asha')`;
     sql:ExecutionResult|error insertResult = dbClient->execute(insertQuery);
     check dbClient.close();
     test:assertTrue(insertResult is sql:DatabaseError);
-    sql:DatabaseError sqlerror = <sql:DatabaseError> insertResult;
+    sql:DatabaseError sqlerror = <sql:DatabaseError>insertResult;
     test:assertTrue(strings:includes(sqlerror.message(), "cannot insert NULL " +
             "into (\"ADMIN\".\"TESTCREATETABLE\".\"STUDENTID\")"), sqlerror.message());
 }
@@ -123,10 +123,10 @@ function TestNullValue() returns error? {
 }
 function TestNoDataRead() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT string_type from ErrorTable WHERE row_id = 5`;
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     record {}|error queryResult = dbClient->queryRow(sqlQuery);
-    //test:assertTrue(queryResult is sql:NoRowsError);
-    sql:NoRowsError sqlerror = <sql:NoRowsError> queryResult;
+    test:assertTrue(queryResult is sql:NoRowsError);
+    sql:NoRowsError sqlerror = <sql:NoRowsError>queryResult;
     test:assertEquals(sqlerror.message(), "Query did not retrieve any rows.", sqlerror.message());
 }
 
@@ -135,11 +135,11 @@ function TestNoDataRead() returns error? {
 }
 function TestUnsupportedTypeValue() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT string_type from ErrorTable WHERE row_id = 1`;
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     json|error stringVal = dbClient->queryRow(sqlQuery);
     check dbClient.close();
-    //test:assertTrue(stringVal is sql:ConversionError);
-    sql:ConversionError sqlerror = <sql:ConversionError> stringVal;
+    test:assertTrue(stringVal is sql:ConversionError);
+    sql:ConversionError sqlerror = <sql:ConversionError>stringVal;
     test:assertEquals(sqlerror.message(), "Retrieved column 1 result 'Hello' could not be converted to 'JSON', " +
                 "unrecognized token 'Hello' at line: 1 column: 7.", sqlerror.message());
 }
@@ -148,13 +148,13 @@ function TestUnsupportedTypeValue() returns error? {
     groups: ["error"]
 }
 function TestConversionError() returns error? {
-    sql:DateValue value = new("hi");
+    sql:DateValue value = new ("hi");
     sql:ParameterizedQuery sqlQuery = `SELECT string_type from ErrorTable WHERE row_id = ${value}`;
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     string|error stringVal = dbClient->queryRow(sqlQuery);
     check dbClient.close();
     test:assertTrue(stringVal is sql:ConversionError);
-    sql:ConversionError sqlError = <sql:ConversionError> stringVal;
+    sql:ConversionError sqlError = <sql:ConversionError>stringVal;
     test:assertEquals(sqlError.message(), "Unsupported value: hi for Date Value", sqlError.message());
 }
 
@@ -163,10 +163,10 @@ function TestConversionError() returns error? {
 }
 function TestConversionError1() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT string_type from ErrorTable WHERE row_id = 1`;
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     json|error queryResult = dbClient->queryRow(sqlQuery);
-    //test:assertTrue(queryResult is sql:ConversionError);
-    sql:ConversionError sqlError = <sql:ConversionError> queryResult;
+    test:assertTrue(queryResult is sql:ConversionError);
+    sql:ConversionError sqlError = <sql:ConversionError>queryResult;
     test:assertTrue(strings:includes(sqlError.message(), "Retrieved column 1 result 'Hello' could not be " +
             "converted to 'JSON', unrecognized token 'Hello'"), sqlError.message());
 }
@@ -181,10 +181,10 @@ type data record {|
 }
 function TestTypeMismatchError() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT string_type from ErrorTable WHERE row_id = 1`;
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     data|error queryResult = dbClient->queryRow(sqlQuery);
-    //test:assertTrue(queryResult is sql:TypeMismatchError);
-    sql:TypeMismatchError sqlError = <sql:TypeMismatchError> queryResult;
+    test:assertTrue(queryResult is sql:TypeMismatchError);
+    sql:TypeMismatchError sqlError = <sql:TypeMismatchError>queryResult;
     test:assertEquals(sqlError.message(), "The field 'string_type' of type int cannot be mapped to " +
                 "the column 'STRING_TYPE' of SQL type 'VARCHAR2'", sqlError.message());
 }
@@ -199,10 +199,10 @@ type stringValue record {|
 }
 function TestFieldMismatchError() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT string_type from ErrorTable WHERE row_id = 1`;
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stringValue|error queryResult = dbClient->queryRow(sqlQuery);
-    //test:assertTrue(queryResult is sql:FieldMismatchError);
-    sql:FieldMismatchError sqlError = <sql:FieldMismatchError> queryResult;
+    test:assertTrue(queryResult is sql:FieldMismatchError);
+    sql:FieldMismatchError sqlError = <sql:FieldMismatchError>queryResult;
     test:assertTrue(strings:includes(sqlError.message(), "No mapping field found for SQL table column " +
                 "'STRING_TYPE' in the record type 'stringValue'"), sqlError.message());
 }
@@ -211,17 +211,17 @@ function TestFieldMismatchError() returns error? {
     groups: ["error"]
 }
 function TestIntegrityConstraintViolation() returns error? {
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    _ = check  dbClient->execute(`CREATE TABLE employees( employee_id NUMBER not null,
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    _ = check dbClient->execute(`CREATE TABLE employees( employee_id NUMBER not null,
                                                         employee_name varchar (75) not null,supervisor_name varchar(75),
                                                         CONSTRAINT employee_pk PRIMARY KEY (employee_id))`);
-    _ = check  dbClient->execute(`CREATE TABLE departments( department_id NUMBER not null,employee_id int not
-                                       null,CONSTRAINT fk_employee FOREIGN KEY (employee_id)
-                                       REFERENCES employees (employee_id))`);
+    _ = check dbClient->execute(`CREATE TABLE departments( department_id NUMBER not null,employee_id int not
+                                  null,CONSTRAINT fk_employee FOREIGN KEY (employee_id)
+                                  REFERENCES employees (employee_id))`);
     sql:ExecutionResult|error result = dbClient->execute(
                                     `INSERT INTO departments(department_id, employee_id) VALUES (250, 600)`);
     check dbClient.close();
-    sql:DatabaseError sqlerror = <sql:DatabaseError> result;
+    sql:DatabaseError sqlerror = <sql:DatabaseError>result;
     test:assertTrue(strings:includes(sqlerror.message(), "parent key not found"), sqlerror.message());
 }
 
@@ -229,7 +229,7 @@ function TestIntegrityConstraintViolation() returns error? {
     groups: ["error"]
 }
 function testCreateProceduresWithMissingParams() returns error? {
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ParameterizedQuery query = `CREATE OR replace PROCEDURE InsertData (
                                             pId IN NUMBER,
                                             pData IN NUMBER
@@ -242,7 +242,7 @@ function testCreateProceduresWithMissingParams() returns error? {
     _ = check dbClient->execute(query);
     sql:ProcedureCallResult|error result = dbClient->call(`{call InsertData(1)}`);
     check dbClient.close();
-    sql:DatabaseError sqlError = <sql:DatabaseError> result;
+    sql:DatabaseError sqlError = <sql:DatabaseError>result;
     test:assertTrue(strings:includes(sqlError.message(), "ADMIN.INSERTDATA is invalid"), sqlError.message());
 }
 
@@ -251,10 +251,10 @@ function testCreateProceduresWithMissingParams() returns error? {
     dependsOn: [testCreateProceduresWithMissingParams]
 }
 function testCreateProceduresWithParameterTypeMismatch() returns error? {
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ProcedureCallResult|error result = dbClient->call(`{call InsertData(1, 2)}`);
     check dbClient.close();
-    sql:DatabaseError sqlError = <sql:DatabaseError> result;
+    sql:DatabaseError sqlError = <sql:DatabaseError>result;
     test:assertTrue(strings:includes(sqlError.message(), "ADMIN.INSERTDATA is invalid"), sqlError.message());
 }
 
@@ -262,14 +262,14 @@ function testCreateProceduresWithParameterTypeMismatch() returns error? {
     groups: ["error"]
 }
 function TestDuplicateKey() returns error? {
-    Client dbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     _ = check dbClient->execute(`CREATE TABLE Details(id NUMBER, age INT, PRIMARY KEY (id))`);
     sql:ParameterizedQuery insertQuery = `Insert into Details (id, age) values (1,10)`;
     sql:ExecutionResult|error insertResult = dbClient->execute(insertQuery);
     insertResult = dbClient->execute(insertQuery);
     check dbClient.close();
     test:assertTrue(insertResult is sql:DatabaseError);
-    sql:DatabaseError sqlerror = <sql:DatabaseError> insertResult;
+    sql:DatabaseError sqlerror = <sql:DatabaseError>insertResult;
     test:assertTrue(strings:includes(sqlerror.message(), "violated"),
                 sqlerror.message());
 }
