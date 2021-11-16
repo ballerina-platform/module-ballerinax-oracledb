@@ -32,8 +32,8 @@ public class OutParameterProcessor {
 
     private OutParameterProcessor() {}
 
-    public static Object get(BObject result, BTypedesc typeDesc) {
+    public static Object getOutParameterValue(BObject result, BTypedesc typeDesc) {
         return io.ballerina.stdlib.sql.nativeimpl.OutParameterProcessor
-                .get(result, typeDesc, OracleDBResultParameterProcessor.getInstance());
+                .get(result, typeDesc, OracleDBResultParameterProcessor.getInstance(), "OutParameter");
     }
 }
