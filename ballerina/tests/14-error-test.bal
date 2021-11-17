@@ -273,3 +273,36 @@ function TestDuplicateKey() returns error? {
     test:assertTrue(strings:includes(sqlerror.message(), "violated"),
                 sqlerror.message());
 }
+
+@test:Config {
+    groups: ["error"]
+}
+function TestUnderflowException() returns error? {
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    _ = check dbClient->execute(`CREATE TABLE test( VALUE DOUBLE PRECISION)`);
+    decimal value = 1e-234;
+    sql:ParameterizedQuery insertQuery = `Insert into test (VALUE) values (${value})`;
+    sql:ExecutionResult|error insertResult = dbClient->execute(insertQuery);
+    insertResult = dbClient->execute(insertQuery);
+    check dbClient.close();
+    sql:DatabaseError sqlerror = <sql:DatabaseError>insertResult;
+    test:assertTrue(strings:includes(sqlerror.message(), "Underflow Exception trying to bind 1E-234"),
+                sqlerror.message());
+}
+
+@test:Config {
+    groups: ["error"]
+}
+function TestOverflowException() returns error? {
+    decimal decimalValue = 1e+234;
+    sql:NumericValue value = new(decimalValue);
+    Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    _ = check dbClient->execute(`CREATE TABLE test1 (VALUE SMALLINT)`);
+    sql:ParameterizedQuery insertQuery = `Insert into test (VALUE) values (${value})`;
+    sql:ExecutionResult|error insertResult = dbClient->execute(insertQuery);
+    insertResult = dbClient->execute(insertQuery);
+    check dbClient.close();
+    sql:DatabaseError sqlerror = <sql:DatabaseError>insertResult;
+    test:assertTrue(strings:includes(sqlerror.message(), "Internal Error: Overflow Exception " +
+                "trying to bind"), sqlerror.message());
+}
