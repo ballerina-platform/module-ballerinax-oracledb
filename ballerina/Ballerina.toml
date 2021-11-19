@@ -12,7 +12,7 @@ distribution = "slbeta3"
 path = "../native/build/libs/oracledb-native-1.1.0-SNAPSHOT.jar"
 
 [[platform.java11.dependency]]
-path = "./lib/sql-native-1.1.0-20211115-201400-bd1fcce.jar"
+path = "./lib/sql-native-1.1.0-20211118-095300-f0a760a.jar"
 
 [[platform.java11.dependency]]
 path = "./lib/ojdbc8-12.2.0.1.jar"
