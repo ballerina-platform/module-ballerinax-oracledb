@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+## [1.1.0] - 2021-11-20
+
+### Changed
+- [Change queryRow return type to anydata](https://github.com/ballerina-platform/ballerina-standard-library/issues/2390)
+- [Make OutParameter get function parameter optional](https://github.com/ballerina-platform/ballerina-standard-library/issues/2388)
+
+## [1.0.0] - 2021-10-09
+
+### Added
 - [Add Nested Table support](https://github.com/ballerina-platform/ballerina-standard-library/issues/1665)
 - [Add mix array type support](https://github.com/ballerina-platform/ballerina-standard-library/issues/1816)
 - [Add Interval support](https://github.com/ballerina-platform/ballerina-standard-library/issues/1763)

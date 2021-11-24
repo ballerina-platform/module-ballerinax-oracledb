@@ -10,3 +10,4 @@ sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @procedures/stored-p
 sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @query/complex-params-test-data.sql
 sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @query/simple-params-test-data.sql
 sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @transaction/local-transaction-test-data.sql
+sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @error/error-test-data.sql

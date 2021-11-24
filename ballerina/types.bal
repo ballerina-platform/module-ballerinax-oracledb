@@ -122,7 +122,8 @@ public distinct class XmlOutParameter {
     # + typeDesc - Type description of the data that need to be converted
     # + return - The converted ballerina value or Error
     public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
-        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor",
+        name: "getOutParameterValue"
     } external;
 }
 
@@ -135,7 +136,8 @@ public distinct class IntervalYearToMonthOutParameter {
     # + typeDesc - Type description of the data that need to be converted
     # + return - The converted ballerina value or Error
     public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
-        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor",
+        "name": "getOutParameterValue"
     } external;
 }
 
@@ -148,7 +150,8 @@ public distinct class IntervalDayToSecondOutParameter {
     # + typeDesc - Type description of the data that need to be converted
     # + return - The converted ballerina value or Error
     public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
-        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor",
+        "name": "getOutParameterValue"
     } external;
 }
 

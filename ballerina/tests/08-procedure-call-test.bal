@@ -208,7 +208,8 @@ isolated function testCallWithComplexTypesOutParams() returns error? {
 distinct class RandomOutParameter {
     *sql:OutParameter;
     public isolated function get(typedesc<anydata> typeDesc) returns typeDesc|sql:Error = @java:Method {
-        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor",
+        name: "getOutParameterValue"
     } external;
 }
 
