@@ -38,6 +38,8 @@ import java.util.Optional;
 
 import static io.ballerina.stdlib.oracledb.compiler.Constants.UNNECESSARY_CHARS_REGEX;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_101;
+import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_201;
+import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_202;
 
 /**
  * Utils class.
@@ -109,5 +111,27 @@ public class Utils {
                     ((BasicLiteralNode) unaryExpressionNode.expression()).literalToken().text();
         }
         return value.replaceAll(UNNECESSARY_CHARS_REGEX, "");
+    }
+
+    public static DiagnosticInfo addDiagnosticsForInvalidTypes(String objectName, TypeDescKind requestedReturnType) {
+        switch(objectName) {
+            case Constants.OutParameter.INTERVAL_DAY_TO_SECOND:
+            case Constants.OutParameter.INTERVAL_YEAR_TO_MONTH:
+                // todo Verify needed specific record type
+                if (requestedReturnType == TypeDescKind.RECORD ||
+                        requestedReturnType == TypeDescKind.OBJECT) {
+                    return null;
+                }
+                return new DiagnosticInfo(ORACLEDB_201.getCode(), ORACLEDB_201.getMessage(),
+                        ORACLEDB_201.getSeverity());
+            case Constants.OutParameter.XML:
+                if (requestedReturnType == TypeDescKind.XML) {
+                    return null;
+                }
+                return new DiagnosticInfo(ORACLEDB_202.getCode(), ORACLEDB_202.getMessage(),
+                        ORACLEDB_202.getSeverity());
+            default:
+                return null;
+        }
     }
 }

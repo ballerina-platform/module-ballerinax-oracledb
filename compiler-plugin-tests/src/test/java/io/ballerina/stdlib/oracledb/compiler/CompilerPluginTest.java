@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_101;
+import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_201;
+import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_202;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_901;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_902;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.SQL_101;
@@ -137,6 +139,29 @@ public class CompilerPluginTest {
             Assert.assertEquals(diagnostic.diagnosticInfo().messageFormat(),
                     ORACLEDB_101.getMessage());
         });
+    }
+
+
+    @Test
+    public void testOutParameterValidations() {
+        Package currentPackage = loadPackage("sample4");
+        PackageCompilation compilation = currentPackage.getCompilation();
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        List<Diagnostic> errorDiagnosticsList = diagnosticResult.diagnostics().stream()
+                .filter(r -> r.diagnosticInfo().severity().equals(DiagnosticSeverity.ERROR))
+                .collect(Collectors.toList());
+        long availableErrors = errorDiagnosticsList.size();
+
+        Assert.assertEquals(availableErrors, 2);
+
+        DiagnosticInfo diagnostic = errorDiagnosticsList.get(0).diagnosticInfo();
+        Assert.assertEquals(diagnostic.code(), ORACLEDB_201.getCode());
+        Assert.assertEquals(diagnostic.messageFormat(), ORACLEDB_201.getMessage());
+
+        diagnostic = errorDiagnosticsList.get(1).diagnosticInfo();
+        Assert.assertEquals(diagnostic.code(), ORACLEDB_202.getCode());
+        Assert.assertEquals(diagnostic.messageFormat(), ORACLEDB_202.getMessage());
+
     }
 
 }

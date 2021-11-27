@@ -35,6 +35,10 @@ public enum OracleDBDiagnosticsCode {
 
     ORACLEDB_101("ORACLEDB_101", "invalid value: expected value is greater than or equal to zero", ERROR),
 
+    // Out parameter return type validations diagnostics
+    ORACLEDB_201("ORACLEDB_201", "invalid value: expected value is either record or object", ERROR),
+    ORACLEDB_202("ORACLEDB_202", "invalid value: expected value is xml", ERROR),
+
     ORACLEDB_901("ORACLEDB_901",
             "parameter 'rowType' should be explicitly passed when the return data is ignored", HINT),
     ORACLEDB_902("ORACLEDB_902",

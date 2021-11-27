@@ -54,6 +54,17 @@ public class Constants {
         public static final String LOGIN_TIMEOUT = "loginTimeout";
     }
 
+    /**
+     * Constants for fields in OutParameter objects.
+     */
+    public static class OutParameter {
+        public static final String METHOD_NAME = "get";
+        public static final String XML = "XmlOutParameter";
+        public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthOutParameter";
+        public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondOutParameter";
+    }
+
+
     public static final String UNNECESSARY_CHARS_REGEX = "\"|\\n";
 
 }
