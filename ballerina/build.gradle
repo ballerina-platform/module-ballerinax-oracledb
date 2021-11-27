@@ -240,6 +240,3 @@ build.dependsOn ":${packageName}-native:build"
 test.dependsOn ":${packageName}-native:build"
 build.finalizedBy stopTestDockerContainers
 test.dependsOn startTestDockerContainers
-
-publishToMavenLocal.dependsOn build
-publish.dependsOn build
