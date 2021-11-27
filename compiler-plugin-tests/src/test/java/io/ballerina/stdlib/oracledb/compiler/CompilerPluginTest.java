@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_901;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_902;
+import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.SQL_101;
 
 /**
  * Tests the custom SQL compiler plugin.
@@ -86,6 +87,24 @@ public class CompilerPluginTest {
         DiagnosticInfo hint3 = diagnosticHints.get(2).diagnosticInfo();
         Assert.assertEquals(hint3.code(), ORACLEDB_901.getCode());
         Assert.assertEquals(hint3.messageFormat(), ORACLEDB_901.getMessage());
+    }
+
+    @Test
+    public void testSQLConnectionPoolFieldsInNewExpression() {
+        Package currentPackage = loadPackage("sample2");
+        PackageCompilation compilation = currentPackage.getCompilation();
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        List<Diagnostic> diagnosticErrorStream = diagnosticResult.diagnostics().stream()
+                .filter(r -> r.diagnosticInfo().severity().equals(DiagnosticSeverity.ERROR))
+                .collect(Collectors.toList());
+        long availableErrors = diagnosticErrorStream.size();
+
+        Assert.assertEquals(availableErrors, 2);
+
+        diagnosticErrorStream.forEach(diagnostic -> {
+            Assert.assertEquals(diagnostic.diagnosticInfo().code(), SQL_101.getCode());
+            Assert.assertEquals(diagnostic.diagnosticInfo().messageFormat(), SQL_101.getMessage());
+        });
     }
 
 }
