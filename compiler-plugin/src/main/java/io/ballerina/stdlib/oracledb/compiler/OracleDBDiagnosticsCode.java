@@ -33,6 +33,8 @@ public enum OracleDBDiagnosticsCode {
     SQL_102("SQL_102", "invalid value: expected value is greater than zero", ERROR),
     SQL_103("SQL_103", "invalid value: expected value is greater than or equal to 30", ERROR),
 
+    ORACLEDB_101("ORACLEDB_101", "invalid value: expected value is greater than or equal to zero", ERROR),
+
     ORACLEDB_901("ORACLEDB_901",
             "parameter 'rowType' should be explicitly passed when the return data is ignored", HINT),
     ORACLEDB_902("ORACLEDB_902",

@@ -16,16 +16,28 @@
 
 import ballerinax/oracledb;
 
-oracledb:Client dbClient = check new oracledb:Client("url", (), (), (), 120, { loginTimeout: -2 }, { maxOpenConnections: -1 });
+public function main() {
 
-public function main() returns error? {
+    int id = 5;
 
-    oracledb:Client dbClient1 = check new("url", connectionPool = { maxOpenConnections: -1 });
-    check dbClient1.close();
+    int|oracledb:Options pool1 = 5;
 
-    oracledb:Client dbClient2 = check new("url", options = { loginTimeout: -2 });
-    check dbClient2.close();
+    int|oracledb:Options pool2 = {
+        loginTimeout: -2,
+        socketTimeout: -3
+    };
 
-    oracledb:Client dbClient3 = check new("url", (), (), (), 120, { loginTimeout: -2 });
-    check dbClient3.close();
+    oracledb:Options|int pool3 = {
+        loginTimeout: -2,
+        socketTimeout: -3
+    };
+
+    oracledb:Options pool4 = {
+        connectTimeout: -1,
+        socketTimeout: -1,
+        loginTimeout: -1
+    };
+
+    oracledb:Options pool5 = {
+    };
 }

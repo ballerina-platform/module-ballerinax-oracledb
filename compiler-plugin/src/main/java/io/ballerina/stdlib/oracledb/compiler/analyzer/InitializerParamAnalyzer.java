@@ -40,13 +40,15 @@ import io.ballerina.tools.diagnostics.DiagnosticInfo;
 import io.ballerina.tools.diagnostics.DiagnosticSeverity;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static io.ballerina.stdlib.oracledb.compiler.Constants.CONNECTION_POOL_PARAM_NAME;
+import static io.ballerina.stdlib.oracledb.compiler.Constants.OPTIONS_PARAM_NAME;
 import static io.ballerina.stdlib.oracledb.compiler.Constants.UNNECESSARY_CHARS_REGEX;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.SQL_101;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.SQL_102;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.SQL_103;
+import static io.ballerina.stdlib.oracledb.compiler.Utils.validateOptions;
 
 /**
  * Validate fields of sql:Connection pool fields.
@@ -72,22 +74,43 @@ public class InitializerParamAnalyzer implements AnalysisTask<SyntaxNodeAnalysis
             arguments = ((ExplicitNewExpressionNode) ctx.node()).parenthesizedArgList().arguments();
         }
 
-        Optional<NamedArgumentNode> connectionPoolOptional = arguments.stream()
+        List<NamedArgumentNode> namedArgumentNodes = arguments.stream()
                 .filter(argNode -> argNode instanceof NamedArgumentNode)
                 .map(argNode -> (NamedArgumentNode) argNode)
-                .filter(arg -> arg.argumentName().name().text().equals(CONNECTION_POOL_PARAM_NAME))
-                .findFirst();
-        ExpressionNode connectionPool;
-        if (connectionPoolOptional.isPresent()) {
-            connectionPool = connectionPoolOptional.get().expression();
+                .collect(Collectors.toList());
+
+        boolean namedNodeFound = namedArgumentNodes.size() > 0;
+
+        ExpressionNode options = null;
+        ExpressionNode connectionPool = null;
+        if (namedNodeFound) {
+            for (NamedArgumentNode node : namedArgumentNodes) {
+                if (node.argumentName().name().text().equals(OPTIONS_PARAM_NAME)) {
+                    options = node.expression();
+                }
+                if (node.argumentName().name().text().equals(CONNECTION_POOL_PARAM_NAME)) {
+                    connectionPool = node.expression();
+                }
+            }
         } else if (arguments.size() == 7) {
-            // All params are present
+            options = ((PositionalArgumentNode) arguments.get(5)).expression();
             connectionPool = ((PositionalArgumentNode) arguments.get(6)).expression();
+        } else if (arguments.size() == 6) {
+            options = ((PositionalArgumentNode) arguments.get(5)).expression();
         } else {
             return;
         }
-        SeparatedNodeList<MappingFieldNode> fields =
-                ((MappingConstructorExpressionNode) connectionPool).fields();
+
+        if (options instanceof MappingConstructorExpressionNode) {
+            validateOptions(ctx, (MappingConstructorExpressionNode) options);
+        }
+        if (connectionPool instanceof MappingConstructorExpressionNode) {
+            validateConnectionPool(ctx, (MappingConstructorExpressionNode) connectionPool);
+        }
+    }
+
+    private void validateConnectionPool(SyntaxNodeAnalysisContext ctx, MappingConstructorExpressionNode pool) {
+        SeparatedNodeList<MappingFieldNode> fields = pool.fields();
         for (MappingFieldNode field : fields) {
             String name = ((SpecificFieldNode) field).fieldName().toString()
                     .trim().replaceAll(UNNECESSARY_CHARS_REGEX, "");
