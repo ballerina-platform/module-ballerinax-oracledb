@@ -56,7 +56,7 @@ public class RemoteMethodAnalyzer implements AnalysisTask<SyntaxNodeAnalysisCont
     }
 
     private void addHint(SyntaxNodeAnalysisContext ctx, RemoteMethodCallActionNode node) {
-        if (!(Utils.isOracleDBClientObject(ctx, node.expression()))) {
+        if (!(Utils.isOracleDBObject(ctx, node.expression(), Constants.Client.NAME))) {
             return;
         }
 

@@ -63,7 +63,7 @@ public class InitializerParamAnalyzer implements AnalysisTask<SyntaxNodeAnalysis
             }
         }
 
-        if (!(Utils.isOracleDBClientObject(ctx, ((ExpressionNode) ctx.node())))) {
+        if (!(Utils.isOracleDBObject(ctx, ((ExpressionNode) ctx.node()), Constants.Client.NAME))) {
             return;
         }
 

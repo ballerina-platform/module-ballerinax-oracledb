@@ -41,6 +41,7 @@ import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORAC
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_202;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_901;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_902;
+import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_903;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.SQL_101;
 
 /**
@@ -141,7 +142,6 @@ public class CompilerPluginTest {
         });
     }
 
-
     @Test
     public void testOutParameterValidations() {
         Package currentPackage = loadPackage("sample4");
@@ -161,6 +161,32 @@ public class CompilerPluginTest {
         diagnostic = errorDiagnosticsList.get(1).diagnosticInfo();
         Assert.assertEquals(diagnostic.code(), ORACLEDB_202.getCode());
         Assert.assertEquals(diagnostic.messageFormat(), ORACLEDB_202.getMessage());
+
+    }
+
+    @Test
+    public void testOutParameterHint() {
+        Package currentPackage = loadPackage("sample5");
+        PackageCompilation compilation = currentPackage.getCompilation();
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        List<Diagnostic> errorDiagnosticsList = diagnosticResult.diagnostics().stream()
+                .filter(r -> r.diagnosticInfo().severity().equals(DiagnosticSeverity.ERROR))
+                .collect(Collectors.toList());
+        long availableErrors = errorDiagnosticsList.size();
+
+        Assert.assertEquals(availableErrors, 1);
+
+        List<Diagnostic> hintDiagnosticsList = diagnosticResult.diagnostics().stream()
+                .filter(r -> r.diagnosticInfo().severity().equals(DiagnosticSeverity.HINT))
+                .collect(Collectors.toList());
+        long availableHints = hintDiagnosticsList.size();
+
+        Assert.assertEquals(availableHints, 1);
+
+        hintDiagnosticsList.forEach(diagnostic -> {
+            Assert.assertEquals(diagnostic.diagnosticInfo().code(), ORACLEDB_903.getCode());
+            Assert.assertEquals(diagnostic.diagnosticInfo().messageFormat(), ORACLEDB_903.getMessage());
+        });
 
     }
 

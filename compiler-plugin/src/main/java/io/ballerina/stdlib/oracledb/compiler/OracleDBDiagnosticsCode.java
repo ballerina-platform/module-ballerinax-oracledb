@@ -42,7 +42,9 @@ public enum OracleDBDiagnosticsCode {
     ORACLEDB_901("ORACLEDB_901",
             "parameter 'rowType' should be explicitly passed when the return data is ignored", HINT),
     ORACLEDB_902("ORACLEDB_902",
-            "parameter 'returnType' should be explicitly passed when the return data is ignored", HINT);
+            "parameter 'returnType' should be explicitly passed when the return data is ignored", HINT),
+    ORACLEDB_903("ORACLEDB_903",
+            "parameter 'typeDesc' should be explicitly passed when the return data is ignored", HINT);
 
     private final String code;
     private final String message;

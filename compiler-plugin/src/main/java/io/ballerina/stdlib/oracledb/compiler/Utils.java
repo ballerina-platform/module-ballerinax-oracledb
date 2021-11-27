@@ -45,7 +45,7 @@ import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORAC
  * Utils class.
  */
 public class Utils {
-    public static boolean isOracleDBClientObject(SyntaxNodeAnalysisContext ctx, ExpressionNode node) {
+    public static boolean isOracleDBObject(SyntaxNodeAnalysisContext ctx, ExpressionNode node, String matchName) {
         Optional<TypeSymbol> objectType = ctx.semanticModel().typeOf(node);
         if (objectType.isEmpty()) {
             return false;
@@ -54,15 +54,15 @@ public class Utils {
             return ((UnionTypeSymbol) objectType.get()).memberTypeDescriptors().stream()
                     .filter(typeDescriptor -> typeDescriptor instanceof TypeReferenceTypeSymbol)
                     .map(typeReferenceTypeSymbol -> (TypeReferenceTypeSymbol) typeReferenceTypeSymbol)
-                    .anyMatch(Utils::isOracleDBClientObject);
+                    .anyMatch(typeRef -> Utils.isOracleDBObject(typeRef, matchName));
         }
         if (objectType.get() instanceof TypeReferenceTypeSymbol) {
-            return isOracleDBClientObject(((TypeReferenceTypeSymbol) objectType.get()));
+            return isOracleDBObject(((TypeReferenceTypeSymbol) objectType.get()), matchName);
         }
         return false;
     }
 
-    public static boolean isOracleDBClientObject(TypeReferenceTypeSymbol typeReference) {
+    public static boolean isOracleDBObject(TypeReferenceTypeSymbol typeReference, String matchName) {
         Optional<ModuleSymbol> optionalModuleSymbol = typeReference.getModule();
         if (optionalModuleSymbol.isEmpty()) {
             return false;
@@ -73,7 +73,14 @@ public class Utils {
             return false;
         }
         String objectName = typeReference.definition().getName().get();
-        return objectName.equals(Constants.Client.NAME);
+        switch (matchName) {
+            case Constants.Client.NAME:
+                return objectName.equals(Constants.Client.NAME);
+            case Constants.OUT_PARAMETER_POSTFIX:
+                return objectName.endsWith(Constants.OUT_PARAMETER_POSTFIX);
+            default:
+                return false;
+        }
     }
 
     public static void validateOptions(SyntaxNodeAnalysisContext ctx, MappingConstructorExpressionNode options) {

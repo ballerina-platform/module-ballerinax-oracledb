@@ -25,6 +25,7 @@ public class Constants {
     public static final String ORACLEDB = "oracledb";
     public static final String CONNECTION_POOL_PARAM_NAME = "connectionPool";
     public static final String OPTIONS_PARAM_NAME = "options";
+    public static final String OUT_PARAMETER_POSTFIX = "OutParameter";
 
     /**
      * Constants related to Client object.
