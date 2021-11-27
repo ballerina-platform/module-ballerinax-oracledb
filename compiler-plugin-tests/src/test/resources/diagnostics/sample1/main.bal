@@ -18,5 +18,12 @@ import ballerinax/oracledb;
 
 public function main() returns error? {
     oracledb:Client dbClient = check new();
+    _ = check dbClient->query(``);
+    _ = check dbClient->queryRow(``);
+    check invokeQuery(dbClient);
     check dbClient.close();
+}
+
+function invokeQuery(oracledb:Client dbClient) returns error? {
+    _ = check dbClient->query(``);
 }
