@@ -23,12 +23,16 @@ rootProject.name = 'ballerina-oracledb'
 
 include ':checkstyle'
 include ':oracledb-native'
+include ':oracledb-compiler-plugin'
 include ':oracledb-ballerina'
+include ':oracledb-compiler-plugin-tests'
 include ':oracledb-examples'
 
 project(':checkstyle').projectDir = file("build-config${File.separator}checkstyle")
 project(':oracledb-native').projectDir = file('native')
+project(':oracledb-compiler-plugin').projectDir = file('compiler-plugin')
 project(':oracledb-ballerina').projectDir = file('ballerina')
+project(':oracledb-compiler-plugin-tests').projectDir = file('compiler-plugin-tests')
 project(':oracledb-examples').projectDir = file('examples')
 
 gradleEnterprise {
