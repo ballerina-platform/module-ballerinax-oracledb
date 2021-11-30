@@ -1,0 +1,133 @@
+## ConfigDBora.sh script storage
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: configdbora-script-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 50Mi
+---
+## Initialization script storage
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: init-script-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 50Mi
+---
+## OracleDB data storage
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: oracledb-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oracledb-deployment
+spec:
+  selector:
+    matchLabels:
+      app: oracledb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oracledb
+        logs: "true"
+    spec:
+      initContainers:
+        - name: configdbora-downloader
+          image: appropriate/curl
+          args:
+            - "-o"
+            - "/tmp/data/configDBora.sh"
+            - "https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-oracledb/main/load-tests/online-shop/src/setup/configDBora.sh"
+          volumeMounts:
+            - name: configdbora-script
+              mountPath: /tmp/data
+        - name: init-script-downloader
+          image: appropriate/curl
+          args:
+           - "-o"
+           - "/tmp/data2/init.sql"
+           - "https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-oracledb/load-tests/main/online-shop/src/setup/init.sql"
+          volumeMounts:
+           - name: init-script
+             mountPath: /tmp/data2
+      containers:
+        - name: oracledb
+          image: niveathika/oracle-enterprise:12.2.0.1-slim
+          imagePullPolicy: Never  # REMOVE
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/bash", "-c", "sleep 60s; source /home/oracle/.bashrc; sqlplus / as sysdba <<< @/home/oracle/sql-scripts/init.sql"]
+          ports:
+            - containerPort: 1521
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/oracledb
+            - name: configdbora-script
+              mountPath: /home/oracle/setup/configDBora.sh
+              subPath: configDBora.sh
+            - name: init-script
+              mountPath: /home/oracle/sql-scripts/init.sql
+              subPath: init.sql
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: oracledb-data-pvc
+        - name: configdbora-script
+          persistentVolumeClaim:
+            claimName: configdbora-script-pvc
+        - name: init-script
+          persistentVolumeClaim:
+            claimName: init-script-pvc
+---
+## Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: oracledb-service
+  labels:
+    app: oracledb-server
+spec:
+  type: NodePort
+  ports:
+    - port: 1521
+      targetPort: 1521
+      protocol: TCP
+  selector:
+    app: oracledb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oracledb-deployment
+spec:
+  selector:
+    app: oracledb
+  ports:
+    - protocol: TCP
+      port: 1521
+      targetPort: 1521
+  type: LoadBalancer
+---

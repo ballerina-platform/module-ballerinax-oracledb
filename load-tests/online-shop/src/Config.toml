@@ -1,0 +1,5 @@
+USER="balUser"
+PASSWORD="balpass"
+HOST="oracledb-service"
+PORT=1521
+DATABASE="ORCLCDB.localdomain"
