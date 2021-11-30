@@ -44,7 +44,7 @@
             </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${__P(host,localhost)}</stringProp>
-          <stringProp name="HTTPSampler.port">${__P(port,9091)}</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(port,9090)}</stringProp>
           <stringProp name="HTTPSampler.protocol">${__P(protocol,http)}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">onlineshop/customers/${random}</stringProp>
@@ -93,7 +93,7 @@
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${__P(host,localhost)}</stringProp>
-          <stringProp name="HTTPSampler.port">${__P(port,9091)}</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(port,9090)}</stringProp>
           <stringProp name="HTTPSampler.protocol">${__P(protocol,http)}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">onlineshop/customers/${random2}</stringProp>
@@ -135,7 +135,7 @@
             </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${__P(host,localhost)}</stringProp>
-          <stringProp name="HTTPSampler.port">${__P(port,9091)}</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(port,9090)}</stringProp>
           <stringProp name="HTTPSampler.protocol">${__P(protocol,http)}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">onlineshop/customers</stringProp>
@@ -165,7 +165,7 @@
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${__P(host,localhost)}</stringProp>
-          <stringProp name="HTTPSampler.port">${__P(port,9091)}</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(port,9090)}</stringProp>
           <stringProp name="HTTPSampler.protocol">${__P(protocol,http)}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">onlineshop/customers/${counter}</stringProp>
