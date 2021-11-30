@@ -16,4 +16,4 @@ spec:
               service:
                 name: online-shop-svc
                 port:
-                  number: 9092
+                  number: 9090
