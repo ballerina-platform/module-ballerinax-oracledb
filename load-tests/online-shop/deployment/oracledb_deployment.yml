@@ -75,7 +75,6 @@ spec:
       containers:
         - name: oracledb
           image: niveathika/oracle-enterprise:12.2.0.1-slim
-          imagePullPolicy: Never  # REMOVE
           lifecycle:
             postStart:
               exec:
