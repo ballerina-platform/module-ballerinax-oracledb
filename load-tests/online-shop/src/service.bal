@@ -30,12 +30,12 @@ final oracledb:Client dbClient = check new(host = HOST, user = USER, password = 
 service /onlineshop on new http:Listener(9090) {
     resource function get employees() returns Employee[]|error? {
         Employee[] employees = [];
-         stream<Employee, error?> resultStream = dbClient->query(`SELECT * FROM sys.EMPLOYEES`);
-         check resultStream.forEach(function(Employee employee) {
+        stream<Employee, error?> resultStream = dbClient->query(`SELECT * FROM sys.EMPLOYEES`);
+        check resultStream.forEach(function(Employee employee) {
             employees.push(employee);
-         });
-         check resultStream.close();
-         return employees;
+        });
+        check resultStream.close();
+        return employees;
     }
 
     resource function get employees/[int id]() returns Employee|error? {

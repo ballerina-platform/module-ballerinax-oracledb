@@ -20,23 +20,23 @@ import ballerinax/oracledb;
 public type Customer record {
     decimal customer_id;
     string name;
-    string? address;
-    string? credit_limit;
-    string? website;
+    string address?;
+    string credit_limit?;
+    string website?;
 };
 
 public type CustomerInput record {
     string name;
-    string? address;
-    string? credit_limit;
-    string? website;
+    string address?;
+    string credit_limit?;
+    string website?;
 };
 
 public type Purchase record {
     decimal purchase_id;
     decimal customer_id;
     string status;
-    decimal? salesman_id;
+    decimal salesman_id?;
     time:Civil purchase_date;
 };
 
@@ -47,17 +47,17 @@ public type Employee record {
     string email;
     string phone;
     time:Civil hire_date;
-    decimal? manager_id;
+    decimal manager_id?;
     string job_title;
 };
 
 public type Product record {
     decimal product_id;
     string product_name;
-    string? description;
-    decimal? standard_cost;
-    decimal? list_price;
-    int?[] reviews;
+    string description?;
+    decimal standard_cost?;
+    decimal list_price?;
+    int[] reviews?;
 };
 
 public type PurchaseItem record {
@@ -66,7 +66,7 @@ public type PurchaseItem record {
     decimal product_id;
     decimal quantity;
     decimal unit_price;
-    oracledb:IntervalYearToMonth? warranty_period;
+    oracledb:IntervalYearToMonth warranty_period?;
 };
 
 public type Contact record {
@@ -74,6 +74,6 @@ public type Contact record {
     string first_name;
     string last_name;
     string email;
-    string? phone;
-    decimal? customer_id;
+    string phone?;
+    decimal customer_id?;
 };
