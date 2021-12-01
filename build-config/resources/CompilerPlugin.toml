@@ -1,0 +1,6 @@
+[plugin]
+id = "oracledb-compiler-plugin"
+class = "io.ballerina.stdlib.oracledb.compiler.OracleDBCompilerPlugin"
+
+[[dependency]]
+path = "../compiler-plugin/build/libs/oracledb-compiler-plugin-@project.version@.jar"
