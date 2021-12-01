@@ -78,7 +78,7 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: ["/bin/bash", "-c", "sleep 60s; source /home/oracle/.bashrc; sqlplus / as sysdba <<< @/home/oracle/sql-scripts/init.sql"]
+                command: ["/bin/bash", "-c", "sleep 60s; source /home/oracle/.bashrc; sqlplus / as sysdba <<< startup; sqlplus / as sysdba <<< @/home/oracle/sql-scripts/init.sql"]
           ports:
             - containerPort: 1521
           volumeMounts:

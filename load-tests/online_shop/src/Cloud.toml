@@ -1,5 +1,5 @@
 [container.image]
-repository = "ballerina"
+repository = "kaneeldias"
 name = "online_shop"
 
 [cloud.deployment]
