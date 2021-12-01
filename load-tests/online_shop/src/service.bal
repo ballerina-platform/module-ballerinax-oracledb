@@ -27,7 +27,7 @@ configurable string DATABASE = ?;
 final oracledb:Client dbClient = check new(host = HOST, user = USER, password = PASSWORD, port = PORT,
     database = DATABASE, connectionPool = {maxOpenConnections: 3, minIdleConnections: 1});
 
-service /onlineshop on new http:Listener(9091) {
+service /onlineshop on new http:Listener(9090) {
     resource function get employees() returns Employee[]|error? {
         Employee[] employees = [];
         stream<Employee, error?> resultStream = dbClient->query(`SELECT * FROM sys.EMPLOYEES`);
