@@ -73,7 +73,7 @@ isolated function batchInsertIntoDataTableFailure() {
         from var row in data
         select `INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double) 
         VALUES (${row.col_number}, ${row.col_float}, ${row.col_binary_float}, ${row.col_binary_double})`;
-    sql:ExecutionResult[]|error result = trap batchExecuteQuery(sqlQueries);
+    sql:ExecutionResult[]|error result = batchExecuteQuery(sqlQueries);
     test:assertTrue(result is error);
 
     if result is sql:BatchExecuteError {

@@ -372,7 +372,7 @@ isolated function testLocalTransactionFailed() returns error? {
 
     string a = "beforetx";
 
-    string|error ret = trap testLocalTransactionFailedHelper(oracledbClient);
+    string|error ret = testLocalTransactionFailedHelper(oracledbClient);
     if ret is string {
         a += ret;
     } else {
@@ -425,7 +425,7 @@ isolated function testLocalTransactionSuccessWithFailed() returns error? {
     Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
 
     string a = "beforetx";
-    string | error ret = trap testLocalTransactionSuccessWithFailedHelper(a, oracledbClient);
+    string | error ret = testLocalTransactionSuccessWithFailedHelper(a, oracledbClient);
     if ret is string {
         a = ret;
     } else {
