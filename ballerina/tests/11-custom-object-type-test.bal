@@ -28,7 +28,7 @@ isolated function insertObjectTypeWithString() returns sql:Error? {
         VALUES(OBJECT_TYPE(${string_attr}, ${int_attr}, ${float_attr}, ${decimal_attr}))`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -46,7 +46,7 @@ isolated function insertObjectTypeWithCustomType() returns sql:Error? {
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -74,7 +74,7 @@ isolated function insertObjectTypeWithNullArray() returns sql:Error? {
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -163,7 +163,7 @@ isolated function insertObjectTypeWithStringArray() returns sql:Error? {
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -182,7 +182,7 @@ isolated function insertObjectTypeWithNestedType() returns sql:Error? {
         VALUES(${objectType})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -396,7 +396,7 @@ isolated function insertToNestedTable() returns error? {
             VALUES (${pk}, ${teacher}, ${students}, ${grades}, ${total})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 

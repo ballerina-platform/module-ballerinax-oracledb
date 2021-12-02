@@ -38,7 +38,7 @@ isolated function insertVarray() returns sql:Error? {
           values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -82,7 +82,7 @@ isolated function insertVarrayWithNullArray() returns sql:Error? {
           values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -109,7 +109,7 @@ isolated function insertVarrayWithEmptyArray() returns sql:Error? {
              values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -138,7 +138,7 @@ isolated function insertVarrayWithNullElements() returns sql:Error? {
           values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -167,7 +167,7 @@ isolated function insertVarrayWithMixElements() returns sql:Error? {
           values(${charVarray}, ${byteVarray}, ${intVarray}, ${boolVarray}, ${floatVarray}, ${decimalVarray})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 

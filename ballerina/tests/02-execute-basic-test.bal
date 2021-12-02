@@ -72,7 +72,7 @@ isolated function testInsertTable() returns sql:Error? {
     sql:ExecutionResult result = check executeQuery(
         `INSERT INTO TestExecuteTable(field1, field2) VALUES (1, 'Hello, world')`);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -95,7 +95,7 @@ isolated function testInsertTableWithoutGeneratedKeys() returns sql:Error? {
     sql:ExecutionResult result = check executeQuery(`Insert into TestCharacterTable (id, col_varchar2)
          values (20, 'test')`);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -106,7 +106,7 @@ isolated function testInsertTableWithoutGeneratedKeys() returns sql:Error? {
 isolated function testInsertTableWithGeneratedKeys() returns sql:Error? {
     sql:ExecutionResult result = check executeQuery(`insert into TestNumericTable (col_number) values (21)`);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string.");
 }
 

@@ -37,7 +37,7 @@ isolated function insertDateTimeTypesAndIntervalsWithString() returns sql:Error?
             ${intervalDtoS})`;
     result = check oracledbClient->execute(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
     check oracledbClient.close();
 }
@@ -64,7 +64,7 @@ isolated function insertIntervalWithBalTypeString() returns sql:Error? {
         ${intervalDtoS})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -79,7 +79,7 @@ isolated function insertIntervalWithBalType() returns sql:Error? {
        COL_INTERVAL_DAY_TO_SECOND) VALUES (${intervalYtoM}, ${intervalDtoS})`;
    sql:ExecutionResult result = check executeQuery(insertQuery);
    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-   var insertId = result.lastInsertId;
+   int|string? insertId = result.lastInsertId;
    test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -100,7 +100,7 @@ isolated function insertIntervalNull() returns sql:Error? {
        ${date}, ${timestamp}, ${timestamptz}, ${timestamptzl}, ${intervalYtoM}, ${intervalDtoS})`;
    sql:ExecutionResult result = check executeQuery(insertQuery);
    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-   var insertId = result.lastInsertId;
+   int|string? insertId = result.lastInsertId;
    test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
@@ -271,7 +271,7 @@ isolated function insertNegativeIntervalsWithDifferentBalTypes() returns sql:Err
          ${intH}, ${intMS}, ${intM}, ${intH3}, ${intS})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    var insertId = result.lastInsertId;
+    int|string? insertId = result.lastInsertId;
     test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 

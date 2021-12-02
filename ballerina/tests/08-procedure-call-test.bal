@@ -222,7 +222,7 @@ isolated function testCallWithRandomOutParams() returns error? {
     sql:IntegerValue paraID = new (1);
     RandomOutParameter paraRandom = new ();
 
-    var ret = oracledbClient->call(
+    sql:ProcedureCallResult|error ret = oracledbClient->call(
         `{call SelectComplexDataWithOutParams(${paraID}, ${paraRandom})}`);
     check oracledbClient.close();
     test:assertTrue(ret is error);
