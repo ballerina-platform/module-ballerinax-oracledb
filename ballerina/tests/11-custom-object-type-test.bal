@@ -17,7 +17,7 @@ import ballerina/sql;
 import ballerina/test;
 
 @test:Config {
-    groups:["custom-object"]
+    groups: ["custom-object"]
 }
 isolated function insertObjectTypeWithString() returns sql:Error? {
     string string_attr = "Hello world";
@@ -33,7 +33,7 @@ isolated function insertObjectTypeWithString() returns sql:Error? {
 }
 
 @test:Config {
-    groups:["custom-object"],
+    groups: ["custom-object"],
     dependsOn: [insertObjectTypeWithString]
 }
 isolated function insertObjectTypeWithCustomType() returns sql:Error? {
@@ -41,8 +41,10 @@ isolated function insertObjectTypeWithCustomType() returns sql:Error? {
     int int_attr = 1;
     float float_attr = 34.23;
     decimal decimal_attr = 34.23;
-    ObjectTypeValue objectType = new({typename: "object_type",
-        attributes: [ string_attr, int_attr, float_attr, decimal_attr]});
+    ObjectTypeValue objectType = new ({
+        typename: "object_type",
+        attributes: [string_attr, int_attr, float_attr, decimal_attr]
+    });
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -51,26 +53,26 @@ isolated function insertObjectTypeWithCustomType() returns sql:Error? {
 }
 
 @test:Config {
-    groups:["custom-object"],
+    groups: ["custom-object"],
     dependsOn: [insertObjectTypeWithCustomType]
 }
 isolated function insertObjectTypeNull() returns sql:Error? {
-    ObjectTypeValue objectType = new();
+    ObjectTypeValue objectType = new ();
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType}))`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: object"));
+        test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: object"));
     } else {
-       test:assertFail("Database Error expected.");
+        test:assertFail("Database Error expected.");
     }
 }
 
 @test:Config {
-    groups:["custom-object"],
+    groups: ["custom-object"],
     dependsOn: [insertObjectTypeNull]
 }
 isolated function insertObjectTypeWithNullArray() returns sql:Error? {
-    ObjectTypeValue objectType = new({typename: "object_type", attributes: ()});
+    ObjectTypeValue objectType = new ({typename: "object_type", attributes: ()});
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -79,11 +81,11 @@ isolated function insertObjectTypeWithNullArray() returns sql:Error? {
 }
 
 @test:Config {
-    groups:["custom-object"],
+    groups: ["custom-object"],
     dependsOn: [insertObjectTypeWithNullArray]
 }
 isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
-    ObjectTypeValue objectType = new({typename: "object_type", attributes: []});
+    ObjectTypeValue objectType = new ({typename: "object_type", attributes: []});
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if result is sql:DatabaseError {
@@ -96,7 +98,7 @@ isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
 }
 
 @test:Config {
-    groups:["custom-object"],
+    groups: ["custom-object"],
     dependsOn: [insertObjectTypeWithEmptyArray]
 }
 isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
@@ -104,8 +106,10 @@ isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
     int int_attr = 34;
     float float_attr = 34.23;
     decimal decimal_attr = 34.23;
-    ObjectTypeValue objectType = new({typename: "object_type",
-        attributes: [ float_attr, int_attr, string_attr, decimal_attr]});
+    ObjectTypeValue objectType = new ({
+        typename: "object_type",
+        attributes: [float_attr, int_attr, string_attr, decimal_attr]
+    });
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
@@ -116,13 +120,15 @@ isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
 }
 
 @test:Config {
-    groups:["custom-object"],
+    groups: ["custom-object"],
     dependsOn: [insertObjectTypeWithInvalidTypes1]
 }
 isolated function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
     boolean invalid_attr = true;
-    ObjectTypeValue objectType = new({typename: "object_type",
-        attributes: [invalid_attr]});
+    ObjectTypeValue objectType = new ({
+        typename: "object_type",
+        attributes: [invalid_attr]
+    });
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
@@ -133,13 +139,15 @@ isolated function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
 }
 
 @test:Config {
-    groups:["custom-object"],
+    groups: ["custom-object"],
     dependsOn: [insertObjectTypeWithInvalidTypes2]
 }
 isolated function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
-    map<string> invalid_attr = { key1: "value1", key2: "value2"};
-    ObjectTypeValue objectType = new({typename: "object_type",
-        attributes: [invalid_attr]});
+    map<string> invalid_attr = {key1: "value1", key2: "value2"};
+    ObjectTypeValue objectType = new ({
+        typename: "object_type",
+        attributes: [invalid_attr]
+    });
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
@@ -150,7 +158,7 @@ isolated function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
 }
 
 @test:Config {
-    groups:["custom-object"],
+    groups: ["custom-object"],
     dependsOn: [insertObjectTypeWithInvalidTypes3]
 }
 isolated function insertObjectTypeWithStringArray() returns sql:Error? {
@@ -158,8 +166,8 @@ isolated function insertObjectTypeWithStringArray() returns sql:Error? {
     string int_attr = "34";
     string float_attr = "34.23";
     string decimal_attr = "34.23";
-    string[] attributes = [ string_attr, int_attr, float_attr, decimal_attr];
-    ObjectTypeValue objectType = new({typename: "object_type", attributes: attributes});
+    string[] attributes = [string_attr, int_attr, float_attr, decimal_attr];
+    ObjectTypeValue objectType = new ({typename: "object_type", attributes: attributes});
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -168,7 +176,7 @@ isolated function insertObjectTypeWithStringArray() returns sql:Error? {
 }
 
 @test:Config {
-    groups:["custom-object"],
+    groups: ["custom-object"],
     dependsOn: [insertObjectTypeWithStringArray]
 }
 isolated function insertObjectTypeWithNestedType() returns sql:Error? {
@@ -176,8 +184,8 @@ isolated function insertObjectTypeWithNestedType() returns sql:Error? {
     int int_attr = 34;
     float float_attr = 34.23;
     decimal decimal_attr = 34.23;
-    anydata[] attributes = [ string_attr,[string_attr, int_attr, float_attr, decimal_attr]];
-    ObjectTypeValue objectType = new({typename: "nested_type", attributes: attributes});
+    anydata[] attributes = [string_attr, [string_attr, int_attr, float_attr, decimal_attr]];
+    ObjectTypeValue objectType = new ({typename: "nested_type", attributes: attributes});
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestNestedObjectTypeTable(COL_NESTED_OBJECT)
         VALUES(${objectType})`;
     sql:ExecutionResult result = check executeQuery(insertQuery);
@@ -203,7 +211,7 @@ type ObjectRecordType record {
     dependsOn: [insertObjectTypeWithNestedType]
 }
 isolated function selectObjectType() returns error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<ObjectRecordType, error?> streamData = oracledbClient->query(
         `SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1`);
     record {|ObjectRecordType value;|}? data = check streamData.next();
@@ -232,7 +240,7 @@ isolated function selectObjectType() returns error? {
     dependsOn: [selectObjectType]
 }
 isolated function selectObjectTypeNull() returns error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<ObjectRecordType, error?> streamData = oracledbClient->query(
         `SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 15`);
     record {|ObjectRecordType value;|}? data = check streamData.next();
@@ -258,17 +266,17 @@ type MismatchObjectRecordType record {
     dependsOn: [selectObjectTypeNull]
 }
 isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<MismatchObjectRecordType, error?> streamData = oracledbClient->query(
         `SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1`);
     record {}|error? returnData = streamData.next();
     check streamData.close();
     check oracledbClient.close();
     if returnData is sql:ApplicationError {
-        test:assertEquals(returnData.message(), "Error when iterating the SQL result. Record 'MismatchObjectRecord' " +
-          "field count 3 and the returned SQL Struct field count 4 are different.");
+        test:assertEquals(returnData.message(), "Error when iterating the SQL result. Record 'MismatchObjectRecord' " + 
+        "field count 3 and the returned SQL Struct field count 4 are different.");
     } else {
-        test:assertFail("Querying custom type with rowType mismatching field count should fail with " +
+        test:assertFail("Querying custom type with rowType mismatching field count should fail with " + 
                             "sql:ApplicationError");
     }
 }
@@ -290,7 +298,7 @@ type BoolObjectRecordType record {
     dependsOn: [selectObjectTypeWithMisMatchingFieldCount]
 }
 isolated function selectObjectTypeWithBoolean() returns error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<BoolObjectRecordType, error?> streamData = oracledbClient->query(
         `SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 2`);
     record {|BoolObjectRecordType value;|}? data = check streamData.next();
@@ -323,7 +331,7 @@ type NestedObjectRecordType record {
     dependsOn: [selectObjectTypeWithBoolean]
 }
 isolated function selectObjectTypeWithNestedType() returns error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<NestedObjectRecordType, error?> streamData = oracledbClient->query(
         `SELECT pk, col_nested_object FROM TestNestedObjectTypeTable WHERE pk = 1`);
     record {|NestedObjectRecordType value;|}? data = check streamData.next();
@@ -366,17 +374,17 @@ type InvalidObjectRecordType record {
     dependsOn: [selectObjectTypeWithNestedType]
 }
 isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<InvalidObjectRecordType, error?> streamData = oracledbClient->query(
         `SELECT pk, col_object FROM TestObjectTypeTable WHERE pk = 1`);
     record {}|error? returnData = streamData.next();
     check streamData.close();
     check oracledbClient.close();
     if returnData is sql:ApplicationError {
-        test:assertTrue(returnData.message().includes("Error while retrieving data for unsupported type"),
+        test:assertTrue(returnData.message().includes("Error while retrieving data for unsupported type"), 
             "Incorrect error message");
     } else {
-        test:assertFail("Querying custom type with invalid record field type should fail with " +
+        test:assertFail("Querying custom type with invalid record field type should fail with " + 
                             "sql:ApplicationError");
     }
 }
@@ -386,9 +394,9 @@ isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
 }
 isolated function insertToNestedTable() returns error? {
     string[] nameAtt = ["Smith", "John", "Arya", "Stark"];
-    NestedTableValue students = new({name: "NestedNameTable", elements: nameAtt});
+    NestedTableValue students = new ({name: "NestedNameTable", elements: nameAtt});
     int[] gradesAtt = [67, 45, 78, 86];
-    NestedTableValue grades = new({name: "NestedGradeTable", elements: gradesAtt});
+    NestedTableValue grades = new ({name: "NestedGradeTable", elements: gradesAtt});
     int total = 4;
     int pk = 2;
     string teacher = "Kate Anderson";
@@ -413,7 +421,7 @@ type ReturnZeroLevelNestedClassTable record {
     dependsOn: [insertToNestedTable]
 }
 isolated function selectFromZeroLevelNestedTable() returns error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<ReturnZeroLevelNestedClassTable, error?> streamData = oracledbClient->query(
         `SELECT * FROM NestedClassTable WHERE pk = 1`);
     record {|ReturnZeroLevelNestedClassTable value;|}? returnData = check streamData.next();
@@ -421,30 +429,30 @@ isolated function selectFromZeroLevelNestedTable() returns error? {
     check streamData.close();
     check oracledbClient.close();
     ReturnZeroLevelNestedClassTable expectedData = {
-         pk: 1,
-         col_teacher: "Kate Johnson",
-         col_students: ["John","Smith","Arya","Stark","Conan"],
-         col_grades: [78, 56, 23, 68, 87],
-         col_total: 5
+        pk: 1,
+        col_teacher: "Kate Johnson",
+        col_students: ["John", "Smith", "Arya", "Stark", "Conan"],
+        col_grades: [78, 56, 23, 68, 87],
+        col_total: 5
     };
     test:assertEquals(value, expectedData, "Expected data mismatched.");
 }
 
 @test:Config {
-   groups:["nested-table"],
-   dependsOn: [insertToNestedTable]
+    groups: ["nested-table"],
+    dependsOn: [insertToNestedTable]
 }
 isolated function insertNestedTableNull() returns error? {
     int pk = 3;
-    NestedTableValue students = new();
-    NestedTableValue grades = new();
+    NestedTableValue students = new ();
+    NestedTableValue grades = new ();
     sql:ParameterizedQuery insertQuery = `INSERT INTO NestedClassTable(pk, col_students, col_grades)
             VALUES (${pk}, ${students}, ${grades})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if result is sql:ApplicationError {
-       test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: nested table"));
+        test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: nested table"));
     } else {
-       test:assertFail("Database Error expected.");
+        test:assertFail("Database Error expected.");
     }
 }
 
@@ -454,21 +462,21 @@ type InvalidIntTypeNestedTable record {
 };
 
 @test:Config {
-    groups:["nested-table"],
+    groups: ["nested-table"],
     dependsOn: [insertNestedTableNull]
 }
 isolated function selectNestedTableWithInvalidIntType() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<InvalidIntTypeNestedTable, sql:Error?> streamData = oracledbClient->query(
         `SELECT pk, col_students FROM NestedClassTable WHERE pk = 1`);
-    record {}|error? returnData =  streamData.next();
+    record {}|error? returnData = streamData.next();
     check streamData.close();
     check oracledbClient.close();
     if returnData is sql:ApplicationError {
-        test:assertTrue(returnData.message().includes("Cannot cast array to type: int[]"),
+        test:assertTrue(returnData.message().includes("Cannot cast array to type: int[]"), 
             "Incorrect error message");
     } else {
-        test:assertFail("Querying varray with invalid array type should fail with " +
+        test:assertFail("Querying varray with invalid array type should fail with " + 
                             "sql:ApplicationError");
     }
 }

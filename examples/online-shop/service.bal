@@ -24,18 +24,18 @@ configurable string HOST = ?;
 configurable int PORT = ?;
 configurable string DATABASE = ?;
 
-final oracledb:Client dbClient = check new(host = HOST, user = USER, password = PASSWORD, port = PORT,
+final oracledb:Client dbClient = check new (host = HOST, user = USER, password = PASSWORD, port = PORT, 
     database = DATABASE, connectionPool = {maxOpenConnections: 3, minIdleConnections: 1});
 
 service /onlineshop on new http:Listener(9090) {
     resource function get employees() returns Employee[]|error? {
         Employee[] employees = [];
-         stream<Employee, error?> resultStream = dbClient->query(`SELECT * FROM EMPLOYEES`);
-         check resultStream.forEach(function(Employee employee) {
+        stream<Employee, error?> resultStream = dbClient->query(`SELECT * FROM EMPLOYEES`);
+        check resultStream.forEach(function(Employee employee) {
             employees.push(employee);
-         });
-         check resultStream.close();
-         return employees;
+        });
+        check resultStream.close();
+        return employees;
     }
 
     resource function get employees/[int id]() returns Employee|error? {
@@ -52,7 +52,7 @@ service /onlineshop on new http:Listener(9090) {
         Product[] products = [];
         stream<Product, error?> resultStream = dbClient->query(`SELECT * FROM PRODUCTS`);
         check resultStream.forEach(function(Product product) {
-           products.push(product);
+            products.push(product);
         });
         check resultStream.close();
         return products;
@@ -81,7 +81,7 @@ service /onlineshop on new http:Listener(9090) {
         Customer[] customers = [];
         stream<Customer, error?> resultStream = dbClient->query(`SELECT * FROM CUSTOMERS`);
         check resultStream.forEach(function(Customer customer) {
-           customers.push(customer);
+            customers.push(customer);
         });
         check resultStream.close();
         return customers;
@@ -120,7 +120,7 @@ service /onlineshop on new http:Listener(9090) {
         Purchase[] purchases = [];
         stream<Purchase, error?> resultStream = dbClient->query(`SELECT * FROM PURCHASES`);
         check resultStream.forEach(function(Purchase purchase) {
-           purchases.push(purchase);
+            purchases.push(purchase);
         });
         check resultStream.close();
         return purchases;
@@ -140,7 +140,7 @@ service /onlineshop on new http:Listener(9090) {
         PurchaseItem[] purchaseItems = [];
         stream<PurchaseItem, error?> resultStream = dbClient->query(`SELECT * FROM PURCHASE_ITEMS`);
         check resultStream.forEach(function(PurchaseItem purchaseItem) {
-           purchaseItems.push(purchaseItem);
+            purchaseItems.push(purchaseItem);
         });
         check resultStream.close();
         return purchaseItems;
@@ -155,7 +155,7 @@ service /onlineshop on new http:Listener(9090) {
         PurchaseItem[] purchaseItems = [];
         stream<PurchaseItem, error?> resultStream = dbClient->query(`SELECT * FROM PURCHASE_ITEMS WHERE PURCHASE_ID = ${id}`);
         check resultStream.forEach(function(PurchaseItem purchaseItem) {
-           purchaseItems.push(purchaseItem);
+            purchaseItems.push(purchaseItem);
         });
         check resultStream.close();
         return purchaseItems;
@@ -170,7 +170,7 @@ service /onlineshop on new http:Listener(9090) {
         Contact[] contacts = [];
         stream<Contact, error?> resultStream = dbClient->query(`SELECT * FROM CONTACTS`);
         check resultStream.forEach(function(Contact contact) {
-           contacts.push(contact);
+            contacts.push(contact);
         });
         check resultStream.close();
         return contacts;
@@ -180,7 +180,7 @@ service /onlineshop on new http:Listener(9090) {
         Contact[] contacts = [];
         stream<Contact, error?> resultStream = dbClient->query(`SELECT * FROM CONTACTS WHERE CUSTOMER_ID = ${id}`);
         check resultStream.forEach(function(Contact contact) {
-           contacts.push(contact);
+            contacts.push(contact);
         });
         check resultStream.close();
         return contacts;

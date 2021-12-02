@@ -43,7 +43,7 @@ type InvalidRecord record {
     groups: ["query", "query-simple-params"]
 }
 function queryInvalidRecordParam() {
-    InvalidRecord recordValue = {id : 1};
+    InvalidRecord recordValue = {id: 1};
     sql:ParameterizedQuery sqlQuery = `SELECT * from DataTable WHERE row_id = ${recordValue}`;
     record {}|error? result = queryClient(sqlQuery);
     test:assertTrue(result is error);
@@ -54,12 +54,12 @@ function queryInvalidRecordParam() {
     }
 }
 
-isolated function validateGeneralQueryTableResult(record{}? returnData) {
+isolated function validateGeneralQueryTableResult(record {}? returnData) {
     if returnData is () {
         test:assertFail("Empty row returned.");
     } else {
-        test:assertEquals(<int> returnData["ID"], 1);
-        test:assertEquals(<float> returnData["COL_NUMBER"], -23.4);
+        test:assertEquals(<int>returnData["ID"], 1);
+        test:assertEquals(<float>returnData["COL_NUMBER"], -23.4);
         test:assertEquals(returnData["COL_VARCHAR2"], "Hello world");
     }
 }
@@ -87,7 +87,7 @@ isolated function queryDoubleNumberParam() returns error? {
 }
 isolated function queryFloatParam() returns error? {
     int id = 1;
-    sql:FloatValue col_float = new(922.337);
+    sql:FloatValue col_float = new (922.337);
     sql:ParameterizedQuery sqlQuery = `SELECT * from NumericSimpleQueryTable WHERE id = ${id}
         AND col_float =  ${col_float}`;
     validateNumericSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -98,7 +98,7 @@ isolated function queryFloatParam() returns error? {
 }
 isolated function queryBinaryFloatParam() returns error? {
     int id = 1;
-    sql:FloatValue col_binary_float = new(123.34);
+    sql:FloatValue col_binary_float = new (123.34);
     sql:ParameterizedQuery sqlQuery = `SELECT * from NumericSimpleQueryTable WHERE id = ${id}
         AND col_binary_float =  ${col_binary_float}`;
     validateNumericSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -109,7 +109,7 @@ isolated function queryBinaryFloatParam() returns error? {
 }
 isolated function queryBinaryDoubleParam() returns error? {
     int id = 1;
-    sql:FloatValue col_binary_double = new(123.34);
+    sql:FloatValue col_binary_double = new (123.34);
     sql:ParameterizedQuery sqlQuery = `SELECT * from NumericSimpleQueryTable WHERE id = ${id}
         AND col_binary_double =  ${col_binary_double}`;
     validateNumericSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -139,14 +139,14 @@ isolated function queryInvalidValueParam() returns error? {
     }
 }
 
-isolated function validateNumericSimpleQueryTableResult(record{}? returnData) {
+isolated function validateNumericSimpleQueryTableResult(record {}? returnData) {
     if returnData is () {
         test:assertFail("Empty row returned.");
     } else {
 
-        test:assertEquals(<int> returnData["ID"], 1);
-        test:assertEquals(returnData["COL_NUMBER"], <decimal> 1);
-        test:assertEquals(<float> returnData["COL_FLOAT"], 922.337);
+        test:assertEquals(<int>returnData["ID"], 1);
+        test:assertEquals(returnData["COL_NUMBER"], <decimal>1);
+        test:assertEquals(<float>returnData["COL_FLOAT"], 922.337);
         test:assertEquals(returnData["COL_BINARY_FLOAT"], "123.34");
         test:assertEquals(returnData["COL_BINARY_DOUBLE"], "123.34");
     }
@@ -157,7 +157,7 @@ isolated function validateNumericSimpleQueryTableResult(record{}? returnData) {
 }
 isolated function queryVarchar2Param() returns error? {
     int id = 1;
-    sql:VarcharValue col_varchar2 = new("Hello world");
+    sql:VarcharValue col_varchar2 = new ("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from CharSimpleQueryTable WHERE id = ${id}
         AND col_varchar2 =  ${col_varchar2}`;
     validateCharacterSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -168,7 +168,7 @@ isolated function queryVarchar2Param() returns error? {
 }
 isolated function queryVarcharParam() returns error? {
     int id = 1;
-    sql:VarcharValue col_varchar = new("Hello world");
+    sql:VarcharValue col_varchar = new ("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from CharSimpleQueryTable WHERE id = ${id}
         AND col_varchar =  ${col_varchar}`;
     validateCharacterSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -179,7 +179,7 @@ isolated function queryVarcharParam() returns error? {
 }
 isolated function queryNVarchar2Param() returns error? {
     int id = 1;
-    sql:NVarcharValue col_nvarchar2 = new("Hello world");
+    sql:NVarcharValue col_nvarchar2 = new ("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from CharSimpleQueryTable WHERE id = ${id}
         AND col_nvarchar2 =  ${col_nvarchar2}`;
     validateCharacterSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -190,7 +190,7 @@ isolated function queryNVarchar2Param() returns error? {
 }
 isolated function queryAnsiCharacterVarParam() returns error? {
     int id = 1;
-    sql:VarcharValue col_character_var = new("Hello world");
+    sql:VarcharValue col_character_var = new ("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id}
         AND col_character_var =  ${col_character_var}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -201,7 +201,7 @@ isolated function queryAnsiCharacterVarParam() returns error? {
 }
 isolated function queryAnsiNationalCharacterVarParam() returns error? {
     int id = 1;
-    sql:NVarcharValue col_national_character_var = new("Hello world");
+    sql:NVarcharValue col_national_character_var = new ("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id}
         AND col_national_character_var =  ${col_national_character_var}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -212,7 +212,7 @@ isolated function queryAnsiNationalCharacterVarParam() returns error? {
 }
 isolated function queryAnsiNationalCharVarParam() returns error? {
     int id = 1;
-    sql:NVarcharValue col_national_char_var = new("Hello world");
+    sql:NVarcharValue col_national_char_var = new ("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id}
         AND col_national_char_var =  ${col_national_char_var}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -223,7 +223,7 @@ isolated function queryAnsiNationalCharVarParam() returns error? {
 }
 isolated function queryAnsiNCharVarParam() returns error? {
     int id = 1;
-    sql:NVarcharValue col_nchar_var = new("Hello world");
+    sql:NVarcharValue col_nchar_var = new ("Hello world");
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id}
         AND col_nchar_var =  ${col_nchar_var}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -234,7 +234,7 @@ isolated function queryAnsiNCharVarParam() returns error? {
 }
 isolated function queryAnsiNumericParam() returns error? {
     int id = 1;
-    sql:NumericValue col_numeric = new(1234134);
+    sql:NumericValue col_numeric = new (1234134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id}
         AND col_numeric =  ${col_numeric}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -245,7 +245,7 @@ isolated function queryAnsiNumericParam() returns error? {
 }
 isolated function queryAnsiDecimalParam() returns error? {
     int id = 1;
-    sql:DecimalValue col_decimal = new(1234134);
+    sql:DecimalValue col_decimal = new (1234134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id}
         AND col_decimal =  ${col_decimal}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -256,7 +256,7 @@ isolated function queryAnsiDecimalParam() returns error? {
 }
 isolated function queryAnsiIntegerParam() returns error? {
     int id = 1;
-    sql:IntegerValue col_integer = new(1234134);
+    sql:IntegerValue col_integer = new (1234134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id}
         AND col_integer =  ${col_integer}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -267,7 +267,7 @@ isolated function queryAnsiIntegerParam() returns error? {
 }
 isolated function queryAnsiIntParam() returns error? {
     int id = 1;
-    sql:IntegerValue col_int = new(1234134);
+    sql:IntegerValue col_int = new (1234134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_int =  ${col_int}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
 }
@@ -277,7 +277,7 @@ isolated function queryAnsiIntParam() returns error? {
 }
 isolated function queryAnsiSmallIntParam() returns error? {
     int id = 1;
-    sql:IntegerValue col_smallint = new(1234134);
+    sql:IntegerValue col_smallint = new (1234134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id}
         AND col_smallint =  ${col_smallint}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -288,7 +288,7 @@ isolated function queryAnsiSmallIntParam() returns error? {
 }
 isolated function queryAnsiFloatParam() returns error? {
     int id = 1;
-    sql:FloatValue col_float = new(1234.134);
+    sql:FloatValue col_float = new (1234.134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id}
         AND col_float =  ${col_float}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -299,7 +299,7 @@ isolated function queryAnsiFloatParam() returns error? {
 }
 isolated function queryAnsiDoublePrecisionParam() returns error? {
     int id = 1;
-    sql:DoubleValue col_double_precision = new(1234.134);
+    sql:DoubleValue col_double_precision = new (1234.134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id}
         AND col_double_precision =  ${col_double_precision}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
@@ -310,7 +310,7 @@ isolated function queryAnsiDoublePrecisionParam() returns error? {
 }
 isolated function queryAnsiRealParam() returns error? {
     int id = 1;
-    sql:RealValue col_real = new(1234.134);
+    sql:RealValue col_real = new (1234.134);
     sql:ParameterizedQuery sqlQuery = `SELECT * from AnsiSimpleQueryTable WHERE id = ${id} AND col_real =  ${col_real}`;
     validateAnsiSimpleQueryTableResult(check queryClient(sqlQuery));
 }
@@ -333,22 +333,22 @@ isolated function querySqlDsVarcharParam() returns error? {
     validateSqlDsSimpleQueryTableResult(check queryClient(sqlQuery));
 }
 
-isolated function validateLobSimpleQueryTableResult(record{}? returnData) {
+isolated function validateLobSimpleQueryTableResult(record {}? returnData) {
     if returnData is () {
         test:assertFail("Empty row returned.");
     } else {
-        test:assertEquals(<int> returnData["ID"], 1);
+        test:assertEquals(<int>returnData["ID"], 1);
         test:assertEquals(returnData["COL_CLOB"], "Hello world");
         test:assertEquals(returnData["COL_NCLOB"], "Hello world");
-        test:assertEquals(returnData["COL_BLOB"], [171,52,239,194,52]);
+        test:assertEquals(returnData["COL_BLOB"], [171, 52, 239, 194, 52]);
     }
 }
 
-isolated function validateAnsiSimpleQueryTableResult(record{}? returnData) {
+isolated function validateAnsiSimpleQueryTableResult(record {}? returnData) {
     if returnData is () {
         test:assertFail("Empty row returned.");
     } else {
-        test:assertEquals(<int> returnData["ID"], 1);
+        test:assertEquals(<int>returnData["ID"], 1);
         test:assertEquals((<string>returnData["COL_CHARACTER"]).trim(), "Hello world");
         test:assertEquals(returnData["COL_CHARACTER_VAR"], "Hello world");
         test:assertEquals((<string>returnData["COL_NATIONAL_CHARACTER"]).trim(), "Hello world");
@@ -367,12 +367,12 @@ isolated function validateAnsiSimpleQueryTableResult(record{}? returnData) {
     }
 }
 
-isolated function validateCharacterSimpleQueryTableResult(record{}? returnData) {
+isolated function validateCharacterSimpleQueryTableResult(record {}? returnData) {
     if returnData is () {
         test:assertFail("Empty row returned.");
     } else {
 
-        test:assertEquals(<int> returnData["ID"], 1);
+        test:assertEquals(<int>returnData["ID"], 1);
         test:assertEquals(returnData["COL_VARCHAR2"], "Hello world");
         test:assertEquals(returnData["COL_VARCHAR"], "Hello world");
         test:assertEquals(returnData["COL_NVARCHAR2"], "Hello world");
@@ -381,11 +381,11 @@ isolated function validateCharacterSimpleQueryTableResult(record{}? returnData) 
     }
 }
 
-isolated function validateSqlDsSimpleQueryTableResult(record{}? returnData) {
+isolated function validateSqlDsSimpleQueryTableResult(record {}? returnData) {
     if returnData is () {
         test:assertFail("Empty row returned.");
     } else {
-        test:assertEquals(<int> returnData["ID"], 1);
+        test:assertEquals(<int>returnData["ID"], 1);
         test:assertEquals((<string>returnData["COL_CHARACTER"]).trim(), "Hello world");
         test:assertEquals(returnData["COL_LONG_VARCHAR"], "Hello world");
     }

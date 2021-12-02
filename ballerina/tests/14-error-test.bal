@@ -36,7 +36,7 @@ function TestLinkFailure() {
     Client|error dbClient = new ("HOST", USER, PASSWORD, DATABASE, PORT);
     test:assertTrue(dbClient is sql:ApplicationError);
     sql:ApplicationError sqlerror = <sql:ApplicationError>dbClient;
-    test:assertTrue(strings:includes(sqlerror.message(), " IO Error: The Network Adapter could not establish " +
+    test:assertTrue(strings:includes(sqlerror.message(), " IO Error: The Network Adapter could not establish " + 
                 "the connection "), sqlerror.message());
 }
 
@@ -47,7 +47,7 @@ function TestInvalidDB() {
     Client|error dbClient = new (HOST, USER, PASSWORD, "errorD", PORT);
     test:assertTrue(dbClient is sql:ApplicationError);
     sql:ApplicationError sqlerror = <sql:ApplicationError>dbClient;
-    test:assertTrue(strings:includes(sqlerror.message(), "TNS:listener does not currently know of service requested " +
+    test:assertTrue(strings:includes(sqlerror.message(), "TNS:listener does not currently know of service requested " + 
                 "in connect descriptor"), sqlerror.message());
 }
 
@@ -61,7 +61,7 @@ function TestConnectionClose() returns error? {
     string|error stringVal = dbClient->queryRow(sqlQuery);
     test:assertTrue(stringVal is sql:ApplicationError);
     sql:ApplicationError sqlerror = <sql:ApplicationError>stringVal;
-    test:assertEquals(sqlerror.message(), "SQL Client is already closed, hence further operations are not allowed",
+    test:assertEquals(sqlerror.message(), "SQL Client is already closed, hence further operations are not allowed", 
                 sqlerror.message());
 }
 
@@ -114,7 +114,7 @@ function TestNullValue() returns error? {
     check dbClient.close();
     test:assertTrue(insertResult is sql:DatabaseError);
     sql:DatabaseError sqlerror = <sql:DatabaseError>insertResult;
-    test:assertTrue(strings:includes(sqlerror.message(), "cannot insert NULL " +
+    test:assertTrue(strings:includes(sqlerror.message(), "cannot insert NULL " + 
             "into (\"ADMIN\".\"TESTCREATETABLE\".\"STUDENTID\")"), sqlerror.message());
 }
 
@@ -140,7 +140,7 @@ function TestUnsupportedTypeValue() returns error? {
     check dbClient.close();
     test:assertTrue(stringVal is sql:ConversionError);
     sql:ConversionError sqlerror = <sql:ConversionError>stringVal;
-    test:assertEquals(sqlerror.message(), "Retrieved column 1 result 'Hello' could not be converted to 'JSON', " +
+    test:assertEquals(sqlerror.message(), "Retrieved column 1 result 'Hello' could not be converted to 'JSON', " + 
                 "unrecognized token 'Hello' at line: 1 column: 7.", sqlerror.message());
 }
 
@@ -167,7 +167,7 @@ function TestConversionError1() returns error? {
     json|error queryResult = dbClient->queryRow(sqlQuery);
     test:assertTrue(queryResult is sql:ConversionError);
     sql:ConversionError sqlError = <sql:ConversionError>queryResult;
-    test:assertTrue(strings:includes(sqlError.message(), "Retrieved column 1 result 'Hello' could not be " +
+    test:assertTrue(strings:includes(sqlError.message(), "Retrieved column 1 result 'Hello' could not be " + 
             "converted to 'JSON', unrecognized token 'Hello'"), sqlError.message());
 }
 
@@ -185,7 +185,7 @@ function TestTypeMismatchError() returns error? {
     data|error queryResult = dbClient->queryRow(sqlQuery);
     test:assertTrue(queryResult is sql:TypeMismatchError);
     sql:TypeMismatchError sqlError = <sql:TypeMismatchError>queryResult;
-    test:assertEquals(sqlError.message(), "The field 'string_type' of type int cannot be mapped to " +
+    test:assertEquals(sqlError.message(), "The field 'string_type' of type int cannot be mapped to " + 
                 "the column 'STRING_TYPE' of SQL type 'VARCHAR2'", sqlError.message());
 }
 
@@ -203,7 +203,7 @@ function TestFieldMismatchError() returns error? {
     stringValue|error queryResult = dbClient->queryRow(sqlQuery);
     test:assertTrue(queryResult is sql:FieldMismatchError);
     sql:FieldMismatchError sqlError = <sql:FieldMismatchError>queryResult;
-    test:assertTrue(strings:includes(sqlError.message(), "No mapping field found for SQL table column " +
+    test:assertTrue(strings:includes(sqlError.message(), "No mapping field found for SQL table column " + 
                 "'STRING_TYPE' in the record type 'stringValue'"), sqlError.message());
 }
 
@@ -270,7 +270,7 @@ function TestDuplicateKey() returns error? {
     check dbClient.close();
     test:assertTrue(insertResult is sql:DatabaseError);
     sql:DatabaseError sqlerror = <sql:DatabaseError>insertResult;
-    test:assertTrue(strings:includes(sqlerror.message(), "violated"),
+    test:assertTrue(strings:includes(sqlerror.message(), "violated"), 
                 sqlerror.message());
 }
 
@@ -286,7 +286,7 @@ function TestUnderflowException() returns error? {
     insertResult = dbClient->execute(insertQuery);
     check dbClient.close();
     sql:DatabaseError sqlerror = <sql:DatabaseError>insertResult;
-    test:assertTrue(strings:includes(sqlerror.message(), "Underflow Exception trying to bind 1E-234"),
+    test:assertTrue(strings:includes(sqlerror.message(), "Underflow Exception trying to bind 1E-234"), 
                 sqlerror.message());
 }
 
@@ -295,7 +295,7 @@ function TestUnderflowException() returns error? {
 }
 function TestOverflowException() returns error? {
     decimal decimalValue = 1e+234;
-    sql:NumericValue value = new(decimalValue);
+    sql:NumericValue value = new (decimalValue);
     Client dbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     _ = check dbClient->execute(`CREATE TABLE test1 (VALUE SMALLINT)`);
     sql:ParameterizedQuery insertQuery = `Insert into test (VALUE) values (${value})`;
@@ -303,6 +303,6 @@ function TestOverflowException() returns error? {
     insertResult = dbClient->execute(insertQuery);
     check dbClient.close();
     sql:DatabaseError sqlerror = <sql:DatabaseError>insertResult;
-    test:assertTrue(strings:includes(sqlerror.message(), "Internal Error: Overflow Exception " +
+    test:assertTrue(strings:includes(sqlerror.message(), "Internal Error: Overflow Exception " + 
                 "trying to bind"), sqlerror.message());
 }

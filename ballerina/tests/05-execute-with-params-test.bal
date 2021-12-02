@@ -24,12 +24,12 @@ import ballerina/test;
 isolated function insertIntoNumericTable1() returns sql:Error? {
     int id = 3;
     int col_number = 3;
-    float col_float =  922.337;
+    float col_float = 922.337;
     decimal col_binary_float = 123.34;
     decimal col_binary_double = 123.34;
 
     sql:ParameterizedQuery sqlQuery =
-      `INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double) 
+      `INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)
         VALUES (${id}, ${col_number}, ${col_float}, ${col_binary_float}, ${col_binary_double})`;
     validateResult(check executeQuery(sqlQuery), 1, 1);
 }
@@ -44,7 +44,6 @@ isolated function insertIntoNumericTable2() returns sql:Error? {
     validateResult(check executeQuery(sqlQuery), 1, 1);
 }
 
-
 @test:Config {
     groups: ["execute", "execute-params"],
     dependsOn: [insertIntoNumericTable2]
@@ -52,12 +51,12 @@ isolated function insertIntoNumericTable2() returns sql:Error? {
 isolated function insertIntoNumericTable3() returns sql:Error? {
     int id = 5;
     int col_number = 5;
-    float col_float =  -922.337;
+    float col_float = -922.337;
     decimal col_binary_float = -123.34;
     decimal col_binary_double = 0.34;
 
     sql:ParameterizedQuery sqlQuery =
-      `INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double) 
+      `INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)
         VALUES (${id}, ${col_number}, ${col_float}, ${col_binary_float}, ${col_binary_double})`;
     validateResult(check executeQuery(sqlQuery), 1, 1);
 }
@@ -74,7 +73,7 @@ isolated function insertIntoNumericTable4() returns sql:Error? {
     sql:DoubleValue col_binary_double = new (29095039);
 
     sql:ParameterizedQuery sqlQuery =
-      `INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double) 
+      `INSERT INTO NumericTypesTable (id, col_number, col_float, col_binary_float, col_binary_double)
         VALUES (${id}, ${col_number}, ${col_float}, ${col_binary_float}, ${col_binary_double})`;
     validateResult(check executeQuery(sqlQuery), 1, 1);
 }
@@ -86,11 +85,11 @@ isolated function insertIntoNumericTable4() returns sql:Error? {
 isolated function deleteNumericTable1() returns sql:Error? {
     int id = 1;
     int col_number = 1;
-    float col_float =  922.337;
+    float col_float = 922.337;
     decimal col_binary_float = 123.34;
     decimal col_binary_double = 123.34;
 
-    sql:ParameterizedQuery sqlQuery =
+    sql:ParameterizedQuery sqlQuery = 
             `DELETE FROM NumericTypesTable where id=${id} AND col_number=${col_number} 
                 AND col_float=${col_float} AND col_binary_float=${col_binary_float}
                 AND col_binary_float=${col_binary_float} AND col_binary_double=${col_binary_double}`;
@@ -118,7 +117,7 @@ isolated function deleteNumericTable3() returns sql:Error? {
     sql:DoubleValue col_binary_float = new (123.34);
     sql:DoubleValue col_binary_double = new (123.34);
 
-    sql:ParameterizedQuery sqlQuery =
+    sql:ParameterizedQuery sqlQuery = 
             `DELETE FROM NumericTypesTable where id=${id} AND col_number=${col_number} AND
             col_float=${col_float} AND col_binary_float=${col_binary_float}
             AND col_binary_float=${col_binary_float} AND col_binary_double=${col_binary_double}`;
@@ -137,7 +136,7 @@ isolated function insertIntoCharacterTable1() returns error? {
     string col_char = "very long text";
     string col_nchar = "very long text";
 
-    sql:ParameterizedQuery sqlQuery =
+    sql:ParameterizedQuery sqlQuery = 
         `INSERT INTO CharTypesTable (id, col_varchar2, col_varchar, col_nvarchar2, col_char, col_nchar) VALUES (
         ${id}, ${col_varchar2}, ${col_varchar}, ${col_nvarchar2}, ${col_char}, ${col_nchar})`;
     validateResult(check executeQuery(sqlQuery), 1, 1);
@@ -155,7 +154,7 @@ isolated function insertIntoCharacterTable2() returns error? {
     string? col_char = ();
     string? col_nchar = ();
 
-    sql:ParameterizedQuery sqlQuery =
+    sql:ParameterizedQuery sqlQuery = 
         `INSERT INTO CharTypesTable (id, col_varchar2, col_varchar, col_nvarchar2, col_char, col_nchar) VALUES (
         ${id}, ${col_varchar2}, ${col_varchar}, ${col_nvarchar2}, ${col_char}, ${col_nchar})`;
     validateResult(check executeQuery(sqlQuery), 1, 1);
@@ -167,13 +166,13 @@ isolated function insertIntoCharacterTable2() returns error? {
 }
 isolated function insertIntoCharacterTable3() returns error? {
     int id = 3;
-    sql:VarcharValue col_varchar2 = new();
-    sql:VarcharValue col_varchar = new();
-    sql:NVarcharValue col_nvarchar2 = new();
-    sql:CharValue col_char = new();
-    sql:NCharValue col_nchar = new();
+    sql:VarcharValue col_varchar2 = new ();
+    sql:VarcharValue col_varchar = new ();
+    sql:NVarcharValue col_nvarchar2 = new ();
+    sql:CharValue col_char = new ();
+    sql:NCharValue col_nchar = new ();
 
-    sql:ParameterizedQuery sqlQuery =
+    sql:ParameterizedQuery sqlQuery = 
         `INSERT INTO CharTypesTable (id, col_varchar2, col_varchar, col_nvarchar2, col_char, col_nchar) VALUES (
         ${id}, ${col_varchar2}, ${col_varchar}, ${col_nvarchar2}, ${col_char}, ${col_nchar})`;
     validateResult(check executeQuery(sqlQuery), 1, 1);
@@ -185,13 +184,13 @@ isolated function insertIntoCharacterTable3() returns error? {
 }
 isolated function insertIntoCharacterTable4() returns error? {
     int id = 4;
-    sql:VarcharValue col_varchar2 = new("very long text");
-    sql:VarcharValue col_varchar = new("very long text");
-    sql:NVarcharValue col_nvarchar2 = new("very long text");
-    sql:CharValue col_char = new("very long text");
-    sql:NCharValue col_nchar = new("very long text");
+    sql:VarcharValue col_varchar2 = new ("very long text");
+    sql:VarcharValue col_varchar = new ("very long text");
+    sql:NVarcharValue col_nvarchar2 = new ("very long text");
+    sql:CharValue col_char = new ("very long text");
+    sql:NCharValue col_nchar = new ("very long text");
 
-    sql:ParameterizedQuery sqlQuery =
+    sql:ParameterizedQuery sqlQuery = 
         `INSERT INTO CharTypesTable (id, col_varchar2, col_varchar, col_nvarchar2, col_char, col_nchar) VALUES (
         ${id}, ${col_varchar2}, ${col_varchar}, ${col_nvarchar2}, ${col_char}, ${col_nchar})`;
     validateResult(check executeQuery(sqlQuery), 1, 1);
@@ -281,22 +280,22 @@ isolated function insertIntoAnsiTable2() returns error? {
 }
 isolated function insertIntoAnsiTable3() returns error? {
     int id = 3;
-    sql:CharValue col_character = new("Hello, world!");
-    sql:VarcharValue col_character_var = new("Hello, world!");
-    sql:NCharValue col_national_character = new("Hello, world!");
-    sql:NCharValue col_national_char =new("Hello, world!");
-    sql:NVarcharValue col_national_character_var = new("Hello, world!");
-    sql:NVarcharValue col_national_char_var = new("Hello, world!");
-    sql:NCharValue col_nchar_var = new("Hello, world!");
+    sql:CharValue col_character = new ("Hello, world!");
+    sql:VarcharValue col_character_var = new ("Hello, world!");
+    sql:NCharValue col_national_character = new ("Hello, world!");
+    sql:NCharValue col_national_char = new ("Hello, world!");
+    sql:NVarcharValue col_national_character_var = new ("Hello, world!");
+    sql:NVarcharValue col_national_char_var = new ("Hello, world!");
+    sql:NCharValue col_nchar_var = new ("Hello, world!");
 
-    sql:NumericValue col_numeric = new(1234.134);
-    sql:DecimalValue col_decimal = new(123.4134);
-    sql:IntegerValue col_integer = new(1234134);
-    sql:IntegerValue col_int = new(1234134);
-    sql:SmallIntValue col_smallint = new(1234134);
-    sql:FloatValue col_float = new(1234.134);
-    sql:DoubleValue col_double_precision = new(1.234134);
-    sql:RealValue col_real = new(1.234134);
+    sql:NumericValue col_numeric = new (1234.134);
+    sql:DecimalValue col_decimal = new (123.4134);
+    sql:IntegerValue col_integer = new (1234134);
+    sql:IntegerValue col_int = new (1234134);
+    sql:SmallIntValue col_smallint = new (1234134);
+    sql:FloatValue col_float = new (1234.134);
+    sql:DoubleValue col_double_precision = new (1.234134);
+    sql:RealValue col_real = new (1.234134);
 
     sql:ParameterizedQuery sqlQuery = 
         `INSERT INTO AnsiTypesTable(id, col_character, col_character_var, col_national_character, col_national_char,
@@ -315,22 +314,22 @@ isolated function insertIntoAnsiTable3() returns error? {
 }
 isolated function insertIntoAnsiTable4() returns error? {
     int id = 4;
-    sql:CharValue col_character = new();
-    sql:VarcharValue col_character_var = new();
-    sql:NCharValue col_national_character = new();
-    sql:NCharValue col_national_char =new();
-    sql:NVarcharValue col_national_character_var = new();
-    sql:NVarcharValue col_national_char_var = new();
-    sql:NCharValue col_nchar_var = new();
+    sql:CharValue col_character = new ();
+    sql:VarcharValue col_character_var = new ();
+    sql:NCharValue col_national_character = new ();
+    sql:NCharValue col_national_char = new ();
+    sql:NVarcharValue col_national_character_var = new ();
+    sql:NVarcharValue col_national_char_var = new ();
+    sql:NCharValue col_nchar_var = new ();
 
-    sql:NumericValue col_numeric = new();
-    sql:DecimalValue col_decimal = new();
-    sql:IntegerValue col_integer = new();
-    sql:IntegerValue col_int = new();
-    sql:SmallIntValue col_smallint = new();
-    sql:FloatValue col_float = new();
-    sql:DoubleValue col_double_precision = new();
-    sql:RealValue col_real = new();
+    sql:NumericValue col_numeric = new ();
+    sql:DecimalValue col_decimal = new ();
+    sql:IntegerValue col_integer = new ();
+    sql:IntegerValue col_int = new ();
+    sql:SmallIntValue col_smallint = new ();
+    sql:FloatValue col_float = new ();
+    sql:DoubleValue col_double_precision = new ();
+    sql:RealValue col_real = new ();
 
     sql:ParameterizedQuery sqlQuery = 
         `INSERT INTO AnsiTypesTable(id, col_character, col_character_var, col_national_character, col_national_char,
@@ -363,7 +362,7 @@ isolated function insertIntoSqlDsTable1() returns error? {
     string col_long_varchar = "Hello, world!";
 
     sql:ParameterizedQuery sqlQuery = 
-         `INSERT INTO SqlDsTypesTable(id, col_character, col_long_varchar) VALUES (${id}, ${col_character},
+        `INSERT INTO SqlDsTypesTable(id, col_character, col_long_varchar) VALUES (${id}, ${col_character},
          ${col_long_varchar})`;
 
     validateResult(check executeQuery(sqlQuery), 1, 1);
@@ -407,7 +406,7 @@ isolated function insertIntoLobTable1() returns error? {
     sql:ClobValue col_nclob = new (clobChannel);
     sql:BlobValue col_blob = new (blobChannel);
 
-    sql:ParameterizedQuery sqlQuery =
+    sql:ParameterizedQuery sqlQuery = 
         `INSERT INTO LobTypesTable(id, col_clob, col_nclob, col_blob) VALUES (
         ${id}, ${col_clob},  ${col_nclob}, ${col_blob})`;
 
@@ -431,6 +430,6 @@ isolated function validateResult(sql:ExecutionResult result, int rowCount, int? 
         test:assertEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
     } else {
         int|string? lastInsertIdVal = result.lastInsertId;
-        test:assertTrue(lastInsertIdVal is string , "Last Insert Id should be string.");
+        test:assertTrue(lastInsertIdVal is string, "Last Insert Id should be string.");
     }
 }

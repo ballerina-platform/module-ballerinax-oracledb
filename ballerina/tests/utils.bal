@@ -17,7 +17,7 @@
 import ballerina/io;
 import ballerina/sql;
 
-isolated function getByteColumnChannel() returns io:ReadableByteChannel|error  {
+isolated function getByteColumnChannel() returns io:ReadableByteChannel|error {
     io:ReadableByteChannel byteChannel = check io:openReadableFile("./tests/resources/files/byteValue.txt");
     return byteChannel;
 }
@@ -65,9 +65,9 @@ isolated function dropTypeIfExists(string typename, Client oracledbClient) retur
     return result;
 }
 
-isolated function queryClient(sql:ParameterizedQuery sqlQuery, typedesc<record {}>? resultType = ())
+isolated function queryClient(sql:ParameterizedQuery sqlQuery, typedesc<record {}>? resultType = ()) 
 returns record {}|error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     stream<record {}, error?> streamData;
     if resultType is () {
         streamData = oracledbClient->query(sqlQuery);
@@ -82,7 +82,7 @@ returns record {}|error? {
 }
 
 isolated function executeQuery(sql:ParameterizedQuery sqlQuery) returns sql:ExecutionResult|sql:Error {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult result = check oracledbClient->execute(sqlQuery);
     check oracledbClient.close();
     return result;
