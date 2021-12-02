@@ -55,7 +55,7 @@ function queryInvalidRecordParam() {
 }
 
 isolated function validateGeneralQueryTableResult(record{}? returnData) {
-    if (returnData is ()) {
+    if returnData is () {
         test:assertFail("Empty row returned.");
     } else {
         test:assertEquals(<int> returnData["ID"], 1);
@@ -132,7 +132,7 @@ isolated function queryInvalidValueParam() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT * from CharSimpleQueryTable WHERE col_varchar = ${invalid_type}`;
     record {}|error? result = queryClient(sqlQuery);
     test:assertTrue(result is error);
-    if (result is sql:ApplicationError) {
+    if result is sql:ApplicationError {
         test:assertEquals(result.message(), "Invalid parameter: string is passed as value for SQL type: InvalidType");
     } else {
         test:assertFail("Error ApplicationError is expected.");
@@ -140,7 +140,7 @@ isolated function queryInvalidValueParam() returns error? {
 }
 
 isolated function validateNumericSimpleQueryTableResult(record{}? returnData) {
-    if (returnData is ()) {
+    if returnData is () {
         test:assertFail("Empty row returned.");
     } else {
 
@@ -334,7 +334,7 @@ isolated function querySqlDsVarcharParam() returns error? {
 }
 
 isolated function validateLobSimpleQueryTableResult(record{}? returnData) {
-    if (returnData is ()) {
+    if returnData is () {
         test:assertFail("Empty row returned.");
     } else {
         test:assertEquals(<int> returnData["ID"], 1);
@@ -345,7 +345,7 @@ isolated function validateLobSimpleQueryTableResult(record{}? returnData) {
 }
 
 isolated function validateAnsiSimpleQueryTableResult(record{}? returnData) {
-    if (returnData is ()) {
+    if returnData is () {
         test:assertFail("Empty row returned.");
     } else {
         test:assertEquals(<int> returnData["ID"], 1);
@@ -368,7 +368,7 @@ isolated function validateAnsiSimpleQueryTableResult(record{}? returnData) {
 }
 
 isolated function validateCharacterSimpleQueryTableResult(record{}? returnData) {
-    if (returnData is ()) {
+    if returnData is () {
         test:assertFail("Empty row returned.");
     } else {
 
@@ -382,7 +382,7 @@ isolated function validateCharacterSimpleQueryTableResult(record{}? returnData) 
 }
 
 isolated function validateSqlDsSimpleQueryTableResult(record{}? returnData) {
-    if (returnData is ()) {
+    if returnData is () {
         test:assertFail("Empty row returned.");
     } else {
         test:assertEquals(<int> returnData["ID"], 1);

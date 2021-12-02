@@ -127,7 +127,7 @@ isolated function testInsertAndSelectTableWithGeneratedKeys() returns sql:Error?
     sql:ExecutionResult result = check oracledbClient->execute(`insert into TestNumericTable (col_number) values (31)`);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     string|int? insertedId = result.lastInsertId;
-    if (insertedId is string|int) {
+    if insertedId is string {
         sql:ParameterizedQuery query = `SELECT * from TestNumericTable where col_number = 31`;
         stream<NumericRecord , sql:Error?> streamData = oracledbClient->query(query);
         record {|NumericRecord value;|}? data = check streamData.next();
@@ -149,7 +149,7 @@ isolated function testInsertWithAllNilAndSelectTableWithGeneratedKeys() returns 
         col_binary_float, col_binary_double) values (null, null, null, null)`);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
     string|int? insertedId = result.lastInsertId;
-    if (insertedId is string|int) {
+    if insertedId is string {
         sql:ParameterizedQuery query = `SELECT * from TestNumericTable where id = 2`;
         stream<NumericRecord , sql:Error?> streamData = oracledbClient->query(query);
         record {|NumericRecord value;|}? data = check streamData.next();
@@ -168,7 +168,7 @@ isolated function testInsertWithAllNilAndSelectTableWithGeneratedKeys() returns 
 isolated function testInsertTableWithDatabaseError() returns sql:Error? {
     sql:ExecutionResult|sql:Error result = executeQuery(
         `Insert into NumericTypesNonExistTable (int_type) values (20)`);
-    if (result is sql:DatabaseError) {
+    if result is sql:DatabaseError {
         sql:DatabaseErrorDetail errorDetails = result.detail();
         test:assertEquals(errorDetails.errorCode, 942, "SQL Error code does not match");
         test:assertEquals(errorDetails.sqlState, "42000", "SQL Error state does not match");
@@ -184,7 +184,7 @@ isolated function testInsertTableWithDatabaseError() returns sql:Error? {
 isolated function testInsertTableWithDataTypeError() returns sql:Error? {
     sql:ExecutionResult|sql:Error result = executeQuery(`Insert into TestNumericTable (col_number) values
          ('This is wrong type')`);
-    if (result is sql:DatabaseError) {
+    if result is sql:DatabaseError {
         sql:DatabaseErrorDetail errorDetails = result.detail();
         test:assertEquals(errorDetails.errorCode, 1722, "SQL Error code does not match");
         test:assertEquals(errorDetails.sqlState, "42000", "SQL Error state does not match");

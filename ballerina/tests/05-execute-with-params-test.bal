@@ -427,7 +427,7 @@ isolated function deleteLobTable() returns sql:Error? {
 isolated function validateResult(sql:ExecutionResult result, int rowCount, int? lastId = ()) {
     test:assertExactEquals(result.affectedRowCount, rowCount, "Affected row count is different.");
 
-    if (lastId is ()) {
+    if lastId is () {
         test:assertEquals(result.lastInsertId, (), "Last Insert Id is not nil.");
     } else {
         int|string? lastInsertIdVal = result.lastInsertId;

@@ -58,7 +58,7 @@ isolated function insertObjectTypeNull() returns sql:Error? {
     ObjectTypeValue objectType = new();
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType}))`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
-    if (result is sql:ApplicationError) {
+    if result is sql:ApplicationError {
        test:assertTrue(result.message().includes("Invalid parameter: null is passed as value for SQL type: object"));
     } else {
        test:assertFail("Database Error expected.");
@@ -86,7 +86,7 @@ isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
     ObjectTypeValue objectType = new({typename: "object_type", attributes: []});
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
-    if (result is sql:DatabaseError) {
+    if result is sql:DatabaseError {
         sql:DatabaseErrorDetail errorDetails = result.detail();
         test:assertEquals(errorDetails.errorCode, 17049);
         test:assertEquals(errorDetails.sqlState, "99999");
@@ -108,7 +108,7 @@ isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
         attributes: [ float_attr, int_attr, string_attr, decimal_attr]});
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
-    if (result is sql:ApplicationError) {
+    if result is sql:ApplicationError {
         test:assertTrue(result.message().includes("The array contains elements of unmappable types."));
     } else {
         test:assertFail("Application Error expected.");
@@ -125,7 +125,7 @@ isolated function insertObjectTypeWithInvalidTypes2() returns sql:Error? {
         attributes: [invalid_attr]});
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
-    if (result is sql:ApplicationError) {
+    if result is sql:ApplicationError {
         test:assertTrue(result.message().includes("The array contains elements of unmappable types."));
     } else {
         test:assertFail("Application Error expected.");
@@ -142,7 +142,7 @@ isolated function insertObjectTypeWithInvalidTypes3() returns sql:Error? {
         attributes: [invalid_attr]});
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
-    if (result is sql:ApplicationError) {
+    if result is sql:ApplicationError {
         test:assertTrue(result.message().includes("The array contains elements of unmappable types."));
     } else {
         test:assertFail("Application Error expected.");
@@ -210,7 +210,7 @@ isolated function selectObjectType() returns error? {
     check streamData.close();
     check oracledbClient.close();
     ObjectRecordType? value = data?.value;
-    if (value is ()) {
+    if value is () {
         test:assertFail("Returned data is nil");
     } else {
         test:assertEquals(value.length(), 2);
@@ -264,7 +264,7 @@ isolated function selectObjectTypeWithMisMatchingFieldCount() returns error? {
     record {}|error? returnData = streamData.next();
     check streamData.close();
     check oracledbClient.close();
-    if (returnData is sql:ApplicationError) {
+    if returnData is sql:ApplicationError {
         test:assertEquals(returnData.message(), "Error when iterating the SQL result. Record 'MismatchObjectRecord' " +
           "field count 3 and the returned SQL Struct field count 4 are different.");
     } else {
@@ -297,7 +297,7 @@ isolated function selectObjectTypeWithBoolean() returns error? {
     check streamData.close();
     check oracledbClient.close();
     BoolObjectRecordType? value = data?.value;
-    if (value is ()) {
+    if value is () {
         test:assertFail("Returned data is nil");
     } else {
         test:assertEquals(value.length(), 2);
@@ -330,7 +330,7 @@ isolated function selectObjectTypeWithNestedType() returns error? {
     check streamData.close();
     check oracledbClient.close();
     NestedObjectRecordType? value = data?.value;
-    if (value is ()) {
+    if value is () {
         test:assertFail("Returned data is nil");
     } else {
         test:assertEquals(value.length(), 2);
@@ -372,7 +372,7 @@ isolated function selectObjectTypeWithInvalidTypedRecord() returns error? {
     record {}|error? returnData = streamData.next();
     check streamData.close();
     check oracledbClient.close();
-    if (returnData is sql:ApplicationError) {
+    if returnData is sql:ApplicationError {
         test:assertTrue(returnData.message().includes("Error while retrieving data for unsupported type"),
             "Incorrect error message");
     } else {

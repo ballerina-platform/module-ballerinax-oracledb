@@ -53,7 +53,7 @@ isolated function testLocalTransaction() returns error? {
             creditLimit, country) values ('James', 'Clerk', 200, 5000.75, 'USA')`);
         transInfo = transactions:info();
         error? commitResult = commit;
-        if(commitResult is ()){
+        if commitResult is () {
             committedBlockExecuted = true;
         }
     }
@@ -112,12 +112,12 @@ isolated function testTransactionRollbackWithRollback() returns error? {
         transInfo = transactions:info();
         sql:ExecutionResult|error e1 = oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
                 creditLimit,country) values ('James', 'Clerk', 211, 5000.75, 'USA')`);
-        if (e1 is error){
+        if e1 is error {
             rollback;
         } else {
             sql:ExecutionResult|error e2 = oracledbClient->execute(`Insert into LocalTranCustomers2 (firstName,lastName,registrationID,
                         creditLimit,country) values ('James', 'Clerk', 211, 5000.75, 'USA')`);
-            if (e2 is error) {
+            if e2 is error {
                 rollback;
                 stmtAfterFailureExecuted  = true;
             } else {
@@ -212,7 +212,7 @@ isolated function testTransactionAbort() returns error? {
         _ =  check oracledbClient->execute(`Insert into LocalTranCustomers
             (firstName,lastName,registrationID,creditLimit,country) values ('James', 'Clerk', 220, 5000.75, 'USA')`);
         int i = 0;
-        if (i == 0) {
+        if i == 0 {
             rollback;
         } else {
             check commit;
@@ -241,7 +241,7 @@ function testTransactionErrorPanic() returns error? {
     int catchValue = 0;
     error? ret = trap testTransactionErrorPanicHelper(oracledbClient);
     io:println(ret);
-    if (ret is error) {
+    if ret is error {
         catchValue = -1;
     }
     //Check whether the update action is performed.
@@ -259,7 +259,7 @@ function testTransactionErrorPanicHelper(Client oracledbClient) returns error? {
         _ = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,
                               registrationID,creditLimit,country) values ('James', 'Clerk', 260, 5000.75, 'USA')`);
         int i = 0;
-        if (i == 0) {
+        if i == 0 {
             error e = error("error");
             panic e;
         } else {
@@ -283,7 +283,7 @@ isolated function testTransactionErrorPanicAndTrap() returns error? {
         _ = check oracledbClient->execute(`Insert into LocalTranCustomers (firstName,lastName,registrationID,
                  creditLimit,country) values ('James', 'Clerk', 250, 5000.75, 'USA')`);
         var ret = trap testTransactionErrorPanicAndTrapHelper(0);
-        if (ret is error) {
+        if ret is error {
             catchValue = -1;
         }
         check commit;
@@ -298,7 +298,7 @@ isolated function testTransactionErrorPanicAndTrap() returns error? {
 }
 
 isolated function testTransactionErrorPanicAndTrapHelper(int i) {
-    if (i == 0) {
+    if i == 0 {
         error err = error("error");
         panic err;
     }
@@ -373,7 +373,7 @@ isolated function testLocalTransactionFailed() returns error? {
     string a = "beforetx";
 
     string|error ret = trap testLocalTransactionFailedHelper(oracledbClient);
-    if (ret is string) {
+    if ret is string {
         a += ret;
     } else {
         a += ret.message() + " trapped";
@@ -401,7 +401,7 @@ isolated function testLocalTransactionFailedHelper(Client oracledbClient) return
                         creditLimit,country) values ('James', 'Clerk', 111, 5000.75, 'USA')`);
         sql:ExecutionResult|error e2 = oracledbClient->execute(`Insert into LocalTranCustomers2 (firstName,lastName,registrationID,
                         creditLimit,country) values ('Anne', 'Clerk', 111, 5000.75, 'USA')`);
-        if(e2 is error) {
+        if e2 is error {
            check getError();
         }
         check commit;
@@ -426,7 +426,7 @@ isolated function testLocalTransactionSuccessWithFailed() returns error? {
 
     string a = "beforetx";
     string | error ret = trap testLocalTransactionSuccessWithFailedHelper(a, oracledbClient);
-    if (ret is string) {
+    if ret is string {
         a = ret;
     } else {
         a = a + "trapped";
@@ -447,7 +447,7 @@ returns string|error {
         a = a + " inTrx";
         _ = check oracledbClient->execute(`Insert into LocalTranCustomers(firstName,lastName,registrationID,
                         creditLimit,country) values ('James', 'Clerk', 222, 5000.75, 'USA')`);
-        if (i == 3) {
+        if i == 3 {
             _ = check oracledbClient->execute(`Insert into LocalTranCustomers(firstName,lastName,registrationID,
                         creditLimit,country) values ('Anne', 'Clerk', 222, 5000.75, 'USA')`);
         } else {
@@ -466,7 +466,7 @@ isolated function getCount(Client oracledbClient, string id) returns int|error {
         record {|TransactionResultCount value;|}? data = check streamData.next();
         check streamData.close();
         TransactionResultCount? value = data?.value;
-        if(value is TransactionResultCount){
+        if value is TransactionResultCount {
            return value["COUNTVAL"];
         }
         return 0;

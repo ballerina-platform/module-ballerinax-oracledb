@@ -76,7 +76,7 @@ isolated function batchInsertIntoDataTableFailure() {
     sql:ExecutionResult[]|error result = trap batchExecuteQuery(sqlQueries);
     test:assertTrue(result is error);
 
-    if (result is sql:BatchExecuteError) {
+    if result is sql:BatchExecuteError {
         sql:BatchExecuteErrorDetail errorDetails = result.detail();
 
         test:assertEquals(errorDetails.executionResults.length(), 2);
@@ -92,10 +92,10 @@ returns error? {
     test:assertEquals(results.length(), rowCount.length());
 
     int i =0;
-    while (i < results.length()) {
+    while i < results.length() {
         test:assertEquals(results[i].affectedRowCount, rowCount[i]);
         string|int? lastInsertIdVal = results[i].lastInsertId;
-        if (lastId[i] == -1) {
+        if lastId[i] == -1 {
             test:assertNotEquals(lastInsertIdVal, ());
         } else {
             test:assertTrue(lastInsertIdVal is string , "Last Insert Id should be string.");

@@ -66,7 +66,7 @@ function testLocalSharedConnectionPoolConfigSingleDestination() returns sql:Erro
   // custom pool options. Since each select operation holds up one connection each, the last select
   // operation should return an error
   i = 0;
-  while(i < 5) {
+  while i < 5 {
       test:assertEquals(returnArray[i], 1);
       i = i + 1;
   }
@@ -127,7 +127,7 @@ isolated function testLocalSharedConnectionPoolConfigDifferentDbOptions() return
 
   // Since max pool size is 3, the last select function call going through each pool should fail.
   i = 0;
-  while(i < 3) {
+  while i < 3 {
       test:assertEquals(returnArray[i], 1);
       test:assertEquals(returnArray[i + 4], 1);
       i = i + 1;
@@ -191,8 +191,8 @@ function testLocalSharedConnectionPoolConfigMultipleDestinations() returns sql:E
 
     // Since max pool size is 3, the last select function call going through each pool should fail.
     i = 0;
-    while(i < 8) {
-        if (i != 3) {
+    while i < 8 {
+        if i != 3 {
             test:assertEquals(returnArray[i], 1);
         }
         i = i + 1;
@@ -389,7 +389,7 @@ isolated function getReturnValue(stream<Result, error?> queryResult) returns int
   record {|record {} value;|}? data = check queryResult.next();
     check queryResult.close();
 
-  if (data is record {|Result value;|}) {
+  if data is record {|Result value;|} {
       Result value = data.value;
       return value.val;
   } else {

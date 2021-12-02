@@ -17,13 +17,6 @@
 import ballerina/io;
 import ballerina/sql;
 
-isolated function getUntaintedData(record {}|error? value, string fieldName) returns anydata|error? {
-    if (value is record {}) {
-        return value[fieldName];
-    }
-    return {};
-}
-
 isolated function getByteColumnChannel() returns io:ReadableByteChannel|error  {
     io:ReadableByteChannel byteChannel = check io:openReadableFile("./tests/resources/files/byteValue.txt");
     return byteChannel;

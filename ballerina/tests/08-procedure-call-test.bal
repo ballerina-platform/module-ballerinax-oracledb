@@ -277,7 +277,7 @@ returns record {}|error {
     check streamData.close();
     record {}? value = data?.value;
     check oracledbClient.close();
-    if (value is ()) {
+    if value is () {
         return {};
     } else {
         return value;
