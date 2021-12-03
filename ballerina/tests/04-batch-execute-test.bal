@@ -26,7 +26,7 @@ isolated function batchExecuteWithEmptyArray() returns error? {
     test:assertTrue(result is sql:Error);
     if result is sql:ApplicationError {
         test:assertTrue(result.message().includes("Parameter 'sqlQueries' cannot be an empty array"));
-      } else {
+    } else {
         test:assertFail("ApplicationError Error expected");
     }
 }
@@ -36,16 +36,16 @@ isolated function batchExecuteWithEmptyArray() returns error? {
 }
 isolated function batchInsertIntoDataTable() returns error? {
     var data = [
-        {col_number:3, col_float:922.337, col_binary_float:123.34, col_binary_double:123.34},
-        {col_number:4, col_float:922.337, col_binary_float:123.34, col_binary_double:123.34},
-        {col_number:5, col_float:922.337, col_binary_float:123.34, col_binary_double:123.34}
+        {col_number: 3, col_float: 922.337, col_binary_float: 123.34, col_binary_double: 123.34}, 
+        {col_number: 4, col_float: 922.337, col_binary_float: 123.34, col_binary_double: 123.34}, 
+        {col_number: 5, col_float: 922.337, col_binary_float: 123.34, col_binary_double: 123.34}
     ];
-    sql:ParameterizedQuery[] sqlQueries =
+    sql:ParameterizedQuery[] sqlQueries = 
         from var row in data
         select `INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double)
         VALUES (${row.col_number}, ${row.col_float}, ${row.col_binary_float}, ${row.col_binary_double})`;
 
-    check validateBatchExecutionResult(check batchExecuteQuery(sqlQueries), [1, 1, 1], [3,4,5]);
+    check validateBatchExecutionResult(check batchExecuteQuery(sqlQueries), [1, 1, 1], [3, 4, 5]);
 }
 
 @test:Config {
@@ -65,18 +65,18 @@ isolated function batchInsertIntoDataTable2() returns error? {
 }
 isolated function batchInsertIntoDataTableFailure() {
     var data = [
-        {col_number:7, col_float:922.337, col_binary_float:123.34, col_binary_double:123.34},
-        {col_number:8, col_float:922.337, col_binary_float:123.34, col_binary_double:123.34},
-        {col_number:1, col_float:922.337, col_binary_float:123.34, col_binary_double:123.34}
+        {col_number: 7, col_float: 922.337, col_binary_float: 123.34, col_binary_double: 123.34}, 
+        {col_number: 8, col_float: 922.337, col_binary_float: 123.34, col_binary_double: 123.34}, 
+        {col_number: 1, col_float: 922.337, col_binary_float: 123.34, col_binary_double: 123.34}
     ];
-    sql:ParameterizedQuery[] sqlQueries =
+    sql:ParameterizedQuery[] sqlQueries = 
         from var row in data
-        select `INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double) 
+        select `INSERT INTO DataTable (col_number, col_float, col_binary_float, col_binary_double)
         VALUES (${row.col_number}, ${row.col_float}, ${row.col_binary_float}, ${row.col_binary_double})`;
-    sql:ExecutionResult[]|error result = trap batchExecuteQuery(sqlQueries);
+    sql:ExecutionResult[]|error result = batchExecuteQuery(sqlQueries);
     test:assertTrue(result is error);
 
-    if (result is sql:BatchExecuteError) {
+    if result is sql:BatchExecuteError {
         sql:BatchExecuteErrorDetail errorDetails = result.detail();
 
         test:assertEquals(errorDetails.executionResults.length(), 2);
@@ -87,25 +87,25 @@ isolated function batchInsertIntoDataTableFailure() {
     }
 }
 
-isolated function validateBatchExecutionResult(sql:ExecutionResult[] results, int[] rowCount, int[] lastId)
+isolated function validateBatchExecutionResult(sql:ExecutionResult[] results, int[] rowCount, int[] lastId) 
 returns error? {
     test:assertEquals(results.length(), rowCount.length());
 
-    int i =0;
-    while (i < results.length()) {
+    int i = 0;
+    while i < results.length() {
         test:assertEquals(results[i].affectedRowCount, rowCount[i]);
         string|int? lastInsertIdVal = results[i].lastInsertId;
-        if (lastId[i] == -1) {
+        if lastId[i] == -1 {
             test:assertNotEquals(lastInsertIdVal, ());
         } else {
-            test:assertTrue(lastInsertIdVal is string , "Last Insert Id should be string.");
+            test:assertTrue(lastInsertIdVal is string, "Last Insert Id should be string.");
         }
         i = i + 1;
     }
 }
 
 isolated function batchExecuteQuery(sql:ParameterizedQuery[] sqlQueries) returns sql:ExecutionResult[]|sql:Error {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:ExecutionResult[] result = check oracledbClient->batchExecute(sqlQueries);
     check oracledbClient.close();
     return result;

@@ -21,41 +21,41 @@ int SSLPORT = 2484;
 
 // with no parameters
 @test:Config {
-    groups:["connection"]
+    groups: ["connection"]
 }
 isolated function testWithNoParams() {
-    Client|sql:Error oracledbClient = new();
+    Client|sql:Error oracledbClient = new ();
     test:assertTrue(oracledbClient is sql:Error, "Initializing with no parameters should fail");
 }
 
 // with user and password only
 @test:Config {
-    groups:["connection"]
+    groups: ["connection"]
 }
 isolated function testWithOnlyUserPasswordParams() {
-    Client|sql:Error oracledbClient = new(user = USER, password = PASSWORD);
+    Client|sql:Error oracledbClient = new (user = USER, password = PASSWORD);
     test:assertTrue(oracledbClient is sql:Error, "Initializing only with username and password params should fail");
 }
 
 // with user, pwd, db
 @test:Config {
-    groups:["connection"]
+    groups: ["connection"]
 }
 isolated function testWithUserPasswordDatabaseParams() returns error? {
-    Client oracledbClient = check new(user = USER, password = PASSWORD, database = DATABASE);
+    Client oracledbClient = check new (user = USER, password = PASSWORD, database = DATABASE);
     test:assertEquals(oracledbClient.close(), (), "Initializing with username, password and database params fail");
 }
 
 // with all params except options
 @test:Config {
-    groups:["connection"]
+    groups: ["connection"]
 }
 isolated function testWithAllParamsExceptOptions() returns error? {
-    Client oracledbClient = check new(
-        host = HOST,
+    Client oracledbClient = check new (
+        host = HOST, 
         user = USER, 
-        password = PASSWORD,
-        port = PORT,
+        password = PASSWORD, 
+        port = PORT, 
         database = DATABASE
     );
     test:assertEquals(oracledbClient.close(), (), "Initializing with all params except options fail");
@@ -63,7 +63,7 @@ isolated function testWithAllParamsExceptOptions() returns error? {
 
 // with all params and options minus SSL
 @test:Config {
-    groups:["connection"]
+    groups: ["connection"]
 
 }
 isolated function testWithOptionsExceptSSL() returns error? {
@@ -73,32 +73,32 @@ isolated function testWithOptionsExceptSSL() returns error? {
         connectTimeout: 30,
         socketTimeout: 30
     };
-    Client oracledbClient = check new(
-        host = HOST,
-        user = USER,
-        password = PASSWORD,
-        port = PORT,
-        database = DATABASE,
+    Client oracledbClient = check new (
+        host = HOST, 
+        user = USER, 
+        password = PASSWORD, 
+        port = PORT, 
+        database = DATABASE, 
         options = options);
     test:assertEquals(oracledbClient.close(), (), "Initializing with options fail");
 }
 
 // with all params, options and connection Pool
 @test:Config {
-   groups:["connection"]
+    groups: ["connection"]
 }
 isolated function testWithConnectionPoolParam() returns error? {
     sql:ConnectionPool connectionPool = {
-       maxOpenConnections: 10,
-       maxConnectionLifeTime: 2000.0,
-       minIdleConnections: 5
+        maxOpenConnections: 10,
+        maxConnectionLifeTime: 2000.0,
+        minIdleConnections: 5
     };
-    Client oracledbClient = check new(
-        host = HOST,
-        user = USER,
-        password = PASSWORD,
-        port = PORT,
-        database = DATABASE,
+    Client oracledbClient = check new (
+        host = HOST, 
+        user = USER, 
+        password = PASSWORD, 
+        port = PORT, 
+        database = DATABASE, 
         connectionPool = connectionPool
     );
     test:assertEquals(oracledbClient.close(), (), "Initializing with connection pool param fail");
@@ -106,7 +106,7 @@ isolated function testWithConnectionPoolParam() returns error? {
 
 // with all params and options with Erroneous SSL with wrong port
 @test:Config {
-    groups:["connection"]
+    groups: ["connection"]
 }
 isolated function testWithOptionsWithErroneousSSL() returns error? {
     string clientStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-keystore.p12");
@@ -150,52 +150,52 @@ isolated function testWithOptionsWithErroneousSSL() returns error? {
         }
     };
 
-    Client|error oracledbClient = new(
-        host = HOST,
-        user = USER,
-        password = PASSWORD,
-        port = PORT,
-        database = DATABASE,
+    Client|error oracledbClient = new (
+        host = HOST, 
+        user = USER, 
+        password = PASSWORD, 
+        port = PORT, 
+        database = DATABASE, 
         options = options
     );
 
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
-        test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
+        test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " + 
         "IO Error: closing inbound before receiving peer's close_notify"));
     } else {
         test:assertFail("Error ApplicatonError expected");
     }
 
-    Client|error oracledbClient2 = new(
-        host = HOST,
-        user = USER,
-        password = PASSWORD,
-        port = PORT,
-        database = DATABASE,
+    Client|error oracledbClient2 = new (
+        host = HOST, 
+        user = USER, 
+        password = PASSWORD, 
+        port = PORT, 
+        database = DATABASE, 
         options = options2
     );
 
     test:assertTrue(oracledbClient2 is error);
     if oracledbClient2 is sql:ApplicationError {
-        test:assertTrue(oracledbClient2.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
+        test:assertTrue(oracledbClient2.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " + 
         "IO Error: closing inbound before receiving peer's close_notify"));
     } else {
         test:assertFail("Error ApplicatonError expected");
     }
 
-    Client|error oracledbClient3 = new(
-        host = HOST,
-        user = USER,
-        password = PASSWORD,
-        port = PORT,
-        database = DATABASE,
+    Client|error oracledbClient3 = new (
+        host = HOST, 
+        user = USER, 
+        password = PASSWORD, 
+        port = PORT, 
+        database = DATABASE, 
         options = options3
     );
 
     test:assertTrue(oracledbClient3 is error);
     if oracledbClient3 is sql:ApplicationError {
-        test:assertTrue(oracledbClient3.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
+        test:assertTrue(oracledbClient3.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " + 
         "IO Error: The Network Adapter could not establish the connection"));
     } else {
         test:assertFail("Error ApplicatonError expected");
@@ -204,34 +204,34 @@ isolated function testWithOptionsWithErroneousSSL() returns error? {
 
 // with all params and options with Erroneous SSL with correct port
 @test:Config {
-    groups:["connection"]
+    groups: ["connection"]
 }
 function testWithOptionsWithErroneousSSLCorrectPort() returns error? {
-     string clientStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-keystore.p12");
-     string trustStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-truststore.p12");
-     Options options = {
-            ssl: {
-                key: {
-                    path: clientStorePath,
-                    password: "password"
-                },
-                cert: {
-                    path: trustStorePath,
-                    password: "password"
-                }
+    string clientStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-keystore.p12");
+    string trustStorePath = check file:getAbsolutePath("./tests/resources/keystore/client/client-truststore.p12");
+    Options options = {
+        ssl: {
+            key: {
+                path: clientStorePath,
+                password: "password"
+            },
+            cert: {
+                path: trustStorePath,
+                password: "password"
             }
-     };
-    Client|error oracledbClient = new(
-        host = HOST,
-        user = USER,
-        password = PASSWORD,
-        port = SSLPORT,
-        database = DATABASE,
+        }
+    };
+    Client|error oracledbClient = new (
+        host = HOST, 
+        user = USER, 
+        password = PASSWORD, 
+        port = SSLPORT, 
+        database = DATABASE, 
         options = options
     );
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
-        test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
+        test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " + 
         "IO Error: PKIX path building failed: unable to find valid certification path to requested target"));
     } else {
         test:assertFail("Application Error expected");
@@ -240,29 +240,29 @@ function testWithOptionsWithErroneousSSLCorrectPort() returns error? {
 
 // with all params and options with SSL with correct port with incorrect password
 @test:Config {
-    groups:["connection"]
+    groups: ["connection"]
 }
 function testWithOptionsWithErroneousSSLWrongPW() returns error? {
     string trustStorePathValid = check file:getAbsolutePath("./tests/resources/wallets/client-wallet/ballerina-server.p12");
-         Options options = {
-                ssl: {
-                    cert: {
-                        path: trustStorePathValid,
-                        password: "InvalidPassword"
-                    }
-                }
-         };
-    Client|error oracledbClient = new(
-        host = HOST,
-        user = USER,
-        password = PASSWORD,
-        port = SSLPORT,
-        database = DATABASE,
+    Options options = {
+        ssl: {
+            cert: {
+                path: trustStorePathValid,
+                password: "InvalidPassword"
+            }
+        }
+    };
+    Client|error oracledbClient = new (
+        host = HOST, 
+        user = USER, 
+        password = PASSWORD, 
+        port = SSLPORT, 
+        database = DATABASE, 
         options = options
     );
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
-        test:assertTrue(oracledbClient.message().endsWith("The Network Adapter could not establish the connection Caused by " +
+        test:assertTrue(oracledbClient.message().endsWith("The Network Adapter could not establish the connection Caused by " + 
         ":Unable to initialize ssl context."));
     } else {
         test:assertFail("Error ApplicatonError expected");
@@ -271,24 +271,24 @@ function testWithOptionsWithErroneousSSLWrongPW() returns error? {
 
 // with all params and options with SSL cert only
 @test:Config {
-    groups:["connection"]
+    groups: ["connection"]
 }
 function testWithOptionsWithSSLWithoutKey() returns error? {
     string trustStorePathValid = check file:getAbsolutePath("./tests/resources/wallets/client-wallet/ballerina-server.p12");
-     Options options = {
-            ssl: {
-                cert: {
-                    path: trustStorePathValid,
-                    password: "password"
-                }
+    Options options = {
+        ssl: {
+            cert: {
+                path: trustStorePathValid,
+                password: "password"
             }
-     };
-    Client oracledbClient = check new(
-        host = HOST,
-        user = USER,
-        password = PASSWORD,
-        port = SSLPORT,
-        database = DATABASE,
+        }
+    };
+    Client oracledbClient = check new (
+        host = HOST, 
+        user = USER, 
+        password = PASSWORD, 
+        port = SSLPORT, 
+        database = DATABASE, 
         options = options
     );
     test:assertEquals(oracledbClient.close(), (), "Initializing with ssl param fail");
@@ -296,29 +296,29 @@ function testWithOptionsWithSSLWithoutKey() returns error? {
 
 // with all params and options with SSL both key and cert
 @test:Config {
-    groups:["connection"]
+    groups: ["connection"]
 }
 function testWithOptionsWithSSLWithKey() returns error? {
     string clientStorePathValid = check file:getAbsolutePath("./tests/resources/wallets/client-wallet/ballerina-client.p12");
     string trustStorePathValid = check file:getAbsolutePath("./tests/resources/wallets/client-wallet/ballerina-server.p12");
-     Options options = {
-            ssl: {
-                key: {
-                    path: clientStorePathValid,
-                    password: "password@123"
-                },
-                cert: {
-                    path: trustStorePathValid,
-                    password: "password"
-                }
+    Options options = {
+        ssl: {
+            key: {
+                path: clientStorePathValid,
+                password: "password@123"
+            },
+            cert: {
+                path: trustStorePathValid,
+                password: "password"
             }
-     };
-    Client oracledbClient = check new(
-        host = HOST,
-        user = USER,
-        password = PASSWORD,
-        port = SSLPORT,
-        database = DATABASE,
+        }
+    };
+    Client oracledbClient = check new (
+        host = HOST, 
+        user = USER, 
+        password = PASSWORD, 
+        port = SSLPORT, 
+        database = DATABASE, 
         options = options
     );
     test:assertEquals(oracledbClient.close(), (), "Initializing with ssl params fail");

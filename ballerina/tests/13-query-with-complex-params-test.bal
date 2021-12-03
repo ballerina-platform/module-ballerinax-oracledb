@@ -39,7 +39,7 @@ isolated function queryXmlWithoutReturnType() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT a.* from ComplexQueryTable a where a.id = ${id}`;
     record {}|sql:Error? value = check queryClient(sqlQuery);
     if value is record {} {
-        test:assertEquals(<decimal> 1, value["ID"], "Expected data did not match.");
+        test:assertEquals(<decimal>1, value["ID"], "Expected data did not match.");
         test:assertEquals(xml `<key>value</key>`, value["COL_XML"], "Returned are wrong");
     } else {
         test:assertFail("Value is Error");
@@ -55,7 +55,7 @@ isolated function queryNullXmlWithoutReturnType() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT a.* from ComplexQueryTable a where a.id = ${id}`;
     record {}|sql:Error? value = check queryClient(sqlQuery);
     if value is record {} {
-        test:assertEquals(<decimal> 2, value["ID"], "Expected data did not match.");
+        test:assertEquals(<decimal>2, value["ID"], "Expected data did not match.");
         test:assertEquals((), value["COL_XML"], "Expected data did not match.");
     } else {
         test:assertFail("Value is Error");
@@ -76,9 +76,9 @@ isolated function queryXmlWithReturnType() returns error? {
     sql:ParameterizedQuery sqlQuery = `SELECT a.* from ComplexQueryTable a where a.id = ${id}`;
     record {}? value = check queryClient(sqlQuery, XmlTypeRecord);
     XmlTypeRecord complexResult = {
-            id: 1,
-            col_xml: xml `<key>value</key>`
-        };
+        id: 1,
+        col_xml: xml `<key>value</key>`
+    };
     test:assertEquals(complexResult, value, "Expected data did not match.");
 }
 
@@ -93,9 +93,9 @@ type SelectComplexData record {
     groups: ["query", "query-complex-params"]
 }
 isolated function testGetPrimitiveTypesRecord() returns error? {
-    Client oracledbClient = check new(HOST, USER, PASSWORD, DATABASE, PORT);
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     SelectComplexData value = check oracledbClient->queryRow(
-	`SELECT int_type, int_type as int_as_str_type, double_type, string_type from ComplexDataTable WHERE row_id = 1`);
+`SELECT int_type, int_type as int_as_str_type, double_type, string_type from ComplexDataTable WHERE row_id = 1`);
     SelectComplexData expectedData = {
         INT_TYPE: 1,
         INT_AS_STR_TYPE: "1",

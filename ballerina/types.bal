@@ -163,7 +163,7 @@ public class CustomResultIterator {
         paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
     } external;
 
-    public isolated function getNextQueryResult(sql:ProcedureCallResult callResult)
+    public isolated function getNextQueryResult(sql:ProcedureCallResult callResult) 
     returns boolean|sql:Error = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.utils.ProcedureCallResultUtils",
         paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
