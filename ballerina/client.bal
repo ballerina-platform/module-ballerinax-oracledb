@@ -21,17 +21,17 @@ import ballerina/sql;
 public isolated client class Client {
     *sql:Client;
 
-    # Initialize the Oracle Client.
+    # Initializes the Oracle Client.
     #
-    # + host - Hostname of the Oracle database server to be connected
+    # + host - Hostname of the Oracle database server
     # + user - Name of a user of the database
     # + password - Password of the user
     # + database - System identifier or the service name of the database
-    # + port - Port number of the Oracle database server to be connected
+    # + port - Port number of the Oracle database server
     # + options - Oracle database connection parameters
     # + connectionPool - The `sql:ConnectionPool` object to be used within the database client. If there is no
     #                    `connectionPool` provided, the global connection pool will be used
-    # + return - An SQL error if the client creation failed 
+    # + return - An `sql:Error` if the client creation fails
     public isolated function init(string host = "localhost", string? user = (), string? password = (), 
     string? database = (), int port = 1521, Options? options = (), sql:ConnectionPool? connectionPool = ()) 
     returns sql:Error? {
@@ -47,52 +47,45 @@ public isolated client class Client {
         return createClient(self, clientConfig, sql:getGlobalConnectionPool());
     }
 
-    # Queries the database with the query provided by the user, and returns the result as stream.
+    # Executes the query, which may return multiple results.
     #
-    # + sqlQuery - The query, which needs to be executed as an `sql:ParameterizedQuery`
-    # + rowType - The `typedesc` of the record that should be returned as a result. If this is not provided, the default
-    #             column names of the query result set will be used for the record attributes
-    # + return - Stream of records in the type of `rowType`
+    # + sqlQuery - The SQL query
+    # + rowType - The `typedesc` of the record to which the result needs to be returned
+    # + return - Stream of records in the `rowType` type
     remote isolated function query(sql:ParameterizedQuery sqlQuery, typedesc<record {}> rowType = <>) 
     returns stream<rowType, sql:Error?> = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.nativeimpl.QueryProcessor",
         name: "nativeQuery"
     } external;
 
-    # Queries the database with the provided query and returns the first row as a record if the expected return type is
-    # a record. If the expected return type is not a record, then a single value is returned.
+    # Executes the query, which is expected to return at most one row of the result.
+    # If the query does not return any results, `sql:NoRowsError` is returned
     #
-    # + sqlQuery - The query to be executed as a `sql:ParameterizedQuery` which returns only one row result
-    # + returnType - The `typedesc` of the record/type that should be returned as a result. If this is not provided, the
-    #                default column names/type of the query result set will be used
-    # + return - Result in the type of `returnType`
+    # + sqlQuery - The SQL query
+    # + returnType - The `typedesc` of the record to which the result needs to be returned.
+    #                It can be a basic type if the query contains only one column
+    # + return - Result in the `returnType` type or an `sql:Error`
     remote isolated function queryRow(sql:ParameterizedQuery sqlQuery, typedesc<anydata> returnType = <>) 
     returns returnType|sql:Error = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.nativeimpl.QueryProcessor",
         name: "nativeQueryRow"
     } external;
 
-    # Executes the DDL or DML SQL queries provided by the user and returns a summary of the execution.
+    # Executes the SQL query. Only the metadata of the execution is returned (not the results from the query).
     #
-    # + sqlQuery - The DDL or DML query such as INSERT, DELETE, UPDATE, etc. as an `sql:ParameterizedQuery`
-    # + return - Summary of the SQL update query as an `sql:ExecutionResult` or returns an `sql:Error`
-    #            if any error occurred when executing the query
+    # + sqlQuery - The SQL query
+    # + return - Metadata of the query execution as an `sql:ExecutionResult` or an `sql:Error`
     remote isolated function execute(sql:ParameterizedQuery sqlQuery)
     returns sql:ExecutionResult|sql:Error = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.nativeimpl.ExecuteProcessor",
         name: "nativeExecute"
     } external;
 
-    # Executes a provided batch of parameterized DDL or DML SQL queries
-    # and returns the summary of the execution.
+    # Executes the SQL query with multiple sets of parameters in a batch. Only the metadata of the execution is returned (not results from the query).
+    # If one of the commands in the batch fails, the `sql:BatchExecuteError` will be returned with immediate effect.
     #
-    # + sqlQueries - The DDL or DML queries such as `INSERT`, `DELETE`, `UPDATE`, etc. as a `sql:ParameterizedQuery` with an array
-    #                of values passed in
-    # + return - Summary of the executed SQL queries as an `sql:ExecutionResult[]`, which includes details such as
-    #            `affectedRowCount` and `lastInsertId`. If one of the commands in the batch fails, this function
-    #            will return a `sql:BatchExecuteError`. However, the Oracle driver may or may not continue to process the
-    #            remaining commands in the batch after a failure. The summary of the executed queries in case of an error
-    #            can be accessed as `(<sql:BatchExecuteError> result).detail()?.executionResults`
+    # + sqlQueries - The SQL query with multiple sets of parameters
+    # + return - Metadata of the query execution as an `sql:ExecutionResult[]` or an `sql:Error`
     remote isolated function batchExecute(sql:ParameterizedQuery[] sqlQueries)
     returns sql:ExecutionResult[]|sql:Error {
         if sqlQueries.length() == 0 {
@@ -101,21 +94,20 @@ public isolated client class Client {
         return nativeBatchExecute(self, sqlQueries);
     }
 
-    # Executes a SQL stored procedure and returns the result as a stream and the execution summary.
+    # Executes a SQL query, which calls a stored procedure. This can return results or not.
     #
-    # + sqlQuery - The query to execute the SQL stored procedure as an `sql:ParameterizedQuery`
-    # + rowTypes - The array of `typedesc` of the records that should be returned as a result. If this is not provided,
-    #              the default column names of the query result set will be used for the record attributes
-    # + return - Summary of the execution is returned in a `sql:ProcedureCallResult` or an `sql:Error`
+    # + sqlQuery - The SQL query
+    # + rowTypes - The array `typedesc` of the records to which the results needs to be returned
+    # + return - Summary of the execution and results are returned in an `sql:ProcedureCallResult`, or an `sql:Error`
     remote isolated function call(sql:ParameterizedCallQuery sqlQuery, 
     typedesc<record {}>[] rowTypes = []) returns sql:ProcedureCallResult|sql:Error = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.nativeimpl.CallProcessor",
         name: "nativeCall"
     } external;
 
-    # Close the SQL client.
+    # Closes the SQL client and shuts down the connection pool.
     #
-    # + return - Possible error during closing the client
+    # + return - Possible error when closing the client
     public isolated function close() returns sql:Error? = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.nativeimpl.ClientProcessor",
         name: "close"
@@ -131,13 +123,15 @@ public type SecureSocket record {|
     crypto:TrustStore cert?;
 |};
 
-# Oracle database connection parameters.
+# Provides a set of configuration related to Oracle database connection.
 #
 # + ssl - SSL Configuration to be used
-# + loginTimeout - Specify how long to wait for establishment of a database connection in seconds
-# + autoCommit - If true commits automatically when the statement is complete
-# + connectTimeout - Time duration for a connection in seconds
-# + socketTimeout - Timeout duration for reading from a socket in seconds
+# + loginTimeout - Timeout (in seconds) when connecting to the Oracle server and authentication.
+#                  (0 means no timeout)
+# + autoCommit - If true, commits automatically when the statement is complete
+# + connectTimeout - Timeout (in seconds) to be used when connecting to the Oracle server
+# + socketTimeout - Socket timeout (in seconds) during the read/write operations with the MySQL server
+#                   (0 means no socket timeout)
 public type Options record {|
     SecureSocket ssl?;
     decimal loginTimeout = 0;
