@@ -126,8 +126,7 @@ public type SecureSocket record {|
 # Provides a set of configuration related to Oracle database connection.
 #
 # + ssl - SSL Configuration to be used
-# + loginTimeout - Timeout (in seconds) when connecting to the Oracle server and authentication.
-#                  (0 means no timeout)
+# + loginTimeout - Timeout (in seconds) when connecting to the Oracle server and authentication (0 means no timeout)
 # + autoCommit - If true, commits automatically when the statement is complete
 # + connectTimeout - Timeout (in seconds) to be used when connecting to the Oracle server
 # + socketTimeout - Socket timeout (in seconds) during the read/write operations with the Oracle server
