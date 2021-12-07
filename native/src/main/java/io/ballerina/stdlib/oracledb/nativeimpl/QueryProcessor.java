@@ -55,7 +55,7 @@ public class QueryProcessor {
     public static Object nativeQueryRow(Environment env, BObject client, BObject paramSQLString, BTypedesc recordType) {
         DefaultStatementParameterProcessor statementParametersProcessor = OracleDBStatementParameterProcessor
                 .getInstance();
-        DefaultResultParameterProcessor resultParametersProcessor = DefaultResultParameterProcessor
+        OracleDBResultParameterProcessor resultParametersProcessor = OracleDBResultParameterProcessor
                 .getInstance();
         return io.ballerina.stdlib.sql.nativeimpl.QueryProcessor.nativeQueryRow(env, client, paramSQLString, recordType,
                 statementParametersProcessor, resultParametersProcessor);
