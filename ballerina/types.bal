@@ -17,7 +17,7 @@
 import ballerina/jballerina.java;
 import ballerina/sql;
 
-# Represents the Oracle sign.
+# Represents the Oracle (+/-) sign.
 public type Sign +1|-1;
 
 # Represents a period of time in years and months.
