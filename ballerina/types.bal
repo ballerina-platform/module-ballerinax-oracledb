@@ -77,7 +77,7 @@ public type NestedTableType record {|
     ArrayValueType? elements;
 |};
 
-# Represents OBJECT TYPE  parameter in `sql:ParameterizedQuery`.
+# Represents OBJECT TYPE parameter in `sql:ParameterizedQuery`.
 #
 # + value - Value of parameter passed into the SQL statement
 public distinct class ObjectTypeValue {
@@ -89,7 +89,7 @@ public distinct class ObjectTypeValue {
     }
 }
 
-# Represents VARRAY type  parameter in `sql:ParameterizedQuery`.
+# Represents VARRAY type parameter in `sql:ParameterizedQuery`.
 #
 # + value - Value of the parameter
 public distinct class VarrayValue {
@@ -101,7 +101,7 @@ public distinct class VarrayValue {
     }
 }
 
-# Represents Nested Table type  parameter in `sql:ParameterizedQuery`.
+# Represents Nested Table type parameter in `sql:ParameterizedQuery`.
 #
 # + value - Value of the parameter
 public distinct class NestedTableValue {
