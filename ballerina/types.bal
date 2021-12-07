@@ -17,10 +17,10 @@
 import ballerina/jballerina.java;
 import ballerina/sql;
 
-# Represents the type that can be either minus one or plus one.
+# Represents the Oracle (+/-) sign.
 public type Sign +1|-1;
 
-# Stores a period of time in years and months.
+# Represents a period of time in years and months.
 #
 # + sign - sign of the interval value
 # + years - Number of years
@@ -31,7 +31,7 @@ public type IntervalYearToMonth record {|
     int:Unsigned32 months?;
 |};
 
-# Stores a period of time in days, hours, minutes, and seconds.
+# Represents a period of time in days, hours, minutes, and seconds.
 #
 # + sign - sign of the interval value
 # + days - Number of days
@@ -46,7 +46,7 @@ public type IntervalDayToSecond record {|
     decimal seconds?;
 |};
 
-# An abstraction of the real-world entities, such as purchase orders, that application programs deal with.
+# Represents Oracle UDT type, an abstraction of the real-world entities, such as purchase orders, that application programs deal with.
 #
 # + typename - Name of the object type
 # + attributes - Attributes of the object
@@ -77,7 +77,7 @@ public type NestedTableType record {|
     ArrayValueType? elements;
 |};
 
-# Represents OBJECT TYPE Oracle DB field.
+# Represents OBJECT TYPE parameter in `sql:ParameterizedQuery`.
 #
 # + value - Value of parameter passed into the SQL statement
 public distinct class ObjectTypeValue {
@@ -89,9 +89,9 @@ public distinct class ObjectTypeValue {
     }
 }
 
-# Represents VARRAY Oracle DB field.
+# Represents VARRAY type parameter in `sql:ParameterizedQuery`.
 #
-# + value - Value of parameter passed into the SQL statement
+# + value - Value of the parameter
 public distinct class VarrayValue {
     *sql:TypedValue;
     public Varray? value;
@@ -101,9 +101,9 @@ public distinct class VarrayValue {
     }
 }
 
-# Represents Nested Table Oracle DB field.
+# Represents Nested Table type parameter in `sql:ParameterizedQuery`.
 #
-# + value - Value of parameter passed into the SQL statement
+# + value - Value of the parameter
 public distinct class NestedTableValue {
     *sql:TypedValue;
     public NestedTableType? value;
@@ -113,50 +113,49 @@ public distinct class NestedTableValue {
     }
 }
 
-# Represents Xml range OutParameter used in procedure calls
+# Represents Xml range OutParameter in `sql:ParameterizedCallQuery`.
 public distinct class XmlOutParameter {
     *sql:OutParameter;
 
-    # Parses returned SQL value to ballerina value.
+    # Parses returned Xml SQL value to a ballerina value.
     #
-    # + typeDesc - Type description of the data that need to be converted
-    # + return - The converted ballerina value or Error
+    # + typeDesc - The `typedesc` of the type to which the result needs to be returned
+    # + return - The result in the `typeDesc` type, or an `sql:Error`
     public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor",
         name: "getOutParameterValue"
     } external;
 }
 
-# Represents IntervalYearToMonth OutParameter used in procedure calls
+# Represents IntervalYearToMonth OutParameter in `sql:ParameterizedCallQuery`.
 public distinct class IntervalYearToMonthOutParameter {
     *sql:OutParameter;
 
-    # Parses returned SQL value to ballerina value.
+    # Parses returned IntervalYearToMonthOutParameter SQL value to a ballerina value.
     #
-    # + typeDesc - Type description of the data that need to be converted
-    # + return - The converted ballerina value or Error
+    # + typeDesc - The `typedesc` of the type to which the result needs to be returned
+    # + return - The result in the `typeDesc` type, or an `sql:Error`
     public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor",
         "name": "getOutParameterValue"
     } external;
 }
 
-# Represents IntervalDayToSecond OutParameter used in procedure calls
+# Represents IntervalDayToSecond OutParameter in `sql:ParameterizedCallQuery`.
 public distinct class IntervalDayToSecondOutParameter {
     *sql:OutParameter;
 
-    # Parses returned SQL value to ballerina value.
+    # Parses returned IntervalDayToSecondOutParameter SQL value to a ballerina value.
     #
-    # + typeDesc - Type description of the data that need to be converted
-    # + return - The converted ballerina value or Error
+    # + typeDesc - The `typedesc` of the type to which the result needs to be returned
+    # + return - The result in the `typeDesc` type, or an `sql:Error`
     public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor",
         "name": "getOutParameterValue"
     } external;
 }
 
-# The class with custom implementations for nextResult and getNextQueryResult in the connector modules.
-#
+# The iterator for the stream returned in `query` function to be used overriding the default behaviour of `sql:ResultIterator`.
 public class CustomResultIterator {
     public isolated function nextResult(sql:ResultIterator iterator) returns record {}|sql:Error? = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.utils.RecordIteratorUtils",
