@@ -19,5 +19,13 @@
 set -e
 source base-scenario.sh
 
+# Wait for the OracleDB pod to reach ready state
+kubectl wait --for=condition=ready pod -l database=true --timeout=10m
+
+sleep 60
+
+# Wait for the Ballerina service pod to reach ready state
+kubectl wait --for=condition=ready pod -l service=true --timeout=10m
+
 jmeter -n -t "$scriptsDir/"http-requests.jmx -l "$resultsDir/"original-measurement.jtl -Jusers="$concurrent_users" -Jduration=600 -Jhost=bal.perf.test -Jport=80
 tail "$resultsDir/"original-measurement.jtl
