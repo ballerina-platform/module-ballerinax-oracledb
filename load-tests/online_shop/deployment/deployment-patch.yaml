@@ -8,6 +8,7 @@ spec:
       labels:
         logs: "true"
         load: "true"
+        service: "true"
     spec:
       containers:
       - name: "online-shop-deployment"
