@@ -7,6 +7,7 @@ spec:
     metadata:
       labels:
         logs: "true"
+        load: "true"
     spec:
       containers:
       - name: "online-shop-deployment"
