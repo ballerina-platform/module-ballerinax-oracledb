@@ -20,5 +20,5 @@ set -e
 source base-scenario.sh
 
 sleep 360
-jmeter -n -t "$scriptsDir/"http-requests.jmx -l "$resultsDir/"original-measurement.jtl -Jusers="$concurrent_users" -Jduration=600 -Jhost=bal.perf.test -Jport=80
-tail "$resultsDir/"original-measurement.jtl
+jmeter -n -t "$scriptsDir/"http-requests.jmx -l "$resultsDir/"original.jtl -Jusers="$concurrent_users" -Jduration=600 -Jhost=bal.perf.test -Jport=80
+tail "$resultsDir/"original.jtl
