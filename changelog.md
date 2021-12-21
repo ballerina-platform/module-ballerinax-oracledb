@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- Release OracleDB module on Ballerina 2201.0.0 distribution
 
 ## [1.2.0] - 2021-12-13
 
