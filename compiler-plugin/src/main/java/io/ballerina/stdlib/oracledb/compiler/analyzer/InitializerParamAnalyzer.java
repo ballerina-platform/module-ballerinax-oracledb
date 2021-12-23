@@ -17,7 +17,6 @@
  */
 package io.ballerina.stdlib.oracledb.compiler.analyzer;
 
-import io.ballerina.compiler.syntax.tree.BasicLiteralNode;
 import io.ballerina.compiler.syntax.tree.ExplicitNewExpressionNode;
 import io.ballerina.compiler.syntax.tree.ExpressionNode;
 import io.ballerina.compiler.syntax.tree.FunctionArgumentNode;
@@ -25,11 +24,9 @@ import io.ballerina.compiler.syntax.tree.ImplicitNewExpressionNode;
 import io.ballerina.compiler.syntax.tree.MappingConstructorExpressionNode;
 import io.ballerina.compiler.syntax.tree.MappingFieldNode;
 import io.ballerina.compiler.syntax.tree.NamedArgumentNode;
-import io.ballerina.compiler.syntax.tree.Node;
 import io.ballerina.compiler.syntax.tree.PositionalArgumentNode;
 import io.ballerina.compiler.syntax.tree.SeparatedNodeList;
 import io.ballerina.compiler.syntax.tree.SpecificFieldNode;
-import io.ballerina.compiler.syntax.tree.UnaryExpressionNode;
 import io.ballerina.projects.plugins.AnalysisTask;
 import io.ballerina.projects.plugins.SyntaxNodeAnalysisContext;
 import io.ballerina.stdlib.oracledb.compiler.Constants;
@@ -48,6 +45,7 @@ import static io.ballerina.stdlib.oracledb.compiler.Constants.UNNECESSARY_CHARS_
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.SQL_101;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.SQL_102;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.SQL_103;
+import static io.ballerina.stdlib.oracledb.compiler.Utils.getTerminalNodeValue;
 import static io.ballerina.stdlib.oracledb.compiler.Utils.validateOptions;
 
 /**
@@ -117,7 +115,7 @@ public class InitializerParamAnalyzer implements AnalysisTask<SyntaxNodeAnalysis
             ExpressionNode valueNode = ((SpecificFieldNode) field).valueExpr().get();
             switch (name) {
                 case Constants.ConnectionPool.MAX_OPEN_CONNECTIONS:
-                    int maxOpenConnections = Integer.parseInt(getTerminalNodeValue(valueNode));
+                    int maxOpenConnections = Integer.parseInt(getTerminalNodeValue(valueNode, "1"));
                     if (maxOpenConnections < 1) {
                         DiagnosticInfo diagnosticInfo = new DiagnosticInfo(SQL_101.getCode(), SQL_101.getMessage(),
                                 SQL_101.getSeverity());
@@ -128,7 +126,7 @@ public class InitializerParamAnalyzer implements AnalysisTask<SyntaxNodeAnalysis
                     }
                     break;
                 case Constants.ConnectionPool.MIN_IDLE_CONNECTIONS:
-                    int minIdleConnection = Integer.parseInt(getTerminalNodeValue(valueNode));
+                    int minIdleConnection = Integer.parseInt(getTerminalNodeValue(valueNode, "0"));
                     if (minIdleConnection < 0) {
                         DiagnosticInfo diagnosticInfo = new DiagnosticInfo(SQL_102.getCode(), SQL_102.getMessage(),
                                 SQL_102.getSeverity());
@@ -138,7 +136,7 @@ public class InitializerParamAnalyzer implements AnalysisTask<SyntaxNodeAnalysis
                     }
                     break;
                 case Constants.ConnectionPool.MAX_CONNECTION_LIFE_TIME:
-                    float maxConnectionTime = Float.parseFloat(getTerminalNodeValue(valueNode));
+                    float maxConnectionTime = Float.parseFloat(getTerminalNodeValue(valueNode, "30"));
                     if (maxConnectionTime < 30) {
                         DiagnosticInfo diagnosticInfo = new DiagnosticInfo(SQL_103.getCode(), SQL_103.getMessage(),
                                 SQL_103.getSeverity());
@@ -153,17 +151,4 @@ public class InitializerParamAnalyzer implements AnalysisTask<SyntaxNodeAnalysis
             }
         }
     }
-
-    private String getTerminalNodeValue(Node valueNode) {
-        String value;
-        if (valueNode instanceof BasicLiteralNode) {
-            value = ((BasicLiteralNode) valueNode).literalToken().text();
-        } else {
-            UnaryExpressionNode unaryExpressionNode = (UnaryExpressionNode) valueNode;
-            value = unaryExpressionNode.unaryOperator() +
-                    ((BasicLiteralNode) unaryExpressionNode.expression()).literalToken().text();
-        }
-        return value.replaceAll(UNNECESSARY_CHARS_REGEX, "");
-    }
-
 }

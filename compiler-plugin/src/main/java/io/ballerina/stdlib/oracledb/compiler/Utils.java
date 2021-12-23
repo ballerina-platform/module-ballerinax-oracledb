@@ -93,7 +93,7 @@ public class Utils {
                 case Constants.Options.CONNECT_TIMEOUT:
                 case Constants.Options.LOGIN_TIMEOUT:
                 case Constants.Options.SOCKET_TIMEOUT:
-                    float timeoutVal = Float.parseFloat(getTerminalNodeValue(valueNode));
+                    float timeoutVal = Float.parseFloat(getTerminalNodeValue(valueNode, "0"));
                     if (timeoutVal < 0) {
                         DiagnosticInfo diagnosticInfo = new DiagnosticInfo(ORACLEDB_101.getCode(),
                                 ORACLEDB_101.getMessage(), ORACLEDB_101.getSeverity());
@@ -108,8 +108,8 @@ public class Utils {
         }
     }
 
-    public static String getTerminalNodeValue(Node valueNode) {
-        String value = "";
+    public static String getTerminalNodeValue(Node valueNode, String defaultValue) {
+        String value = defaultValue;
         if (valueNode instanceof BasicLiteralNode) {
             value = ((BasicLiteralNode) valueNode).literalToken().text();
         } else if (valueNode instanceof UnaryExpressionNode) {
@@ -117,6 +117,7 @@ public class Utils {
             value = unaryExpressionNode.unaryOperator() +
                     ((BasicLiteralNode) unaryExpressionNode.expression()).literalToken().text();
         }
+        // Currently, we cannot process values from variables, this needs code flow analysis
         return value.replaceAll(UNNECESSARY_CHARS_REGEX, "");
     }
 
