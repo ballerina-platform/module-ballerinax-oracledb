@@ -27,8 +27,9 @@ configurable string DATABASE = ?;
 final oracledb:Client dbClient = check new (host = HOST, user = USER, password = PASSWORD, port = PORT, 
     database = DATABASE, connectionPool = {maxOpenConnections: 3, minIdleConnections: 1});
 
-service /onlineshop on new http:Listener(9090) {
-    resource function get employees() returns Employee[]|error? {
+isolated service /onlineshop on new http:Listener(9090) {
+
+    isolated resource function get employees() returns Employee[]|error? {
         Employee[] employees = [];
         stream<Employee, error?> resultStream = dbClient->query(`SELECT * FROM EMPLOYEES`);
         check from Employee employee in resultStream
@@ -39,17 +40,17 @@ service /onlineshop on new http:Listener(9090) {
         return employees;
     }
 
-    resource function get employees/[int id]() returns Employee|error? {
+    isolated resource function get employees/[int id]() returns Employee|error? {
         Employee employee = check dbClient->queryRow(`SELECT * FROM EMPLOYEES WHERE EMPLOYEE_ID = ${id}`);
         return employee;
     }
 
-    resource function get employees/count() returns int|error? {
+    isolated resource function get employees/count() returns int|error? {
         int count = check dbClient->queryRow(`SELECT COUNT(*) FROM EMPLOYEES`);
         return count;
     }
 
-    resource function get products() returns Product[]|error? {
+    isolated resource function get products() returns Product[]|error? {
         Product[] products = [];
         stream<Product, error?> resultStream = dbClient->query(`SELECT * FROM PRODUCTS`);
         check from Product product in resultStream
@@ -60,17 +61,17 @@ service /onlineshop on new http:Listener(9090) {
         return products;
     }
 
-    resource function get products/[int id]() returns Product|error? {
+    isolated resource function get products/[int id]() returns Product|error? {
         Product product = check dbClient->queryRow(`SELECT * FROM PRODUCTS WHERE PRODUCT_ID = ${id}`);
         return product;
     }
 
-    resource function get products/count() returns int|error? {
+    isolated resource function get products/count() returns int|error? {
         int count = check dbClient->queryRow(`SELECT COUNT(*) FROM PRODUCTS`);
         return count;
     }
 
-    resource function put products/[int id](@http:Payload Product product) returns string|error? {
+    isolated resource function put products/[int id](@http:Payload Product product) returns string|error? {
         oracledb:VarrayValue reviewArray = new ({name: "ReviewArrayType", elements: product.reviews});
         sql:ParameterizedQuery query = `UPDATE PRODUCTS SET PRODUCT_NAME = ${product.product_name},
         DESCRIPTION = ${product.description}, STANDARD_COST = ${product.standard_cost},
@@ -79,7 +80,7 @@ service /onlineshop on new http:Listener(9090) {
         return result.lastInsertId.toString();
     }
 
-    resource function get customers() returns Customer[]|error? {
+    isolated resource function get customers() returns Customer[]|error? {
         Customer[] customers = [];
         stream<Customer, error?> resultStream = dbClient->query(`SELECT * FROM CUSTOMERS`);
         check from Customer customer in resultStream
@@ -90,36 +91,36 @@ service /onlineshop on new http:Listener(9090) {
         return customers;
     }
 
-    resource function get customers/[int id]() returns Customer|error? {
+    isolated resource function get customers/[int id]() returns Customer|error? {
         Customer customer = check dbClient->queryRow(`SELECT * FROM CUSTOMERS WHERE CUSTOMER_ID = ${id}`);
         return customer;
     }
 
-    resource function get customers/count() returns int|error? {
+    isolated resource function get customers/count() returns int|error? {
         int count = check dbClient->queryRow(`SELECT COUNT(*) FROM CUSTOMERS`);
         return count;
     }
 
-    resource function post customers(@http:Payload CustomerInput customer) returns string|error? {
+    isolated resource function post customers(@http:Payload CustomerInput customer) returns string|error? {
         sql:ParameterizedQuery query = `INSERT INTO CUSTOMERS (NAME,ADDRESS,CREDIT_LIMIT,WEBSITE) VALUES
         (${customer.name}, ${customer.address}, ${customer.credit_limit}, ${customer.website})`;
         sql:ExecutionResult result = check dbClient->execute(query);
         return result.lastInsertId.toString();
     }
 
-    resource function delete customers/[int id]() returns string|error? {
+    isolated resource function delete customers/[int id]() returns string|error? {
         sql:ExecutionResult result = check dbClient->execute(`DELETE FROM CUSTOMERS WHERE CUSTOMER_ID = ${id}`);
         return result.affectedRowCount.toString();
     }
 
-    resource function put customers/[int id](@http:Payload Customer customer) returns string|error? {
+    isolated resource function put customers/[int id](@http:Payload Customer customer) returns string|error? {
         sql:ParameterizedQuery query = `UPDATE CUSTOMERS SET NAME = ${customer.name}, ADDRESS = ${customer.address},
         CREDIT_LIMIT = ${customer.credit_limit},WEBSITE = ${customer.website} where CUSTOMER_ID = ${id}`;
         sql:ExecutionResult result = check dbClient->execute(query);
         return result.lastInsertId.toString();
     }
 
-    resource function get purchases() returns Purchase[]|error? {
+    isolated resource function get purchases() returns Purchase[]|error? {
         Purchase[] purchases = [];
         stream<Purchase, error?> resultStream = dbClient->query(`SELECT * FROM PURCHASES`);
         check from Purchase purchase in resultStream
@@ -130,17 +131,17 @@ service /onlineshop on new http:Listener(9090) {
         return purchases;
     }
 
-    resource function get purchases/[int id]() returns Purchase|error? {
+    isolated resource function get purchases/[int id]() returns Purchase|error? {
         Purchase purchase = check dbClient->queryRow(`SELECT * FROM PURCHASES WHERE PURCHASE_ID = ${id}`);
         return purchase;
     }
 
-    resource function get purchases/count() returns int|error? {
+    isolated resource function get purchases/count() returns int|error? {
         int count = check dbClient->queryRow(`SELECT COUNT(*) FROM PURCHASES`);
         return count;
     }
 
-    resource function get purchaseitems() returns PurchaseItem[]|error? {
+    isolated resource function get purchaseitems() returns PurchaseItem[]|error? {
         PurchaseItem[] purchaseItems = [];
         stream<PurchaseItem, error?> resultStream = dbClient->query(`SELECT * FROM PURCHASE_ITEMS`);
         check from PurchaseItem purchaseItem in resultStream
@@ -151,12 +152,12 @@ service /onlineshop on new http:Listener(9090) {
         return purchaseItems;
     }
 
-    resource function get purchaseitems/count() returns int|error? {
+    isolated resource function get purchaseitems/count() returns int|error? {
         int count = check dbClient->queryRow(`SELECT COUNT(*) FROM PURCHASE_ITEMS`);
         return count;
     }
 
-    resource function get purchases/[int id]/items() returns PurchaseItem[]|error? {
+    isolated resource function get purchases/[int id]/items() returns PurchaseItem[]|error? {
         PurchaseItem[] purchaseItems = [];
         stream<PurchaseItem, error?> resultStream = dbClient->query(`SELECT * FROM PURCHASE_ITEMS WHERE PURCHASE_ID = ${id}`);
         check from PurchaseItem purchaseItem in resultStream
@@ -167,12 +168,12 @@ service /onlineshop on new http:Listener(9090) {
         return purchaseItems;
     }
 
-    resource function get purchases/[int id]/items/count() returns int|error? {
+    isolated resource function get purchases/[int id]/items/count() returns int|error? {
         int count = check dbClient->queryRow(`SELECT COUNT(*) FROM PURCHASE_ITEMS WHERE PURCHASE_ID = ${id}`);
         return count;
     }
 
-    resource function get contacts() returns Contact[]|error? {
+    isolated resource function get contacts() returns Contact[]|error? {
         Contact[] contacts = [];
         stream<Contact, error?> resultStream = dbClient->query(`SELECT * FROM CONTACTS`);
         check from Contact contact in resultStream
@@ -183,7 +184,7 @@ service /onlineshop on new http:Listener(9090) {
         return contacts;
     }
 
-    resource function get customers/[int id]/contacts() returns Contact[]|error? {
+    isolated resource function get customers/[int id]/contacts() returns Contact[]|error? {
         Contact[] contacts = [];
         stream<Contact, error?> resultStream = dbClient->query(`SELECT * FROM CONTACTS WHERE CUSTOMER_ID = ${id}`);
         check from Contact contact in resultStream
@@ -194,12 +195,12 @@ service /onlineshop on new http:Listener(9090) {
         return contacts;
     }
 
-    resource function get contacts/[int id]() returns Contact|error? {
+    isolated resource function get contacts/[int id]() returns Contact|error? {
         Contact contact = check dbClient->queryRow(`SELECT * FROM CONTACTS WHERE CONTACT_ID = ${id}`);
         return contact;
     }
 
-    resource function get contacts/count() returns int|error? {
+    isolated resource function get contacts/count() returns int|error? {
         int count = check dbClient->queryRow(`SELECT COUNT(*) FROM CONTACTS`);
         return count;
     }
