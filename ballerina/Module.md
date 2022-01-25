@@ -205,7 +205,7 @@ sql:ParameterizedQuery query = `SELECT count(*) as total FROM DataTable
                                 WHERE row_id IN (${ids[0]}, ${ids[1]}, ${ids[2]})`;
 ```
 
-The util function `sql:arrayFlattenQuery()` is introduced to make the array flatten easier. It makes the inclusion of varying array elements into the query easier by flattening the array to return a parameterized query. You can construct the complex dynamic query with the `IN` operator by using both functions as shown below.
+The util function `sql:arrayFlattenQuery()` is used to make the array flatten easier. It makes the inclusion of varying array elements into the query easier by flattening the array to return a parameterized query. You can construct the complex dynamic query with the `IN` operator by using both functions as shown below.
 
 ```ballerina
 int[] ids = [1, 2];

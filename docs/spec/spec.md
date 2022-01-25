@@ -8,8 +8,8 @@ _Issue_: [#2293](https://github.com/ballerina-platform/ballerina-standard-librar
 
 # Introduction
 
-This is the specification for OracleDB standard library, which provides the functionality that is required to access and
-manipulate data stored in a Oracle database in the [Ballerina programming language](https://ballerina.io/),
+This is the specification for the OracleDB standard library, which provides the functionality that is required to access and
+manipulate data stored in an Oracle database in the [Ballerina programming language](https://ballerina.io/),
 which is an open-source programming language for the cloud that makes it easier to use, combine, and create network
 services.
 
@@ -31,7 +31,7 @@ This specification elaborates on usage of OracleDB `Client` object to interface 
 2. Executes the query, which is expected to return at most one row of the result.
 3. Executes the SQL query. Only the metadata of the execution is returned.
 4. Executes the SQL query with multiple sets of parameters in a batch. Only the metadata of the execution is returned.
-5. Executes a SQL query, which calls a stored procedure. This can either return results or nil.
+5. Executes an SQL query, which calls a stored procedure. This can either return results or nil.
 
 All the above operations make use of `sql:ParameterizedQuery` object, backtick surrounded string template to pass
 SQL statements to the database. `sql:ParameterizedQuery` supports passing of Ballerina basic types or Typed SQL Values
@@ -102,10 +102,10 @@ Once all the database operations are performed, the client can be closed by invo
 operation. This will close the corresponding connection pool if it is not shared by any other database clients.
 
    ```ballerina
-    # Closes the OracleDB client and shuts down the connection pool.
-    #
-    # + return - Possible error when closing the client
-    public isolated function close() returns Error?;
+   # Closes the OracleDB client and shuts down the connection pool.
+   #
+   # + return - Possible error when closing the client
+   public isolated function close() returns Error?;
    ```
 
 # 3. Queries and Values

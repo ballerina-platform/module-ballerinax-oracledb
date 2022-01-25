@@ -123,7 +123,7 @@ public type SecureSocket record {|
     crypto:TrustStore cert?;
 |};
 
-# Provides a set of additional configurations related to the Oracle database connection.
+# Provides an additional set of configurations related to the Oracle database connection.
 #
 # + ssl - SSL configurations to be used
 # + loginTimeout - Timeout (in seconds) to be used when connecting to the Oracle server and authentication (0 means no timeout)
