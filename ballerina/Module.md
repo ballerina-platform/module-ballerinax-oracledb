@@ -54,7 +54,7 @@ oracledb:Client|sql:Error dbClient = new ("localhost", "adminUser", "adminPasswo
                               "ORCLCDB.localdomain", 1521);
 ```
 
-In the example below, the `oracledb:Client` uses named parameterss to pass the attributes since it is skipping some parameters in the constructor.
+In the example below, the `oracledb:Client` uses named parameters to pass the attributes since it is skipping some parameters in the constructor.
 Further, the [`oracledb:Options`](https://docs.central.ballerina.io/ballerinax/oracledb/latest/records/Options)
 property is passed to configure the SSL, connection timeout, and a few other additional properties in the OracleDB client.
 

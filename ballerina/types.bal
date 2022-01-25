@@ -117,7 +117,7 @@ public distinct class NestedTableValue {
 public distinct class XmlOutParameter {
     *sql:OutParameter;
 
-    # Parses the returned Xml SQL value to a Ballerina value.
+    # Parses the returned `Xml` SQL value to a Ballerina value.
     #
     # + typeDesc - The `typedesc` of the type to which the result needs to be returned
     # + return - The result in the `typeDesc` type, or an `sql:Error`
@@ -131,7 +131,7 @@ public distinct class XmlOutParameter {
 public distinct class IntervalYearToMonthOutParameter {
     *sql:OutParameter;
 
-    # Parses thereturned IntervalYearToMonthOutParameter SQL value to a Ballerina value.
+    # Parses the returned `IntervalYearToMonthOutParameter` SQL value to a Ballerina value.
     #
     # + typeDesc - The `typedesc` of the type to which the result needs to be returned
     # + return - The result in the `typeDesc` type, or an `sql:Error`
@@ -145,7 +145,7 @@ public distinct class IntervalYearToMonthOutParameter {
 public distinct class IntervalDayToSecondOutParameter {
     *sql:OutParameter;
 
-    # Parses the returned IntervalDayToSecondOutParameter SQL value to a Ballerina value.
+    # Parses the returned `IntervalDayToSecondOutParameter` SQL value to a Ballerina value.
     #
     # + typeDesc - The `typedesc` of the type to which the result needs to be returned
     # + return - The result in the `typeDesc` type, or an `sql:Error`
