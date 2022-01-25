@@ -83,7 +83,7 @@ oracledb:Client|sql:Error dbClient = new (user = "adminUser", password = "adminP
                               options = options);
 ```
 
-Similarly in the example below, the `oracledb:Client` uses the named parameters, and it provides an unshared connection pool of the type of
+Similarly, in the example below, the `oracledb:Client` uses the named parameters and it provides an unshared connection pool of the type of
 [`sql:ConnectionPool`](https://docs.central.ballerina.io/ballerina/sql/latest/records/ConnectionPool)
 to be used within the client.
 For more details about connection pooling, see the [`sql` Module](https://docs.central.ballerina.io/ballerina/sql/latest).
@@ -205,7 +205,7 @@ sql:ParameterizedQuery query = `SELECT count(*) as total FROM DataTable
                                 WHERE row_id IN (${ids[0]}, ${ids[1]}, ${ids[2]})`;
 ```
 
-The util function `sql:arrayFlattenQuery()` is used to make the array flatten easier. It makes the inclusion of varying array elements into the query easier by flattening the array to return a parameterized query. You can construct the complex dynamic query with the `IN` operator by using both functions as shown below.
+The `sql:arrayFlattenQuery()` util function is used to make the array flatten easier. It makes the inclusion of varying array elements into the query easier by flattening the array to return a parameterized query. You can construct the complex dynamic query with the `IN` operator by using both functions as shown below.
 
 ```ballerina
 int[] ids = [1, 2];
@@ -216,8 +216,8 @@ sql:ParameterizedQuery sqlQuery =
 
 #### Creating Tables
 
-This sample creates a table with three columns. The first column is a primary key of type `int`,
-while the second column is of type `int`, and the other is of type `varchar`.
+This sample creates a table with three columns. The first column is a primary key of type `int`
+while the second column is of type `int` and the other is of type `varchar`.
 The `CREATE` statement is executed via the `execute` remote function of the client.
 
 ```ballerina
@@ -229,7 +229,7 @@ sql:ExecutionResult result =
                                            name VARCHAR(255), 
                                            PRIMARY KEY (id)
                                          )`);
-// A value of the sql:ExecutionResult type is returned for 'result'. 
+// A value of the `sql:ExecutionResult` type is returned for the `result`. 
 ```
 
 #### Inserting Data
@@ -259,7 +259,7 @@ sql:ParameterizedQuery query = `INSERT INTO student(age, name)
 sql:ExecutionResult result = check dbClient->execute(query);
 ```
 
-In this sample, the parameter values are passed as a `sql:TypedValue` to the `execute` remote function. Use the
+In this sample, the parameter values are passed as an `sql:TypedValue` to the `execute` remote function. Use the
 corresponding subtype of the `sql:TypedValue` such as `sql:VarcharValue`, `sql:CharValue`, `sql:IntegerValue`, etc., when you need to
 provide more details such as the exact SQL type of the parameter.
 
@@ -329,7 +329,7 @@ stream<Student, sql:Error?> resultStream = dbClient->query(query);
 // Iterating the returned table.
 check from Student student in resultStream
    do {
-      // Can perform operations using the record 'student' of type `Student`.
+      // Can perform operations using the `student` record of type `Student`.
    };
 ```
 
@@ -350,7 +350,7 @@ stream<record{}, sql:Error?> resultStream = dbClient->query(query);
 // Iterating the returned table.
 check from record{} student in resultStream
    do {
-      // Can perform operations using the record 'student'.
+      // Can perform operations using the `student` record.
       io:println("Student name: ", student.value["name"]);
    };
 ```
@@ -433,7 +433,7 @@ stream<record{}, sql:Error?>? resultStr = result.queryResult;
 if resultStr is stream<record{}, sql:Error?> {
    check from record{} result in resultStr
       do {
-         // Can perform operations using the record 'result'.
+         // Can perform operations using the `result` record.
       };
 }
 check result.close();

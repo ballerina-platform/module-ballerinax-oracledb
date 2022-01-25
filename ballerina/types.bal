@@ -46,7 +46,7 @@ public type IntervalDayToSecond record {|
     decimal seconds?;
 |};
 
-# Represents the Oracle UDT type, an abstraction of the real-world entities such as purchase orders that application programs deal with.
+# Represents the Oracle UDT type, which is an abstraction of the real-world entities such as purchase orders that application programs deal with.
 #
 # + typename - Name of the object type
 # + attributes - Attributes of the object
@@ -58,8 +58,7 @@ public type ObjectType record {|
 # Represents a Ballerina typed array.
 type ArrayValueType string?[]|int?[]|boolean?[]|float?[]|decimal?[]|byte[]?[];
 
-# Represents an ordered set of data elements with a variable size but defined maximum size. All elements of a given array are
-# of the same data type with null value support.
+# Represents an ordered set of data elements with a variable size but with a maximum size defined. All elements of a given array are# of the same data type with null value support.
 #
 # + name - Name of the varray
 # + elements - Elements of the Varray
@@ -77,7 +76,7 @@ public type NestedTableType record {|
     ArrayValueType? elements;
 |};
 
-# Represents the OBJECT TYPE parameter in `sql:ParameterizedQuery`.
+# Represents the `OBJECT TYPE`` parameter in `sql:ParameterizedQuery`.
 #
 # + value - Value of the parameter passed into the SQL statement
 public distinct class ObjectTypeValue {
@@ -89,7 +88,7 @@ public distinct class ObjectTypeValue {
     }
 }
 
-# Represents the VARRAY type parameter in `sql:ParameterizedQuery`.
+# Represents the `VARRAY` type parameter in `sql:ParameterizedQuery`.
 #
 # + value - Value of the parameter
 public distinct class VarrayValue {
@@ -101,7 +100,7 @@ public distinct class VarrayValue {
     }
 }
 
-# Represents the Nested Table type parameter in `sql:ParameterizedQuery`.
+# Represents the `Nested Table` type parameter in `sql:ParameterizedQuery`.
 #
 # + value - Value of the parameter
 public distinct class NestedTableValue {
@@ -113,7 +112,7 @@ public distinct class NestedTableValue {
     }
 }
 
-# Represents the Xml range OutParameter in `sql:ParameterizedCallQuery`.
+# Represents the `XML range` `OutParameter` in `sql:ParameterizedCallQuery`.
 public distinct class XmlOutParameter {
     *sql:OutParameter;
 
@@ -127,7 +126,7 @@ public distinct class XmlOutParameter {
     } external;
 }
 
-# Represents the IntervalYearToMonth OutParameter in `sql:ParameterizedCallQuery`.
+# Represents the `IntervalYearToMonth` `OutParameter` in `sql:ParameterizedCallQuery`.
 public distinct class IntervalYearToMonthOutParameter {
     *sql:OutParameter;
 
@@ -141,7 +140,7 @@ public distinct class IntervalYearToMonthOutParameter {
     } external;
 }
 
-# Represents the IntervalDayToSecond OutParameter in `sql:ParameterizedCallQuery`.
+# Represents the `IntervalDayToSecond` `OutParameter` in `sql:ParameterizedCallQuery`.
 public distinct class IntervalDayToSecondOutParameter {
     *sql:OutParameter;
 

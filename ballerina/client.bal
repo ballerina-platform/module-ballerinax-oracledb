@@ -59,7 +59,7 @@ public isolated client class Client {
     } external;
 
     # Executes the query, which is expected to return at most one row of the result.
-    # If the query does not return any results, `sql:NoRowsError` is returned.
+    # If the query does not return any results, an `sql:NoRowsError` is returned.
     #
     # + sqlQuery - The SQL query
     # + returnType - The `typedesc` of the record to which the result needs to be returned.
@@ -107,7 +107,7 @@ public isolated client class Client {
 
     # Closes the SQL client and shuts down the connection pool.
     #
-    # + return - Possible error when closing the client
+    # + return - `()` or an `sql:Error`
     public isolated function close() returns sql:Error? = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.nativeimpl.ClientProcessor",
         name: "close"

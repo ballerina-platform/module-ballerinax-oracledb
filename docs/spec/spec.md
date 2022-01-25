@@ -9,8 +9,8 @@ _Issue_: [#2293](https://github.com/ballerina-platform/ballerina-standard-librar
 # Introduction
 
 This is the specification for the OracleDB standard library, which provides the functionality that is required to access and
-manipulate data stored in an Oracle database in the [Ballerina programming language](https://ballerina.io/),
-which is an open-source programming language for the cloud that makes it easier to use, combine, and create network
+manipulate data stored in an Oracle database in the [Ballerina programming language](https://ballerina.io/).
+Ballerina is an open-source programming language for the cloud that makes it easier to use, combine, and create network
 services.
 
 # Contents
