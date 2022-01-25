@@ -22,7 +22,7 @@ public type Sign +1|-1;
 
 # Represents a period of time in years and months.
 #
-# + sign - sign of the interval value
+# + sign - Sign of the interval value
 # + years - Number of years
 # + months - Number of months
 public type IntervalYearToMonth record {|
@@ -33,7 +33,7 @@ public type IntervalYearToMonth record {|
 
 # Represents a period of time in days, hours, minutes, and seconds.
 #
-# + sign - sign of the interval value
+# + sign - Sign of the interval value
 # + days - Number of days
 # + hours - Number of hours
 # + minutes - Number of minutes
@@ -46,7 +46,7 @@ public type IntervalDayToSecond record {|
     decimal seconds?;
 |};
 
-# Represents Oracle UDT type, an abstraction of the real-world entities, such as purchase orders, that application programs deal with.
+# Represents the Oracle UDT type, an abstraction of the real-world entities such as purchase orders that application programs deal with.
 #
 # + typename - Name of the object type
 # + attributes - Attributes of the object
@@ -55,10 +55,10 @@ public type ObjectType record {|
     anydata[]? attributes;
 |};
 
-# Represents ballerina typed array.
+# Represents a Ballerina typed array.
 type ArrayValueType string?[]|int?[]|boolean?[]|float?[]|decimal?[]|byte[]?[];
 
-# An ordered set of data elements with a variable size but maximum size is defined. All elements of a given array are
+# Represents an ordered set of data elements with a variable size but defined maximum size. All elements of a given array are
 # of the same data type with null value support.
 #
 # + name - Name of the varray
@@ -68,7 +68,7 @@ public type Varray record {|
     ArrayValueType? elements;
 |};
 
-# An ordered set of data elements with a variable size.
+# Represents an ordered set of data elements with a variable size.
 #
 # + name - Name of the varray
 # + elements - Elements of the Varray
@@ -77,9 +77,9 @@ public type NestedTableType record {|
     ArrayValueType? elements;
 |};
 
-# Represents OBJECT TYPE parameter in `sql:ParameterizedQuery`.
+# Represents the OBJECT TYPE parameter in `sql:ParameterizedQuery`.
 #
-# + value - Value of parameter passed into the SQL statement
+# + value - Value of the parameter passed into the SQL statement
 public distinct class ObjectTypeValue {
     *sql:TypedValue;
     public ObjectType? value;
@@ -89,7 +89,7 @@ public distinct class ObjectTypeValue {
     }
 }
 
-# Represents VARRAY type parameter in `sql:ParameterizedQuery`.
+# Represents the VARRAY type parameter in `sql:ParameterizedQuery`.
 #
 # + value - Value of the parameter
 public distinct class VarrayValue {
@@ -101,7 +101,7 @@ public distinct class VarrayValue {
     }
 }
 
-# Represents Nested Table type parameter in `sql:ParameterizedQuery`.
+# Represents the Nested Table type parameter in `sql:ParameterizedQuery`.
 #
 # + value - Value of the parameter
 public distinct class NestedTableValue {
@@ -113,11 +113,11 @@ public distinct class NestedTableValue {
     }
 }
 
-# Represents Xml range OutParameter in `sql:ParameterizedCallQuery`.
+# Represents the Xml range OutParameter in `sql:ParameterizedCallQuery`.
 public distinct class XmlOutParameter {
     *sql:OutParameter;
 
-    # Parses returned Xml SQL value to a ballerina value.
+    # Parses the returned Xml SQL value to a Ballerina value.
     #
     # + typeDesc - The `typedesc` of the type to which the result needs to be returned
     # + return - The result in the `typeDesc` type, or an `sql:Error`
@@ -127,11 +127,11 @@ public distinct class XmlOutParameter {
     } external;
 }
 
-# Represents IntervalYearToMonth OutParameter in `sql:ParameterizedCallQuery`.
+# Represents the IntervalYearToMonth OutParameter in `sql:ParameterizedCallQuery`.
 public distinct class IntervalYearToMonthOutParameter {
     *sql:OutParameter;
 
-    # Parses returned IntervalYearToMonthOutParameter SQL value to a ballerina value.
+    # Parses thereturned IntervalYearToMonthOutParameter SQL value to a Ballerina value.
     #
     # + typeDesc - The `typedesc` of the type to which the result needs to be returned
     # + return - The result in the `typeDesc` type, or an `sql:Error`
@@ -141,11 +141,11 @@ public distinct class IntervalYearToMonthOutParameter {
     } external;
 }
 
-# Represents IntervalDayToSecond OutParameter in `sql:ParameterizedCallQuery`.
+# Represents the IntervalDayToSecond OutParameter in `sql:ParameterizedCallQuery`.
 public distinct class IntervalDayToSecondOutParameter {
     *sql:OutParameter;
 
-    # Parses returned IntervalDayToSecondOutParameter SQL value to a ballerina value.
+    # Parses the returned IntervalDayToSecondOutParameter SQL value to a Ballerina value.
     #
     # + typeDesc - The `typedesc` of the type to which the result needs to be returned
     # + return - The result in the `typeDesc` type, or an `sql:Error`
@@ -155,7 +155,7 @@ public distinct class IntervalDayToSecondOutParameter {
     } external;
 }
 
-# The iterator for the stream returned in `query` function to be used overriding the default behaviour of `sql:ResultIterator`.
+# The iterator for the stream returned from the `query` function to be used to override the default behaviour of `sql:ResultIterator`.
 public class CustomResultIterator {
     public isolated function nextResult(sql:ResultIterator iterator) returns record {}|sql:Error? = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.utils.RecordIteratorUtils",
