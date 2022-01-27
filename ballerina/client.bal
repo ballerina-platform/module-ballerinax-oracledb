@@ -21,15 +21,15 @@ import ballerina/sql;
 public isolated client class Client {
     *sql:Client;
 
-    # Initializes the Oracle Client.
+    # Initializes the Oracle database client.
     #
     # + host - Hostname of the Oracle database server
-    # + user - Name of a user of the database
-    # + password - Password of the user
+    # + user - Name of a user of the Oracle database server
+    # + password - The password of the Oracle database server for the provided username
     # + database - System identifier or the service name of the database
     # + port - Port number of the Oracle database server
-    # + options - Oracle database connection parameters
-    # + connectionPool - The `sql:ConnectionPool` object to be used within the database client. If there is no
+    # + options - Oracle database connection properties
+    # + connectionPool - The `sql:ConnectionPool` object to be used within the client. If there is no
     #                    `connectionPool` provided, the global connection pool will be used
     # + return - An `sql:Error` if the client creation fails
     public isolated function init(string host = "localhost", string? user = (), string? password = (), 
@@ -59,11 +59,11 @@ public isolated client class Client {
     } external;
 
     # Executes the query, which is expected to return at most one row of the result.
-    # If the query does not return any results, `sql:NoRowsError` is returned
+    # If the query does not return any results, an `sql:NoRowsError` is returned.
     #
     # + sqlQuery - The SQL query
     # + returnType - The `typedesc` of the record to which the result needs to be returned.
-    #                It can be a basic type if the query contains only one column
+    #                It can be a basic type if the query result contains only one column
     # + return - Result in the `returnType` type or an `sql:Error`
     remote isolated function queryRow(sql:ParameterizedQuery sqlQuery, typedesc<anydata> returnType = <>) 
     returns returnType|sql:Error = @java:Method {
@@ -82,7 +82,7 @@ public isolated client class Client {
     } external;
 
     # Executes the SQL query with multiple sets of parameters in a batch. Only the metadata of the execution is returned (not results from the query).
-    # If one of the commands in the batch fails, the `sql:BatchExecuteError` will be returned with immediate effect.
+    # If one of the commands in the batch fails, the `sql:BatchExecuteError` will be returned immediately.
     #
     # + sqlQueries - The SQL query with multiple sets of parameters
     # + return - Metadata of the query execution as an `sql:ExecutionResult[]` or an `sql:Error`
@@ -94,10 +94,10 @@ public isolated client class Client {
         return nativeBatchExecute(self, sqlQueries);
     }
 
-    # Executes a SQL query, which calls a stored procedure. This can return results or not.
+    # Executes a SQL query, which calls a stored procedure. This may or may not return results.
     #
     # + sqlQuery - The SQL query
-    # + rowTypes - The array `typedesc` of the records to which the results needs to be returned
+    # + rowTypes - `typedesc` array of the records to which the results need to be returned
     # + return - Summary of the execution and results are returned in an `sql:ProcedureCallResult`, or an `sql:Error`
     remote isolated function call(sql:ParameterizedCallQuery sqlQuery, 
     typedesc<record {}>[] rowTypes = []) returns sql:ProcedureCallResult|sql:Error = @java:Method {
@@ -107,14 +107,14 @@ public isolated client class Client {
 
     # Closes the SQL client and shuts down the connection pool.
     #
-    # + return - Possible error when closing the client
+    # + return - `()` or an `sql:Error`
     public isolated function close() returns sql:Error? = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.nativeimpl.ClientProcessor",
         name: "close"
     } external;
 }
 
-# SSL Configuration to be used when connecting to the Oracle database server.
+# SSL configurations to be used when connecting to the Oracle database server.
 #
 # + key - Keystore configuration of the client certificates
 # + cert - Truststore configuration of the trust certificates
@@ -123,13 +123,13 @@ public type SecureSocket record {|
     crypto:TrustStore cert?;
 |};
 
-# Provides a set of configuration related to Oracle database connection.
+# Provides an additional set of configurations related to the Oracle database connection.
 #
-# + ssl - SSL Configuration to be used
-# + loginTimeout - Timeout (in seconds) when connecting to the Oracle server and authentication (0 means no timeout)
+# + ssl - SSL configurations to be used
+# + loginTimeout - Timeout (in seconds) to be used when connecting to the Oracle server and authentication (0 means no timeout)
 # + autoCommit - If true, commits automatically when the statement is complete
 # + connectTimeout - Timeout (in seconds) to be used when connecting to the Oracle server
-# + socketTimeout - Socket timeout (in seconds) during the read/write operations with the Oracle server
+# + socketTimeout - Socket timeout (in seconds) to be used during the read/write operations with the Oracle database server
 #                   (0 means no socket timeout)
 public type Options record {|
     SecureSocket ssl?;
@@ -141,12 +141,12 @@ public type Options record {|
 
 # Client configuration record for connection initialization.
 #
-# + host - Hostname of the Oracle server to be connected
-# + port - Port number of the Oracle server to be connected
-# + user - Name of a user of the database
-# + database - System Identifier or the Service Name of the database
-# + password - Password of the user
-# + options - Oracle database connection parameters
+# + host - Hostname of the Oracle database server
+# + port - Port number of the Oracle database server
+# + user - Name of a user of the Oracle database server
+# + database - System identifier or the service name of the database
+# + password - The password of the Oracle database server for the provided username
+# + options - Oracle database connection properties
 # + connectionPool - The `sql:ConnectionPool` record to be used within the database client. If there is no
 #                    connectionPool provided, the global connection pool will be used
 type ClientConfiguration record {|
