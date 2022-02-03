@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- [Fix Compiler plugin crash when variable is passed for `sql:ConnectionPool` and `oracledb:Options`](https://github.com/ballerina-platform/ballerina-standard-library/issues/2536)
 
 ## [1.3.0] - 2022-01-29
 
