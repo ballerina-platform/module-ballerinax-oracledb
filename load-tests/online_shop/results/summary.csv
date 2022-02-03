@@ -1,1 +1,4 @@
-Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Std. Dev.,Date,Payload,Users
+Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Std. Dev.
+HTTP POST Request,141895,50,34,61,69,94,1,60006,0.01%,266.6,37.5,622.56
+HTTP GET Request,139851,54,33,42,53,79,0,180006,0.00%,259.5,58.5,1249.74
+HTTP POST Request,125894,57,41,57,72,111,2,60003,0.01%,234.7,33.0,684.42

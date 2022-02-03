@@ -52,6 +52,7 @@ spec:
       labels:
         app: oracledb
         logs: "true"
+        load: "true"
     spec:
       initContainers:
         - name: configdbora-downloader
