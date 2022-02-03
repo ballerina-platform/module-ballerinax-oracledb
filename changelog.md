@@ -12,12 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [Fix Compiler plugin crash when variable is passed for `sql:ConnectionPool` and `oracledb:Options`](https://github.com/ballerina-platform/ballerina-standard-library/issues/2536)
 
-## [1.2.0] - 2021-12-13
-
-### Added
-- [Tooling support for OracleDB module](https://github.com/ballerina-platform/ballerina-standard-library/issues/2283)
-
 ## [1.3.0] - 2022-01-29
+
+### Changed
+- [Fix Compiler plugin crash when variable is passed for `sql:ConnectionPool` and `oracledb:Options`](https://github.com/ballerina-platform/ballerina-standard-library/issues/2536)
+
+## [1.2.1] - 2022-02-03
 
 ### Changed
 - [Fix Compiler plugin crash when variable is passed for `sql:ConnectionPool` and `oracledb:Options`](https://github.com/ballerina-platform/ballerina-standard-library/issues/2536)
