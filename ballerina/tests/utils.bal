@@ -39,10 +39,10 @@ isolated function getTextColumnChannel() returns io:ReadableCharacterChannel|err
     return sourceChannel;
 }
 
-isolated function dropTableIfExists(string tablename, Client oracledbClient) returns sql:ExecutionResult|sql:Error {
+isolated function dropTableIfExists(string tableName, Client oracledbClient) returns sql:ExecutionResult|sql:Error {
     sql:ExecutionResult result = check oracledbClient->execute(
         `BEGIN
-            EXECUTE IMMEDIATE 'DROP TABLE ' || ${tablename};
+            EXECUTE IMMEDIATE 'DROP TABLE ' || ${tableName};
             EXCEPTION
             WHEN OTHERS THEN
             IF SQLCODE != -942 THEN

@@ -25,15 +25,15 @@ isolated function insertDateTimeTypesAndIntervalsWithString() returns sql:Error?
     string date = "05-JAN-2020 10:35:10 AM";
     string dateOnly = "05-JAN-2020";
     string timestamp = "05-JAN-2020 10:35:10 AM";
-    string timestamptz = "05-JAN-2020 10:35:10 AM +05:30";
-    string timestamptzl = "05-JAN-2020 10:35:10 AM";
+    string timestampTZ = "05-JAN-2020 10:35:10 AM +05:30";
+    string timestampTZl = "05-JAN-2020 10:35:10 AM";
     string intervalYtoM = "15-11";
     string intervalDtoS = "200 5:12:45.89";
     sql:ExecutionResult result = check oracledbClient->execute(
         `ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH:MI:SS AM'`);
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_DATE, COL_DATE_ONLY, COL_TIMESTAMP,
             COL_TIMESTAMPTZ, COL_TIMESTAMPTZL, COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND)
-         VALUES (${date}, ${dateOnly}, ${timestamp}, ${timestamptz}, ${timestamptzl}, ${intervalYtoM},
+         VALUES (${date}, ${dateOnly}, ${timestamp}, ${timestampTZ}, ${timestampTZl}, ${intervalYtoM},
             ${intervalDtoS})`;
     result = check oracledbClient->execute(insertQuery);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
@@ -116,7 +116,7 @@ isolated function insertIntervalNull() returns sql:Error? {
     groups: ["datetime"],
     dependsOn: [insertDateTimeTypesAndIntervalsWithString]
 }
-isolated function selectAllDateTimeDatatypesWithoutReturnType() returns error? {
+isolated function selectAllDateTimeDataTypesWithoutReturnType() returns error? {
     int id = 1;
     sql:ParameterizedQuery sqlQuery = `SELECT COL_DATE, COL_DATE_ONLY, COL_TIMESTAMP, COL_TIMESTAMPTZ,
             COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND FROM TestDateTimeTable WHERE pk = ${id}`;

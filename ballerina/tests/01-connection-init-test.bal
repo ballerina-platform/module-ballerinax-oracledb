@@ -17,7 +17,7 @@ import ballerina/sql;
 import ballerina/test;
 import ballerina/file;
 
-int SSLPORT = 2484;
+int SSL_PORT = 2484;
 
 // with no parameters
 @test:Config {
@@ -225,7 +225,7 @@ function testWithOptionsWithErroneousSSLCorrectPort() returns error? {
         host = HOST, 
         user = USER, 
         password = PASSWORD, 
-        port = SSLPORT, 
+        port = SSL_PORT, 
         database = DATABASE, 
         options = options
     );
@@ -256,7 +256,7 @@ function testWithOptionsWithErroneousSSLWrongPW() returns error? {
         host = HOST, 
         user = USER, 
         password = PASSWORD, 
-        port = SSLPORT, 
+        port = SSL_PORT, 
         database = DATABASE, 
         options = options
     );
@@ -287,7 +287,7 @@ function testWithOptionsWithSSLWithoutKey() returns error? {
         host = HOST, 
         user = USER, 
         password = PASSWORD, 
-        port = SSLPORT, 
+        port = SSL_PORT, 
         database = DATABASE, 
         options = options
     );
@@ -317,7 +317,7 @@ function testWithOptionsWithSSLWithKey() returns error? {
         host = HOST, 
         user = USER, 
         password = PASSWORD, 
-        port = SSLPORT, 
+        port = SSL_PORT, 
         database = DATABASE, 
         options = options
     );
