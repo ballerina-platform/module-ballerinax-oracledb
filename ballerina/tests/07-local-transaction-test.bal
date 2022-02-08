@@ -370,7 +370,7 @@ isolated string rollbackOut = "";
 isolated function testLocalTransactionFailed() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
 
-    string a = "beforetx";
+    string a = "beforeTrx";
 
     string|error ret = testLocalTransactionFailedHelper(oracledbClient);
     if ret is string {
@@ -381,7 +381,7 @@ isolated function testLocalTransactionFailed() returns error? {
     a = a + " afterTrx";
     int count = check getCount(oracledbClient, "111");
     check oracledbClient.close();
-    test:assertEquals(a, "beforetx inTrx trxAborted inTrx trxAborted inTrx trapped afterTrx");
+    test:assertEquals(a, "beforeTrx inTrx trxAborted inTrx trxAborted inTrx trapped afterTrx");
     test:assertEquals(count, 0);
 }
 
@@ -424,7 +424,7 @@ isolated function getError() returns error? {
 isolated function testLocalTransactionSuccessWithFailed() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
 
-    string a = "beforetx";
+    string a = "beforeTrx";
     string|error ret = testLocalTransactionSuccessWithFailedHelper(a, oracledbClient);
     if ret is string {
         a = ret;
@@ -434,7 +434,7 @@ isolated function testLocalTransactionSuccessWithFailed() returns error? {
     a = a + " afterTrx";
     int count = check getCount(oracledbClient, "222");
     check oracledbClient.close();
-    test:assertEquals(a, "beforetx inTrx inTrx inTrx committed afterTrx");
+    test:assertEquals(a, "beforeTrx inTrx inTrx inTrx committed afterTrx");
     test:assertEquals(count, 2);
 }
 
@@ -462,7 +462,7 @@ returns string|error {
 
 isolated function getCount(Client oracledbClient, string id) returns int|error {
     stream<TransactionResultCount, sql:Error?> streamData = oracledbClient->query(`Select COUNT(*) as
-        countval from LocalTranCustomers where registrationID = ${id}`);
+        countVal from LocalTranCustomers where registrationID = ${id}`);
     record {|TransactionResultCount value;|}? data = check streamData.next();
     check streamData.close();
     TransactionResultCount? value = data?.value;

@@ -76,7 +76,7 @@ public type NestedTableType record {|
     ArrayValueType? elements;
 |};
 
-# Represents the `OBJECT TYPE`` parameter in `sql:ParameterizedQuery`.
+# Represents the `OBJECT TYPE` parameter in `sql:ParameterizedQuery`.
 #
 # + value - Value of the parameter passed into the SQL statement
 public distinct class ObjectTypeValue {
