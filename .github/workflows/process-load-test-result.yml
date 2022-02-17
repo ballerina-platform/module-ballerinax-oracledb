@@ -51,7 +51,6 @@ jobs:
       - name: Merge PR
         if: ${{ steps.processResults.outputs.hasPassed }}
         run: |
-          status="NOT COMPLETED"
           checkCount="0"
           while [ "$checkCount" != "3" ]
           do
