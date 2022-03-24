@@ -3,7 +3,7 @@
 _Owners_: @daneshk @niveathika  
 _Reviewers_: @daneshk  
 _Created_: 2022/01/14  
-_Updated_: 2022/02/17  
+_Updated_: 2022/03/23  
 _Edition_: Swan Lake  
 _Issue_: [#2293](https://github.com/ballerina-platform/ballerina-standard-library/issues/2293)
 
@@ -21,10 +21,10 @@ The OracleDB library specification has evolved and may continue to evolve in the
 
 1. [Overview](#1-overview)
 2. [Client](#2-client)  
-   2.1. [Connection Pool Handling](#21-connection-pool-handling)  
-   2.2. [Closing the Client](#22-closing-the-client)
-3. [Queries and Values](#3-queries-and-values)
-4. [Database Operations](#4-database-operations)
+   2.1. [Handle connection pools](#21-handle-connection-pools)  
+   2.2. [Close the client](#22-close-the-client)
+3. [Queries and values](#3-queries-and-values)
+4. [Database operations](#4-database-operations)
 
 # 1. Overview
 
@@ -83,7 +83,7 @@ returns sql:Error?;
       decimal socketTimeout?;
   |};
   ``` 
-* SSL Connection:
+* SSL connection:
   ```
   # SSL configurations to be used when connecting to the Oracle database server.
   #
@@ -95,12 +95,12 @@ returns sql:Error?;
   |};
   ```
 
-## 2.1. Connection Pool Handling
+## 2.1. Handle connection pools
 
 Connection pool handling is generic and implemented through `sql` module. For more information, see the
-[SQL Specification](https://github.com/ballerina-platform/module-ballerina-sql/blob/master/docs/spec/spec.md#21-connection-pool-handling)
+[SQL specification](https://github.com/ballerina-platform/module-ballerina-sql/blob/master/docs/spec/spec.md#21-connection-pool-handling)
 
-## 2.2. Closing the Client
+## 2.2. Close the client
 
 Once all the database operations are performed, the client can be closed by invoking the `close()`
 operation. This will close the corresponding connection pool if it is not shared by any other database clients.
@@ -112,17 +112,17 @@ operation. This will close the corresponding connection pool if it is not shared
    public isolated function close() returns Error?;
    ```
 
-# 3. Queries and Values
+# 3. Queries and values
 
 All the generic `sql` queries and values are supported. For more information, see the
-[SQL Specification](https://github.com/ballerina-platform/module-ballerina-sql/blob/master/docs/spec/spec.md#3-queries-and-values)
+[SQL specification](https://github.com/ballerina-platform/module-ballerina-sql/blob/master/docs/spec/spec.md#3-queries-and-values)
 
 In addition to `sql` values, the `oracledb` package supports the following typed values for Oracle SQL data types,
 1. ObjectTypeValue
 2. VarrayValue
 3. NestedTableValue
 
-# 4. Database Operations
+# 4. Database operations
 
 `Client` supports five database operations as follows,
 1. Executes the query, which may return multiple results.
@@ -131,4 +131,4 @@ In addition to `sql` values, the `oracledb` package supports the following typed
 4. Executes the SQL query with multiple sets of parameters in a batch. Only the metadata of the execution is returned.
 5. Executes an SQL query, which calls a stored procedure. This can either return results or nil.
 
-For more information on database operations see the [SQL Specification](https://github.com/ballerina-platform/module-ballerina-sql/blob/master/docs/spec/spec.md#4-database-operations)
+For more information on database operations, see the [SQL specification](https://github.com/ballerina-platform/module-ballerina-sql/blob/master/docs/spec/spec.md#4-database-operations)
