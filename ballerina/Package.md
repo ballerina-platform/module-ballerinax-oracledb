@@ -487,7 +487,7 @@ oracledb:IntervalDayToSecond intervalDS3 = {hours: 10, minutes: 9, seconds: 8.55
 //INTERVAL '11 00:09:08.55578' DAY TO SECOND(5)
 oracledb:IntervalDayToSecond intervalDS4 = {days: 11, minutes: 9, seconds: 8.55578};
 ```
-#### VARRAY types
+#### `VARRAY` types
 
 OracleDB has support for `VARRAY` data type and `VARRAY` consists a type name and elements attributes.
 
