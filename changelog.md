@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- [Change default username for client initialization to `sys`](https://github.com/ballerina-platform/ballerina-standard-library/issues/2397)
 
 ## [1.3.1] - 2022-03-01
 
