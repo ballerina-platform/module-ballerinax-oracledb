@@ -24,7 +24,7 @@ developer experience much more quick, simple and user-friendly, especially in te
 ## Description
 For Oracle databases, the default username is `sys`[[1]](https://docs.oracle.com/database/121/ADMQS/GUID-CF1CD853-AF15-41EC-BC80-61918C73FDB5.htm#ADMQS12003)
 
-Modify the [client initialization method](https://github.com/ballerina-platform/module-ballerinax-mssql/blob/dd331469cfed22073c66337278962cbad6dd565c/ballerina/Client.bal#L37-L38)
+Modify the [client initialization method](https://github.com/ballerina-platform/module-ballerinax-oracledb/blob/f7bf4b36e58ec1effdeffbbe3a1f23711709fcfc/ballerina/client.bal#L35-L37)
 signature to use `sys` as the default value for the username instead of `()`.
 
 ```ballerina
