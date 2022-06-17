@@ -5,9 +5,8 @@ _Reviewers_: @daneshk
 _Created_: 2022/01/14  
 _Updated_: 2022/03/23  
 _Edition_: Swan Lake  
-_Issue_: [#2293](https://github.com/ballerina-platform/ballerina-standard-library/issues/2293)
 
-# Introduction
+## Introduction
 
 This is the specification for the OracleDB standard library of [Ballerina language](https://ballerina.io/), which provides the functionality that is required to access and manipulate data stored in an Oracle database.  
 
@@ -17,7 +16,7 @@ The OracleDB library specification has evolved and may continue to evolve in the
 
  The conforming implementation of the specification is released to Ballerina Central. Any deviation from the specification is considered a bug.
 
-# Contents
+## Contents
 
 1. [Overview](#1-overview)
 2. [Client](#2-client)  
