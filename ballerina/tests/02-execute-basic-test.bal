@@ -129,8 +129,8 @@ isolated function testInsertAndSelectTableWithGeneratedKeys() returns sql:Error?
     string|int? insertedId = result.lastInsertId;
     if insertedId is string {
         sql:ParameterizedQuery query = `SELECT * from TestNumericTable where col_number = 31`;
-        stream<NumericRecord, sql:Error?> streamData = oracledbClient->query(query);
-        record {|NumericRecord value;|}? data = check streamData.next();
+        stream<record {}, sql:Error?> streamData = oracledbClient->query(query);
+        record {|record {} value;|}? data = check streamData.next();
         check streamData.close();
         test:assertNotExactEquals(data?.value, (), "Incorrect InsertId returned.");
     } else {
@@ -151,8 +151,8 @@ isolated function testInsertWithAllNilAndSelectTableWithGeneratedKeys() returns 
     string|int? insertedId = result.lastInsertId;
     if insertedId is string {
         sql:ParameterizedQuery query = `SELECT * from TestNumericTable where id = 2`;
-        stream<NumericRecord, sql:Error?> streamData = oracledbClient->query(query);
-        record {|NumericRecord value;|}? data = check streamData.next();
+        stream<record {}, sql:Error?> streamData = oracledbClient->query(query);
+        record {|record {} value;|}? data = check streamData.next();
         check streamData.close();
         test:assertNotExactEquals(data?.value, (), "Incorrect InsertId returned.");
     } else {
