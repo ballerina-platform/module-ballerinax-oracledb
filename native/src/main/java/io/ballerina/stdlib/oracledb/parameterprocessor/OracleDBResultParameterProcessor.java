@@ -27,6 +27,7 @@ import io.ballerina.runtime.api.types.Field;
 import io.ballerina.runtime.api.types.StructureType;
 import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.utils.StringUtils;
+import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.utils.XmlUtils;
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BMap;
@@ -98,7 +99,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             }
             int index = 0;
             for (Field internalField : internalStructFields) {
-                int type = internalField.getFieldType().getTag();
+                int type = TypeUtils.getReferredType(internalField.getFieldType()).getTag();
                 BString fieldName = fromString(internalField.getFieldName());
                 Object value = dataArray[index];
                 switch (type) {
@@ -135,9 +136,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                         break;
                     case TypeTags.OBJECT_TYPE_TAG:
                     case TypeTags.RECORD_TYPE_TAG:
-                        struct.put(fieldName,
-                                createUserDefinedType((Struct) value,
-                                        (StructureType) internalField.getFieldType()));
+                        struct.put(fieldName, createUserDefinedType((Struct) value,
+                                        (StructureType) TypeUtils.getReferredType(internalField.getFieldType())));
                         break;
                     default:
                         createUserDefinedTypeSubtype(internalField, structType);
