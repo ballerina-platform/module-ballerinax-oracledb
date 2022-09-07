@@ -416,19 +416,29 @@ isolated function selectVarrayWithRecordType() returns error? {
     }
 }
 
+type ArrayRecordType3 record {
+    int pk;
+    string?[]? col_chararr;
+    byte[]?[]? col_bytearr;
+    int?[]? col_intarr;
+    boolean?[]? col_boolarr;
+    float?[]? col_floatarr;
+    decimal?[]? col_decimalarr;
+};
+
 @test:Config {
     groups: ["custom-varray"],
     dependsOn: [insertVarrayNull]
 }
 isolated function selectVarrayNull() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    stream<ArrayRecordType, sql:Error?> streamData = oracledbClient->query(
+    stream<ArrayRecordType3, sql:Error?> streamData = oracledbClient->query(
         `SELECT pk, COL_CHARARR, COL_BYTEARR, COL_INTARR, COL_BOOLARR, COL_FLOATARR, COL_DECIMALARR
         FROM TestVarrayTable WHERE pk = 2`);
-    record {|ArrayRecordType value;|}? data = check streamData.next();
+    record {|ArrayRecordType3 value;|}? data = check streamData.next();
     check streamData.close();
     check oracledbClient.close();
-    ArrayRecordType? value = data?.value;
+    ArrayRecordType3? value = data?.value;
     if value is () {
         test:assertFail("Returned data is nil");
     } else {

@@ -187,7 +187,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                                             Boolean containsNull)
             throws DataError, SQLException {
         if (firstNonNullElement == null) {
-            BArray refValueArray = createEmptyBBRefValueArray(type);
+            BArray refValueArray = createEmptyBBRefValueArray(((ArrayType) type).getElementType());
             for (int i = 0; i < dataArray.length; i++) {
                 refValueArray.add(i, (Object) null);
             }
