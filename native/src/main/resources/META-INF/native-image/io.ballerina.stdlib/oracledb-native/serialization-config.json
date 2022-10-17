@@ -1,0 +1,12 @@
+{
+  "types": [
+    {
+      "name": "oracle.sql.converter.CharacterConverter1Byte"
+    },
+    {
+      "name": "oracle.sql.converter.CharacterConverterJDBC"
+    }
+  ],
+  "lambdaCapturingTypes": [
+  ]
+}
