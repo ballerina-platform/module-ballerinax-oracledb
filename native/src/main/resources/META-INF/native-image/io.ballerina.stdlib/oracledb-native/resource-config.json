@@ -1,0 +1,17 @@
+{
+  "resources": {
+    "includes": [
+      {
+        "pattern": "\\Qoracle/sql/converter_xcharset/lx20002.glb\\E"
+      }
+    ]
+  },
+  "bundles": [
+    {
+      "name": "oracle.net.mesg.Message",
+      "locales": [
+        ""
+      ]
+    }
+  ]
+}
