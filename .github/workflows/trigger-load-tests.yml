@@ -12,7 +12,7 @@ on:
         default: 'oracledb-perf-cluster-test'
         required: false
   schedule:
-    - cron: '30 11 * * *'
+    - cron: '30 22 * * *'
 
 jobs:
   invokeLoadTests:
