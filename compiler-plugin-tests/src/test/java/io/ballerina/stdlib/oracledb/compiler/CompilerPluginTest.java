@@ -39,9 +39,6 @@ import java.util.stream.Collectors;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_101;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_201;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_202;
-import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_901;
-import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_902;
-import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.ORACLEDB_903;
 import static io.ballerina.stdlib.oracledb.compiler.OracleDBDiagnosticsCode.SQL_101;
 
 /**
@@ -63,34 +60,6 @@ public class CompilerPluginTest {
         Path projectDirPath = RESOURCE_DIRECTORY.resolve(path);
         BuildProject project = BuildProject.load(getEnvironmentBuilder(), projectDirPath);
         return project.currentPackage();
-    }
-
-    @Test
-    public void testFunctionHints() {
-        Package currentPackage = loadPackage("sample1");
-        PackageCompilation compilation = currentPackage.getCompilation();
-        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
-        long availableErrors = diagnosticResult.diagnostics().stream()
-                .filter(r -> r.diagnosticInfo().severity().equals(DiagnosticSeverity.ERROR)).count();
-        Assert.assertEquals(availableErrors, 3);
-
-        List<Diagnostic> diagnosticHints = diagnosticResult.diagnostics().stream()
-                .filter(r -> r.diagnosticInfo().severity().equals(DiagnosticSeverity.HINT))
-                .collect(Collectors.toList());
-        long availableHints = diagnosticHints.size();
-        Assert.assertEquals(availableHints, 3);
-
-        DiagnosticInfo hint1 = diagnosticHints.get(0).diagnosticInfo();
-        Assert.assertEquals(hint1.code(), ORACLEDB_901.getCode());
-        Assert.assertEquals(hint1.messageFormat(), ORACLEDB_901.getMessage());
-
-        DiagnosticInfo hint2 = diagnosticHints.get(1).diagnosticInfo();
-        Assert.assertEquals(hint2.code(), ORACLEDB_902.getCode());
-        Assert.assertEquals(hint2.messageFormat(), ORACLEDB_902.getMessage());
-
-        DiagnosticInfo hint3 = diagnosticHints.get(2).diagnosticInfo();
-        Assert.assertEquals(hint3.code(), ORACLEDB_901.getCode());
-        Assert.assertEquals(hint3.messageFormat(), ORACLEDB_901.getMessage());
     }
 
     @Test
@@ -163,33 +132,6 @@ public class CompilerPluginTest {
         Assert.assertEquals(diagnostic.messageFormat(), ORACLEDB_202.getMessage());
 
     }
-
-    @Test
-    public void testOutParameterHint() {
-        Package currentPackage = loadPackage("sample5");
-        PackageCompilation compilation = currentPackage.getCompilation();
-        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
-        List<Diagnostic> errorDiagnosticsList = diagnosticResult.diagnostics().stream()
-                .filter(r -> r.diagnosticInfo().severity().equals(DiagnosticSeverity.ERROR))
-                .collect(Collectors.toList());
-        long availableErrors = errorDiagnosticsList.size();
-
-        Assert.assertEquals(availableErrors, 1);
-
-        List<Diagnostic> hintDiagnosticsList = diagnosticResult.diagnostics().stream()
-                .filter(r -> r.diagnosticInfo().severity().equals(DiagnosticSeverity.HINT))
-                .collect(Collectors.toList());
-        long availableHints = hintDiagnosticsList.size();
-
-        Assert.assertEquals(availableHints, 1);
-
-        hintDiagnosticsList.forEach(diagnostic -> {
-            Assert.assertEquals(diagnostic.diagnosticInfo().code(), ORACLEDB_903.getCode());
-            Assert.assertEquals(diagnostic.diagnosticInfo().messageFormat(), ORACLEDB_903.getMessage());
-        });
-
-    }
-
 
     @Test
     public void testOptionsWithVariables() {
