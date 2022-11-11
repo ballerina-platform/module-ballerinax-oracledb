@@ -6,5 +6,7 @@
     {
       "name": "oracle.sql.converter.CharacterConverterJDBC"
     }
-  ]
+  ],
+   "lambdaCapturingTypes": [
+   ]
 }
