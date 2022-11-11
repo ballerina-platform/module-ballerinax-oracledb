@@ -57,6 +57,7 @@ public final class Constants {
         public static final BString LOGIN_TIMEOUT_SECONDS = StringUtils.fromString("loginTimeout");
         public static final BString CONNECT_TIMEOUT_SECONDS = StringUtils.fromString("connectTimeout");
         public static final BString SOCKET_TIMEOUT_SECONDS = StringUtils.fromString("socketTimeout");
+        public static final BString USE_XA_DATASOURCE = StringUtils.fromString("useXADatasource");
     }
 
     /**
@@ -266,5 +267,6 @@ public final class Constants {
     public static final String PROTOCOL_TCP = "TCP";
     public static final String PROTOCOL_TCPS = "TCPS";
     public static final String ORACLE_DATASOURCE_NAME = "oracle.jdbc.pool.OracleDataSource";
+    public static final String ORACLE_XA_DATASOURCE_NAME = "oracle.jdbc.xa.client.OracleXADataSource";
     public static final String CUSTOM_RESULT_ITERATOR_OBJECT = "CustomResultIterator";
 }
