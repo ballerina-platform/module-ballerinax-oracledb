@@ -369,7 +369,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "oracledb"
-version = "1.4.1"
+version = "1.4.2"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "file"},
