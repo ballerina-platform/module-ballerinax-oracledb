@@ -41,7 +41,7 @@ function testXATransactionSuccess() returns error? {
     transaction {
         _ = check dbClient1->execute(`insert into Customers (customerId, name, creditLimit, country)
                                 values (1, 'Anne', 1000, 'UK')`);
-        _ = check dbClient2->execute(`insert into Salary (id, value ) values (1, 1000)`);
+        _ = check dbClient2->execute(`insert into Salary (id, value) values (1, 1000)`);
         check commit;
     } on fail {
         test:assertFail(msg = "Transaction failed");
@@ -75,7 +75,7 @@ function testXATransactionFailureWithDataSource() returns error? {
         // Intentionally fail first statement
         _ = check dbClient1->execute(`insert into CustomersTrx (customerId, name, creditLimit, country)
                                 values (30, 'Anne', 1000, 'UK')`);
-        _ = check dbClient2->execute(`insert into Salary (id, value ) values (10, 1000)`);
+        _ = check dbClient2->execute(`insert into Salary (id, value) values (10, 1000)`);
         check commit;
     } on fail error e {
         test:assertTrue(e.message().includes("Duplicate"), msg = "Transaction failed as expected");
@@ -109,7 +109,7 @@ function testXATransactionPartialSuccessWithDataSource() returns error? {
         _ = check dbClient1->execute(`insert into Customers (customerId, name, creditLimit, country)
                                 values (30, 'Anne', 1000, 'UK')`);
         // Intentionally fail second statement
-        _ = check dbClient2->execute(`insert into SalaryTrx (id, value ) values (20, 1000)`);
+        _ = check dbClient2->execute(`insert into SalaryTrx (id, value) values (20, 1000)`);
         check commit;
     } on fail error e {
         test:assertTrue(e.message().includes("Duplicate"), msg = "Transaction failed as expected");
