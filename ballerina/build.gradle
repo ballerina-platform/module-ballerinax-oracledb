@@ -219,7 +219,6 @@ def startDockerContainer(containerName, port, sslPort) {
 task startTestDockerContainers() {
     doLast {
         startDockerContainer("ballerina-oracledb", 1521, 2484)
-        startDockerContainer("ballerina-oracledb-trx", 1522, 2485)
     }
 }
 
@@ -240,7 +239,6 @@ def stopTestDockerContainer(containerName) {
 task stopTestDockerContainers() {
     doLast {
         stopTestDockerContainer("ballerina-oracledb")
-        stopTestDockerContainer("ballerina-oracledb-trx")
     }
 }
 

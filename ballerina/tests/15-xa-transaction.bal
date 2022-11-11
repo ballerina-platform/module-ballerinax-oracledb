@@ -23,7 +23,12 @@ type XAResultCount record {
     int COUNTVAL;
 };
 
+// Following test cases are disabled, since they need 2 db instances to run.
+// Due to a constraint 2 Oracle Docker containers cannot be run on the same machine.
+// Currently verified it manually with a local instance running on port 1522 and docker image  running on port 1521
+
 @test:Config {
+    enable: false,
     groups: ["transaction", "xa-transaction"]
 }
 function testXATransactionSuccess() returns error? {
@@ -57,6 +62,7 @@ function testXATransactionSuccess() returns error? {
 }
 
 @test:Config {
+    enable: false,
     groups: ["transaction", "xa-transaction"]
 }
 function testXATransactionFailureWithDataSource() returns error? {
@@ -91,6 +97,7 @@ function testXATransactionFailureWithDataSource() returns error? {
 }
 
 @test:Config {
+    enable: false,
     groups: ["transaction", "xa-transaction"]
 }
 function testXATransactionPartialSuccessWithDataSource() returns error? {
