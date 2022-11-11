@@ -131,12 +131,14 @@ public type SecureSocket record {|
 # + connectTimeout - Timeout (in seconds) to be used when connecting to the Oracle server
 # + socketTimeout - Socket timeout (in seconds) to be used during the read/write operations with the Oracle database server
 #                   (0 means no socket timeout)
+# + useXADatasource - If true, uses XADatasource for transactions
 public type Options record {|
     SecureSocket ssl?;
     decimal loginTimeout = 0;
     boolean autoCommit = true;
     decimal connectTimeout = 30;
     decimal socketTimeout?;
+    boolean useXADatasource = false;
 |};
 
 # Client configuration record for connection initialization.
