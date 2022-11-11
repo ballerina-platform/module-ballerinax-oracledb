@@ -8,7 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+## [1.4.2] - 2022-11-11
+
+### Added
 - [Support for XA transaction](https://github.com/ballerina-platform/ballerina-standard-library/issues/3599)
+
+## [1.4.1] - 2022-06-27
 
 ### Changed
 - [Fix NullPointerException when retrieving record with default value](https://github.com/ballerina-platform/ballerina-standard-library/issues/2985)
