@@ -58,12 +58,16 @@ public class ClientProcessor {
         BMap<BString, Object> datasourceOptions = null;
         Properties poolProperties = null;
         String protocol = Constants.PROTOCOL_TCP;
+        String dataSourceName = Constants.ORACLE_DATASOURCE_NAME;
 
         if (options != null) {
             datasourceOptions = Utils.generateOptionsMap(options);
             poolProperties = Utils.generatePoolProperties(options);
             if (options.getMapValue(Constants.Options.SSL) != null) {
                 protocol = Constants.PROTOCOL_TCPS;
+            }
+            if (options.getBooleanValue(Constants.Options.USE_XA_DATASOURCE)) {
+                dataSourceName = Constants.ORACLE_XA_DATASOURCE_NAME;
             }
         }
         StringBuilder url = new StringBuilder(Constants.DRIVER);
@@ -75,7 +79,6 @@ public class ClientProcessor {
         url.append("(CONNECT_DATA=(SERVICE_NAME=").append(database).append("))");
         url.append(")");
         BMap connectionPool = clientConfig.getMapValue(Constants.ClientConfiguration.CONNECTION_POOL_OPTIONS);
-        String dataSourceName = Constants.ORACLE_DATASOURCE_NAME;
         SQLDatasource.SQLDatasourceParams sqlDatasourceParams = new SQLDatasource.SQLDatasourceParams()
                 .setUrl(url.toString())
                 .setUser(user)
