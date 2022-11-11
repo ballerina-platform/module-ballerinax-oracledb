@@ -8,9 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- [Support for XA transaction](https://github.com/ballerina-platform/ballerina-standard-library/issues/3599)
 
 ### Changed
+
+## [1.5.1] - 2022-11-11
+
+### Added
+- [Support for XA transaction](https://github.com/ballerina-platform/ballerina-standard-library/issues/3599)
 
 ## [1.5.0] - 2022-09-08
 
