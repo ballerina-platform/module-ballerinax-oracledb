@@ -162,9 +162,9 @@ isolated function testWithOptionsWithErroneousSSL() returns error? {
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
         test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " + 
-        "IO Error: closing inbound before receiving peer's close_notify"));
+        "IO Error: Connection closed, Authentication lapse 0 ms."), oracledbClient.message());
     } else {
-        test:assertFail("Error ApplicatonError expected");
+        test:assertFail("Error Application Error expected");
     }
 
     Client|error oracledbClient2 = new (
@@ -179,7 +179,7 @@ isolated function testWithOptionsWithErroneousSSL() returns error? {
     test:assertTrue(oracledbClient2 is error);
     if oracledbClient2 is sql:ApplicationError {
         test:assertTrue(oracledbClient2.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " + 
-        "IO Error: closing inbound before receiving peer's close_notify"));
+        "IO Error: Connection closed, Authentication lapse 0 ms."), oracledbClient2.message());
     } else {
         test:assertFail("Error ApplicatonError expected");
     }
@@ -232,7 +232,8 @@ function testWithOptionsWithErroneousSSLCorrectPort() returns error? {
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
         test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " + 
-        "IO Error: PKIX path building failed: unable to find valid certification path to requested target"));
+        "IO Error: IO Error PKIX path building failed: unable to find valid certification path to requested target"),
+        oracledbClient.message());
     } else {
         test:assertFail("Application Error expected");
     }
@@ -263,7 +264,7 @@ function testWithOptionsWithErroneousSSLWrongPW() returns error? {
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
         test:assertTrue(oracledbClient.message().endsWith("The Network Adapter could not establish the connection Caused by " + 
-        ":Unable to initialize ssl context."));
+        ":Unable to initialize ssl context."), oracledbClient.message());
     } else {
         test:assertFail("Error ApplicatonError expected");
     }
