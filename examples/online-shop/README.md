@@ -38,7 +38,7 @@ These are HTTP RESTful services used to insert, create, and retrieve data of a s
         [platform.java11.dependency]]
         groupId = "com.oracle.database.jdbc"
         artifactId = "ojdbc10"
-        version = "12.2.0.1"
+        version = "19.6.0.0"
   
         [platform.java11.dependency]]
         groupId = "com.oracle.database.xml"
