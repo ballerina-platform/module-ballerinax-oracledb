@@ -3,8 +3,8 @@
 This module provides the functionality required to access and manipulate data stored in an Oracle database.
 
 ### Prerequisite
-Add the OracleDB thin driver `ojdbc8.jar` along with `xdb.jar` and `xmlparserv2.jar` as native library dependencies in your Ballerina project's `Ballerina.toml` file.
-It is recommended to use an oracle thin driver `ojdbc8.jar` version greater than 12.2.0.1.
+Add the OracleDB thin driver `ojdbc10.jar` along with `xdb.jar` and `xmlparserv2.jar` as native library dependencies in your Ballerina project's `Ballerina.toml` file.
+It is recommended to use an oracle thin driver `ojdbc10.jar` version greater than 19.6.0.0.
 
 Follow one of the methods below to add the JAR in the file:
 
@@ -18,8 +18,8 @@ Follow one of the methods below to add the JAR in the file:
     ```
     [[platform.java11.dependency]]
     groupId = "com.oracle.database.jdbc"
-    artifactId = "ojdbc8"
-    version = "12.2.0.1"
+    artifactId = "ojdbc10"
+    version = "19.6.0.0"
   
     [platform.java11.dependency]]
     groupId = "com.oracle.database.xml"

@@ -100,7 +100,7 @@ subprojects {
         ballerinaStdLibs "io.ballerina.stdlib:observe-ballerina:${observeVersion}"
         ballerinaStdLibs "io.ballerina:observe-ballerina:${observeInternalVersion}"
 
-        externalJars (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
+        externalJars (group: 'com.oracle.database.jdbc', name: 'ojdbc10', version: "${oracleDBDriverVersion}") {
             transitive = false
         }
         externalJars (group: 'com.oracle.database.xml', name: 'xdb', version: "${oracleXDBVersion}") {

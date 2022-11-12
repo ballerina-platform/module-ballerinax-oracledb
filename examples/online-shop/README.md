@@ -18,9 +18,9 @@ These are HTTP RESTful services used to insert, create, and retrieve data of a s
 
 * *Adding the oracledb JDBC thin driver and their dependencies*
 
-    * Download and add the OracleDB thin driver `ojdbc8.jar` along with the `xdb.jar` and `xmlparserv2.jar` files as native 
+    * Download and add the OracleDB thin driver `ojdbc10.jar` along with the `xdb.jar` and `xmlparserv2.jar` files as native 
       library dependencies in the example Ballerina project's `Ballerina.toml` file. It is recommended to use an Oracle 
-      thin driver `ojdbc8.jar` version greater than 12.2.0.1. As per the existing `Ballerina.toml` file, it points to 
+      thin driver `ojdbc10.jar` version greater than 19.6.0.0. As per the existing `Ballerina.toml` file, it points to 
       those dependencies in the `ballerina` folder. You may have to download those dependencies and update the `Ballerina.toml`
       file.
       
@@ -37,7 +37,7 @@ These are HTTP RESTful services used to insert, create, and retrieve data of a s
         ```
         [platform.java11.dependency]]
         groupId = "com.oracle.database.jdbc"
-        artifactId = "ojdbc8"
+        artifactId = "ojdbc10"
         version = "12.2.0.1"
   
         [platform.java11.dependency]]

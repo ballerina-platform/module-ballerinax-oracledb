@@ -22,7 +22,7 @@ version = "@sql.version@"
 path = "./lib/sql-native-@stdlib.sql.native.version@.jar"
 
 [[platform.java11.dependency]]
-path = "./lib/ojdbc8-@oracledb.driver.version@.jar"
+path = "./lib/ojdbc10-@oracledb.driver.version@.jar"
 scope = "testOnly"
 
 [[platform.java11.dependency]]
