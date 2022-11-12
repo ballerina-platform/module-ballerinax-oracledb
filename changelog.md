@@ -13,10 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [Updated API Docs](https://github.com/ballerina-platform/ballerina-standard-library/issues/3463)
 
+## [1.5.1] - 2022-11-11
+
+### Added
+- [Support for XA transaction](https://github.com/ballerina-platform/ballerina-standard-library/issues/3599)
+
 ## [1.5.0] - 2022-09-08
 
 ### Changed
 - [Change default username for client initialization to `sys`](https://github.com/ballerina-platform/ballerina-standard-library/issues/2397)
+
+## [1.4.2] - 2022-11-11
+
+### Added
+- [Support for XA transaction](https://github.com/ballerina-platform/ballerina-standard-library/issues/3599)
 
 ## [1.4.1] - 2022-06-27
 
