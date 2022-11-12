@@ -81,6 +81,7 @@ isolated function insertObjectTypeWithNullArray() returns sql:Error? {
 }
 
 @test:Config {
+    enable: false,
     groups: ["custom-object"],
     dependsOn: [insertObjectTypeWithNullArray]
 }
@@ -99,7 +100,7 @@ isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
 
 @test:Config {
     groups: ["custom-object"],
-    dependsOn: [insertObjectTypeWithEmptyArray]
+    dependsOn: [insertObjectTypeWithNullArray]
 }
 isolated function insertObjectTypeWithInvalidTypes1() returns sql:Error? {
     string string_attr = "Hello world";
