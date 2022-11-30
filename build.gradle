@@ -99,16 +99,7 @@ subprojects {
         ballerinaStdLibs "io.ballerina.stdlib:url-ballerina:${stdlibUrlVersion}"
         ballerinaStdLibs "io.ballerina.stdlib:observe-ballerina:${observeVersion}"
         ballerinaStdLibs "io.ballerina:observe-ballerina:${observeInternalVersion}"
-
-        externalJars (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
-            transitive = false
-        }
-        externalJars (group: 'com.oracle.database.xml', name: 'xdb', version: "${oracleXDBVersion}") {
-            transitive = false
-        }
-        externalJars (group: 'com.oracle.database.xml', name: 'xmlparserv2', version: "${oracleXMLParserVersion}") {
-            transitive = false
-        }
+    ballerinaStdLibs "io.ballerina.stdlib:oracledb.driver-ballerina:${stdlibOracledbDriverVersion}"
     }
 }
 
