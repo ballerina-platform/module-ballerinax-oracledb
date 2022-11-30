@@ -10,8 +10,15 @@ Ballerina OracleDB Library
 This library provides the functionality required to access and manipulate data stored in an Oracle database.
 
 ### Prerequisite
-Add the OracleDB thin driver `ojdbc8.jar` along with `xdb.jar` and `xmlparserv2.jar` as native library dependencies in your Ballerina project's `Ballerina.toml` file.
-It is recommended to use an oracle thin driver `ojdbc8.jar` version greater than 12.2.0.1.
+It is required to import the OracleDB driver dependencies in order to connect to a Oracle database. The `ballerinax/oracledb.driver`
+package bundles the latest OracleDB drivers so that the oracledb connector can be used in Ballerina projects easily.
+
+```ballerina
+import ballerinax/oracledb.driver as _;
+```
+
+If it is required to use a specific Oracledb driver JARs (`ojdbc8.jar` along with `xdb.jar` and `xmlparserv2.jar`), they can be added as a native library dependencies in your
+Ballerina project's `Ballerina.toml` file. It is recommended to use an oracle thin driver `ojdbc8.jar` version greater than 12.2.0.1.
 
 Follow one of the methods below to add the JAR in the file:
 
