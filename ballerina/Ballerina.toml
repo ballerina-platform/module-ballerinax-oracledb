@@ -20,15 +20,3 @@ groupId = "io.ballerina.stdlib"
 artifactId = "sql-native"
 version = "1.6.0"
 path = "./lib/sql-native-1.6.0-20221116-183800-78488d3.jar"
-
-[[platform.java11.dependency]]
-path = "./lib/ojdbc8-12.2.0.1.jar"
-scope = "testOnly"
-
-[[platform.java11.dependency]]
-path = "./lib/xdb-21.1.0.0.jar"
-scope = "testOnly"
-
-[[platform.java11.dependency]]
-path = "./lib/xmlparserv2-12.2.0.1.jar"
-scope = "testOnly"

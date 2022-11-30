@@ -403,10 +403,20 @@ dependencies = [
 	{org = "ballerina", name = "sql"},
 	{org = "ballerina", name = "test"},
 	{org = "ballerina", name = "time"},
-	{org = "ballerinai", name = "transaction"}
+	{org = "ballerinai", name = "transaction"},
+	{org = "ballerinax", name = "oracledb.driver"}
 ]
 modules = [
 	{org = "ballerinax", packageName = "oracledb", moduleName = "oracledb"}
+]
+
+[[package]]
+org = "ballerinax"
+name = "oracledb.driver"
+version = "1.2.0"
+scope = "testOnly"
+modules = [
+	{org = "ballerinax", packageName = "oracledb.driver", moduleName = "oracledb.driver"}
 ]
 
 
