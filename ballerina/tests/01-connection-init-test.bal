@@ -161,10 +161,10 @@ isolated function testWithOptionsWithErroneousSSL() returns error? {
 
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
-        test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " + 
-        "IO Error: closing inbound before receiving peer's close_notify"));
+        test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
+        "IO Error: Connection closed"));
     } else {
-        test:assertFail("Error ApplicatonError expected");
+        test:assertFail("Error Application Error expected");
     }
 
     Client|error oracledbClient2 = new (
@@ -178,10 +178,10 @@ isolated function testWithOptionsWithErroneousSSL() returns error? {
 
     test:assertTrue(oracledbClient2 is error);
     if oracledbClient2 is sql:ApplicationError {
-        test:assertTrue(oracledbClient2.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " + 
-        "IO Error: closing inbound before receiving peer's close_notify"));
+        test:assertTrue(oracledbClient2.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
+        "IO Error: Connection closed"));
     } else {
-        test:assertFail("Error ApplicatonError expected");
+        test:assertFail("Error Application Error expected");
     }
 
     Client|error oracledbClient3 = new (
@@ -231,8 +231,8 @@ function testWithOptionsWithErroneousSSLCorrectPort() returns error? {
     );
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
-        test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " + 
-        "IO Error: PKIX path building failed: unable to find valid certification path to requested target"));
+        test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
+        "IO Error: IO Error PKIX path building failed: unable to find valid certification path to requested target"));
     } else {
         test:assertFail("Application Error expected");
     }
