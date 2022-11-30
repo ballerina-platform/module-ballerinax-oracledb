@@ -22,6 +22,9 @@ COPY wallets/server-wallet/ /home/usr/wallet/
 RUN rm -rf /home/oracle/setup/configDBora.sh
 COPY setup/configDBora.sh /home/oracle/setup
 
+#copy bfile test file
+COPY files/bfile.txt /home/oracle/bfile-sample/bfile.txt
+
 # Setup database using sqlplus script
 COPY sql-scripts/ /home/oracle/sql-scripts/
 EXPOSE 2484

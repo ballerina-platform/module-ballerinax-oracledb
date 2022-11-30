@@ -17,12 +17,12 @@
 import ballerina/jballerina.java;
 import ballerina/sql;
 
-# Represents the Oracle (+/-) sign.
+# Represents the type that can be either minus one or plus one.
 public type Sign +1|-1;
 
-# Represents a period of time in years and months.
+# Stores a period of time in years and months.
 #
-# + sign - Sign of the interval value
+# + sign - sign of the interval value
 # + years - Number of years
 # + months - Number of months
 public type IntervalYearToMonth record {|
@@ -31,9 +31,9 @@ public type IntervalYearToMonth record {|
     int:Unsigned32 months?;
 |};
 
-# Represents a period of time in days, hours, minutes, and seconds.
+# Stores a period of time in days, hours, minutes, and seconds.
 #
-# + sign - Sign of the interval value
+# + sign - sign of the interval value
 # + days - Number of days
 # + hours - Number of hours
 # + minutes - Number of minutes
@@ -46,7 +46,7 @@ public type IntervalDayToSecond record {|
     decimal seconds?;
 |};
 
-# Represents the Oracle UDT type, which is an abstraction of the real-world entities such as purchase orders that application programs deal with.
+# An abstraction of the real-world entities, such as purchase orders, that application programs deal with.
 #
 # + typename - Name of the object type
 # + attributes - Attributes of the object
@@ -55,10 +55,11 @@ public type ObjectType record {|
     anydata[]? attributes;
 |};
 
-# Represents a Ballerina typed array.
+# Represents ballerina typed array.
 type ArrayValueType string?[]|int?[]|boolean?[]|float?[]|decimal?[]|byte[]?[];
 
-# Represents an ordered set of data elements with a variable size but with a maximum size defined. All elements of a given array are# of the same data type with null value support.
+# An ordered set of data elements with a variable size but maximum size is defined. All elements of a given array are
+# of the same data type with null value support.
 #
 # + name - Name of the varray
 # + elements - Elements of the Varray
@@ -67,7 +68,7 @@ public type Varray record {|
     ArrayValueType? elements;
 |};
 
-# Represents an ordered set of data elements with a variable size.
+# An ordered set of data elements with a variable size.
 #
 # + name - Name of the varray
 # + elements - Elements of the Varray
@@ -76,9 +77,18 @@ public type NestedTableType record {|
     ArrayValueType? elements;
 |};
 
-# Represents the `OBJECT TYPE` parameter in `sql:ParameterizedQuery`.
+# Represents the BFILE data type in Oracle Database.
 #
-# + value - Value of the parameter passed into the SQL statement
+# + name - Name of bfile
+# + length - length of the pointed file
+public type BFile record {
+   string name;
+   int length;
+};
+
+# Represents OBJECT TYPE Oracle DB field.
+#
+# + value - Value of parameter passed into the SQL statement
 public distinct class ObjectTypeValue {
     *sql:TypedValue;
     public ObjectType? value;
@@ -88,9 +98,9 @@ public distinct class ObjectTypeValue {
     }
 }
 
-# Represents the `VARRAY` type parameter in `sql:ParameterizedQuery`.
+# Represents VARRAY Oracle DB field.
 #
-# + value - Value of the parameter
+# + value - Value of parameter passed into the SQL statement
 public distinct class VarrayValue {
     *sql:TypedValue;
     public Varray? value;
@@ -100,9 +110,9 @@ public distinct class VarrayValue {
     }
 }
 
-# Represents the `Nested Table` type parameter in `sql:ParameterizedQuery`.
+# Represents Nested Table Oracle DB field.
 #
-# + value - Value of the parameter
+# + value - Value of parameter passed into the SQL statement
 public distinct class NestedTableValue {
     *sql:TypedValue;
     public NestedTableType? value;
@@ -112,58 +122,101 @@ public distinct class NestedTableValue {
     }
 }
 
-# Represents the `XML range` `OutParameter` in `sql:ParameterizedCallQuery`.
+# Represents Xml range OutParameter used in procedure calls
 public distinct class XmlOutParameter {
     *sql:OutParameter;
 
-    # Parses the returned `Xml` SQL value to a Ballerina value.
+    # Parses returned SQL value to ballerina value.
     #
-    # + typeDesc - The `typedesc` of the type to which the result needs to be returned
-    # + return - The result in the `typeDesc` type, or an `sql:Error`
+    # + typeDesc - Type description of the data that need to be converted
+    # + return - The converted ballerina value or Error
     public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
-        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor",
-        name: "getOutParameterValue"
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
     } external;
 }
 
-# Represents the `IntervalYearToMonth` `OutParameter` in `sql:ParameterizedCallQuery`.
+# Represents IntervalYearToMonth OutParameter used in procedure calls
 public distinct class IntervalYearToMonthOutParameter {
     *sql:OutParameter;
 
-    # Parses the returned `IntervalYearToMonthOutParameter` SQL value to a Ballerina value.
+    # Parses returned SQL value to ballerina value.
     #
-    # + typeDesc - The `typedesc` of the type to which the result needs to be returned
-    # + return - The result in the `typeDesc` type, or an `sql:Error`
+    # + typeDesc - Type description of the data that need to be converted
+    # + return - The converted ballerina value or Error
     public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
-        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor",
-        "name": "getOutParameterValue"
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
     } external;
 }
 
-# Represents the `IntervalDayToSecond` `OutParameter` in `sql:ParameterizedCallQuery`.
+# Represents IntervalDayToSecond OutParameter used in procedure calls
 public distinct class IntervalDayToSecondOutParameter {
     *sql:OutParameter;
 
-    # Parses the returned `IntervalDayToSecondOutParameter` SQL value to a Ballerina value.
+    # Parses returned SQL value to ballerina value.
     #
-    # + typeDesc - The `typedesc` of the type to which the result needs to be returned
-    # + return - The result in the `typeDesc` type, or an `sql:Error`
+    # + typeDesc - Type description of the data that need to be converted
+    # + return - The converted ballerina value or Error
     public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
-        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor",
-        "name": "getOutParameterValue"
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor"
     } external;
 }
 
-# The iterator for the stream returned from the `query` function to be used to override the default behaviour of `sql:ResultIterator`.
+# The class with custom implementations for nextResult and getNextQueryResult in the connector modules.
 public class CustomResultIterator {
     public isolated function nextResult(sql:ResultIterator iterator) returns record {}|sql:Error? = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.utils.RecordIteratorUtils",
         paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
     } external;
 
-    public isolated function getNextQueryResult(sql:ProcedureCallResult callResult) 
+    public isolated function getNextQueryResult(sql:ProcedureCallResult callResult)
     returns boolean|sql:Error = @java:Method {
         'class: "io.ballerina.stdlib.oracledb.utils.ProcedureCallResultUtils",
         paramTypes: ["io.ballerina.runtime.api.values.BObject", "io.ballerina.runtime.api.values.BObject"]
     } external;
+}
+
+# The BFile iterator object that is used to iterate through the BFile and provide byte array for given buffer size.
+public class BFileIterator {
+    private boolean isClosed = false;
+    private int bufferSize;
+    private int fileLength;
+    private int position = 1;
+
+    isolated function init(int bufferSize, int fileLength) {
+        self.bufferSize = bufferSize;
+        self.fileLength = fileLength;
+    }
+
+    public isolated function next() returns record {|byte[] value;|}|sql:Error? {
+        if self.isClosed {
+             return closedStreamInvocationError();
+        } else {
+            error? closeErrorIgnored = ();
+            if self.position <= self.fileLength {
+            byte[]|sql:Error result = getBytes(self);
+                if result is byte[] {
+                    record {|
+                        byte[] value;
+                    |} streamRecord = {value: result};
+                    return streamRecord;
+                } else {
+                    closeErrorIgnored = self.close();
+                    return result;
+                }
+            } else {
+                closeErrorIgnored = self.close();
+                return ();
+            }
+        }
+    }
+
+    public isolated function close() returns sql:Error? {
+        if !self.isClosed {
+            sql:Error? e = closeBFile(self);
+            if e is () {
+                self.isClosed = true;
+            }
+            return e;
+        }
+    }
 }

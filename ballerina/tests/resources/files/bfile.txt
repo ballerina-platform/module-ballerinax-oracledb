@@ -1,0 +1,1 @@
+This is a sample text file for testing bfile support in ballerina oracledb module.

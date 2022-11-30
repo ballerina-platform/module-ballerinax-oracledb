@@ -29,6 +29,10 @@ public final class Constants {
 
     private Constants() {}
 
+    public static final String ORACLEBFILE_NATIVE_DATA_FIELD = "OracleBFile";
+    public static final String ORACLEBFILE_STREAM_DATA_FIELD = "InputStream";
+    public static final String BFILE_ITERATOR_OBJECT = "BFileIterator";
+
     /**
      * Constants for database client properties.
      */
@@ -159,6 +163,7 @@ public final class Constants {
 
         public static final String INTERVAL_YEAR_TO_MONTH_RECORD = "IntervalYearToMonth";
         public static final String INTERVAL_DAY_TO_SECOND_RECORD = "IntervalDayToSecond";
+        public static final String BFILE_RECORD = "BFile";
 
         /**
          * Constants related to Oracle Database type names.
@@ -170,6 +175,7 @@ public final class Constants {
             public static final String INTERVAL_YEAR_TO_MONTH = "INTERVAL_YEAR_TO_MONTH";
             public static final String INTERVAL_DAY_TO_SECOND = "INTERVAL_DAY_TO_SECOND";
             public static final String OBJECT_TYPE = "OBJECT";
+            public static final String BFILE = "BFILE";
             public static final String VARRAY = "VARRAY";
         }
 
@@ -243,6 +249,20 @@ public final class Constants {
 
             public static final String NAME = "name";
             public static final String ELEMENTS = "elements";
+        }
+
+        /**
+         * Constants related to the attributes of BFile Oracle DB type.
+         */
+        public static final class BFile {
+
+            private BFile() {}
+
+            public static final String NAME = "name";
+            public static final String LENGTH = "length";
+            public static final String POSITION = "position";
+            public static final String BUFFER_SIZE = "bufferSize";
+            public static final String FILE_LENGTH = "fileLength";
         }
 
         /**
