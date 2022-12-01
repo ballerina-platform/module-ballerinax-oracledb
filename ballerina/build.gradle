@@ -82,9 +82,6 @@ task updateTomlFiles {
         newConfig = newConfig.replace('@sql.version@', stdlibDependentSqlVersion)
         newConfig = newConfig.replace('@stdlib.sql.native.version@', project.stdlibSqlVersion.toString())
         newConfig = newConfig.replace('@stdlib.sql.version@', stdlibDependentSqlVersion)
-        newConfig = newConfig.replace('@oracledb.driver.version@', project.oracleDBDriverVersion)
-        newConfig = newConfig.replace('@oracle.xdb.version@', project.oracleXDBVersion)
-        newConfig = newConfig.replace('@oracle.xmlparserv2.version@', project.oracleXMLParserVersion)
         ballerinaTomlFile.text = newConfig
 
         def newCompilerPluginToml = compilerPluginTomlFilePlaceHolder.text.replace("@project.version@", project.version)
@@ -222,20 +219,23 @@ task startTestDockerContainers() {
     }
 }
 
+def stopTestDockerContainer(containerName) {
+    if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+        try {
+            def stdOut = new ByteArrayOutputStream()
+            exec {
+                commandLine 'sh', '-c', "docker stop ${containerName}"
+                standardOutput = stdOut
+            }
+        } catch (ignore) {
+            println("Gradle process can safely ignore stopTestDockerContainers task")
+        }
+    }
+}
+
 task stopTestDockerContainers() {
     doLast {
-        if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-            def containers = "ballerina-oracledb"
-            try {
-                def stdOut = new ByteArrayOutputStream()
-                exec {
-                    commandLine 'sh', '-c', "docker stop ${containers}"
-                    standardOutput = stdOut
-                }
-            } catch (ignore) {
-                println("Gradle process can safely ignore stopTestDockerContainers task")
-            }
-        }
+        stopTestDockerContainer("ballerina-oracledb")
     }
 }
 
