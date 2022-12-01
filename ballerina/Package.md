@@ -3,10 +3,21 @@
 This package provides the functionality required to access and manipulate data stored in an Oracle database.
 
 ### Prerequisite
-Add the OracleDB thin driver `ojdbc8.jar` along with `xdb.jar` and `xmlparserv2.jar` as native library dependencies in your Ballerina project's `Ballerina.toml` file.
-It is recommended to use an oracle thin driver `ojdbc8.jar` version greater than 12.2.0.1.
+Add the OracleDB drivers as a dependency to the Ballerina project.
 
-Follow one of the methods below to add the JAR in the file:
+>**Note:** `ballerinax/oracledb` supports OracleDB driver versions above 12.2.0.1.
+
+You can achieve this by importing the `ballerinax/oracledb.driver` module,
+ ```ballerina
+ import ballerinax/oracledb.driver as _;
+ ```
+
+`ballerinax/oracledb.driver` package bundles the latest OracleDB driver JARs.
+
+>**Tip:** GraalVM native build is supported when `ballerinax/oracledb` is used along with the `ballerinax/oracledb.driver`
+
+If you want to add a OracleDB drivers of specific versions, you can add them as a dependencies in Ballerina.toml.
+Follow one of the following ways to add the JARs in the file:
 
 * Download the JAR and update the path.
     ```

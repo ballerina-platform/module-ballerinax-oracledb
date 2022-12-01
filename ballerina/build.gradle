@@ -82,9 +82,6 @@ task updateTomlFiles {
         newConfig = newConfig.replace('@sql.version@', stdlibDependentSqlVersion)
         newConfig = newConfig.replace('@stdlib.sql.native.version@', project.stdlibSqlVersion.toString())
         newConfig = newConfig.replace('@stdlib.sql.version@', stdlibDependentSqlVersion)
-        newConfig = newConfig.replace('@oracledb.driver.version@', project.oracleDBDriverVersion)
-        newConfig = newConfig.replace('@oracle.xdb.version@', project.oracleXDBVersion)
-        newConfig = newConfig.replace('@oracle.xmlparserv2.version@', project.oracleXMLParserVersion)
         ballerinaTomlFile.text = newConfig
 
         def newCompilerPluginToml = compilerPluginTomlFilePlaceHolder.text.replace("@project.version@", project.version)
