@@ -17,6 +17,7 @@
 import ballerina/http;
 import ballerinax/oracledb;
 import ballerina/sql;
+import ballerinax/oracledb.driver as _;
 
 configurable string USER = ?;
 configurable string PASSWORD = ?;
