@@ -87,14 +87,10 @@ isolated function insertObjectTypeWithNullArray() returns sql:Error? {
 isolated function insertObjectTypeWithEmptyArray() returns sql:Error? {
     ObjectTypeValue objectType = new ({typename: "object_type", attributes: []});
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestObjectTypeTable(COL_OBJECT) VALUES(${objectType})`;
-    sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
-    if result is sql:DatabaseError {
-        sql:DatabaseErrorDetail errorDetails = result.detail();
-        test:assertEquals(errorDetails.errorCode, 17049);
-        test:assertEquals(errorDetails.sqlState, "99999");
-    } else {
-        test:assertFail("Database Error expected.");
-    }
+    sql:ExecutionResult result = check executeQuery(insertQuery);
+    test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
+    int|string? insertId = result.lastInsertId;
+    test:assertTrue(insertId is string, "Last Insert id should be string");
 }
 
 @test:Config {
