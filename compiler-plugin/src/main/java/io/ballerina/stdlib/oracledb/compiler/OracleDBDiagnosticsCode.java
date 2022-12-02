@@ -20,7 +20,6 @@ package io.ballerina.stdlib.oracledb.compiler;
 import io.ballerina.tools.diagnostics.DiagnosticSeverity;
 
 import static io.ballerina.tools.diagnostics.DiagnosticSeverity.ERROR;
-import static io.ballerina.tools.diagnostics.DiagnosticSeverity.HINT;
 
 /**
  * Enum class to hold OracleDB module diagnostic codes.
@@ -37,14 +36,7 @@ public enum OracleDBDiagnosticsCode {
 
     // Out parameter return type validations diagnostics
     ORACLEDB_201("ORACLEDB_201", "invalid value: expected value is either record or object", ERROR),
-    ORACLEDB_202("ORACLEDB_202", "invalid value: expected value is xml", ERROR),
-
-    ORACLEDB_901("ORACLEDB_901",
-            "parameter 'rowType' should be explicitly passed when the return data is ignored", HINT),
-    ORACLEDB_902("ORACLEDB_902",
-            "parameter 'returnType' should be explicitly passed when the return data is ignored", HINT),
-    ORACLEDB_903("ORACLEDB_903",
-            "parameter 'typeDesc' should be explicitly passed when the return data is ignored", HINT);
+    ORACLEDB_202("ORACLEDB_202", "invalid value: expected value is xml", ERROR);
 
     private final String code;
     private final String message;

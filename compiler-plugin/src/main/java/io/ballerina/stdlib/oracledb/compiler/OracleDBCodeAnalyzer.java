@@ -24,7 +24,6 @@ import io.ballerina.projects.plugins.CodeAnalyzer;
 import io.ballerina.stdlib.oracledb.compiler.analyzer.InitializerParamAnalyzer;
 import io.ballerina.stdlib.oracledb.compiler.analyzer.MethodAnalyzer;
 import io.ballerina.stdlib.oracledb.compiler.analyzer.RecordAnalyzer;
-import io.ballerina.stdlib.oracledb.compiler.analyzer.RemoteMethodAnalyzer;
 
 import java.util.List;
 
@@ -35,7 +34,6 @@ public class OracleDBCodeAnalyzer extends CodeAnalyzer {
 
     @Override
     public void init(CodeAnalysisContext ctx) {
-        ctx.addSyntaxNodeAnalysisTask(new RemoteMethodAnalyzer(), SyntaxKind.REMOTE_METHOD_CALL_ACTION);
         ctx.addSyntaxNodeAnalysisTask(new InitializerParamAnalyzer(),
                 List.of(SyntaxKind.IMPLICIT_NEW_EXPRESSION, SyntaxKind.EXPLICIT_NEW_EXPRESSION));
         ctx.addSyntaxNodeAnalysisTask(new RecordAnalyzer(),
