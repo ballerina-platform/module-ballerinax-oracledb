@@ -22,8 +22,7 @@ import ballerina/sql;
 public isolated client class Client {
     *sql:Client;
 
-    # Initializes the OracleDB Client. It should be kept open throughout the entirety of the application
-    # to perform the operations.
+    # Initializes the OracleDB Client. The client must be kept open throughout the application lifetime.
     #
     # + host - Hostname of the Oracle database server
     # + user - Name of a user of the Oracle database server
