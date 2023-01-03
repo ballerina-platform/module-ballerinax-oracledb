@@ -18,10 +18,12 @@ import ballerina/crypto;
 import ballerina/jballerina.java;
 import ballerina/sql;
 
+# Represents a OracleDB client.
 public isolated client class Client {
     *sql:Client;
 
-    # Initializes the Oracle database client.
+    # Initializes the OracleDB Client. It should be kept open throughout the entirety of the application
+    # to perform the operations.
     #
     # + host - Hostname of the Oracle database server
     # + user - Name of a user of the Oracle database server
@@ -48,6 +50,7 @@ public isolated client class Client {
     }
 
     # Executes the query, which may return multiple results.
+    # When processing the stream, make sure to consume all fetched data or close the stream.
     #
     # + sqlQuery - The SQL query such as `` `SELECT * from Album WHERE name=${albumName}` ``
     # + rowType - The `typedesc` of the record to which the result needs to be returned
@@ -94,7 +97,8 @@ public isolated client class Client {
         return nativeBatchExecute(self, sqlQueries);
     }
 
-    # Executes a SQL query, which calls a stored procedure. This may or may not return results.
+    # Executes an SQL query, which calls a stored procedure. This may or may not
+    # return results. Once the results are processed, the `close` method on `sql:ProcedureCallResult` must be called.
     #
     # + sqlQuery - The SQL query such as `` `CALL sp_GetAlbums();` ``
     # + rowTypes - `typedesc` array of the records to which the results need to be returned
@@ -105,7 +109,8 @@ public isolated client class Client {
         name: "nativeCall"
     } external;
 
-    # Closes the SQL client and shuts down the connection pool.
+    # Closes the JDBC client and shuts down the connection pool. The client must be closed only at the end of the
+    # application lifetime (or closed for graceful stops in a service).
     #
     # + return - `()` or an `sql:Error`
     public isolated function close() returns sql:Error? = @java:Method {
