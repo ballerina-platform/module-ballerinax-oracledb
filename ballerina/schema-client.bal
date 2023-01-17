@@ -23,14 +23,14 @@ isolated client class SchemaClient {
 
     # Initializes the Schema Client 
     #
-    # + host - Hostname of the Oracle server
-    # + user - If the Oracle server is secured, the username
-    # + password - The password of the Oracle server for the provided username
-    # + database - The name of the database
-    # + port - Port number of the Oracle server
-    # + options - Oracle database connection options
-    # + connectionPool - The `sql:ConnectionPool` to be used for the connection. If there is no
-    #                    `connectionPool` provided, the global connection pool (shared by all clients) will be used
+    # + host - Hostname of the Oracle database server
+    # + user - Name of a user of the Oracle database server
+    # + password - The password of the Oracle database server for the provided username
+    # + database - System identifier or the service name of the database
+    # + port - Port number of the Oracle database server
+    # + options - Oracle database connection properties
+    # + connectionPool - The `sql:ConnectionPool` object to be used within the client. If there is no
+    #                    `connectionPool` provided, the global connection pool will be used
     # + return - An `sql:Error` if the client creation fails
     public function init(string host, string user, string password, string database, int port, 
             Options? options = (), sql:ConnectionPool? connectionPool = ()) returns sql:Error? {
