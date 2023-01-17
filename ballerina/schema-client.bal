@@ -44,8 +44,8 @@ isolated client class SchemaClient {
     isolated remote function listTables() returns string[]|sql:Error {
         string[] tables = [];
         stream<record {}, sql:Error?> tableStream = self.dbClient->query(
-            `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES 
-             WHERE TABLE_SCHEMA = ${self.database};`
+            `SELECT TABLE_NAME FROM all_tables
+             WHERE owner = ${self.database};`
         );
 
         do {
@@ -72,8 +72,8 @@ isolated client class SchemaClient {
     # + return - An 'sql:TableDefinition' with the relevant table information or an `sql:Error`
     isolated remote function getTableInfo(string tableName, sql:ColumnRetrievalOptions include = sql:COLUMNS_ONLY) returns sql:TableDefinition|sql:Error {
         record {}|sql:Error 'table = self.dbClient->queryRow(
-            `SELECT TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES 
-             WHERE (TABLE_SCHEMA=${self.database} AND TABLE_NAME = ${tableName});`
+            `SELECT object_type FROM all_objects
+             WHERE owner = ${self.database} AND object_name = ${tableName};`
         );
 
         if 'table is sql:NoRowsError {
@@ -81,9 +81,13 @@ isolated client class SchemaClient {
         } else if 'table is sql:Error {
             return 'table;
         } else {
+            if ('table["object_type"] == "TABLE"){
+                'table["object_type"] = "BASE TABLE";
+            }
+
             sql:TableDefinition tableDef = {
                 name: tableName,
-                'type: <sql:TableType>'table["TABLE_TYPE"]
+                'type: <sql:TableType>'table["object_type"]
             };
 
             if !(include == sql:NO_COLUMNS) {
@@ -106,13 +110,13 @@ isolated client class SchemaClient {
     isolated remote function listRoutines() returns string[]|sql:Error {
         string[] routines = [];
         stream<record {}, sql:Error?> routineStream = self.dbClient->query(
-            `SELECT ROUTINE_NAME FROM INFORMATION_SCHEMA.ROUTINES
-            WHERE ROUTINE_SCHEMA = ${self.database};`
+            `SELECT object_name FROM all_objects
+            WHERE owner = ${self.database} AND object_type = 'PROCEDURE' OR object_type = 'FUNCTION';`
         );
 
         do {
             routines = check from record {} 'routine in routineStream
-                select <string>'routine["ROUTINE_NAME"];
+                select <string>'routine["object_name"];
         } on fail error e {
             return error(string `Error while listing routines in the ${self.database} database.`, cause = e);
         }
@@ -128,8 +132,8 @@ isolated client class SchemaClient {
     # + return - An 'sql:RoutineDefinition' with the relevant routine information or an `sql:Error`
     isolated remote function getRoutineInfo(string name) returns sql:RoutineDefinition|sql:Error {
         record {}|sql:Error routineRecord = self.dbClient->queryRow(
-            `SELECT SPECIFIC_NAME, ROUTINE_TYPE, DATA_TYPE FROM INFORMATION_SCHEMA.ROUTINES 
-             WHERE ROUTINE_NAME = ${name};`
+            `SELECT object_name, object_type, return_type FROM all_procedures
+             WHERE object_name = ${name};`
         );
 
         if routineRecord is sql:NoRowsError {
@@ -140,9 +144,9 @@ isolated client class SchemaClient {
             sql:ParameterDefinition[] params = check self.getParameters(name);
 
             sql:RoutineDefinition routine = {
-                name: <string>routineRecord["SPECIFIC_NAME"],
-                'type: <sql:RoutineType>routineRecord["ROUTINE_TYPE"],
-                returnType: <string?>routineRecord["DATA_TYPE"],
+                name: <string>routineRecord["object_name"],
+                'type: <sql:RoutineType>routineRecord["object_type"],
+                returnType: <string?>routineRecord["return_type"],
                 parameters: params
             };            
 
@@ -157,17 +161,17 @@ isolated client class SchemaClient {
     isolated function getColumns(string tableName) returns sql:ColumnDefinition[]|sql:Error {
         sql:ColumnDefinition[] columns = [];
         stream<record {}, sql:Error?> colResults = self.dbClient->query(
-            `SELECT COLUMN_NAME, DATA_TYPE, COLUMN_DEFAULT, IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS 
-                WHERE (TABLE_SCHEMA=${self.database} AND TABLE_NAME = ${tableName});`
+            `SELECT column_name, data_type, data_default, nullable FROM all_tab_columns
+             WHERE owner = ${self.database} AND table_name = ${tableName};`
         );
         do {
             check from record {} result in colResults
                 do {
                     sql:ColumnDefinition column = {
-                        name: <string>result["COLUMN_NAME"],
-                        'type: <string>result["DATA_TYPE"],
-                        defaultValue: result["COLUMN_DEFAULT"],
-                        nullable: (<string>result["IS_NULLABLE"]) == "YES" ? true : false
+                        name: <string>result["column_name"],
+                        'type: <string>result["data_type"],
+                        defaultValue: result["data_default"],
+                        nullable: (<string>result["nullable"]) == "Y" ? true : false
                     };
                     columns.push(column);
                 };
@@ -189,18 +193,18 @@ isolated client class SchemaClient {
         sql:CheckConstraint[] checkConstList =  [];
 
         stream<record {}, sql:Error?> checkResults = self.dbClient->query(
-            `SELECT DISTINCT CC.CONSTRAINT_NAME, CC.CHECK_CLAUSE 
-            FROM INFORMATION_SCHEMA.CHECK_CONSTRAINTS AS CC 
-            JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC 
-            ON CC.CONSTRAINT_SCHEMA = TC.CONSTRAINT_SCHEMA 
-            WHERE CC.CONSTRAINT_SCHEMA=${self.database} AND TC.TABLE_NAME=${tableName};`
+            `SELECT DISTINCT UC.CONSTRAINT_NAME, UC.SEARCH_CONDITION
+            FROM USER_CONSTRAINTS UC
+            JOIN USER_TABLES UT
+            ON UC.TABLE_NAME = UT.TABLE_NAME
+            WHERE UC.CONSTRAINT_TYPE = ${self.database} AND UT.TABLE_NAME = ${tableName};`
         );
         do {
             check from record {} result in checkResults
                 do {
                     sql:CheckConstraint 'check = {
                         name: <string>result["CONSTRAINT_NAME"],
-                        clause: <string>result["CHECK_CLAUSE"]
+                        clause: <string>result["SEARCH_CONDITION"]
                     };
                     checkConstList.push('check);
                 };
@@ -215,13 +219,12 @@ isolated client class SchemaClient {
         map<sql:ReferentialConstraint[]> refConstMap = {};
 
         stream<record {}, sql:Error?> refResults = self.dbClient->query(
-            `SELECT KCU.CONSTRAINT_NAME, KCU.TABLE_NAME, KCU.COLUMN_NAME, RC.UPDATE_RULE, RC.DELETE_RULE
-            FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC 
-            JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE as KCU
-            ON KCU.CONSTRAINT_CATALOG = RC.CONSTRAINT_CATALOG 
-            AND KCU.CONSTRAINT_SCHEMA = RC.CONSTRAINT_SCHEMA
-            AND KCU.CONSTRAINT_NAME = RC.CONSTRAINT_NAME
-            WHERE (RC.CONSTRAINT_SCHEMA=${self.database} AND KCU.TABLE_NAME = ${tableName});`
+            `SELECT UCC.CONSTRAINT_NAME, UCC.TABLE_NAME, UCC.COLUMN_NAME, UC.DELETE_RULE, UC.UPDATE_RULE
+            FROM USER_CONSTRAINTS UC
+            JOIN USER_CONS_COLUMNS UCC
+            ON UC.CONSTRAINT_NAME = UCC.CONSTRAINT_NAME
+            AND UC.OWNER = UCC.OWNER
+            WHERE UCC.TABLE_NAME = ${tableName};`
         );
         do {
             check from record {} result in refResults
@@ -264,11 +267,11 @@ isolated client class SchemaClient {
         sql:ParameterDefinition[] parameterList = [];
 
         stream<sql:ParameterDefinition, sql:Error?> paramResults = self.dbClient->query(
-            `SELECT P.PARAMETER_MODE, P.PARAMETER_NAME, P.DATA_TYPE
-            FROM INFORMATION_SCHEMA.PARAMETERS AS P
-            JOIN INFORMATION_SCHEMA.ROUTINES AS R
-            ON P.SPECIFIC_NAME = R.SPECIFIC_NAME
-            WHERE (P.SPECIFIC_SCHEMA = ${self.database} AND R.ROUTINE_NAME = ${name});`
+            `SELECT UA.IN_OUT as PARAMETER_MODE, UA.ARGUMENT_NAME as PARAMETER_NAME, UA.DATA_TYPE
+            FROM USER_ARGUMENTS UA
+            JOIN USER_PROCEDURES UP
+            ON UA.OBJECT_NAME = UP.OBJECT_NAME
+            WHERE UP.OBJECT_NAME = ${name};`
         );
         do {
             check from sql:ParameterDefinition parameters in paramResults
