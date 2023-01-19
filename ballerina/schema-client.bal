@@ -45,7 +45,7 @@ isolated client class SchemaClient {
         string[] tables = [];
         stream<record {}, sql:Error?> tableStream = self.dbClient->query(
             `SELECT TABLE_NAME FROM all_tables
-             WHERE owner = ${self.database};`
+             WHERE owner = ${self.database}`
         );
 
         do {
@@ -73,7 +73,7 @@ isolated client class SchemaClient {
     isolated remote function getTableInfo(string tableName, sql:ColumnRetrievalOptions include = sql:COLUMNS_ONLY) returns sql:TableDefinition|sql:Error {
         record {}|sql:Error 'table = self.dbClient->queryRow(
             `SELECT object_type FROM all_objects
-             WHERE owner = ${self.database} AND object_name = ${tableName};`
+             WHERE owner = ${self.database} AND object_name = ${tableName}`
         );
 
         if 'table is sql:NoRowsError {
@@ -111,7 +111,7 @@ isolated client class SchemaClient {
         string[] routines = [];
         stream<record {}, sql:Error?> routineStream = self.dbClient->query(
             `SELECT object_name FROM all_objects
-            WHERE owner = ${self.database} AND object_type = 'PROCEDURE' OR object_type = 'FUNCTION';`
+            WHERE owner = ${self.database} AND (object_type = 'PROCEDURE' OR object_type = 'FUNCTION')`
         );
 
         do {
@@ -132,21 +132,25 @@ isolated client class SchemaClient {
     # + return - An 'sql:RoutineDefinition' with the relevant routine information or an `sql:Error`
     isolated remote function getRoutineInfo(string name) returns sql:RoutineDefinition|sql:Error {
         record {}|sql:Error routineRecord = self.dbClient->queryRow(
-            `SELECT object_name, object_type, return_type FROM all_procedures
-             WHERE object_name = ${name};`
+            `SELECT p.object_name AS name, p.object_type AS objectType, a.data_type as dataType
+             FROM all_procedures p
+             JOIN all_arguments a
+             ON p.object_name = a.object_name
+             AND a.argument_name = 'RETURN'
+             WHERE p.object_name = ${name}`
         );
 
         if routineRecord is sql:NoRowsError {
-            return error sql:NoRowsError(string `Selected routine does not exist in the ${self.database} database, or the user does not have required privilege level to view it.`);
+            return error sql:NoRowsError(string `Selected routine does not exist in the database, or the user does not have required privilege level to view it.`);
         } else if routineRecord is sql:Error {
             return routineRecord;
         } else {
             sql:ParameterDefinition[] params = check self.getParameters(name);
 
             sql:RoutineDefinition routine = {
-                name: <string>routineRecord["object_name"],
-                'type: <sql:RoutineType>routineRecord["object_type"],
-                returnType: <string?>routineRecord["return_type"],
+                name: <string>routineRecord["name"],
+                'type: <sql:RoutineType>routineRecord["objectType"],
+                returnType: <string?>routineRecord["dataType"],
                 parameters: params
             };            
 
@@ -162,7 +166,7 @@ isolated client class SchemaClient {
         sql:ColumnDefinition[] columns = [];
         stream<record {}, sql:Error?> colResults = self.dbClient->query(
             `SELECT column_name, data_type, data_default, nullable FROM all_tab_columns
-             WHERE owner = ${self.database} AND table_name = ${tableName};`
+             WHERE owner = ${self.database} AND table_name = ${tableName}`
         );
         do {
             check from record {} result in colResults
@@ -197,7 +201,7 @@ isolated client class SchemaClient {
             FROM USER_CONSTRAINTS UC
             JOIN USER_TABLES UT
             ON UC.TABLE_NAME = UT.TABLE_NAME
-            WHERE UC.CONSTRAINT_TYPE = ${self.database} AND UT.TABLE_NAME = ${tableName};`
+            WHERE UC.CONSTRAINT_TYPE = ${self.database} AND UT.TABLE_NAME = ${tableName}`
         );
         do {
             check from record {} result in checkResults
@@ -224,7 +228,7 @@ isolated client class SchemaClient {
             JOIN USER_CONS_COLUMNS UCC
             ON UC.CONSTRAINT_NAME = UCC.CONSTRAINT_NAME
             AND UC.OWNER = UCC.OWNER
-            WHERE UCC.TABLE_NAME = ${tableName};`
+            WHERE UCC.TABLE_NAME = ${tableName}`
         );
         do {
             check from record {} result in refResults
@@ -271,7 +275,7 @@ isolated client class SchemaClient {
             FROM USER_ARGUMENTS UA
             JOIN USER_PROCEDURES UP
             ON UA.OBJECT_NAME = UP.OBJECT_NAME
-            WHERE UP.OBJECT_NAME = ${name};`
+            WHERE UP.OBJECT_NAME = ${name}`
         );
         do {
             check from sql:ParameterDefinition parameters in paramResults
