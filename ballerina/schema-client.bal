@@ -19,7 +19,6 @@ import ballerina/sql;
 # Represents an SQL metadata client.
 isolated client class SchemaClient {
     private final Client dbClient;
-    private final string database;
 
     # Initializes the Schema Client 
     #
@@ -34,25 +33,25 @@ isolated client class SchemaClient {
     # + return - An `sql:Error` if the client creation fails
     public function init(string host, string user, string password, string database, int port, 
             Options? options = (), sql:ConnectionPool? connectionPool = ()) returns sql:Error? {
-        self.database = database;
         self.dbClient = check new (host, user, password, database, port, options, connectionPool);
     }
 
     # Retrieves all tables in the database.
     #
+    # + schema - The schema that contains the users tables and routines
     # + return - A string array containing the names of the tables or an `sql:Error`
-    isolated remote function listTables() returns string[]|sql:Error {
+    isolated remote function listTables(string schema) returns string[]|sql:Error {
         string[] tables = [];
         stream<record {}, sql:Error?> tableStream = self.dbClient->query(
             `SELECT TABLE_NAME FROM all_tables
-             WHERE owner = ${self.database}`
+             WHERE owner = ${schema}`
         );
 
         do {
             tables = check from record {} 'table in tableStream
                 select <string>'table["TABLE_NAME"];
         } on fail error e {
-            return error sql:Error(string `Error while listing the tables in the ${self.database} database.`, cause = e);
+            return error sql:Error(string `Error while listing the tables in the database.`, cause = e);
         }
 
         check tableStream.close();
@@ -63,6 +62,7 @@ isolated client class SchemaClient {
     # Retrieves information relevant to the provided table in the database.
     #
     # + tableName - The name of the table
+    # + schema - The schema that contains the users tables and routines
     # + include - Options on whether column and constraint related information should be fetched.
     #             If `NO_COLUMNS` is provided, then no information related to columns will be retrieved.
     #             If `COLUMNS_ONLY` is provided, then columnar information will be retrieved, but not constraint
@@ -70,10 +70,10 @@ isolated client class SchemaClient {
     #             If `COLUMNS_WITH_CONSTRAINTS` is provided, then columar information along with constraint related
     #             information will be retrieved
     # + return - An 'sql:TableDefinition' with the relevant table information or an `sql:Error`
-    isolated remote function getTableInfo(string tableName, sql:ColumnRetrievalOptions include = sql:COLUMNS_ONLY) returns sql:TableDefinition|sql:Error {
+    isolated remote function getTableInfo(string tableName, string schema, sql:ColumnRetrievalOptions include = sql:COLUMNS_ONLY) returns sql:TableDefinition|sql:Error {
         record {}|sql:Error 'table = self.dbClient->queryRow(
             `SELECT object_type FROM all_objects
-             WHERE owner = ${self.database} AND object_name = ${tableName}`
+             WHERE owner = ${schema} AND object_name = ${tableName}`
         );
 
         if 'table is sql:NoRowsError {
@@ -91,12 +91,12 @@ isolated client class SchemaClient {
             };
 
             if !(include == sql:NO_COLUMNS) {
-                sql:ColumnDefinition[] columns = check self.getColumns(tableName);
+                sql:ColumnDefinition[] columns = check self.getColumns(tableName, schema);
 
                 tableDef.columns = columns;
 
                 if include == sql:COLUMNS_WITH_CONSTRAINTS {
-                    tableDef = check self.getConstraints(tableName, tableDef);
+                    tableDef = check self.getConstraints(tableName, tableDef, schema);
                 }    
             }
 
@@ -106,19 +106,20 @@ isolated client class SchemaClient {
 
     # Retrieves all routines in the database.
     #
+    # + schema - The schema that contains the users tables and routines
     # + return - A string array containing the names of the routines or an `sql:Error`
-    isolated remote function listRoutines() returns string[]|sql:Error {
+    isolated remote function listRoutines(string schema) returns string[]|sql:Error {
         string[] routines = [];
         stream<record {}, sql:Error?> routineStream = self.dbClient->query(
             `SELECT object_name FROM all_objects
-            WHERE owner = ${self.database} AND (object_type = 'PROCEDURE' OR object_type = 'FUNCTION')`
+            WHERE owner = ${schema} AND (object_type = 'PROCEDURE' OR object_type = 'FUNCTION')`
         );
 
         do {
             routines = check from record {} 'routine in routineStream
                 select <string>'routine["object_name"];
         } on fail error e {
-            return error(string `Error while listing routines in the ${self.database} database.`, cause = e);
+            return error(string `Error while listing routines in the database.`, cause = e);
         }
 
         check routineStream.close();
@@ -136,7 +137,6 @@ isolated client class SchemaClient {
              FROM all_procedures p
              JOIN all_arguments a
              ON p.object_name = a.object_name
-             AND a.argument_name = 'RETURN'
              WHERE p.object_name = ${name}`
         );
 
@@ -161,12 +161,13 @@ isolated client class SchemaClient {
     # Retrieves column information of the provided table in the database.
     #
     # + tableName - The name of the table
+    # + schema - The schema that contains the users tables and routines
     # + return - An 'sql:ColumnDefinition[]' or an `sql:Error`
-    isolated function getColumns(string tableName) returns sql:ColumnDefinition[]|sql:Error {
+    isolated function getColumns(string tableName, string schema) returns sql:ColumnDefinition[]|sql:Error {
         sql:ColumnDefinition[] columns = [];
         stream<record {}, sql:Error?> colResults = self.dbClient->query(
             `SELECT column_name, data_type, data_default, nullable FROM all_tab_columns
-             WHERE owner = ${self.database} AND table_name = ${tableName}`
+             WHERE owner = ${schema} AND table_name = ${tableName}`
         );
         do {
             check from record {} result in colResults
@@ -180,7 +181,7 @@ isolated client class SchemaClient {
                     columns.push(column);
                 };
         } on fail error e {
-            return error sql:Error(string `Error while reading column info in the ${tableName} table, in the ${self.database} database.`, cause = e);
+            return error sql:Error(string `Error while reading column info in the ${tableName} table, in the database.`, cause = e);
         }
 
         check colResults.close();
@@ -192,16 +193,16 @@ isolated client class SchemaClient {
     #
     # + tableName - The name of the table
     # + tableDef - The table definition created in getTableInfo()
+    # + schema - The schema that contains the users tables and routines
     # + return - An 'sql:TableDefinition' now including the constraint information or an `sql:Error`
-    isolated function getConstraints(string tableName, sql:TableDefinition tableDef) returns sql:TableDefinition|sql:Error {
+    isolated function getConstraints(string tableName, sql:TableDefinition tableDef, string schema) returns sql:TableDefinition|sql:Error {
         sql:CheckConstraint[] checkConstList =  [];
 
         stream<record {}, sql:Error?> checkResults = self.dbClient->query(
-            `SELECT DISTINCT UC.CONSTRAINT_NAME, UC.SEARCH_CONDITION
-            FROM USER_CONSTRAINTS UC
-            JOIN USER_TABLES UT
-            ON UC.TABLE_NAME = UT.TABLE_NAME
-            WHERE UC.CONSTRAINT_TYPE = ${self.database} AND UT.TABLE_NAME = ${tableName}`
+            `SELECT CONSTRAINT_NAME, SEARCH_CONDITION
+            FROM USER_CONSTRAINTS
+            WHERE OWNER = ${schema} AND CONSTRAINT_TYPE = 'C' 
+            AND TABLE_NAME = ${tableName} AND GENERATED = 'USER NAME'`
         );
         do {
             check from record {} result in checkResults
@@ -213,7 +214,7 @@ isolated client class SchemaClient {
                     checkConstList.push('check);
                 };
         } on fail error e {
-            return error sql:Error(string `Error while reading check constraints in the ${self.database} database.`, cause = e);
+            return error sql:Error(string `Error while reading check constraints in the database.`, cause = e);
         }
 
         check checkResults.close();        
@@ -223,7 +224,7 @@ isolated client class SchemaClient {
         map<sql:ReferentialConstraint[]> refConstMap = {};
 
         stream<record {}, sql:Error?> refResults = self.dbClient->query(
-            `SELECT UCC.CONSTRAINT_NAME, UCC.TABLE_NAME, UCC.COLUMN_NAME, UC.DELETE_RULE, UC.UPDATE_RULE
+            `SELECT UCC.CONSTRAINT_NAME, UCC.TABLE_NAME, UCC.COLUMN_NAME, UC.DELETE_RULE
             FROM USER_CONSTRAINTS UC
             JOIN USER_CONS_COLUMNS UCC
             ON UC.CONSTRAINT_NAME = UCC.CONSTRAINT_NAME
@@ -237,7 +238,7 @@ isolated client class SchemaClient {
                         name: <string>result["CONSTRAINT_NAME"],
                         tableName: <string>result["TABLE_NAME"],
                         columnName: <string>result["COLUMN_NAME"],
-                        updateRule: <sql:ReferentialRule>result["UPDATE_RULE"],
+                        updateRule: <sql:ReferentialRule>"CASCADE",
                         deleteRule: <sql:ReferentialRule>result["DELETE_RULE"]
                     };
 
@@ -248,7 +249,7 @@ isolated client class SchemaClient {
                     refConstMap.get(colName).push(ref);
                 };
         } on fail error e {
-            return error sql:Error(string `Error while reading referential constraints in the ${tableName} table, in the ${self.database} database.`, cause = e);
+            return error sql:Error(string `Error while reading referential constraints in the ${tableName} table, in the database.`, cause = e);
         }
 
         foreach sql:ColumnDefinition col in <sql:ColumnDefinition[]>tableDef.columns {
@@ -288,7 +289,7 @@ isolated client class SchemaClient {
                     parameterList.push('parameter);
                 };
         } on fail error e {
-            return error sql:Error(string `Error while reading parameters in the ${name} routine, in the ${self.database} database.`, cause = e);
+            return error sql:Error(string `Error while reading parameters in the ${name} routine, in the database.`, cause = e);
         }
 
         check paramResults.close();

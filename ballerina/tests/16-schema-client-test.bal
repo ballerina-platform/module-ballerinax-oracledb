@@ -22,7 +22,7 @@ import ballerina/sql;
 }
 function testListTables() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    string[] tableList = check client1->listTables();
+    string[] tableList = check client1->listTables("METADATADB");
     check client1.close();
     test:assertEquals(tableList, ["OFFICES", "EMPLOYEES"]);
 }
@@ -32,7 +32,7 @@ function testListTables() returns error? {
 }
 function testListTablesNegative() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    string[] tableList = check client1->listTables();
+    string[] tableList = check client1->listTables("METADATAEMPTYDB");
     check client1.close();
     test:assertEquals(tableList, []);
 }
@@ -42,7 +42,7 @@ function testListTablesNegative() returns error? {
 }
 function testGetTableInfoNoColumns() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:TableDefinition 'table = check client1->getTableInfo("EMPLOYEES", include = sql:NO_COLUMNS);
+    sql:TableDefinition 'table = check client1->getTableInfo("EMPLOYEES", "METADATADB", include = sql:NO_COLUMNS);
     check client1.close();
     test:assertEquals('table, {"name": "EMPLOYEES", "type": "BASE TABLE"});
 }
@@ -52,7 +52,7 @@ function testGetTableInfoNoColumns() returns error? {
 }
 function testGetTableInfoColumnsOnly() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:TableDefinition 'table = check client1->getTableInfo("EMPLOYEES", include = sql:COLUMNS_ONLY);
+    sql:TableDefinition 'table = check client1->getTableInfo("EMPLOYEES", "METADATADB", include = sql:COLUMNS_ONLY);
     check client1.close();
     test:assertEquals('table.name, "EMPLOYEES");
     test:assertEquals('table.'type, "BASE TABLE");
@@ -71,7 +71,7 @@ function testGetTableInfoColumnsOnly() returns error? {
 }
 function testGetTableInfoColumnsWithConstraints() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:TableDefinition 'table = check client1->getTableInfo("EMPLOYEES", include = sql:COLUMNS_WITH_CONSTRAINTS);
+    sql:TableDefinition 'table = check client1->getTableInfo("EMPLOYEES", "METADATADB", include = sql:COLUMNS_WITH_CONSTRAINTS);
     check client1.close();
 
     test:assertEquals('table.name, "EMPLOYEES");
@@ -97,7 +97,7 @@ function testGetTableInfoColumnsWithConstraints() returns error? {
 }
 function testGetTableInfoNegative() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:TableDefinition|sql:Error 'table = client1->getTableInfo("EMPLOYEE", include = sql:NO_COLUMNS);
+    sql:TableDefinition|sql:Error 'table = client1->getTableInfo("EMPLOYEE", "METADATADB", include = sql:NO_COLUMNS);
     check client1.close();
     if 'table is sql:Error {
         test:assertEquals('table.message(), "The selected table does not exist or the user does not have the required privilege level to view the table.");
@@ -111,9 +111,9 @@ function testGetTableInfoNegative() returns error? {
 }
 function testListRoutines() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    string[] routineList = check client1->listRoutines();
+    string[] routineList = check client1->listRoutines("METADATADB");
     check client1.close();
-    test:assertEquals(routineList, ["getEmpsName", "getEmpsEmail"]);
+    test:assertEquals(routineList, ["GETEMPSNAME", "GETEMPSEMAIL"]);
 }
 
 @test:Config {
@@ -121,7 +121,7 @@ function testListRoutines() returns error? {
 }
 function testListRoutinesNegative() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    string[] routineList = check client1->listRoutines();
+    string[] routineList = check client1->listRoutines("METADATAEMPTYDB");
     check client1.close();
     test:assertEquals(routineList, []);
 }
@@ -131,13 +131,13 @@ function testListRoutinesNegative() returns error? {
 }
 function testGetRoutineInfo() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:RoutineDefinition routine = check client1->getRoutineInfo("getEmpsName");
+    sql:RoutineDefinition routine = check client1->getRoutineInfo("GETEMPSNAME");
     check client1.close();
-    test:assertEquals(routine.name, "getEmpsName");
+    test:assertEquals(routine.name, "GETEMPSNAME");
     test:assertEquals(routine.'type, "PROCEDURE");
 
     string routineParams = (<sql:ParameterDefinition[]>routine.parameters).toString();
-    boolean paramCheck = routineParams.includes("@EMPNUMBER") && routineParams.includes("@FNAME");
+    boolean paramCheck = routineParams.includes("EMPNUMBER") && routineParams.includes("FNAME");
     test:assertEquals(paramCheck, true);
 }
 
@@ -146,7 +146,7 @@ function testGetRoutineInfo() returns error? {
 }
 function testGetRoutineInfoNegative() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:RoutineDefinition|sql:Error routine = client1->getRoutineInfo("getEmpsNames");
+    sql:RoutineDefinition|sql:Error routine = client1->getRoutineInfo("GETEMPSNAMES");
     check client1.close();
     if routine is sql:Error {
         test:assertEquals(routine.message(), "Selected routine does not exist in the database, or the user does not have required privilege level to view it.");
