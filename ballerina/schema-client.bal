@@ -81,13 +81,13 @@ isolated client class SchemaClient {
         } else if 'table is sql:Error {
             return 'table;
         } else {
-            if ('table["object_type"] == "TABLE"){
-                'table["object_type"] = "BASE TABLE";
+            if ('table["OBJECT_TYPE"] == "TABLE"){
+                'table["OBJECT_TYPE"] = "BASE TABLE";
             }
 
             sql:TableDefinition tableDef = {
                 name: tableName,
-                'type: <sql:TableType>'table["object_type"]
+                'type: <sql:TableType>'table["OBJECT_TYPE"]
             };
 
             if !(include == sql:NO_COLUMNS) {
@@ -117,7 +117,7 @@ isolated client class SchemaClient {
 
         do {
             routines = check from record {} 'routine in routineStream
-                select <string>'routine["object_name"];
+                select <string>'routine["OBJECT_NAME"];
         } on fail error e {
             return error(string `Error while listing routines in the database.`, cause = e);
         }
@@ -148,9 +148,9 @@ isolated client class SchemaClient {
             sql:ParameterDefinition[] params = check self.getParameters(name);
 
             sql:RoutineDefinition routine = {
-                name: <string>routineRecord["name"],
-                'type: <sql:RoutineType>routineRecord["objectType"],
-                returnType: <string?>routineRecord["dataType"],
+                name: <string>routineRecord["NAME"],
+                'type: <sql:RoutineType>routineRecord["OBJECTTYPE"],
+                returnType: <string?>routineRecord["DATATYPE"],
                 parameters: params
             };            
 
@@ -173,10 +173,10 @@ isolated client class SchemaClient {
             check from record {} result in colResults
                 do {
                     sql:ColumnDefinition column = {
-                        name: <string>result["column_name"],
-                        'type: <string>result["data_type"],
-                        defaultValue: result["data_default"],
-                        nullable: (<string>result["nullable"]) == "Y" ? true : false
+                        name: <string>result["COLUMN_NAME"],
+                        'type: <string>result["DATA_TYPE"],
+                        defaultValue: result["DATA_DEFAULT"],
+                        nullable: (<string>result["NULLABLE"]) == "Y" ? true : false
                     };
                     columns.push(column);
                 };
@@ -229,7 +229,7 @@ isolated client class SchemaClient {
             JOIN USER_CONS_COLUMNS UCC
             ON UC.CONSTRAINT_NAME = UCC.CONSTRAINT_NAME
             AND UC.OWNER = UCC.OWNER
-            WHERE UCC.TABLE_NAME = ${tableName}`
+            WHERE UCC.TABLE_NAME = ${tableName} AND NOT DELETE_RULE = 'null'`
         );
         do {
             check from record {} result in refResults
@@ -238,7 +238,7 @@ isolated client class SchemaClient {
                         name: <string>result["CONSTRAINT_NAME"],
                         tableName: <string>result["TABLE_NAME"],
                         columnName: <string>result["COLUMN_NAME"],
-                        updateRule: <sql:ReferentialRule>"CASCADE",
+                        updateRule: <sql:ReferentialRule>(<string>"NO ACTION"),
                         deleteRule: <sql:ReferentialRule>result["DELETE_RULE"]
                     };
 

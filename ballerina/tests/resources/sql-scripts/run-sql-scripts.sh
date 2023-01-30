@@ -13,3 +13,4 @@ sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @transaction/local-t
 sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @transaction/xa-transaction-test-data-1.sql
 sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @transaction/xa-transaction-test-data-2.sql
 sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @error/error-test-data.sql
+sqlplus -S admin/password@localhost/ORCLCDB.localdomain <<< @metadata/schema-client-test-data.sql
