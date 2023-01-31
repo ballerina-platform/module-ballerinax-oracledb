@@ -26,7 +26,7 @@ function testListTables() returns error? {
     string[] tableList = check client1->listTables("ADMIN");
     check client1.close();
 
-    boolean tableCheck = tableList.indexOf("OFFICES") != null && tableList.indexOf("EMPLOYEES") != null;
+    boolean tableCheck = tableList.indexOf("OFFICES") != null && tableList.indexOf("MYEMPLOYEES") != null;
     test:assertEquals(tableCheck, true);
 }
 
@@ -38,7 +38,7 @@ function testListTablesNegative() returns error? {
     string[] tableList = check client1->listTables("SYS");
     check client1.close();
 
-    boolean tableCheck = tableList.indexOf("OFFICES") != null && tableList.indexOf("EMPLOYEES") != null;
+    boolean tableCheck = tableList.indexOf("OFFICES") != null && tableList.indexOf("MYEMPLOYEES") != null;
     test:assertEquals(tableCheck, false);
 }
 
@@ -47,9 +47,9 @@ function testListTablesNegative() returns error? {
 }
 function testGetTableInfoNoColumns() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:TableDefinition 'table = check client1->getTableInfo("EMPLOYEES", "ADMIN", include = sql:NO_COLUMNS);
+    sql:TableDefinition 'table = check client1->getTableInfo("MYEMPLOYEES", "ADMIN", include = sql:NO_COLUMNS);
     check client1.close();
-    test:assertEquals('table, {"name": "EMPLOYEES", "type": "BASE TABLE"});
+    test:assertEquals('table, {"name": "MYEMPLOYEES", "type": "BASE TABLE"});
 }
 
 @test:Config {
@@ -57,9 +57,9 @@ function testGetTableInfoNoColumns() returns error? {
 }
 function testGetTableInfoColumnsOnly() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:TableDefinition 'table = check client1->getTableInfo("EMPLOYEES", "ADMIN", include = sql:COLUMNS_ONLY);
+    sql:TableDefinition 'table = check client1->getTableInfo("MYEMPLOYEES", "ADMIN", include = sql:COLUMNS_ONLY);
     check client1.close();
-    test:assertEquals('table.name, "EMPLOYEES");
+    test:assertEquals('table.name, "MYEMPLOYEES");
     test:assertEquals('table.'type, "BASE TABLE");
 
     string tableCol = (<sql:ColumnDefinition[]>'table.columns).toString();
@@ -76,10 +76,10 @@ function testGetTableInfoColumnsOnly() returns error? {
 }
 function testGetTableInfoColumnsWithConstraints() returns error? {
     SchemaClient client1 = check new(HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:TableDefinition 'table = check client1->getTableInfo("EMPLOYEES", "ADMIN", include = sql:COLUMNS_WITH_CONSTRAINTS);
+    sql:TableDefinition 'table = check client1->getTableInfo("MYEMPLOYEES", "ADMIN", include = sql:COLUMNS_WITH_CONSTRAINTS);
     check client1.close();
 
-    test:assertEquals('table.name, "EMPLOYEES");
+    test:assertEquals('table.name, "MYEMPLOYEES");
     test:assertEquals('table.'type, "BASE TABLE");
 
     string tableCheckConst = (<sql:CheckConstraint[]>'table.checkConstraints).toString();
@@ -93,7 +93,7 @@ function testGetTableInfoColumnsWithConstraints() returns error? {
                          tableCol.includes("FIRSTNAME") && tableCol.includes("EXTENSION") && 
                          tableCol.includes("EMAIL") && tableCol.includes("OFFICECODE") && 
                          tableCol.includes("REPORTSTO") && tableCol.includes("JOBTITLE") && 
-                         tableCol.includes("FK_EMPLOYEES_OFFICE") && tableCol.includes("FK_EMPLOYEES_MANAGER");
+                         tableCol.includes("FK_MYEMPLOYEES_OFFICE") && tableCol.includes("FK_MYEMPLOYEES_MANAGER");
 
     test:assertEquals(colCheck, true);
 }
