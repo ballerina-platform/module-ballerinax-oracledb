@@ -204,4 +204,17 @@ public class CompilerPluginTest {
         Assert.assertEquals(availableErrors, 0);
     }
 
+    @Test
+    public void testDiagnosticsCodeNull() {
+        Package currentPackage = loadPackage("sample7");
+        PackageCompilation compilation = currentPackage.getCompilation();
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        List<Diagnostic> errorDiagnosticsList = diagnosticResult.diagnostics().stream()
+                .filter(r -> r.diagnosticInfo().severity().equals(DiagnosticSeverity.ERROR))
+                .collect(Collectors.toList());
+        long availableErrors = errorDiagnosticsList.size();
+
+        Assert.assertEquals(availableErrors, 3);
+    }
+
 }

@@ -1,0 +1,4 @@
+[package]
+org = "oracledb_test"
+name = "sample7"
+version = "0.1.0"
