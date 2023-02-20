@@ -66,6 +66,9 @@ dependencies = [
 	{org = "ballerina", name = "regex"},
 	{org = "ballerina", name = "time"}
 ]
+modules = [
+	{org = "ballerina", packageName = "file", moduleName = "file"}
+]
 
 [[package]]
 org = "ballerina"
@@ -391,6 +394,7 @@ name = "oracledb"
 version = "1.7.0"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
+	{org = "ballerina", name = "file"},
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.runtime"},
@@ -409,10 +413,9 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "oracledb.driver"
-version = "1.2.0"
+version = "1.2.1"
 scope = "testOnly"
 modules = [
 	{org = "ballerinax", packageName = "oracledb.driver", moduleName = "oracledb.driver"}
 ]
-
 
