@@ -27,11 +27,17 @@ public class Constants {
     public static final String OPTIONS_PARAM_NAME = "options";
     public static final String OUT_PARAMETER_POSTFIX = "OutParameter";
 
+    private Constants() {
+    }
+
     /**
      * Constants related to Client object.
      */
     public static class Client {
         public static final String NAME = "Client";
+
+        private Client() {
+        }
     }
 
     /**
@@ -41,6 +47,9 @@ public class Constants {
         public static final String MAX_OPEN_CONNECTIONS = "maxOpenConnections";
         public static final String MAX_CONNECTION_LIFE_TIME = "maxConnectionLifeTime";
         public static final String MIN_IDLE_CONNECTIONS = "minIdleConnections";
+
+        private ConnectionPool() {
+        }
     }
 
     /**
@@ -51,6 +60,9 @@ public class Constants {
         public static final String CONNECT_TIMEOUT = "connectTimeout";
         public static final String SOCKET_TIMEOUT = "socketTimeout";
         public static final String LOGIN_TIMEOUT = "loginTimeout";
+
+        private Options() {
+        }
     }
 
     /**
@@ -61,6 +73,9 @@ public class Constants {
         public static final String XML = "XmlOutParameter";
         public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthOutParameter";
         public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondOutParameter";
+
+        private OutParameter() {
+        }
     }
 
 
