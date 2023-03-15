@@ -24,6 +24,7 @@ import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.ArrayType;
 import io.ballerina.runtime.api.types.Field;
+import io.ballerina.runtime.api.types.RecordType;
 import io.ballerina.runtime.api.types.StructureType;
 import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.utils.StringUtils;
@@ -91,7 +92,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             return null;
         }
         Field[] internalStructFields = structType.getFields().values().toArray(new Field[0]);
-        BMap<BString, Object> struct = ValueCreator.createMapValue(structType);
+        BMap<BString, Object> struct = ValueCreator.createRecordValue(((RecordType) structType));
         Object[] dataArray = structValue.getAttributes();
         if (dataArray != null) {
             if (dataArray.length != internalStructFields.length) {
