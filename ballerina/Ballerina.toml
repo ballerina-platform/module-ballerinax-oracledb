@@ -7,7 +7,7 @@ keywords = ["database", "client", "network", "SQL", "RDBMS", "OracleDB", "Oracle
 repository = "https://github.com/ballerina-platform/module-ballerinax-oracledb"
 icon = "icon.png"
 license = ["Apache-2.0"]
-distribution = "2201.4.0"
+distribution = "2201.5.0"
 
 [[platform.java11.dependency]]
 groupId = "io.ballerina.stdlib"
@@ -18,5 +18,5 @@ path = "../native/build/libs/oracledb-native-1.7.1-SNAPSHOT.jar"
 [[platform.java11.dependency]]
 groupId = "io.ballerina.stdlib"
 artifactId = "sql-native"
-version = "1.7.0"
-path = "./lib/sql-native-1.7.0.jar"
+version = "1.8.0"
+path = "./lib/sql-native-1.8.0-20230328-115500-42d5c5f.jar"
