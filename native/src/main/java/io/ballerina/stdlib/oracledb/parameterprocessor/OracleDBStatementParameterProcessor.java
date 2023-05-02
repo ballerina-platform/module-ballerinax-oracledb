@@ -19,6 +19,7 @@
 package io.ballerina.stdlib.oracledb.parameterprocessor;
 
 import io.ballerina.runtime.api.types.Type;
+import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
@@ -59,7 +60,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     @Override
     protected void setCustomSqlTypedParam(Connection connection, PreparedStatement preparedStatement, int index,
         BObject typedValue) throws SQLException, DataError {
-        String sqlType = typedValue.getType().getName();
+        String sqlType = TypeUtils.getType(typedValue).getName();
         Object value = typedValue.get(Constants.TypedValueFields.VALUE);
         switch (sqlType) {
             case Constants.Types.CustomTypes.OBJECT:
@@ -78,7 +79,7 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
 
     @Override
     public int getCustomOutParameterType(BObject typedValue) throws DataError {
-        String sqlType = typedValue.getType().getName();
+        String sqlType = TypeUtils.getType(typedValue).getName();
         int sqlTypeValue;
         switch (sqlType) {
             case Constants.Types.OutParameterTypes.XML:
