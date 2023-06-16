@@ -37,7 +37,7 @@ import java.util.Optional;
 
 import static io.ballerina.stdlib.oracledb.compiler.Constants.BALLERINAX;
 import static io.ballerina.stdlib.oracledb.compiler.Constants.ORACLEDB;
-import static io.ballerina.stdlib.oracledb.compiler.Utils.validateOptions;
+import static io.ballerina.stdlib.oracledb.compiler.Utils.validateOptionConfig;
 
 /**
  * Analyser for validation oracledb:Options.
@@ -58,7 +58,7 @@ public class RecordAnalyzer implements AnalysisTask<SyntaxNodeAnalysisContext> {
                 if (recordNode.isEmpty()) {
                     return;
                 }
-                validateOptions(ctx, recordNode.get());
+                validateOptionConfig(ctx, recordNode.get());
             }
         }
     }
