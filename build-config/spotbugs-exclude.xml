@@ -16,4 +16,14 @@
   ~ under the License.
   -->
 <FindBugsFilter>
+    <Match>
+        <Class name="io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBResultParameterProcessor"/>
+        <Method name="getBalStreamResultIterator"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="io.ballerina.stdlib.oracledb.parameterprocessor.OracleDBStatementParameterProcessor"/>
+        <Method name="getInstance"/>
+        <Bug pattern="MS_EXPOSE_REP"/>
+    </Match>
 </FindBugsFilter>

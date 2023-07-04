@@ -28,24 +28,24 @@ These are HTTP RESTful services used to insert, create, and retrieve data of a s
       
       * Download the JAR files and update the path.
         ```
-        [[platform.java11.dependency]]
+        [[platform.java17.dependency]]
         path = "PATH"
         ```
         or
         
       * Add the JAR with the Maven dependency params.
         ```
-        [platform.java11.dependency]]
+        [platform.java17.dependency]]
         groupId = "com.oracle.database.jdbc"
         artifactId = "ojdbc8"
         version = "12.2.0.1"
   
-        [platform.java11.dependency]]
+        [platform.java17.dependency]]
         groupId = "com.oracle.database.xml"
         artifactId = "xdb"
         version = "21.1.0.0"
   
-        [platform.java11.dependency]]
+        [platform.java17.dependency]]
         groupId = "com.oracle.database.xml"
         artifactId = "xmlparserv2"
         version = "12.2.0.1"
