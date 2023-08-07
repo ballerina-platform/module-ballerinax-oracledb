@@ -29,7 +29,7 @@ Follow one of the following ways to add the JARs in the file:
     ```
     [[platform.java17.dependency]]
     groupId = "com.oracle.database.jdbc"
-    artifactId = "ojdbc8"
+    artifactId = "ojdbc11"
     version = "12.2.0.1"
   
     [platform.java17.dependency]]
