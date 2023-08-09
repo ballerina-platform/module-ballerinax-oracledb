@@ -16,7 +16,6 @@
 
 import ballerina/io;
 import ballerina/sql;
-import ballerinax/oracledb.driver as _;
 
 isolated function getByteColumnChannel() returns io:ReadableByteChannel|error {
     io:ReadableByteChannel byteChannel = check io:openReadableFile("./tests/resources/files/byteValue.txt");
