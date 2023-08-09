@@ -71,7 +71,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "http"
-version = "2.9.0"
+version = "2.9.1"
 scope = "testOnly"
 dependencies = [
 	{org = "ballerina", name = "auth"},
@@ -402,19 +402,9 @@ dependencies = [
 	{org = "ballerina", name = "sql"},
 	{org = "ballerina", name = "test"},
 	{org = "ballerina", name = "time"},
-	{org = "ballerinai", name = "transaction"},
-	{org = "ballerinax", name = "oracledb.driver"}
+	{org = "ballerinai", name = "transaction"}
 ]
 modules = [
 	{org = "ballerinax", packageName = "oracledb", moduleName = "oracledb"}
-]
-
-[[package]]
-org = "ballerinax"
-name = "oracledb.driver"
-version = "1.2.1"
-scope = "testOnly"
-modules = [
-	{org = "ballerinax", packageName = "oracledb.driver", moduleName = "oracledb.driver"}
 ]
 

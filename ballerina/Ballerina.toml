@@ -23,3 +23,18 @@ groupId = "io.ballerina.stdlib"
 artifactId = "sql-native"
 version = "1.10.0"
 path = "./lib/sql-native-1.10.0.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.oracle.database.jdbc"
+artifactId = "ojdbc11"
+version = "23.2.0.0"
+
+[[platform.java17.dependency]]
+groupId = "com.oracle.database.xml"
+artifactId = "xdb"
+version = "23.2.0.0"
+
+[[platform.java17.dependency]]
+groupId = "com.oracle.database.xml"
+artifactId = "xmlparserv2"
+version = "23.2.0.0"
