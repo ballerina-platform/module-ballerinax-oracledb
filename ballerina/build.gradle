@@ -122,8 +122,8 @@ publishing {
 
 def checkExecResult(execResult, failText, standardOutput) {
     if (execResult) {
-        if (execResult.getExitValue() != 0) {
-            throw new GradleException('Non-zero exit value: ' + execResult.getExitValue())
+        if (execResult.get().getExitValue() != 0) {
+            throw new GradleException('Non-zero exit value: ' + execResult.get().getExitValue())
         }
         if (standardOutput.toString().contains(failText)) {
             throw new GradleException('"' + failText + '" string in output: ' + standardOutput.toString())
@@ -139,7 +139,7 @@ task createTestDockerImage(type: Exec) {
         commandLine 'sh', '-c', "docker build -f $project.projectDir/tests/resources/Dockerfile -t ballerina-oracledb" +
                 " -q $project.projectDir/tests/resources/"
         doLast {
-            checkExecResult(execResult, 'Error', standardOutput)
+            checkExecResult(executionResult, 'Error', standardOutput)
             sleep(5 * 1000)
         }
     }

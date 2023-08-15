@@ -15,7 +15,7 @@
  *
  */
 
-apply plugin: "java"
+apply plugin: "java-library"
 apply plugin: "com.github.spotbugs"
 apply plugin: "checkstyle"
 apply plugin: "jacoco"
@@ -31,7 +31,7 @@ dependencies {
 
     checkstyle project(":checkstyle")
     checkstyle "com.puppycrawl.tools:checkstyle:${puppycrawlCheckstyleVersion}"
-    implementation (group: 'com.oracle.database.jdbc', name: 'ojdbc8', version: "${oracleDBDriverVersion}") {
+    implementation (group: 'com.oracle.database.jdbc', name: 'ojdbc11', version: "${oracleDBDriverVersion}") {
         transitive = false
     }
     implementation group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
@@ -43,10 +43,10 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_17
 
 jacoco {
-    toolVersion = "0.8.6"
+    toolVersion = "0.8.10"
 }
 
 test {
