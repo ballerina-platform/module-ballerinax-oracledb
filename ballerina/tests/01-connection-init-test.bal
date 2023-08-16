@@ -196,7 +196,7 @@ isolated function testWithOptionsWithErroneousSSL() returns error? {
     test:assertTrue(oracledbClient3 is error);
     if oracledbClient3 is sql:ApplicationError {
         test:assertTrue(oracledbClient3.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " + 
-        "IO Error: The Network Adapter could not establish the connection"));
+        "IO Error: The Network Adapter could not establish the connection"), oracledbClient3.message());
     } else {
         test:assertFail("Error ApplicatonError expected");
     }
