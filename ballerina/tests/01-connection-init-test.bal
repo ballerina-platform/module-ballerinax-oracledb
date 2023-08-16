@@ -178,8 +178,8 @@ isolated function testWithOptionsWithErroneousSSL() returns error? {
 
     test:assertTrue(oracledbClient2 is error);
     if oracledbClient2 is sql:ApplicationError {
-        test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize " +
-        "pool: ORA-17002: I/O error: Connection closed,"), oracledbClient.message());
+        test:assertTrue(oracledbClient2.message().startsWith("Error in SQL connector configuration: Failed to initialize " +
+        "pool: ORA-17002: I/O error: Connection closed,"), oracledbClient2.message());
     } else {
         test:assertFail("Error Application Error expected");
     }
