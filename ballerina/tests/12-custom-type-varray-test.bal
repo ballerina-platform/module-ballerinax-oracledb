@@ -184,8 +184,8 @@ isolated function insertVarrayWithMoreElements() returns sql:Error? {
     sql:ParameterizedQuery insertQuery = `insert into TestVarrayTable (COL_CHARARR) values (${charVarray})`;
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if result is sql:DatabaseError {
-        test:assertTrue(result.message().includes("Error while executing SQL query: insert into TestVarrayTable " + 
-        "(COL_CHARARR) values ( ? ). Exceeded maximum VARRAY limit ."));
+        test:assertTrue(result.message().includes("Error while executing SQL query: insert into TestVarrayTable " +
+        "(COL_CHARARR) values ( ? ). Exceeded maximum VARRAY limit ."), result.message());
     } else {
         test:assertFail("Database Error expected.");
     }
