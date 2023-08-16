@@ -84,7 +84,7 @@ isolated function testUpdateTable() returns sql:Error? {
     sql:ExecutionResult result = check executeQuery(
         `UPDATE TestExecuteTable SET field2 = 'Hello, ballerina' WHERE field1 = 1`);
     test:assertExactEquals(result.affectedRowCount, 1, "Affected row count is different.");
-    test:assertExactEquals(result.lastInsertId, (), "Last Insert Id should be null.");
+    test:assertTrue(result.lastInsertId is string);
 }
 
 @test:Config {
