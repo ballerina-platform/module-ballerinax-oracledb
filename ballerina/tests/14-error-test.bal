@@ -36,8 +36,7 @@ function TestLinkFailure() {
     Client|error dbClient = new ("HOST", USER, PASSWORD, DATABASE, PORT);
     test:assertTrue(dbClient is sql:ApplicationError);
     sql:ApplicationError sqlerror = <sql:ApplicationError>dbClient;
-    test:assertTrue(strings:includes(sqlerror.message(), " IO Error: The Network Adapter could not establish " + 
-                "the connection "), sqlerror.message());
+    test:assertTrue(strings:includes(sqlerror.message(), "Unknown host specified.: HOST:"), sqlerror.message());
 }
 
 @test:Config {
@@ -47,8 +46,8 @@ function TestInvalidDB() {
     Client|error dbClient = new (HOST, USER, PASSWORD, "errorD", PORT);
     test:assertTrue(dbClient is sql:ApplicationError);
     sql:ApplicationError sqlerror = <sql:ApplicationError>dbClient;
-    test:assertTrue(strings:includes(sqlerror.message(), "TNS:listener does not currently know of service requested " + 
-                "in connect descriptor"), sqlerror.message());
+    test:assertTrue(strings:includes(sqlerror.message(), "Service errorD is not registered with the listener at host "
+        + "localhost port 1521."), sqlerror.message());
 }
 
 @test:Config {
@@ -303,6 +302,6 @@ function TestOverflowException() returns error? {
     insertResult = dbClient->execute(insertQuery);
     check dbClient.close();
     sql:DatabaseError sqlerror = <sql:DatabaseError>insertResult;
-    test:assertTrue(strings:includes(sqlerror.message(), "Internal Error: Overflow Exception " + 
+    test:assertTrue(strings:includes(sqlerror.message(), "Internal error: Overflow Exception " +
                 "trying to bind"), sqlerror.message());
 }
