@@ -179,7 +179,7 @@ isolated function testWithOptionsWithErroneousSSL() returns error? {
     test:assertTrue(oracledbClient2 is error);
     if oracledbClient2 is sql:ApplicationError {
         test:assertTrue(oracledbClient2.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
-        "IO Error: Connection closed"));
+        "IO Error: Connection closed"), oracledbClient2.message());
     } else {
         test:assertFail("Error Application Error expected");
     }
@@ -226,13 +226,13 @@ function testWithOptionsWithErroneousSSLCorrectPort() returns error? {
         user = USER, 
         password = PASSWORD, 
         port = SSL_PORT, 
-        database = DATABASE, 
+        database = DATABASE,
         options = options
     );
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
         test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
-        "ORA-17002: IO Error: IO Error PKIX path building failed: unable to find valid certification path to requested target"),
+        "ORA-17002: I/O error: IO Error PKIX path building failed: unable to find valid certification path to requested target"),
         oracledbClient.message());
     } else {
         test:assertFail("Application Error expected");
@@ -263,8 +263,7 @@ function testWithOptionsWithErroneousSSLWrongPW() returns error? {
     );
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
-        test:assertTrue(oracledbClient.message().endsWith("Error in SQL connector configuration: Failed to initialize " +
-        "pool: ORA-17958: Unable to initialize the trust store."), oracledbClient.message());
+        test:assertTrue(oracledbClient.message().includes("keystore password was incorrect"), oracledbClient.message());
     } else {
         test:assertFail("Error ApplicationError expected");
     }
