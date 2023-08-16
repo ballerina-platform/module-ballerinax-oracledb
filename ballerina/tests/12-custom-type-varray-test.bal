@@ -185,7 +185,7 @@ isolated function insertVarrayWithMoreElements() returns sql:Error? {
     sql:ExecutionResult|sql:Error result = executeQuery(insertQuery);
     if result is sql:DatabaseError {
         test:assertTrue(result.message().includes("Error while executing SQL query: insert into TestVarrayTable " +
-        "(COL_CHARARR) values ( ? ). Exceeded maximum VARRAY limit ."), result.message());
+        "(COL_CHARARR) values ( ? ). ORA-17071: Exceeded maximum VARRAY limit ."), result.message());
     } else {
         test:assertFail("Database Error expected.");
     }

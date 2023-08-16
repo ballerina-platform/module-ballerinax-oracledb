@@ -161,8 +161,8 @@ isolated function testWithOptionsWithErroneousSSL() returns error? {
 
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
-        test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
-        "IO Error: Connection closed"), oracledbClient.message());
+        test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize " +
+        "pool: ORA-17002: I/O error: Connection closed,"), oracledbClient.message());
     } else {
         test:assertFail("Error Application Error expected");
     }
@@ -232,7 +232,7 @@ function testWithOptionsWithErroneousSSLCorrectPort() returns error? {
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
         test:assertTrue(oracledbClient.message().startsWith("Error in SQL connector configuration: Failed to initialize pool: " +
-        "IO Error: IO Error PKIX path building failed: unable to find valid certification path to requested target"),
+        "ORA-17002: IO Error: IO Error PKIX path building failed: unable to find valid certification path to requested target"),
         oracledbClient.message());
     } else {
         test:assertFail("Application Error expected");
@@ -263,8 +263,8 @@ function testWithOptionsWithErroneousSSLWrongPW() returns error? {
     );
     test:assertTrue(oracledbClient is error);
     if oracledbClient is sql:ApplicationError {
-        test:assertTrue(oracledbClient.message().endsWith("The Network Adapter could not establish the connection Caused by " + 
-        ":Unable to initialize ssl context."), oracledbClient.message());
+        test:assertTrue(oracledbClient.message().endsWith("Error in SQL connector configuration: Failed to initialize " +
+        "pool: ORA-17958: Unable to initialize the trust store."), oracledbClient.message());
     } else {
         test:assertFail("Error ApplicationError expected");
     }
