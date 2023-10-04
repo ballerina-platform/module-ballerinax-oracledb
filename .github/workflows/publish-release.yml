@@ -14,3 +14,4 @@ jobs:
     with:
       package-name: oracledb
       package-org: ballerinax
+      additional-build-flags: -x :oracledb-examples:build
