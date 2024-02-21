@@ -278,6 +278,96 @@ isolated function testCallWithDateTimesOutParams() returns error? {
     check oracledbClient.close();
 }
 
+type CallStringTypes record {|
+    string id;
+    string col_char;
+    string col_nchar;
+    string col_varchar2;
+    string col_varchar;
+    string col_nvarchar2;
+|};
+
+type StringCharType record {|
+    @sql:Column {
+        name: "COL_CHAR"
+    }
+    string colChar;
+|};
+
+@test:Config {
+    groups: ["procedures"],
+    dependsOn: [testCallWithStringTypesOutParams]
+}
+isolated function testCallWithStringTypesCursorOutParams() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    int id = 1;
+    sql:CursorOutParameter cursor = new;
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursorAndInputParam.GET_STRING_DATA_WITH_INPUT(${id}, ${cursor})}`);
+    stream<CallStringTypes, sql:Error?> resultStream = cursor.get();
+
+    CallStringTypes[] result = check from CallStringTypes row in resultStream select row;
+
+    StringDataForCall expectedDataRow = {
+        id: 1,
+        COL_CHAR: "test0",
+        COL_NCHAR: "test1",
+        COL_VARCHAR2: "test2",
+        COL_VARCHAR: "test3",
+        COL_NVARCHAR2: "test4"
+    };
+    test:assertEquals(result.length(), 1, "Result length did not match.");
+    test:assertEquals(result[0], expectedDataRow, "Result did not match.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"],
+    dependsOn: [testCallWithStringTypesCursorOutParams]
+}
+isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:CursorOutParameter cursor = new;
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursor.GET_STRING_DATA(${cursor})}`);
+    stream<CallStringTypes, sql:Error?> resultStream = cursor.get();
+
+    CallStringTypes[] result = check from CallStringTypes row in resultStream select row;
+
+    StringDataForCall expectedDataRow = {
+        id: 1,
+        COL_CHAR: "test0",
+        COL_NCHAR: "test1",
+        COL_VARCHAR2: "test2",
+        COL_VARCHAR: "test3",
+        COL_NVARCHAR2: "test4"
+    };
+    test:assertEquals(result.length(), 3, "Result length did not match.");
+    test:assertEquals(result[0], expectedDataRow, "Result did not match.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"],
+    dependsOn: [testCallWithStringTypesOutParams]
+}
+isolated function testCallWithStringTypesSingleColumnCursorOutParams() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:CursorOutParameter cursor = new;
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursor.GET_STRING_DATA_COLUMN(${cursor})}`);
+    stream<StringCharType, sql:Error?> resultStream = cursor.get();
+
+    StringCharType[] result = check from StringCharType row in resultStream select row;
+
+    StringCharType expectedDataRow = {
+        colChar: "test0"
+    };
+    test:assertEquals(result.length(), 3, "Result length did not match.");
+    test:assertEquals(result[0], expectedDataRow, "Result did not match.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
 isolated function callQueryClient(Client oracledbClient, sql:ParameterizedQuery sqlQuery) 
 returns record {}|error {
     stream<record {}, error?> streamData = oracledbClient->query(sqlQuery);
