@@ -279,7 +279,7 @@ isolated function testCallWithDateTimesOutParams() returns error? {
 }
 
 type CallStringTypes record {|
-    int id;
+    decimal id;
     string col_char;
     string col_nchar;
     string col_varchar2;
@@ -291,7 +291,7 @@ type StringCharType record {|
     @sql:Column {
         name: "COL_CHAR"
     }
-    string col_Char;
+    string col_char;
 |};
 
 @test:Config {
@@ -360,7 +360,7 @@ isolated function testCallWithStringTypesSingleColumnCursorOutParams() returns e
     StringCharType[] result = check from StringCharType row in resultStream select row;
 
     StringCharType expectedDataRow = {
-        col_Char: "test0"
+        col_char: "test0"
     };
     test:assertEquals(result.length(), 3, "Result length did not match.");
     test:assertEquals(result[0], expectedDataRow, "Result did not match.");
