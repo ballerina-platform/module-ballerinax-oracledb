@@ -135,72 +135,35 @@ BEGIN
 END;
 /
 
-CREATE OR REPLACE PACKAGE SelectStringDataWithRefCursor
-AS
-   PROCEDURE GET_STRING_DATA(
-      oActiveCursor              OUT SYS_REFCURSOR
-    );
-END SelectStringDataWithRefCursor;
-
-/
-
-CREATE OR REPLACE PACKAGE BODY SelectStringDataWithRefCursor
-AS
-    PROCEDURE GET_STRING_DATA(
+CREATE OR REPLACE PROCEDURE SelectStringDataWithRefCursor(
       oActiveCursor              OUT SYS_REFCURSOR
     )
-    IS
-    BEGIN
+AS
+BEGIN
        OPEN oActiveCursor FOR
        SELECT * FROM CallStringTypes;
 
-    END GET_STRING_DATA;
-END SelectStringDataWithRefCursor;
+END;
 /
 
-CREATE OR REPLACE PACKAGE SelectSingleStringDataWithRefCursor
-AS
-   PROCEDURE GET_STRING_DATA_COLUMN(
-      oActiveCursor              OUT SYS_REFCURSOR
-    );
-END SelectSingleStringDataWithRefCursor;
-
-/
-
-CREATE OR REPLACE PACKAGE BODY SelectSingleStringDataWithRefCursor
-AS
-    PROCEDURE GET_STRING_DATA_COLUMN(
+CREATE OR REPLACE PROCEDURE SelectSingleStringDataWithRefCursor(
       oActiveCursor              OUT SYS_REFCURSOR
     )
-    IS
-    BEGIN
+AS
+BEGIN
        OPEN oActiveCursor FOR
        SELECT col_char FROM CallStringTypes;
 
-    END GET_STRING_DATA_COLUMN;
-END SelectSingleStringDataWithRefCursor;
+END;
 /
 
-CREATE OR REPLACE PACKAGE SelectStringDataWithRefCursorAndInputParam
-AS
-   PROCEDURE GET_STRING_DATA_WITH_INPUT(
-      p_id                       IN NUMBER,
-      oActiveCursor              OUT SYS_REFCURSOR
-    );
-END SelectStringDataWithRefCursorAndInputParam;
-
-/
-
-CREATE OR REPLACE PACKAGE BODY SelectStringDataWithRefCursorAndInputParam
-AS
-    PROCEDURE GET_STRING_DATA_WITH_INPUT(
+CREATE OR REPLACE PROCEDURE SelectStringDataWithRefCursorAndInputParam(
       p_id                       IN NUMBER,
       oActiveCursor              OUT SYS_REFCURSOR
     )
-    IS
-    BEGIN
+AS
+BEGIN
        OPEN oActiveCursor FOR
        SELECT * FROM CallStringTypes where id = p_id;
 
-    END GET_STRING_DATA_WITH_INPUT;
-END SelectStringDataWithRefCursorAndInputParam;
+END;

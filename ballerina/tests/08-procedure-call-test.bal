@@ -302,7 +302,7 @@ isolated function testCallWithStringTypesCursorOutParams() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     int id = 1;
     sql:CursorOutParameter cursor = new;
-    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursorAndInputParam.GET_STRING_DATA_WITH_INPUT(${id}, ${cursor})}`);
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursorAndInputParam(${id}, ${cursor})}`);
     stream<CallStringTypes, sql:Error?> resultStream = cursor.get();
 
     CallStringTypes[] result = check from CallStringTypes row in resultStream select row;
@@ -328,7 +328,7 @@ isolated function testCallWithStringTypesCursorOutParams() returns error? {
 isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:CursorOutParameter cursor = new;
-    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursor.GET_STRING_DATA(${cursor})}`);
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursor(${cursor})}`);
     stream<CallStringTypes, sql:Error?> resultStream = cursor.get();
 
     CallStringTypes[] result = check from CallStringTypes row in resultStream select row;
@@ -354,7 +354,7 @@ isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns e
 isolated function testCallWithStringTypesSingleColumnCursorOutParams() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:CursorOutParameter cursor = new;
-    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursor.GET_STRING_DATA_COLUMN(${cursor})}`);
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectSingleStringDataWithRefCursor(${cursor})}`);
     stream<StringCharType, sql:Error?> resultStream = cursor.get();
 
     StringCharType[] result = check from StringCharType row in resultStream select row;
