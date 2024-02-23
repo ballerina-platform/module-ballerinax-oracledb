@@ -360,7 +360,7 @@ isolated function testCallWithStringTypesSingleColumnCursorOutParams() returns e
     StringCharType[] result = check from StringCharType row in resultStream select row;
 
     StringCharType expectedDataRow = {
-        colChar: "test0"
+        col_Char: "test0"
     };
     test:assertEquals(result.length(), 3, "Result length did not match.");
     test:assertEquals(result[0], expectedDataRow, "Result did not match.");
