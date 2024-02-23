@@ -291,7 +291,7 @@ type StringCharType record {|
     @sql:Column {
         name: "COL_CHAR"
     }
-    string colChar;
+    string col_Char;
 |};
 
 @test:Config {
@@ -323,7 +323,7 @@ isolated function testCallWithStringTypesCursorOutParams() returns error? {
 
 @test:Config {
     groups: ["procedures"],
-    dependsOn: [testCallWithStringTypesCursorOutParams]
+    dependsOn: [testCallWithStringTypesOutParams]
 }
 isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
