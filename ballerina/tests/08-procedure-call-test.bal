@@ -303,10 +303,10 @@ isolated function testCallWithStringTypesCursorOutParams() returns error? {
     int id = 1;
     sql:CursorOutParameter cursor = new;
     sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursorAndInputParam(${id}, ${cursor})}`);
-    stream<CallStringTypes, sql:Error?> resultStream = cursor.get();
+    stream<record {}, sql:Error?> resultStream = cursor.get();
 
-    CallStringTypes[] result = check from CallStringTypes row in resultStream select row;
-
+    record {}[] result = check from record {} row in resultStream select row;
+    io:println("result: ", result);
     CallStringTypes expectedDataRow = {
         id: 1,
         col_char: "test0",
@@ -329,9 +329,10 @@ isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns e
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:CursorOutParameter cursor = new;
     sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursor(${cursor})}`);
-    stream<CallStringTypes, sql:Error?> resultStream = cursor.get();
+    stream<record {}, sql:Error?> resultStream = cursor.get();
 
-    CallStringTypes[] result = check from CallStringTypes row in resultStream select row;
+    record {}[] result = check from record {} row in resultStream select row;
+    io:println("result: ", result);
 
     CallStringTypes expectedDataRow = {
         id: 1,
@@ -355,10 +356,10 @@ isolated function testCallWithStringTypesSingleColumnCursorOutParams() returns e
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
     sql:CursorOutParameter cursor = new;
     sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectSingleStringDataWithRefCursor(${cursor})}`);
-    stream<StringCharType, sql:Error?> resultStream = cursor.get();
+    stream<record {}, sql:Error?> resultStream = cursor.get();
 
-    StringCharType[] result = check from StringCharType row in resultStream select row;
-
+    record {}[] result = check from record {} row in resultStream select row;
+    io:println("result: ", result);
     StringCharType expectedDataRow = {
         col_char: "test0"
     };
