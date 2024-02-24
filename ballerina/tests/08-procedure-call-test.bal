@@ -301,9 +301,9 @@ type StringCharType record {|
 }
 isolated function testCallWithStringTypesCursorOutParams() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    int id = 1;
+    decimal id = 1;
     sql:CursorOutParameter cursor = new;
-    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursorAndInputParam(${id}, ${cursor})}`);
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectDataWithRefCursorAndNumber(${id}, ${cursor})}`);
     stream<CallStringTypes, sql:Error?> resultStream = cursor.get();
 
     CallStringTypes[] result = check from CallStringTypes row in resultStream select row;

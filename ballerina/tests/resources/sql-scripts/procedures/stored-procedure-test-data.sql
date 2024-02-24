@@ -146,6 +146,17 @@ BEGIN
 END;
 /
 
+CREATE OR REPLACE PROCEDURE SelectDataWithRefCursorAndNumber(
+      p_id                       IN NUMBER,
+      oActiveCursor              OUT SYS_REFCURSOR
+    )
+AS
+BEGIN
+       OPEN oActiveCursor FOR
+       SELECT * FROM CallStringTypes where id = p_id;
+
+END;
+
 CREATE OR REPLACE PROCEDURE SelectSingleStringDataWithRefCursor(
       oActiveCursor              OUT SYS_REFCURSOR
     )
@@ -156,14 +167,3 @@ BEGIN
 
 END;
 /
-
-CREATE OR REPLACE PROCEDURE SelectStringDataWithRefCursorAndInputParam(
-      p_id                       IN NUMBER,
-      oActiveCursor              OUT SYS_REFCURSOR
-    )
-AS
-BEGIN
-       OPEN oActiveCursor FOR
-       SELECT * FROM CallStringTypes where id = p_id;
-
-END;
