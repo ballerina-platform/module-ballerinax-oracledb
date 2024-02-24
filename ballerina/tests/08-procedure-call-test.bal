@@ -17,6 +17,7 @@ import ballerina/sql;
 import ballerina/test;
 import ballerina/jballerina.java;
 import ballerina/time;
+import ballerina/io;
 
 type StringDataForCall record {
     string COL_CHAR;
