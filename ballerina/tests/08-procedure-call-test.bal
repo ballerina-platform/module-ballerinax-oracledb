@@ -328,11 +328,13 @@ isolated function testCallWithStringTypesCursorOutParams() returns error? {
 }
 isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:CursorOutParameter cursor = new;
-    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursor(${cursor})}`);
-    stream<record {}, sql:Error?> resultStream = cursor.get();
+    sql:CursorOutParameter activeCursor = new;
+    sql:CursorOutParameter upcomingCursor = new;
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursor(${activeCursor}, ${upcomingCursor})}`);
 
-    record {}[] result = check from record {} row in resultStream select row;
+    // First cursor - activeCursor
+    stream<CallStringTypes, sql:Error?> resultStream = activeCursor.get();
+    CallStringTypes[] result = check from CallStringTypes row in resultStream select row;
     io:println("result: ", result);
 
     CallStringTypes expectedDataRow = {
@@ -345,27 +347,17 @@ isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns e
     };
     test:assertEquals(result.length(), 4, "Result length did not match.");
     test:assertEquals(result[0], expectedDataRow, "Result did not match.");
-    check ret.close();
-    check oracledbClient.close();
-}
 
-@test:Config {
-    groups: ["procedures"],
-    dependsOn: [testCallWithStringTypesOutParams]
-}
-isolated function testCallWithStringTypesSingleColumnCursorOutParams() returns error? {
-    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:CursorOutParameter cursor = new;
-    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectSingleStringDataWithRefCursor(${cursor})}`);
-    stream<record {}, sql:Error?> resultStream = cursor.get();
-
-    record {}[] result = check from record {} row in resultStream select row;
-    io:println("result: ", result);
-    StringCharType expectedDataRow = {
+    // Second cursor - upcomingCursor
+    stream<StringCharType, sql:Error?> resultStream2 = upcomingCursor.get();
+    StringCharType[] result2 = check from StringCharType row in resultStream2 select row;
+    io:println("result: ", result2);
+    StringCharType expectedDataRow2 = {
         COL_CHAR: "test0"
     };
-    test:assertEquals(result.length(), 4, "Result length did not match.");
-    test:assertEquals(result[0], expectedDataRow, "Result did not match.");
+    test:assertEquals(result2.length(), 4, "Result length did not match.");
+    test:assertEquals(result2[0], expectedDataRow2, "Result did not match.");
+
     check ret.close();
     check oracledbClient.close();
 }
