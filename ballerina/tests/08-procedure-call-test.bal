@@ -349,7 +349,7 @@ isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns e
     stream<record{}, sql:Error?> resultStream2 = upcomingCursor.get();
     record{}[] result2 = check from record{} row in resultStream2 select row;
     io:println("result: ", result2);
-    record{} expectedDataRow2 = {
+    StringCharType expectedDataRow2 = {
         COL_CHAR: "test0"
     };
     test:assertEquals(result2.length(), 4, "Result length did not match.");
