@@ -280,19 +280,19 @@ isolated function testCallWithDateTimesOutParams() returns error? {
 }
 
 type CallStringTypes record {|
-    decimal id;
-    string col_char;
-    string col_nchar;
-    string col_varchar2;
-    string col_varchar;
-    string col_nvarchar2;
+    decimal ID;
+    string COL_CHAR;
+    string COL_NCHAR;
+    string COL_VARCHAR2;
+    string COL_VARCHAR;
+    string COL_NVARCHAR2;
 |};
 
 type StringCharType record {|
     @sql:Column {
         name: "COL_CHAR"
     }
-    string col_char;
+    string COL_CHAR;
 |};
 
 @test:Config {
@@ -304,9 +304,9 @@ isolated function testCallWithStringTypesCursorOutParams() returns error? {
     int id = 1;
     sql:CursorOutParameter cursor = new;
     sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursorAndInputParam(${id}, ${cursor})}`);
-    stream<record {}, sql:Error?> resultStream = cursor.get();
+    stream<CallStringTypes, sql:Error?> resultStream = cursor.get();
 
-    record {}[] result = check from record {} row in resultStream select row;
+    CallStringTypes[] result = check from CallStringTypes row in resultStream select row;
     io:println("result: ", result);
     CallStringTypes expectedDataRow = {
         id: 1,
