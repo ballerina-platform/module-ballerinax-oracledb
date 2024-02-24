@@ -346,10 +346,10 @@ isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns e
     test:assertEquals(result[0], expectedDataRow, "Result did not match.");
 
     // Second cursor - upcomingCursor
-    stream<StringCharType, sql:Error?> resultStream2 = upcomingCursor.get();
-    StringCharType[] result2 = check from StringCharType row in resultStream2 select row;
+    stream<record{}, sql:Error?> resultStream2 = upcomingCursor.get();
+    record{}[] result2 = check from record{} row in resultStream2 select row;
     io:println("result: ", result2);
-    StringCharType expectedDataRow2 = {
+    record{} expectedDataRow2 = {
         COL_CHAR: "test0"
     };
     test:assertEquals(result2.length(), 4, "Result length did not match.");
