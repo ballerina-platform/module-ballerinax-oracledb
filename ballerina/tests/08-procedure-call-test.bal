@@ -309,12 +309,12 @@ isolated function testCallWithStringTypesCursorOutParams() returns error? {
     CallStringTypes[] result = check from CallStringTypes row in resultStream select row;
     io:println("result: ", result);
     CallStringTypes expectedDataRow = {
-        id: 1,
-        col_char: "test0",
-        col_nchar: "test1",
-        col_varchar2: "test2",
-        col_varchar: "test3",
-        col_nvarchar2: "test4"
+        ID: 1,
+        COL_CHAR: "test0",
+        COL_NCHAR: "test1",
+        COL_VARCHAR2: "test2",
+        COL_VARCHAR: "test3",
+        COL_NVARCHAR2: "test4"
     };
     test:assertEquals(result.length(), 1, "Result length did not match.");
     test:assertEquals(result[0], expectedDataRow, "Result did not match.");
@@ -336,14 +336,14 @@ isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns e
     io:println("result: ", result);
 
     CallStringTypes expectedDataRow = {
-        id: 1,
-        col_char: "test0",
-        col_nchar: "test1",
-        col_varchar2: "test2",
-        col_varchar: "test3",
-        col_nvarchar2: "test4"
+        ID: 1,
+        COL_CHAR: "test0",
+        COL_NCHAR: "test1",
+        COL_VARCHAR2: "test2",
+        COL_VARCHAR: "test3",
+        COL_NVARCHAR2: "test4"
     };
-    test:assertEquals(result.length(), 3, "Result length did not match.");
+    test:assertEquals(result.length(), 4, "Result length did not match.");
     test:assertEquals(result[0], expectedDataRow, "Result did not match.");
     check ret.close();
     check oracledbClient.close();
@@ -362,9 +362,9 @@ isolated function testCallWithStringTypesSingleColumnCursorOutParams() returns e
     record {}[] result = check from record {} row in resultStream select row;
     io:println("result: ", result);
     StringCharType expectedDataRow = {
-        col_char: "test0"
+        COL_CHAR: "test0"
     };
-    test:assertEquals(result.length(), 3, "Result length did not match.");
+    test:assertEquals(result.length(), 4, "Result length did not match.");
     test:assertEquals(result[0], expectedDataRow, "Result did not match.");
     check ret.close();
     check oracledbClient.close();
