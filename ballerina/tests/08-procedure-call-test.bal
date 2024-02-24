@@ -289,9 +289,6 @@ type CallStringTypes record {|
 |};
 
 type StringCharType record {|
-    @sql:Column {
-        name: "COL_CHAR"
-    }
     string COL_CHAR;
 |};
 
