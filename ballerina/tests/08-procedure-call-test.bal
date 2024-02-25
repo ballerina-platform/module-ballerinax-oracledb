@@ -330,8 +330,8 @@ isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns e
     sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursor(${activeCursor}, ${upcomingCursor})}`);
 
     // First cursor - activeCursor
-    stream<CallStringTypes, sql:Error?> resultStream = activeCursor.get();
-    CallStringTypes[] result = check from CallStringTypes row in resultStream select row;
+    stream<record{}, sql:Error?> resultStream = activeCursor.get();
+    record{}[] result = check from record{} row in resultStream select row;
     io:println("result: ", result);
 
     CallStringTypes expectedDataRow = {
