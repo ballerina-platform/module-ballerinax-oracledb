@@ -134,3 +134,29 @@ BEGIN
         SELECT col_interval_day_to_second INTO p_col_interval_day_to_second FROM CallDateTimeTypes where id = p_id;
 END;
 /
+
+CREATE OR REPLACE PROCEDURE SelectStringDataWithRefCursor(
+      oActiveCursor              OUT SYS_REFCURSOR,
+      oUpcomingCursor            OUT SYS_REFCURSOR
+    )
+AS
+BEGIN
+       OPEN oActiveCursor FOR
+       SELECT * FROM CallStringTypes;
+
+       OPEN oUpcomingCursor FOR
+       SELECT col_char FROM CallStringTypes;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE SelectDataWithRefCursorAndNumber(
+      p_id                       IN NUMBER,
+      oActiveCursor              OUT SYS_REFCURSOR
+    )
+AS
+BEGIN
+       OPEN oActiveCursor FOR
+       SELECT * FROM CallStringTypes where id = p_id;
+
+END;
+/

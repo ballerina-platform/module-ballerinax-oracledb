@@ -17,6 +17,7 @@ import ballerina/sql;
 import ballerina/test;
 import ballerina/jballerina.java;
 import ballerina/time;
+import ballerina/io;
 
 type StringDataForCall record {
     string COL_CHAR;
@@ -274,6 +275,86 @@ isolated function testCallWithDateTimesOutParams() returns error? {
                         "paraIntervalMY out parameter of procedure did not match.");
     test:assertEquals(check paraIntervalDS.get(IntervalDayToSecond), intervalDS, 
                         "paraIntervalDS out parameter of procedure did not match.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
+type CallStringTypes record {|
+    decimal ID;
+    string COL_CHAR;
+    string COL_NCHAR;
+    string COL_VARCHAR2;
+    string COL_VARCHAR;
+    string COL_NVARCHAR2;
+|};
+
+type StringCharType record {|
+    string COL_CHAR;
+|};
+
+@test:Config {
+    groups: ["procedures"],
+    dependsOn: [testCallWithStringTypesOutParams]
+}
+isolated function testCallWithStringTypesCursorOutParams() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    decimal id = 1;
+    sql:CursorOutParameter cursor = new;
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectDataWithRefCursorAndNumber(${id}, ${cursor})}`);
+    stream<CallStringTypes, sql:Error?> resultStream = cursor.get();
+
+    CallStringTypes[] result = check from CallStringTypes row in resultStream select row;
+    io:println("result: ", result);
+    CallStringTypes expectedDataRow = {
+        ID: 1,
+        COL_CHAR: "test0",
+        COL_NCHAR: "test1",
+        COL_VARCHAR2: "test2",
+        COL_VARCHAR: "test3",
+        COL_NVARCHAR2: "test4"
+    };
+    test:assertEquals(result.length(), 1, "Result length did not match.");
+    test:assertEquals(result[0], expectedDataRow, "Result did not match.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"],
+    dependsOn: [testCallWithStringTypesOutParams]
+}
+isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:CursorOutParameter activeCursor = new;
+    sql:CursorOutParameter upcomingCursor = new;
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{call SelectStringDataWithRefCursor(${activeCursor}, ${upcomingCursor})}`);
+
+    // First cursor - activeCursor
+    stream<record{}, sql:Error?> resultStream = activeCursor.get();
+    record{}[] result = check from record{} row in resultStream select row;
+    io:println("result: ", result);
+
+    CallStringTypes expectedDataRow = {
+        ID: 1,
+        COL_CHAR: "test0",
+        COL_NCHAR: "test1",
+        COL_VARCHAR2: "test2",
+        COL_VARCHAR: "test3",
+        COL_NVARCHAR2: "test4"
+    };
+    test:assertEquals(result.length(), 4, "Result length did not match.");
+    test:assertEquals(result[0], expectedDataRow, "Result did not match.");
+
+    // Second cursor - upcomingCursor
+    stream<record{}, sql:Error?> resultStream2 = upcomingCursor.get();
+    record{}[] result2 = check from record{} row in resultStream2 select row;
+    io:println("result: ", result2);
+    StringCharType expectedDataRow2 = {
+        COL_CHAR: "test0"
+    };
+    test:assertEquals(result2.length(), 4, "Result length did not match.");
+    test:assertEquals(result2[0], expectedDataRow2, "Result did not match.");
+
     check ret.close();
     check oracledbClient.close();
 }
