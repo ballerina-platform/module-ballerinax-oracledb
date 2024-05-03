@@ -5,7 +5,7 @@ _Reviewers_: @daneshk @niveathika
 _Created_: 2022/04/25  
 _Updated_: 2022/04/25  
 _Edition_: Swan Lake  
-_Issues_: [#2397](https://github.com/ballerina-platform/ballerina-standard-library/issues/2397)
+_Issues_: [#2397](https://github.com/ballerina-platform/ballerina-library/issues/2397)
 
 ## Summary
 Define default username to be used when connecting to an Oracle database on client initialization.

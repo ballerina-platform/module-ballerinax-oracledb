@@ -6,7 +6,7 @@ Ballerina OracleDB Library
   [![Trivy](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/trivy-scan.yml)
   [![GraalVM Check](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/build-with-bal-test-graalvm.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/actions/workflows/build-with-bal-test-graalvm.yml)
   [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-oracledb.svg)](https://github.com/ballerina-platform/module-ballerinax-oracledb/commits/main)
-  [![GitHub issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-standard-library/module/oracledb.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-standard-library/labels/module%2Foracledb)
+  [![GitHub issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-library/module/oracledb.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-library/labels/module%2Foracledb)
 
 This library provides the functionality required to access and manipulate data stored in an Oracle database.
 
@@ -551,7 +551,7 @@ Varray charVarray = { name:"CharArrayType", elements: charArray };
 
 ## Issues and projects
 
-Issues and Projects tabs are disabled for this repository as this is part of the Ballerina standard library. To report bugs, request new features, start new discussions, view project boards, etc. please visit Ballerina Standard Library [parent repository](https://github.com/ballerina-platform/ballerina-standard-library).
+Issues and Projects tabs are disabled for this repository as this is part of the Ballerina standard library. To report bugs, request new features, start new discussions, view project boards, etc. please visit Ballerina Standard Library [parent repository](https://github.com/ballerina-platform/ballerina-library).
 
 This repository only contains the source code for the package.
 
