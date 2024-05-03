@@ -3,7 +3,7 @@ _Owners_:  @daneshk @niveathika @lahirusamith
 _Reviewers_: @daneshk @niveathika   
 _Created_: 2021/10/04   
 _Updated_: 2021/10/07   
-_Issue_: [#1944](https://github.com/ballerina-platform/ballerina-standard-library/issues/1944)   
+_Issue_: [#1944](https://github.com/ballerina-platform/ballerina-library/issues/1944)   
 
 ## Summary
 Add BFILE data type support to `oracledb` module.
