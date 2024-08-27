@@ -53,7 +53,7 @@ Follow one of the following ways to add the JARs in the file:
 
 ### Client
 To access a database, you must first create an
-[`oracledb:Client`](https://docs.central.ballerina.io/ballerinax/oracledb/latest/clients/Client) object.
+[`oracledb:Client`](https://docs.central.ballerina.io/ballerinax/oracledb/latest#Client) object.
 The samples for creating an OracleDB client can be found below.
 
 > **Tip**: The client should be used throughout the application lifetime.
@@ -76,7 +76,7 @@ oracledb:Client|sql:Error dbClient = new ("localhost", "adminUser", "adminPasswo
 ```
 
 In the example below, the `oracledb:Client` uses named parameters to pass the attributes since it is skipping some parameters in the constructor.
-Further, the [`oracledb:Options`](https://docs.central.ballerina.io/ballerinax/oracledb/latest/records/Options)
+Further, the [`oracledb:Options`](https://docs.central.ballerina.io/ballerinax/oracledb/latest#Options)
 property is passed to configure the SSL, connection timeout, and a few other additional properties in the OracleDB client.
 
 ```ballerina
@@ -105,7 +105,7 @@ oracledb:Client|sql:Error dbClient = new (user = "adminUser", password = "adminP
 ```
 
 Similarly, in the example below, the `oracledb:Client` uses the named parameters and it provides an unshared connection pool of the type of
-[`sql:ConnectionPool`](https://docs.central.ballerina.io/ballerina/sql/latest/records/ConnectionPool)
+[`sql:ConnectionPool`](https://docs.central.ballerina.io/ballerina/sql/latest#ConnectionPool)
 to be used within the client.
 For more details about connection pooling, see the [`sql` Library](https://docs.central.ballerina.io/ballerina/sql/latest).
 
@@ -117,7 +117,7 @@ oracledb:Client|sql:Error dbClient = new (user = "adminUser", password = "adminP
 #### Handle connection pools
 
 All database libraries share the same connection pooling concept and there are three possible scenarios for
-connection pool handling. For its properties and possible values, see [`sql:ConnectionPool`](https://docs.central.ballerina.io/ballerina/sql/latest/records/ConnectionPool).
+connection pool handling. For its properties and possible values, see [`sql:ConnectionPool`](https://docs.central.ballerina.io/ballerina/sql/latest#ConnectionPool).
 
 >**Note**: Connection pooling is used to optimize opening and closing connections to the database. However, the pool comes with an overhead. It is best to configure the connection pool properties as per the application need to get the best performance.
 
@@ -160,10 +160,10 @@ connection pool handling. For its properties and possible values, see [`sql:Conn
                                connectionPool = connPool);
     ```
 
-For more details about each property, see the [`oracledb:Client`](https://docs.central.ballerina.io/ballerinax/oracledb/latest/clients/Client) constructor.
+For more details about each property, see the [`oracledb:Client`](https://docs.central.ballerina.io/ballerinax/oracledb/latest#Client) constructor.
 
-The [oracledb:Client](https://docs.central.ballerina.io/ballerinax/oracledb/latest/clients/Client) references
-[sql:Client](https://docs.central.ballerina.io/ballerina/sql/latest/clients/Client) and all the operations
+The [oracledb:Client](https://docs.central.ballerina.io/ballerinax/oracledb/latest#Client) references
+[sql:Client](https://docs.central.ballerina.io/ballerina/sql/latest#Client) and all the operations
 defined by the `sql:Client` will be supported by the `oracledb:Client` as well.
 
 #### Close the client
@@ -644,5 +644,6 @@ All contributors are encouraged to read the [Ballerina code of conduct](https://
 ## Useful links
 
 * For more information go to the [`oracledb` library](https://lib.ballerina.io/ballerinax/oracledb/latest).
+* For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/#database-access).
 * Chat live with us via our [Discord server](https://discord.gg/ballerinalang).
 * Post all technical questions on Stack Overflow with the [#ballerina](https://stackoverflow.com/questions/tagged/ballerina) tag.
