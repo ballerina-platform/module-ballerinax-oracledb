@@ -16,7 +16,7 @@ graalvmCompatible = true
 groupId = "io.ballerina.stdlib"
 artifactId = "oracledb-native"
 version = "1.11.1"
-path = "../native/build/libs/oracledb-native-1.11.1-SNAPSHOT.jar"
+path = "../native/build/libs/oracledb-native-1.11.1.jar"
 
 [[platform.java17.dependency]]
 groupId = "io.ballerina.stdlib"
