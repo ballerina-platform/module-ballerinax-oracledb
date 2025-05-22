@@ -119,83 +119,84 @@ def checkExecResult(execResult, failText, standardOutput) {
 }
 
 task createTestDockerImage(type: Exec) {
-    if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-        def standardOutput = new ByteArrayOutputStream()
-        commandLine 'sh', '-c', "docker build -f $project.projectDir/tests/resources/Dockerfile -t ballerina-oracledb" +
-                " -q $project.projectDir/tests/resources/"
-        doLast {
-            checkExecResult(executionResult, 'Error', standardOutput)
-            sleep(5 * 1000)
-        }
+    def standardOutput = new ByteArrayOutputStream()
+    def dockerBuildCommand = !Os.isFamily(Os.FAMILY_WINDOWS)
+            ? ['sh', '-c', "docker build -f $project.projectDir/tests/resources/Dockerfile -t ballerina-oracledb -q $project.projectDir/tests/resources/"]
+            : ['cmd', '/c', "docker build -f $project.projectDir\\tests\\resources\\Dockerfile -t ballerina-oracledb -q $project.projectDir\\tests\\resources\\"]
+    commandLine dockerBuildCommand
+    doLast {
+        checkExecResult(executionResult, 'Error', standardOutput)
+        sleep(5 * 1000)
     }
 }
 
 def waitForContainerHealth(containerName) {
-    if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-        def HEALTH_STATUS;
-        def counter = 0
-        while (counter < 60) {
-            sleep(10000)
-            def output = new ByteArrayOutputStream()
-            try {
-                exec {
-                    commandLine 'sh', '-c',
-                            "docker inspect --format='{{json .State.Health.Status}}' ${containerName}"
-                    standardOutput = output
-                }
-                HEALTH_STATUS = output.toString().trim()
-                if (HEALTH_STATUS.toString().contains("healthy")) {
-                    return 0
-                }
-                if (counter % 6 == 0) {
-                    println("${counter/6}: Waiting for container ${containerName} to be healthy")
-                    println("   HEALTH_STATUS: $HEALTH_STATUS \n")
-                }
-                counter = counter + 1
-            } catch (err) {
-                println(err)
-                return 1
+    def HEALTH_STATUS
+    def counter = 0
+    while (counter < 60) {
+        sleep(10000)
+        def output = new ByteArrayOutputStream()
+        try {
+            def cmd = !Os.isFamily(Os.FAMILY_WINDOWS) ?
+                    ['sh', '-c', "docker inspect --format='{{json .State.Health.Status}}' ${containerName}"] :
+                    ['cmd', '/c', "docker inspect --format=\"{{json .State.Health.Status}}\" ${containerName}"]
+            exec {
+                commandLine cmd
+                standardOutput = output
             }
+            HEALTH_STATUS = output?.toString()?.trim()
+            if (HEALTH_STATUS?.toString()?.contains("healthy")) {
+                return 0
+            }
+            if (counter % 6 == 0) {
+                println("${counter / 6}: Waiting for container ${containerName} to be healthy")
+                println("   HEALTH_STATUS: $HEALTH_STATUS \n")
+            }
+            counter = counter + 1
+        } catch (err) {
+            println(err)
+            return 1
         }
+    }
+    return 1
+}
+
+def initializeDatabase(containerName) {
+    println("Waiting for ${containerName} database to open.")
+    sleep(70000)
+    try {
+        def temp
+        def cmd = Os.isFamily(Os.FAMILY_WINDOWS) ?
+                ['cmd', '/c', "docker exec ${containerName} /bin/bash -c 'cd /home/oracle && source .bashrc; sh ./sql-scripts/run-sql-scripts.sh'"] :
+                ['sh', '-c', "docker exec ${containerName} /bin/bash -c 'cd /home/oracle && source .bashrc; sh ./sql-scripts/run-sql-scripts.sh'"]
+        temp = exec {
+            commandLine cmd ?: []
+        }.exitValue
+        return temp
+    } catch (all) {
+        println(all)
         return 1
     }
 }
 
-def initializeDatabase(containerName) {
-    if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-        println("Waiting for ${containerName} database to open.")
-        sleep(70000)
-        try {
-            def temp = exec {
-                commandLine 'sh', '-c',
-                        "docker exec ${containerName} /bin/bash -c 'cd /home/oracle && source .bashrc; sh ./sql-scripts/run-sql-scripts.sh'"
-            }.exitValue
-            return temp
-        } catch (all) {
-            println(all)
-            return 1
-        }
-    }
-}
-
 def startDockerContainer(containerName, port, sslPort) {
-    if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-        exec {
-            commandLine 'sh', '-c', "docker run --rm -d --name ${containerName} -p ${port}:1521 -p ${sslPort}:2484 -t ballerina-oracledb"
-        }
-        def healthCheck = waitForContainerHealth(containerName)
-        if (healthCheck != 0) {
-            throw new GradleException("Docker container '${containerName}' health test failed!")
-        }
-        println("Docker container '${containerName}' health test passed!")
-
-        def initializeCheck = initializeDatabase(containerName)
-        if(initializeCheck != 0) {
-            throw new GradleException("Failed to initialize the database!")
-        }
-        println("Database initialized!")
-
+    def cmd = !Os.isFamily(Os.FAMILY_WINDOWS) ?
+            ['sh', '-c', "docker run --rm -d --name ${containerName} -p ${port}:1521 -p ${sslPort}:2484 -t ballerina-oracledb"] :
+            ['cmd', '/c', "docker run --rm -d --name ${containerName} -p ${port}:1521 -p ${sslPort}:2484 -t ballerina-oracledb"]
+    exec {
+        commandLine cmd ?: []
     }
+    def healthCheck = waitForContainerHealth(containerName)
+    if (healthCheck != 0) {
+        throw new GradleException("Docker container '${containerName}' health test failed!")
+    }
+    println("Docker container '${containerName}' health test passed!")
+
+    def initializeCheck = initializeDatabase(containerName)
+    if (initializeCheck != 0) {
+        throw new GradleException("Failed to initialize the database!")
+    }
+    println("Database initialized!")
 }
 
 task startTestDockerContainers() {
@@ -205,16 +206,17 @@ task startTestDockerContainers() {
 }
 
 def stopTestDockerContainer(containerName) {
-    if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-        try {
-            def stdOut = new ByteArrayOutputStream()
-            exec {
-                commandLine 'sh', '-c', "docker stop ${containerName}"
-                standardOutput = stdOut
-            }
-        } catch (ignore) {
-            println("Gradle process can safely ignore stopTestDockerContainers task")
+    try {
+        def stdOut = new ByteArrayOutputStream()
+        def cmd = !Os.isFamily(Os.FAMILY_WINDOWS) ?
+                ['sh', '-c', "docker stop ${containerName}"] :
+                ['cmd', '/c', "docker stop ${containerName}"]
+        exec {
+            commandLine cmd
+            standardOutput = stdOut
         }
+    } catch (ignore) {
+        println("Gradle process can safely ignore stopTestDockerContainers task")
     }
 }
 
