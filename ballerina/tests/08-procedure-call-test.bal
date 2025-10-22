@@ -359,6 +359,24 @@ isolated function testCallWithStringTypesCursorOutParamsWithoutInput() returns e
     check oracledbClient.close();
 }
 
+// Call ClobOutProc procedure to test CLOB type as output parameter.
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallWithClobOutParams() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+
+    sql:ClobOutParameter returnedDbData = new();
+    sql:ParameterizedCallQuery query = `{CALL ClobOutProc(${returnedDbData})}`;
+    sql:ProcedureCallResult ret = check oracledbClient->call(query);
+
+    string clobData = check returnedDbData.get();
+    io:println("CLOB data returned from the procedure, the length is: ", clobData.length());
+    test:assertEquals(clobData.length(), 110904, "Result length did not match.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
 isolated function callQueryClient(Client oracledbClient, sql:ParameterizedQuery sqlQuery) 
 returns record {}|error {
     stream<record {}, error?> streamData = oracledbClient->query(sqlQuery);
@@ -372,3 +390,5 @@ returns record {}|error {
         return value;
     }
 }
+
+
