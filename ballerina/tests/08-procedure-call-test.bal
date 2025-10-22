@@ -390,5 +390,3 @@ returns record {}|error {
         return value;
     }
 }
-
-
