@@ -160,3 +160,25 @@ BEGIN
 
 END;
 /
+
+CREATE OR REPLACE PROCEDURE ClobOutProc(p_clob_out OUT CLOB)
+AS
+    v_json_out   json_object_t;
+    v_json_array_out json_array_t;
+    v_json_inner json_object_t;
+BEGIN
+    v_json_out := json_object_t();
+    v_json_array_out := json_array_t();
+    v_json_inner := json_object_t();
+
+    for i in 1..4000
+        loop
+            v_json_inner.put(key => 'i: ' || i, val =>'random string');
+            v_json_array_out.append(val => v_json_inner);
+            v_json_inner := json_object_t();
+        end loop;
+    v_json_out.put(key => 'files', val => v_json_array_out);
+    p_clob_out := v_json_out.To_Clob;
+
+END;
+/
