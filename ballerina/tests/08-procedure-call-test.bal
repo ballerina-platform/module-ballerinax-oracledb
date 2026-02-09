@@ -377,7 +377,103 @@ isolated function testCallWithClobOutParams() returns error? {
     check oracledbClient.close();
 }
 
-isolated function callQueryClient(Client oracledbClient, sql:ParameterizedQuery sqlQuery) 
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallStringFunction() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:VarcharOutParameter returnValue = new;
+    decimal id = 1;
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{${returnValue} = call GetStringById(${id})}`);
+    test:assertEquals(check returnValue.get(string), "test2", "Function return value did not match.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallNumericFunction() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:DecimalOutParameter returnValue = new;
+    decimal id = 1;
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{${returnValue} = call GetNumericById(${id})}`);
+    test:assertEquals(check returnValue.get(decimal), 2147483647d, "Function return value did not match.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallDoubleFunction() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:DoubleOutParameter returnValue = new;
+    decimal id = 1;
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{${returnValue} = call GetDoubleById(${id})}`);
+    test:assertEquals(check returnValue.get(float), 21474836.47, "Function return value did not match.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallFunctionWithMultipleParams() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:VarcharOutParameter returnValue = new;
+    decimal id = 1;
+    string paramType = "varchar2";
+    sql:ProcedureCallResult ret = check oracledbClient->call(
+        `{${returnValue} = call GetStringByIdAndType(${id}, ${paramType})}`);
+    test:assertEquals(check returnValue.get(string), "test2", "Function return value did not match.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallFunctionWithMultipleParamsCharType() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:VarcharOutParameter returnValue = new;
+    decimal id = 1;
+    string paramType = "char";
+    sql:ProcedureCallResult ret = check oracledbClient->call(
+        `{${returnValue} = call GetStringByIdAndType(${id}, ${paramType})}`);
+    test:assertEquals(check returnValue.get(string), "test0", "Function return value did not match.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallFunctionReturningNull() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:VarcharOutParameter returnValue = new;
+    decimal id = 999;
+    sql:ProcedureCallResult ret = check oracledbClient->call(`{${returnValue} = call GetNullableStringById(${id})}`);
+    json result = check returnValue.get(json);
+    test:assertEquals(result, (), "Function return value should be nil.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallNonExistentFunction() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:VarcharOutParameter returnValue = new;
+    decimal id = 1;
+    sql:ProcedureCallResult|sql:Error ret = oracledbClient->call(
+        `{${returnValue} = call NonExistentFunction(${id})}`);
+    test:assertTrue(ret is sql:Error, "Expected an error for non-existent function.");
+    check oracledbClient.close();
+}
+
+isolated function callQueryClient(Client oracledbClient, sql:ParameterizedQuery sqlQuery)
 returns record {}|error {
     stream<record {}, error?> streamData = oracledbClient->query(sqlQuery);
     record {|record {} value;|}? data = check streamData.next();

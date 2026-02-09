@@ -96,10 +96,24 @@ public isolated client class Client {
         return nativeBatchExecute(self, sqlQueries);
     }
 
-    # Executes an SQL query, which calls a stored procedure. This may or may not
+    # Executes an SQL query, which calls a stored procedure or function. This may or may not
     # return results. Once the results are processed, the `close` method on `sql:ProcedureCallResult` must be called.
     #
-    # + sqlQuery - The SQL query such as `` `CALL sp_GetAlbums();` ``
+    # This method supports two JDBC call syntaxes:
+    # - **Procedure call**: `` `{call procedureName(${param1}, ${param2})}` ``
+    # - **Function call**: `` `{${returnParam} = call functionName(${param1})}` ``
+    #
+    # For function calls, use an `OutParameter` (e.g., `sql:VarcharOutParameter`) as the return parameter to capture
+    # the function's return value. This is especially important for Oracle PL/SQL functions, which cannot be invoked
+    # using `CALL func()` syntax (ORA-06576). Use the function call syntax instead:
+    # ```ballerina
+    # sql:VarcharOutParameter retVal = new;
+    # sql:ProcedureCallResult ret = check dbClient->call(`{${retVal} = call myFunc(${param})}`);
+    # string result = check retVal.get(string);
+    # check ret.close();
+    # ```
+    #
+    # + sqlQuery - The SQL query such as `` `{call sp_GetAlbums()}` `` or `` `{${retVal} = call myFunc(${param})}` ``
     # + rowTypes - `typedesc` array of the records to which the results need to be returned
     # + return - Summary of the execution and results are returned in an `sql:ProcedureCallResult`, or an `sql:Error`
     remote isolated function call(sql:ParameterizedCallQuery sqlQuery, 

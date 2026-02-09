@@ -182,3 +182,62 @@ BEGIN
 
 END;
 /
+
+CREATE OR REPLACE FUNCTION GetStringById(p_id NUMBER)
+RETURN VARCHAR2
+IS
+    v_result VARCHAR2(255);
+BEGIN
+    SELECT col_varchar2 INTO v_result FROM CallStringTypes WHERE id = p_id;
+    RETURN v_result;
+END;
+/
+
+CREATE OR REPLACE FUNCTION GetNumericById(p_id NUMBER)
+RETURN NUMBER
+IS
+    v_result NUMBER;
+BEGIN
+    SELECT col_number INTO v_result FROM CallNumericTypes WHERE id = p_id;
+    RETURN v_result;
+END;
+/
+
+CREATE OR REPLACE FUNCTION GetDoubleById(p_id NUMBER)
+RETURN BINARY_DOUBLE
+IS
+    v_result BINARY_DOUBLE;
+BEGIN
+    SELECT col_binary_double INTO v_result FROM CallNumericTypes WHERE id = p_id;
+    RETURN v_result;
+END;
+/
+
+CREATE OR REPLACE FUNCTION GetStringByIdAndType(p_id NUMBER, p_type VARCHAR2)
+RETURN VARCHAR2
+IS
+    v_result VARCHAR2(255);
+BEGIN
+    IF p_type = 'varchar2' THEN
+        SELECT col_varchar2 INTO v_result FROM CallStringTypes WHERE id = p_id;
+    ELSIF p_type = 'char' THEN
+        SELECT col_char INTO v_result FROM CallStringTypes WHERE id = p_id;
+    ELSE
+        v_result := NULL;
+    END IF;
+    RETURN v_result;
+END;
+/
+
+CREATE OR REPLACE FUNCTION GetNullableStringById(p_id NUMBER)
+RETURN VARCHAR2
+IS
+    v_result VARCHAR2(255);
+BEGIN
+    SELECT col_varchar2 INTO v_result FROM CallStringTypes WHERE id = p_id;
+    RETURN v_result;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN NULL;
+END;
+/
