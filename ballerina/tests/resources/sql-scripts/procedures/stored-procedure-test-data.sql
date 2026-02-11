@@ -241,3 +241,102 @@ EXCEPTION
         RETURN NULL;
 END;
 /
+
+CREATE OR REPLACE TYPE CallResultObjectType AS OBJECT (
+    STRING_ATTR VARCHAR2(255),
+    INT_ATTR NUMBER,
+    FLOAT_ATTR FLOAT,
+    DECIMAL_ATTR NUMBER
+);
+/
+
+CREATE OR REPLACE FUNCTION GetObjectById(p_id NUMBER)
+RETURN CallResultObjectType
+IS
+    v_result CallResultObjectType;
+    v_string VARCHAR2(255);
+    v_number NUMBER;
+    v_float FLOAT;
+    v_double NUMBER;
+BEGIN
+    SELECT col_varchar2 INTO v_string FROM CallStringTypes WHERE id = p_id;
+    SELECT col_number, col_float, col_binary_double INTO v_number, v_float, v_double
+        FROM CallNumericTypes WHERE id = p_id;
+    v_result := CallResultObjectType(v_string, v_number, v_float, v_double);
+    RETURN v_result;
+END;
+/
+
+CREATE OR REPLACE TYPE CallNullableObjectType AS OBJECT (
+    ID_ATTR NUMBER,
+    STRING_ATTR VARCHAR2(255),
+    STATUS VARCHAR2(20)
+);
+/
+
+CREATE OR REPLACE FUNCTION GetNullableObjectById(p_id NUMBER)
+RETURN CallNullableObjectType
+IS
+    v_result CallNullableObjectType;
+BEGIN
+    BEGIN
+        SELECT CallNullableObjectType(id, col_varchar2, NULL)
+        INTO v_result
+        FROM CallStringTypes WHERE id = p_id;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_result := NULL;
+    END;
+    RETURN v_result;
+END;
+/
+
+CREATE TABLE CallMobileUsers (
+    user_id         NUMBER,
+    first_name      VARCHAR2(100),
+    last_name       VARCHAR2(100),
+    email           VARCHAR2(255),
+    mobile_number   VARCHAR2(20),
+    is_verified     VARCHAR2(5) DEFAULT 'N',
+    PRIMARY KEY (user_id)
+);
+
+INSERT INTO CallMobileUsers (user_id, first_name, last_name, email, mobile_number, is_verified)
+VALUES (1, 'John', 'Doe', 'john.doe@example.com', '0771234567', 'Y');
+
+CREATE OR REPLACE TYPE MobileResultType AS OBJECT (
+    USER_ID NUMBER,
+    FIRST_NAME VARCHAR2(100),
+    LAST_NAME VARCHAR2(100),
+    EMAIL VARCHAR2(255),
+    MOBILE_NUMBER VARCHAR2(20),
+    STATUS VARCHAR2(20),
+    IS_VERIFIED VARCHAR2(5),
+    MESSAGE VARCHAR2(255)
+);
+/
+
+CREATE OR REPLACE FUNCTION verify_mobile(p_mobile_number VARCHAR2)
+RETURN MobileResultType
+IS
+    v_result MobileResultType;
+    v_user_id NUMBER;
+    v_first_name VARCHAR2(100);
+    v_last_name VARCHAR2(100);
+    v_email VARCHAR2(255);
+    v_mobile_number VARCHAR2(20);
+    v_is_verified VARCHAR2(5);
+BEGIN
+    SELECT user_id, first_name, last_name, email, mobile_number, is_verified
+    INTO v_user_id, v_first_name, v_last_name, v_email, v_mobile_number, v_is_verified
+    FROM CallMobileUsers
+    WHERE mobile_number = p_mobile_number;
+
+    v_result := MobileResultType(v_user_id, v_first_name, v_last_name, v_email, v_mobile_number, 'ACTIVE', v_is_verified, 'Mobile number verified successfully');
+    RETURN v_result;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        v_result := MobileResultType(NULL, NULL, NULL, NULL, p_mobile_number, 'NOT_FOUND', 'N', 'Mobile number not registered');
+        RETURN v_result;
+END;
+/

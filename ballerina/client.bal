@@ -113,6 +113,15 @@ public isolated client class Client {
     # check ret.close();
     # ```
     #
+    # For functions that return Oracle OBJECT types, use `ObjectOutParameter` to capture the return value
+    # and map it to a Ballerina record:
+    # ```ballerina
+    # oracledb:ObjectOutParameter retVal = new("MY_OBJECT_TYPE");
+    # sql:ProcedureCallResult ret = check dbClient->call(`{${retVal} = call myFunc(${param})}`);
+    # MyRecord? result = check retVal.get(MyRecord);
+    # check ret.close();
+    # ```
+    #
     # + sqlQuery - The SQL query such as `` `{call sp_GetAlbums()}` `` or `` `{${retVal} = call myFunc(${param})}` ``
     # + rowTypes - `typedesc` array of the records to which the results need to be returned
     # + return - Summary of the execution and results are returned in an `sql:ProcedureCallResult`, or an `sql:Error`

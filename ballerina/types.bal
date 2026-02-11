@@ -112,6 +112,36 @@ public distinct class NestedTableValue {
     }
 }
 
+# Represents the Oracle OBJECT type `OutParameter` in `sql:ParameterizedCallQuery`.
+# Use this to capture the return value of an Oracle function that returns an OBJECT type.
+#
+# + typeName - The Oracle OBJECT type name (e.g., "MY_OBJECT_TYPE")
+#
+# # Example
+# ```ballerina
+# oracledb:ObjectOutParameter returnValue = new("MY_OBJECT_TYPE");
+# sql:ProcedureCallResult ret = check dbClient->call(`{${returnValue} = call myFunc(${param})}`);
+# MyRecord? result = check returnValue.get(MyRecord);
+# check ret.close();
+# ```
+public distinct class ObjectOutParameter {
+    *sql:OutParameter;
+    public string typeName;
+
+    public isolated function init(string typeName) {
+        self.typeName = typeName;
+    }
+
+    # Parses the returned Oracle OBJECT SQL value to a Ballerina value.
+    #
+    # + typeDesc - The `typedesc` of the type to which the result needs to be returned
+    # + return - The result in the `typeDesc` type, or an `sql:Error`
+    public isolated function get(typedesc<anydata> typeDesc = <>) returns typeDesc|sql:Error = @java:Method {
+        'class: "io.ballerina.stdlib.oracledb.nativeimpl.OutParameterProcessor",
+        name: "getOutParameterValue"
+    } external;
+}
+
 # Represents the `XML range` `OutParameter` in `sql:ParameterizedCallQuery`.
 public distinct class XmlOutParameter {
     *sql:OutParameter;

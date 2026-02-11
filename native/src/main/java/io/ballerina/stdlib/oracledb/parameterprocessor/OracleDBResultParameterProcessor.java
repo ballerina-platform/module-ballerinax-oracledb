@@ -27,6 +27,7 @@ import io.ballerina.runtime.api.types.RecordType;
 import io.ballerina.runtime.api.types.StructureType;
 import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.types.TypeTags;
+import io.ballerina.runtime.api.types.UnionType;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.utils.XmlUtils;
@@ -55,6 +56,7 @@ import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Struct;
 import java.sql.Timestamp;
+import java.sql.Types;
 
 import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 
@@ -100,13 +102,18 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             }
             int index = 0;
             for (Field internalField : internalStructFields) {
-                int type = TypeUtils.getReferredType(internalField.getFieldType()).getTag();
                 BString fieldName = fromString(internalField.getFieldName());
                 Object value = dataArray[index];
+                if (value == null) {
+                    struct.put(fieldName, null);
+                    ++index;
+                    continue;
+                }
+                int type = resolveNonNullTypeTag(internalField.getFieldType());
                 switch (type) {
                     case TypeTags.INT_TAG:
                         if (value instanceof BigDecimal) {
-                            struct.put(fieldName, ((BigDecimal) value).intValue());
+                            struct.put(fieldName, ((BigDecimal) value).longValue());
                         } else {
                             struct.put(fieldName, value);
                         }
@@ -147,6 +154,20 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             }
         }
         return struct;
+    }
+
+    private int resolveNonNullTypeTag(Type fieldType) {
+        Type referredType = TypeUtils.getReferredType(fieldType);
+        int tag = referredType.getTag();
+        if (tag == TypeTags.UNION_TAG && referredType instanceof UnionType) {
+            for (Type memberType : ((UnionType) referredType).getMemberTypes()) {
+                int memberTag = TypeUtils.getReferredType(memberType).getTag();
+                if (memberTag != TypeTags.NULL_TAG) {
+                    return memberTag;
+                }
+            }
+        }
+        return tag;
     }
 
     @Override
@@ -216,6 +237,8 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             case OracleTypes.INTERVALDS:
             case OracleTypes.INTERVALYM:
                 return processInterval(statement, paramIndex);
+            case Types.STRUCT:
+                return statement.getObject(paramIndex);
             default:
                 throw new UnsupportedTypeError(JDBCType.valueOf(sqlType).getName(), paramIndex);
         }
@@ -229,10 +252,37 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                 return convertInterval((String) value, sqlType, ballerinaType, "INTERVALDS");
             case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH:
                 return convertInterval((String) value, sqlType, ballerinaType, "INTERVALYM");
+            case Constants.Types.OutParameterTypes.OBJECT:
+                return convertObjectOutParameter(value, sqlType, ballerinaType);
             default:
                 throw new UnsupportedTypeError(String.format(
                        "ParameterizedCallQuery consists of a parameter of unsupported type '%s'.", outParamObjectName));
         }
+    }
+
+    private Object convertObjectOutParameter(Object value, int sqlType, Type ballerinaType) throws DataError {
+        if (value instanceof Struct) {
+            Type referredType = TypeUtils.getReferredType(ballerinaType);
+            if (referredType instanceof StructureType) {
+                try {
+                    return createUserDefinedType((Struct) value, (StructureType) referredType);
+                } catch (SQLException e) {
+                    throw new DataError(e.getMessage());
+                }
+            } else {
+                throw new TypeMismatchError("SQL Struct", ballerinaType.getName(),
+                        new String[]{"record type"});
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object convertStruct(Struct value, int sqlType, Type ballerinaType) throws DataError, SQLException {
+        if (value == null) {
+            return null;
+        }
+        return super.convertStruct(value, sqlType, ballerinaType);
     }
 
     @Override

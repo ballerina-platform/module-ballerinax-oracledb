@@ -19,6 +19,7 @@
 package io.ballerina.stdlib.oracledb.parameterprocessor;
 
 import io.ballerina.runtime.api.types.Type;
+import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BMap;
@@ -33,12 +34,14 @@ import io.ballerina.stdlib.sql.parameterprocessor.DefaultStatementParameterProce
 import oracle.jdbc.OracleTypes;
 
 import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Struct;
 import java.sql.Types;
+import java.util.Locale;
 
 /**
  * This class overrides DefaultStatementParameterProcessor to implement methods required to convert ballerina types
@@ -91,11 +94,26 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
             case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH:
                 sqlTypeValue = OracleTypes.INTERVALYM;
                 break;
+            case Constants.Types.OutParameterTypes.OBJECT:
+                sqlTypeValue = Types.STRUCT;
+                break;
             default:
                 throw new UnsupportedTypeError(String.format(
                         "ParameterizedCallQuery consists of a parameter of unsupported type '%s'.", sqlType));
         }
         return sqlTypeValue;
+    }
+
+    @Override
+    public void registerOutParameter(CallableStatement statement, int index, BObject typedValue, int sqlType)
+            throws SQLException, DataError {
+        String outParamType = TypeUtils.getType(typedValue).getName();
+        if (outParamType.equals(Constants.Types.OutParameterTypes.OBJECT)) {
+            String typeName = typedValue.getStringValue(StringUtils.fromString("typeName")).getValue();
+            statement.registerOutParameter(index, OracleTypes.STRUCT, typeName.toUpperCase(Locale.ROOT));
+        } else {
+            super.registerOutParameter(statement, index, typedValue, sqlType);
+        }
     }
 
     @Override

@@ -473,6 +473,130 @@ isolated function testCallNonExistentFunction() returns error? {
     check oracledbClient.close();
 }
 
+type ObjectResult record {|
+    string STRING_ATTR;
+    int INT_ATTR;
+    float FLOAT_ATTR;
+    decimal DECIMAL_ATTR;
+|};
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallFunctionReturningObject() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    ObjectOutParameter returnValue = new ("CALLRESULTOBJECTTYPE");
+    decimal id = 1;
+    sql:ProcedureCallResult ret = check oracledbClient->call(
+        `{${returnValue} = call GetObjectById(${id})}`);
+    ObjectResult? result = check returnValue.get(ObjectResult);
+    test:assertTrue(result is ObjectResult, "Function should return an object.");
+    if result is ObjectResult {
+        test:assertEquals(result.STRING_ATTR, "test2", "STRING_ATTR did not match.");
+        test:assertEquals(result.INT_ATTR, 2147483647, "INT_ATTR did not match.");
+    }
+    check ret.close();
+    check oracledbClient.close();
+}
+
+type NullableObjectResult record {|
+    int? ID_ATTR;
+    string? STRING_ATTR;
+    string? STATUS;
+|};
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallFunctionReturningObjectWithNullFields() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    ObjectOutParameter returnValue = new ("CALLNULLABLEOBJECTTYPE");
+    decimal id = 1;
+    sql:ProcedureCallResult ret = check oracledbClient->call(
+        `{${returnValue} = call GetNullableObjectById(${id})}`);
+    NullableObjectResult? result = check returnValue.get(NullableObjectResult);
+    test:assertTrue(result is NullableObjectResult, "Function should return an object.");
+    if result is NullableObjectResult {
+        test:assertEquals(result.ID_ATTR, 1, "ID_ATTR did not match.");
+        test:assertEquals(result.STRING_ATTR, "test2", "STRING_ATTR did not match.");
+        test:assertEquals(result.STATUS, (), "STATUS should be null.");
+    }
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallFunctionReturningNullObject() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    ObjectOutParameter returnValue = new ("CALLNULLABLEOBJECTTYPE");
+    decimal id = 999;
+    sql:ProcedureCallResult ret = check oracledbClient->call(
+        `{${returnValue} = call GetNullableObjectById(${id})}`);
+    json result = check returnValue.get(json);
+    test:assertEquals(result, (), "Function should return null for non-existent id.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
+type MobileResult record {|
+    int? user_id;
+    string? first_name;
+    string? last_name;
+    string? email;
+    string? mobile_number;
+    string? status;
+    string? is_verified;
+    string? message;
+|};
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallFunctionReturningStructType() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:StructOutParameter returnValue = new;
+    string mobileNumber = "0771234567";
+    sql:ProcedureCallResult ret = check oracledbClient->call(
+        `{${returnValue} = call verify_mobile(${mobileNumber})}`);
+    MobileResult? result = check returnValue.get(MobileResult);
+    test:assertTrue(result is MobileResult, "Function should return a struct.");
+    if result is MobileResult {
+        test:assertEquals(result.user_id, 1, "user_id did not match.");
+        test:assertEquals(result.first_name, "John", "first_name did not match.");
+        test:assertEquals(result.last_name, "Doe", "last_name did not match.");
+        test:assertEquals(result.email, "john.doe@example.com", "email did not match.");
+        test:assertEquals(result.mobile_number, "0771234567", "mobile_number did not match.");
+        test:assertEquals(result.status, "ACTIVE", "status did not match.");
+        test:assertEquals(result.is_verified, "Y", "is_verified did not match.");
+        test:assertEquals(result.message, "Mobile number verified successfully", "message did not match.");
+    }
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallFunctionReturningStructTypeNotFound() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    sql:StructOutParameter returnValue = new;
+    string mobileNumber = "0000000000";
+    sql:ProcedureCallResult ret = check oracledbClient->call(
+        `{${returnValue} = call verify_mobile(${mobileNumber})}`);
+    MobileResult? result = check returnValue.get(MobileResult);
+    test:assertTrue(result is MobileResult, "Function should return a struct.");
+    if result is MobileResult {
+        test:assertEquals(result.user_id, (), "user_id should be null.");
+        test:assertEquals(result.mobile_number, "0000000000", "mobile_number did not match.");
+        test:assertEquals(result.status, "NOT_FOUND", "status did not match.");
+        test:assertEquals(result.message, "Mobile number not registered", "message did not match.");
+    }
+    check ret.close();
+    check oracledbClient.close();
+}
+
 isolated function callQueryClient(Client oracledbClient, sql:ParameterizedQuery sqlQuery)
 returns record {}|error {
     stream<record {}, error?> streamData = oracledbClient->query(sqlQuery);
