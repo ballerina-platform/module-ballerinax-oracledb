@@ -556,7 +556,7 @@ type MobileResult record {|
 }
 isolated function testCallFunctionReturningStructType() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:StructOutParameter returnValue = new;
+    ObjectOutParameter returnValue = new ("MOBILERESULTTYPE");
     string mobileNumber = "0771234567";
     sql:ProcedureCallResult ret = check oracledbClient->call(
         `{${returnValue} = call verify_mobile(${mobileNumber})}`);
@@ -581,7 +581,7 @@ isolated function testCallFunctionReturningStructType() returns error? {
 }
 isolated function testCallFunctionReturningStructTypeNotFound() returns error? {
     Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
-    sql:StructOutParameter returnValue = new;
+    ObjectOutParameter returnValue = new ("MOBILERESULTTYPE");
     string mobileNumber = "0000000000";
     sql:ProcedureCallResult ret = check oracledbClient->call(
         `{${returnValue} = call verify_mobile(${mobileNumber})}`);
