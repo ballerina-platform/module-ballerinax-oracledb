@@ -159,11 +159,20 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
     private Type resolveNonNullType(Type fieldType) {
         Type referredType = TypeUtils.getReferredType(fieldType);
         if (referredType.getTag() == TypeTags.UNION_TAG && referredType instanceof UnionType) {
+            Type nonNullMember = null;
             for (Type memberType : ((UnionType) referredType).getMemberTypes()) {
                 Type referredMember = TypeUtils.getReferredType(memberType);
-                if (referredMember.getTag() != TypeTags.NULL_TAG) {
-                    return referredMember;
+                if (referredMember.getTag() == TypeTags.NULL_TAG) {
+                    continue;
                 }
+                if (nonNullMember != null) {
+                    // More than one non-null member — not a simple nullable type; return the union as-is
+                    return referredType;
+                }
+                nonNullMember = referredMember;
+            }
+            if (nonNullMember != null) {
+                return nonNullMember;
             }
         }
         return referredType;
@@ -265,10 +274,10 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
 
     private Object convertObjectOutParameter(Object value, Type ballerinaType) throws DataError {
         if (value instanceof Struct) {
-            Type referredType = TypeUtils.getReferredType(ballerinaType);
-            if (referredType instanceof StructureType) {
+            Type resolvedType = resolveNonNullType(ballerinaType);
+            if (resolvedType instanceof StructureType) {
                 try {
-                    return createUserDefinedType((Struct) value, (StructureType) referredType);
+                    return createUserDefinedType((Struct) value, (StructureType) resolvedType);
                 } catch (SQLException e) {
                     throw new DataError(e.getMessage());
                 }
