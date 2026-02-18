@@ -145,7 +145,7 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
                     case TypeTags.OBJECT_TYPE_TAG:
                     case TypeTags.RECORD_TYPE_TAG:
                         struct.put(fieldName, createUserDefinedType((Struct) value,
-                                        (StructureType) TypeUtils.getReferredType(internalField.getFieldType())));
+                                        (StructureType) resolveNonNullType(internalField.getFieldType())));
                         break;
                     default:
                         createUserDefinedTypeSubtype(internalField, structType);
@@ -156,18 +156,21 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
         return struct;
     }
 
-    private int resolveNonNullTypeTag(Type fieldType) {
+    private Type resolveNonNullType(Type fieldType) {
         Type referredType = TypeUtils.getReferredType(fieldType);
-        int tag = referredType.getTag();
-        if (tag == TypeTags.UNION_TAG && referredType instanceof UnionType) {
+        if (referredType.getTag() == TypeTags.UNION_TAG && referredType instanceof UnionType) {
             for (Type memberType : ((UnionType) referredType).getMemberTypes()) {
-                int memberTag = TypeUtils.getReferredType(memberType).getTag();
-                if (memberTag != TypeTags.NULL_TAG) {
-                    return memberTag;
+                Type referredMember = TypeUtils.getReferredType(memberType);
+                if (referredMember.getTag() != TypeTags.NULL_TAG) {
+                    return referredMember;
                 }
             }
         }
-        return tag;
+        return referredType;
+    }
+
+    private int resolveNonNullTypeTag(Type fieldType) {
+        return resolveNonNullType(fieldType).getTag();
     }
 
     @Override
@@ -253,14 +256,14 @@ public class OracleDBResultParameterProcessor extends DefaultResultParameterProc
             case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH:
                 return convertInterval((String) value, sqlType, ballerinaType, "INTERVALYM");
             case Constants.Types.OutParameterTypes.OBJECT:
-                return convertObjectOutParameter(value, sqlType, ballerinaType);
+                return convertObjectOutParameter(value, ballerinaType);
             default:
                 throw new UnsupportedTypeError(String.format(
                        "ParameterizedCallQuery consists of a parameter of unsupported type '%s'.", outParamObjectName));
         }
     }
 
-    private Object convertObjectOutParameter(Object value, int sqlType, Type ballerinaType) throws DataError {
+    private Object convertObjectOutParameter(Object value, Type ballerinaType) throws DataError {
         if (value instanceof Struct) {
             Type referredType = TypeUtils.getReferredType(ballerinaType);
             if (referredType instanceof StructureType) {
