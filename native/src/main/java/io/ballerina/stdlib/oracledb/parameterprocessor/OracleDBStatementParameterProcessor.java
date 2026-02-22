@@ -104,12 +104,17 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
         return sqlTypeValue;
     }
 
-    @Override
+    `@Override`
     public void registerOutParameter(CallableStatement statement, int index, BObject typedValue, int sqlType)
             throws SQLException, DataError {
         String outParamType = TypeUtils.getType(typedValue).getName();
         if (outParamType.equals(Constants.Types.OutParameterTypes.OBJECT)) {
-            String typeName = typedValue.getStringValue(StringUtils.fromString("typeName")).getValue();
+            io.ballerina.runtime.api.values.BString typeNameBStr = 
+                    typedValue.getStringValue(StringUtils.fromString("typeName"));
+            if (typeNameBStr == null) {
+                throw new DataError("ObjectOutParameter requires a non-null 'typeName' field");
+            }
+            String typeName = typeNameBStr.getValue();
             statement.registerOutParameter(index, OracleTypes.STRUCT, typeName.toUpperCase(Locale.ROOT));
         } else {
             super.registerOutParameter(statement, index, typedValue, sqlType);
