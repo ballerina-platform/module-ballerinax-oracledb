@@ -31,6 +31,8 @@ isolated function insertDateTimeTypesAndIntervalsWithString() returns sql:Error?
     string intervalDtoS = "200 5:12:45.89";
     sql:ExecutionResult result = check oracledbClient->execute(
         `ALTER SESSION SET NLS_DATE_FORMAT='DD-MON-YYYY HH:MI:SS AM'`);
+    result = check oracledbClient->execute(`ALTER SESSION SET NLS_TIMESTAMP_FORMAT='DD-MON-YYYY HH:MI:SS AM'`);
+    result = check oracledbClient->execute(`ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT='DD-MON-YYYY HH:MI:SS AM TZH:TZM'`);
     sql:ParameterizedQuery insertQuery = `INSERT INTO TestDateTimeTable(COL_DATE, COL_DATE_ONLY, COL_TIMESTAMP,
             COL_TIMESTAMPTZ, COL_TIMESTAMPTZL, COL_INTERVAL_YEAR_TO_MONTH, COL_INTERVAL_DAY_TO_SECOND)
          VALUES (${date}, ${dateOnly}, ${timestamp}, ${timestampTZ}, ${timestampTZl}, ${intervalYtoM},
