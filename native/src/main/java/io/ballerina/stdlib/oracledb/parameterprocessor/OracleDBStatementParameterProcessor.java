@@ -83,28 +83,17 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     @Override
     public int getCustomOutParameterType(BObject typedValue) throws DataError {
         String sqlType = TypeUtils.getType(typedValue).getName();
-        int sqlTypeValue;
-        switch (sqlType) {
-            case Constants.Types.OutParameterTypes.XML:
-                sqlTypeValue = Types.SQLXML;
-                break;
-            case Constants.Types.OutParameterTypes.INTERVAL_DAY_TO_SECOND:
-                sqlTypeValue = OracleTypes.INTERVALDS;
-                break;
-            case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH:
-                sqlTypeValue = OracleTypes.INTERVALYM;
-                break;
-            case Constants.Types.OutParameterTypes.OBJECT:
-                sqlTypeValue = Types.STRUCT;
-                break;
-            default:
-                throw new UnsupportedTypeError(String.format(
-                        "ParameterizedCallQuery consists of a parameter of unsupported type '%s'.", sqlType));
-        }
-        return sqlTypeValue;
+        return switch (sqlType) {
+            case Constants.Types.OutParameterTypes.XML -> Types.SQLXML;
+            case Constants.Types.OutParameterTypes.INTERVAL_DAY_TO_SECOND -> OracleTypes.INTERVALDS;
+            case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH -> OracleTypes.INTERVALYM;
+            case Constants.Types.OutParameterTypes.OBJECT -> Types.STRUCT;
+            default -> throw new UnsupportedTypeError(String.format(
+                    "ParameterizedCallQuery consists of a parameter of unsupported type '%s'.", sqlType));
+        };
     }
 
-    `@Override`
+    @Override
     public void registerOutParameter(CallableStatement statement, int index, BObject typedValue, int sqlType)
             throws SQLException, DataError {
         String outParamType = TypeUtils.getType(typedValue).getName();
@@ -175,16 +164,17 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                                       Object value, boolean returnType) throws DataError, SQLException {
         Type type = ((BMap<?, ?>) value).getType();
         String recordName = type.getName();
-        switch (recordName) {
-            case Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD:
+        return switch (recordName) {
+            case Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD -> {
                 setIntervalYearToMonth(preparedStatement, index, value);
-                return returnType ? OracleTypes.INTERVALYM : 0;
-            case Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD:
+                yield returnType ? OracleTypes.INTERVALYM : 0;
+            }
+            case Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD -> {
                 setIntervalDayToSecond(preparedStatement, index, value);
-                return returnType ? OracleTypes.INTERVALDS : 0;
-            default:
-                throw new UnsupportedTypeError(recordName, index);
-        }
+                yield returnType ? OracleTypes.INTERVALDS : 0;
+            }
+            default -> throw new UnsupportedTypeError(recordName, index);
+        };
     }
 
     private void setIntervalYearToMonth(PreparedStatement preparedStatement,
