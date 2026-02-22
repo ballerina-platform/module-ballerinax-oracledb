@@ -104,6 +104,9 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                 throw new DataError("ObjectOutParameter requires a non-null 'typeName' field");
             }
             String typeName = typeNameBStr.getValue();
+            if (typeName.isBlank()) {
+                throw new DataError("ObjectOutParameter requires a non-empty 'typeName' field");
+            }
             statement.registerOutParameter(index, OracleTypes.STRUCT, typeName.toUpperCase(Locale.ROOT));
         } else {
             super.registerOutParameter(statement, index, typedValue, sqlType);
