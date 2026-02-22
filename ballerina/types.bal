@@ -112,7 +112,7 @@ public distinct class NestedTableValue {
     }
 }
 
-# Represents the Oracle OBJECT type `OutParameter` in `sql:ParameterizedCallQuery`.
+# Represents the Oracle OBJECT type `sql:OutParameter` in `sql:ParameterizedCallQuery`.
 # Use this to capture the return value of an Oracle function that returns an OBJECT type.
 #
 # + typeName - The Oracle OBJECT type name (e.g., "MY_OBJECT_TYPE")

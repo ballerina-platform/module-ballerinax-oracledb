@@ -632,7 +632,7 @@ isolated function testCallFunctionReturningObjectWithNullableTypeDesc() returns 
     decimal id = 1;
     sql:ProcedureCallResult ret = check oracledbClient->call(
         `{${returnValue} = call GetObjectById(${id})}`);
-    ObjectResult? result = check returnValue.get(ObjectResult?);
+    ObjectResult? result = check returnValue.get();
     test:assertTrue(result is ObjectResult, "Function should return an object with nullable typeDesc.");
     if result is ObjectResult {
         test:assertEquals(result.STRING_ATTR, "test2", "STRING_ATTR did not match.");
