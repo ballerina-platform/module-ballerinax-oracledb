@@ -340,3 +340,32 @@ EXCEPTION
         RETURN v_result;
 END;
 /
+
+CREATE OR REPLACE TYPE CallAddressType AS OBJECT (
+    STREET VARCHAR2(255),
+    CITY VARCHAR2(100)
+);
+/
+
+CREATE OR REPLACE TYPE CallPersonType AS OBJECT (
+    NAME VARCHAR2(100),
+    AGE NUMBER,
+    ADDRESS CallAddressType
+);
+/
+
+CREATE OR REPLACE FUNCTION GetNestedObject()
+RETURN CallPersonType
+IS
+BEGIN
+    RETURN CallPersonType('John Doe', 30, CallAddressType('123 Main St', 'Colombo'));
+END;
+/
+
+CREATE OR REPLACE FUNCTION GetNestedObjectWithNullField()
+RETURN CallPersonType
+IS
+BEGIN
+    RETURN CallPersonType('Jane Doe', 25, NULL);
+END;
+/

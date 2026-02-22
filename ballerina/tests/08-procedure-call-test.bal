@@ -551,6 +551,17 @@ type MobileResult record {|
     string? message;
 |};
 
+type AddressResult record {|
+    string STREET;
+    string CITY;
+|};
+
+type PersonResult record {|
+    string NAME;
+    int AGE;
+    AddressResult? ADDRESS;
+|};
+
 @test:Config {
     groups: ["procedures"]
 }
@@ -592,6 +603,83 @@ isolated function testCallFunctionReturningStructTypeNotFound() returns error? {
         test:assertEquals(result.mobile_number, "0000000000", "mobile_number did not match.");
         test:assertEquals(result.status, "NOT_FOUND", "status did not match.");
         test:assertEquals(result.message, "Mobile number not registered", "message did not match.");
+    }
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallFunctionReturningObjectWithTypeMismatch() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    ObjectOutParameter returnValue = new ("CALLRESULTOBJECTTYPE");
+    decimal id = 1;
+    sql:ProcedureCallResult ret = check oracledbClient->call(
+        `{${returnValue} = call GetObjectById(${id})}`);
+    string|sql:Error result = returnValue.get(string);
+    test:assertTrue(result is sql:Error, "Expected a type mismatch error when getting object as string.");
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallFunctionReturningObjectWithNullableTypeDesc() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    ObjectOutParameter returnValue = new ("CALLRESULTOBJECTTYPE");
+    decimal id = 1;
+    sql:ProcedureCallResult ret = check oracledbClient->call(
+        `{${returnValue} = call GetObjectById(${id})}`);
+    ObjectResult? result = check returnValue.get(ObjectResult?);
+    test:assertTrue(result is ObjectResult, "Function should return an object with nullable typeDesc.");
+    if result is ObjectResult {
+        test:assertEquals(result.STRING_ATTR, "test2", "STRING_ATTR did not match.");
+        test:assertEquals(result.INT_ATTR, 2147483647, "INT_ATTR did not match.");
+    }
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallFunctionReturningNestedObject() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    ObjectOutParameter returnValue = new ("CALLPERSONTYPE");
+    sql:ProcedureCallResult ret = check oracledbClient->call(
+        `{${returnValue} = call GetNestedObject()}`);
+    PersonResult? result = check returnValue.get(PersonResult);
+    test:assertTrue(result is PersonResult, "Function should return a nested object.");
+    if result is PersonResult {
+        test:assertEquals(result.NAME, "John Doe", "NAME did not match.");
+        test:assertEquals(result.AGE, 30, "AGE did not match.");
+        AddressResult? address = result.ADDRESS;
+        test:assertTrue(address is AddressResult, "ADDRESS should not be null.");
+        if address is AddressResult {
+            test:assertEquals(address.STREET, "123 Main St", "STREET did not match.");
+            test:assertEquals(address.CITY, "Colombo", "CITY did not match.");
+        }
+    }
+    check ret.close();
+    check oracledbClient.close();
+}
+
+@test:Config {
+    groups: ["procedures"]
+}
+isolated function testCallFunctionReturningNestedObjectWithNullField() returns error? {
+    Client oracledbClient = check new (HOST, USER, PASSWORD, DATABASE, PORT);
+    ObjectOutParameter returnValue = new ("CALLPERSONTYPE");
+    sql:ProcedureCallResult ret = check oracledbClient->call(
+        `{${returnValue} = call GetNestedObjectWithNullField()}`);
+    PersonResult? result = check returnValue.get(PersonResult);
+    test:assertTrue(result is PersonResult, "Function should return an object with null nested field.");
+    if result is PersonResult {
+        test:assertEquals(result.NAME, "Jane Doe", "NAME did not match.");
+        test:assertEquals(result.AGE, 25, "AGE did not match.");
+        test:assertEquals(result.ADDRESS, (), "ADDRESS should be null.");
     }
     check ret.close();
     check oracledbClient.close();
