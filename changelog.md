@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- [Add support for calling Oracle PL/SQL functions using the `call` remote method](https://github.com/ballerina-platform/ballerina-library/issues/8635)
 
 ### Changed
 

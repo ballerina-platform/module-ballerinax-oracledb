@@ -182,3 +182,190 @@ BEGIN
 
 END;
 /
+
+CREATE OR REPLACE FUNCTION GetStringById(p_id NUMBER)
+RETURN VARCHAR2
+IS
+    v_result VARCHAR2(255);
+BEGIN
+    SELECT col_varchar2 INTO v_result FROM CallStringTypes WHERE id = p_id;
+    RETURN v_result;
+END;
+/
+
+CREATE OR REPLACE FUNCTION GetNumericById(p_id NUMBER)
+RETURN NUMBER
+IS
+    v_result NUMBER;
+BEGIN
+    SELECT col_number INTO v_result FROM CallNumericTypes WHERE id = p_id;
+    RETURN v_result;
+END;
+/
+
+CREATE OR REPLACE FUNCTION GetDoubleById(p_id NUMBER)
+RETURN BINARY_DOUBLE
+IS
+    v_result BINARY_DOUBLE;
+BEGIN
+    SELECT col_binary_double INTO v_result FROM CallNumericTypes WHERE id = p_id;
+    RETURN v_result;
+END;
+/
+
+CREATE OR REPLACE FUNCTION GetStringByIdAndType(p_id NUMBER, p_type VARCHAR2)
+RETURN VARCHAR2
+IS
+    v_result VARCHAR2(255);
+BEGIN
+    IF p_type = 'varchar2' THEN
+        SELECT col_varchar2 INTO v_result FROM CallStringTypes WHERE id = p_id;
+    ELSIF p_type = 'char' THEN
+        SELECT col_char INTO v_result FROM CallStringTypes WHERE id = p_id;
+    ELSE
+        v_result := NULL;
+    END IF;
+    RETURN v_result;
+END;
+/
+
+CREATE OR REPLACE FUNCTION GetNullableStringById(p_id NUMBER)
+RETURN VARCHAR2
+IS
+    v_result VARCHAR2(255);
+BEGIN
+    SELECT col_varchar2 INTO v_result FROM CallStringTypes WHERE id = p_id;
+    RETURN v_result;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN NULL;
+END;
+/
+
+CREATE OR REPLACE TYPE CallResultObjectType AS OBJECT (
+    STRING_ATTR VARCHAR2(255),
+    INT_ATTR NUMBER,
+    FLOAT_ATTR FLOAT,
+    DECIMAL_ATTR NUMBER
+);
+/
+
+CREATE OR REPLACE FUNCTION GetObjectById(p_id NUMBER)
+RETURN CallResultObjectType
+IS
+    v_result CallResultObjectType;
+    v_string VARCHAR2(255);
+    v_number NUMBER;
+    v_float FLOAT;
+    v_double NUMBER;
+BEGIN
+    SELECT col_varchar2 INTO v_string FROM CallStringTypes WHERE id = p_id;
+    SELECT col_number, col_float, col_binary_double INTO v_number, v_float, v_double
+        FROM CallNumericTypes WHERE id = p_id;
+    v_result := CallResultObjectType(v_string, v_number, v_float, v_double);
+    RETURN v_result;
+END;
+/
+
+CREATE OR REPLACE TYPE CallNullableObjectType AS OBJECT (
+    ID_ATTR NUMBER,
+    STRING_ATTR VARCHAR2(255),
+    STATUS VARCHAR2(20)
+);
+/
+
+CREATE OR REPLACE FUNCTION GetNullableObjectById(p_id NUMBER)
+RETURN CallNullableObjectType
+IS
+    v_result CallNullableObjectType;
+BEGIN
+    BEGIN
+        SELECT CallNullableObjectType(id, col_varchar2, NULL)
+        INTO v_result
+        FROM CallStringTypes WHERE id = p_id;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_result := NULL;
+    END;
+    RETURN v_result;
+END;
+/
+
+CREATE TABLE CallMobileUsers (
+    user_id         NUMBER,
+    first_name      VARCHAR2(100),
+    last_name       VARCHAR2(100),
+    email           VARCHAR2(255),
+    mobile_number   VARCHAR2(20),
+    is_verified     VARCHAR2(5) DEFAULT 'N',
+    PRIMARY KEY (user_id)
+);
+
+INSERT INTO CallMobileUsers (user_id, first_name, last_name, email, mobile_number, is_verified)
+VALUES (1, 'John', 'Doe', 'john.doe@example.com', '0771234567', 'Y');
+
+CREATE OR REPLACE TYPE MobileResultType AS OBJECT (
+    USER_ID NUMBER,
+    FIRST_NAME VARCHAR2(100),
+    LAST_NAME VARCHAR2(100),
+    EMAIL VARCHAR2(255),
+    MOBILE_NUMBER VARCHAR2(20),
+    STATUS VARCHAR2(20),
+    IS_VERIFIED VARCHAR2(5),
+    MESSAGE VARCHAR2(255)
+);
+/
+
+CREATE OR REPLACE FUNCTION verify_mobile(p_mobile_number VARCHAR2)
+RETURN MobileResultType
+IS
+    v_result MobileResultType;
+    v_user_id NUMBER;
+    v_first_name VARCHAR2(100);
+    v_last_name VARCHAR2(100);
+    v_email VARCHAR2(255);
+    v_mobile_number VARCHAR2(20);
+    v_is_verified VARCHAR2(5);
+BEGIN
+    SELECT user_id, first_name, last_name, email, mobile_number, is_verified
+    INTO v_user_id, v_first_name, v_last_name, v_email, v_mobile_number, v_is_verified
+    FROM CallMobileUsers
+    WHERE mobile_number = p_mobile_number;
+
+    v_result := MobileResultType(v_user_id, v_first_name, v_last_name, v_email, v_mobile_number, 'ACTIVE', v_is_verified, 'Mobile number verified successfully');
+    RETURN v_result;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        v_result := MobileResultType(NULL, NULL, NULL, NULL, p_mobile_number, 'NOT_FOUND', 'N', 'Mobile number not registered');
+        RETURN v_result;
+END;
+/
+
+CREATE OR REPLACE TYPE CallAddressType AS OBJECT (
+    STREET VARCHAR2(255),
+    CITY VARCHAR2(100)
+);
+/
+
+CREATE OR REPLACE TYPE CallPersonType AS OBJECT (
+    NAME VARCHAR2(100),
+    AGE NUMBER,
+    ADDRESS CallAddressType
+);
+/
+
+CREATE OR REPLACE FUNCTION GetNestedObject
+RETURN CallPersonType
+IS
+BEGIN
+    RETURN CallPersonType('John Doe', 30, CallAddressType('123 Main St', 'Colombo'));
+END;
+/
+
+CREATE OR REPLACE FUNCTION GetNestedObjectWithNullField
+RETURN CallPersonType
+IS
+BEGIN
+    RETURN CallPersonType('Jane Doe', 25, NULL);
+END;
+/

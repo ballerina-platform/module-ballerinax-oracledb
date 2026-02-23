@@ -195,6 +195,7 @@ public final class Constants {
             public static final String XML = "XmlOutParameter";
             public static final String INTERVAL_YEAR_TO_MONTH = "IntervalYearToMonthOutParameter";
             public static final String INTERVAL_DAY_TO_SECOND = "IntervalDayToSecondOutParameter";
+            public static final String OBJECT = "ObjectOutParameter";
         }
 
         /**

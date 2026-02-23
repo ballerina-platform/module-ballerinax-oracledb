@@ -19,6 +19,7 @@
 package io.ballerina.stdlib.oracledb.parameterprocessor;
 
 import io.ballerina.runtime.api.types.Type;
+import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BMap;
@@ -33,12 +34,14 @@ import io.ballerina.stdlib.sql.parameterprocessor.DefaultStatementParameterProce
 import oracle.jdbc.OracleTypes;
 
 import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Struct;
 import java.sql.Types;
+import java.util.Locale;
 
 /**
  * This class overrides DefaultStatementParameterProcessor to implement methods required to convert ballerina types
@@ -80,22 +83,34 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
     @Override
     public int getCustomOutParameterType(BObject typedValue) throws DataError {
         String sqlType = TypeUtils.getType(typedValue).getName();
-        int sqlTypeValue;
-        switch (sqlType) {
-            case Constants.Types.OutParameterTypes.XML:
-                sqlTypeValue = Types.SQLXML;
-                break;
-            case Constants.Types.OutParameterTypes.INTERVAL_DAY_TO_SECOND:
-                sqlTypeValue = OracleTypes.INTERVALDS;
-                break;
-            case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH:
-                sqlTypeValue = OracleTypes.INTERVALYM;
-                break;
-            default:
-                throw new UnsupportedTypeError(String.format(
-                        "ParameterizedCallQuery consists of a parameter of unsupported type '%s'.", sqlType));
+        return switch (sqlType) {
+            case Constants.Types.OutParameterTypes.XML -> Types.SQLXML;
+            case Constants.Types.OutParameterTypes.INTERVAL_DAY_TO_SECOND -> OracleTypes.INTERVALDS;
+            case Constants.Types.OutParameterTypes.INTERVAL_YEAR_TO_MONTH -> OracleTypes.INTERVALYM;
+            case Constants.Types.OutParameterTypes.OBJECT -> Types.STRUCT;
+            default -> throw new UnsupportedTypeError(String.format(
+                    "ParameterizedCallQuery consists of a parameter of unsupported type '%s'.", sqlType));
+        };
+    }
+
+    @Override
+    public void registerOutParameter(CallableStatement statement, int index, BObject typedValue, int sqlType)
+            throws SQLException, DataError {
+        String outParamType = TypeUtils.getType(typedValue).getName();
+        if (outParamType.equals(Constants.Types.OutParameterTypes.OBJECT)) {
+            io.ballerina.runtime.api.values.BString typeNameBStr = 
+                    typedValue.getStringValue(StringUtils.fromString("typeName"));
+            if (typeNameBStr == null) {
+                throw new DataError("ObjectOutParameter requires a non-null 'typeName' field");
+            }
+            String typeName = typeNameBStr.getValue();
+            if (typeName.isBlank()) {
+                throw new DataError("ObjectOutParameter requires a non-empty 'typeName' field");
+            }
+            statement.registerOutParameter(index, OracleTypes.STRUCT, typeName.toUpperCase(Locale.ROOT));
+        } else {
+            super.registerOutParameter(statement, index, typedValue, sqlType);
         }
-        return sqlTypeValue;
     }
 
     @Override
@@ -152,16 +167,17 @@ public class OracleDBStatementParameterProcessor extends DefaultStatementParamet
                                       Object value, boolean returnType) throws DataError, SQLException {
         Type type = ((BMap<?, ?>) value).getType();
         String recordName = type.getName();
-        switch (recordName) {
-            case Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD:
+        return switch (recordName) {
+            case Constants.Types.INTERVAL_YEAR_TO_MONTH_RECORD -> {
                 setIntervalYearToMonth(preparedStatement, index, value);
-                return returnType ? OracleTypes.INTERVALYM : 0;
-            case Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD:
+                yield returnType ? OracleTypes.INTERVALYM : 0;
+            }
+            case Constants.Types.INTERVAL_DAY_TO_SECOND_RECORD -> {
                 setIntervalDayToSecond(preparedStatement, index, value);
-                return returnType ? OracleTypes.INTERVALDS : 0;
-            default:
-                throw new UnsupportedTypeError(recordName, index);
-        }
+                yield returnType ? OracleTypes.INTERVALDS : 0;
+            }
+            default -> throw new UnsupportedTypeError(recordName, index);
+        };
     }
 
     private void setIntervalYearToMonth(PreparedStatement preparedStatement,

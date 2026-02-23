@@ -1,13 +1,13 @@
 [package]
 org = "ballerinax"
 name = "oracledb"
-version = "1.14.1"
+version = "1.15.0"
 authors = ["Ballerina"]
 keywords = ["client", "network", "SQL", "RDBMS", "OracleDB", "Vendor/Oracle", "Area/Database", "Type/Connector"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-oracledb"
 icon = "icon.png"
 license = ["Apache-2.0"]
-distribution = "2201.12.0"
+distribution = "2201.13.1"
 
 [platform.java21]
 graalvmCompatible = true
@@ -15,11 +15,11 @@ graalvmCompatible = true
 [[platform.java21.dependency]]
 groupId = "io.ballerina.stdlib"
 artifactId = "oracledb-native"
-version = "1.14.1"
-path = "../native/build/libs/oracledb-native-1.14.1.jar"
+version = "1.15.0"
+path = "../native/build/libs/oracledb-native-1.15.0-SNAPSHOT.jar"
 
 [[platform.java21.dependency]]
 groupId = "io.ballerina.stdlib"
 artifactId = "sql-native"
-version = "1.17.1"
-path = "./lib/sql-native-1.17.1.jar"
+version = "1.18.0"
+path = "./lib/sql-native-1.18.0-20260218-212900-051ce11.jar"
