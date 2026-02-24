@@ -45,10 +45,12 @@ dependencies = [
 org = "ballerina"
 name = "crypto"
 version = "2.9.0"
-scope = "testOnly"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "time"}
+]
+modules = [
+	{org = "ballerina", packageName = "crypto", moduleName = "crypto"}
 ]
 
 [[package]]
@@ -352,6 +354,9 @@ version = "2.7.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
+modules = [
+	{org = "ballerina", packageName = "time", moduleName = "time"}
+]
 
 [[package]]
 org = "ballerina"
@@ -401,6 +406,7 @@ org = "ballerinax"
 name = "oracledb"
 version = "1.15.0"
 dependencies = [
+	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "file"},
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
@@ -409,6 +415,7 @@ dependencies = [
 	{org = "ballerina", name = "lang.transaction"},
 	{org = "ballerina", name = "sql"},
 	{org = "ballerina", name = "test"},
+	{org = "ballerina", name = "time"},
 	{org = "ballerinai", name = "transaction"},
 	{org = "ballerinax", name = "oracledb.driver"}
 ]
