@@ -1,6 +1,15 @@
 ## Overview
 
-This module provides the functionality required to access and manipulate data stored in an Oracle database.
+This module provides the functionality required to access and manipulate data stored in an Oracle database. It enables seamless integration with OracleDB, supporting various data types and advanced database features.
+
+### Key Features
+
+- Reliable and high-performance database connectivity
+- Support for common SQL operations (Query, Execute, Batch)
+- Efficient connection pooling and resource management
+- Support for OracleDB-specific data types (INTERVAL, VARRAY)
+- Secure communication with SSL and authentication
+- GraalVM compatible for native image builds
 
 ### Prerequisite
 Add the OracleDB drivers as a dependency to the Ballerina project.
@@ -99,7 +108,7 @@ oracledb:Client|sql:Error dbClient = new (user = "adminUser", password = "adminP
 Similarly, in the example below, the `oracledb:Client` uses the named parameters and it provides an unshared connection pool of the type of
 [`sql:ConnectionPool`](https://docs.central.ballerina.io/ballerina/sql/latest#ConnectionPool)
 to be used within the client.
-For more details about connection pooling, see the [`sql` Module](https://docs.central.ballerina.io/ballerina/sql/latest).
+For more details about connection pooling, see the [`sql` Package](https://docs.central.ballerina.io/ballerina/sql/latest).
 
 ```ballerina
 oracledb:Client|sql:Error dbClient = new (user = "adminUser", password = "adminPassword",
@@ -108,7 +117,7 @@ oracledb:Client|sql:Error dbClient = new (user = "adminUser", password = "adminP
 
 #### Handle connection pools
 
-All database modules share the same connection pooling concept and there are three possible scenarios for
+All database packages share the same connection pooling concept and there are three possible scenarios for
 connection pool handling. For its properties and possible values, see [`sql:ConnectionPool`](https://docs.central.ballerina.io/ballerina/sql/latest#ConnectionPool).
 
 >**Note**: Connection pooling is used to optimize opening and closing connections to the database. However, the pool comes with an overhead. It is best to configure the connection pool properties as per the application need to get the best performance.
@@ -136,7 +145,7 @@ connection pool handling. For its properties and possible values, see [`sql:Conn
 
    If you create a record of the `sql:ConnectionPool` type and reuse that in the configuration of multiple clients,
    for each set of clients that connects to the same database instance with the same set of properties, a shared
-   connection pool will be used.
+   connection pool will be created.
 
     ```ballerina
     sql:ConnectionPool connPool = {maxOpenConnections: 5};
@@ -175,7 +184,7 @@ check dbClient.close();
 
 ### Database operations
 
-Once the client is created, database operations can be executed through that client. This module defines the interface
+Once the client is created, database operations can be executed through that client. This package defines the interface
 and common properties that are shared among multiple database clients. It also supports querying, inserting, deleting,
 updating, and batch updating data.
 
@@ -464,7 +473,7 @@ check result.close();
 
 #### Interval types
 
-OracleDB has two `INTERVAL` data types: `INTERVAL YEAR TO MONTH` and `INTERVAL DAY TO SECOND` to store the various `INTERVAL` periods. 
+OracleDB has two `INTERVAL` data types: `INTERVAL YEAR TO MONTH` and `INTERVAL DAY TO SECOND` to store the various `INTERVAL` periods.
 
 The equivalent types in Ballerina are as follows.
 
@@ -486,7 +495,7 @@ public type IntervalDayToSecond record {|
 |};
 ```
 
-Here, `oracledb:Sign` is used to mark the sign of the interval period and period values are always ZERO or positive integers. 
+Here, `oracledb:Sign` is used to mark the sign of the interval period and period values are always ZERO or positive integers.
 
 ```ballerina
 //INTERVAL '120-11' YEAR(3) TO MONTH
@@ -507,7 +516,8 @@ oracledb:IntervalDayToSecond intervalDS3 = {hours: 10, minutes: 9, seconds: 8.55
 //INTERVAL '11 00:09:08.55578' DAY TO SECOND(5)
 oracledb:IntervalDayToSecond intervalDS4 = {days: 11, minutes: 9, seconds: 8.55578};
 ```
-#### VARRAY types
+
+#### `VARRAY` types
 
 OracleDB has support for `VARRAY` data type and `VARRAY` consists a type name and elements attributes.
 
@@ -541,3 +551,11 @@ Varray charVarray = { name:"CharArrayType", elements: charArray };
 ```
 
 >**Note**: The default thread pool size used in Ballerina is: `the number of processors available * 2`. You can configure the thread pool size by using the `BALLERINA_MAX_POOL_SIZE` environment variable.
+
+## Report issues
+
+To report bugs, request new features, start new discussions, view project boards, etc., go to the [Ballerina standard library parent repository](https://github.com/ballerina-platform/ballerina-library)
+
+## Useful links
+- Chat live with us via our [Discord server](https://discord.gg/ballerinalang).
+- Post all technical questions on Stack Overflow with the [#ballerina](https://stackoverflow.com/questions/tagged/ballerina) tag.
