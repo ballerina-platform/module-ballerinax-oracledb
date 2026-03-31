@@ -24,7 +24,10 @@ import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.oracledb.Constants;
 import io.ballerina.stdlib.oracledb.utils.Utils;
 import io.ballerina.stdlib.sql.datasource.SQLDatasource;
+import io.ballerina.stdlib.sql.observability.ObservabilityUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -79,6 +82,12 @@ public class ClientProcessor {
         url.append("(CONNECT_DATA=(SERVICE_NAME=").append(database).append("))");
         url.append(")");
         BMap connectionPool = clientConfig.getMapValue(Constants.ClientConfiguration.CONNECTION_POOL_OPTIONS);
+        Map<String, String> metricsTags = new HashMap<>();
+        metricsTags.put(ObservabilityUtils.TAG_DB_HOST, host);
+        metricsTags.put(ObservabilityUtils.TAG_DB_PORT, String.valueOf(port));
+        if (database != null && !database.isEmpty()) {
+            metricsTags.put(ObservabilityUtils.TAG_DB_NAME, database);
+        }
         SQLDatasource.SQLDatasourceParams sqlDatasourceParams = new SQLDatasource.SQLDatasourceParams()
                 .setUrl(url.toString())
                 .setUser(user)
@@ -86,7 +95,8 @@ public class ClientProcessor {
                 .setDatasourceName(dataSourceName)
                 .setOptions(datasourceOptions)
                 .setConnectionPool(connectionPool, globalConnPool)
-                .setPoolProperties(poolProperties);
+                .setPoolProperties(poolProperties)
+                .setMetricsTags(metricsTags);
         return io.ballerina.stdlib.sql.nativeimpl.ClientProcessor.createClient(client, sqlDatasourceParams, true, true);
     }
 
