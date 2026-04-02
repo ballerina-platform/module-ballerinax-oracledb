@@ -25,7 +25,7 @@ The OracleDB library specification has evolved and may continue to evolve in the
 3. [Queries and values](#3-queries-and-values)
 4. [Database operations](#4-database-operations)
 5. [Observability](#5-observability)
-   - [6.1. Metric tags](#61-metric-tags)
+   - [5.1. Metric tags](#51-metric-tags)
 
 # 1. Overview
 
