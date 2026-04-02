@@ -3,7 +3,7 @@
 _Owners_: @daneshk @niveathika  
 _Reviewers_: @daneshk  
 _Created_: 2022/01/14  
-_Updated_: 2022/03/23  
+_Updated_: 2026/04/02  
 _Edition_: Swan Lake  
 
 ## Introduction
@@ -24,6 +24,8 @@ The OracleDB library specification has evolved and may continue to evolve in the
    2.2. [Close the client](#22-close-the-client)
 3. [Queries and values](#3-queries-and-values)
 4. [Database operations](#4-database-operations)
+5. [Observability](#5-observability)
+   - [6.1. Metric tags](#61-metric-tags)
 
 # 1. Overview
 
@@ -131,3 +133,17 @@ In addition to `sql` values, the `oracledb` package supports the following typed
 5. Executes an SQL query, which calls a stored procedure. This can either return results or nil.
 
 For more information on database operations, see the [SQL specification](https://github.com/ballerina-platform/module-ballerina-sql/blob/master/docs/spec/spec.md#4-database-operations)
+
+# 5. Observability
+
+The OracleDB module supports observability through connection pool metrics, reported via the `ballerina/observe` module. The metric names and lifecycle are defined by the `ballerina/sql` module. For more information on connection pool metrics, see the [SQL specification](https://github.com/ballerina-platform/module-ballerina-sql/blob/master/docs/spec/spec.md).
+
+## 6.1. Metric tags
+
+The OracleDB module sets the following metric tags on every connection pool it creates. These tags are attached to all pool health and connection event metrics, enabling filtering and identification.
+
+| Tag | Source | Always present | Description |
+|---|---|---|---|
+| `db_host` | `host` parameter | Yes | Hostname of the MySQL server (defaults to `"localhost"`) |
+| `db_port` | `port` parameter | Yes | Port number of the MySQL server (defaults to `3306`) |
+| `db_name` | `database` parameter | No | Database name; omitted when `database` is `nil` or empty |
