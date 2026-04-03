@@ -427,7 +427,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "oracledb.driver"
-version = "1.5.0"
+version = "1.5.1"
 scope = "testOnly"
 modules = [
 	{org = "ballerinax", packageName = "oracledb.driver", moduleName = "oracledb.driver"}
