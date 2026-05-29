@@ -43,10 +43,8 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-
 jacoco {
-    toolVersion = "0.8.10"
+    toolVersion = "0.8.13"
 }
 
 test {
@@ -58,7 +56,7 @@ test {
     }
     jacoco {
         enabled = true
-        destinationFile = file("$buildDir/coverage-reports/jacoco.exec")
+        destinationFile = layout.buildDirectory.file("coverage-reports/jacoco.exec").get().asFile
         includeNoLocationClasses = true
     }
 }
@@ -69,13 +67,13 @@ spotbugsMain {
     def SpotBugsEffort = classLoader.findLoadedClass("com.github.spotbugs.snom.Effort")
     effort = SpotBugsEffort.MAX
     reportLevel = SpotBugsConfidence.LOW
-    reportsDir = file("$project.buildDir/reports/spotbugs")
+    reportsDir = layout.buildDirectory.dir("reports/spotbugs").get().asFile
     def excludeFile = file("${rootDir}/build-config/spotbugs-exclude.xml")
     if (excludeFile.exists()) {
         it.excludeFilter = excludeFile
     }
     reports {
-        text.enabled = true
+        text.required = true
     }
 }
 
