@@ -25,7 +25,6 @@ pluginManagement {
     }
 
     repositories {
-        mavenLocal()
         gradlePluginPortal()
         maven {
             url = 'https://maven.pkg.github.com/ballerina-platform/*'
