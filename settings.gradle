@@ -37,7 +37,7 @@ pluginManagement {
 }
 
 plugins {
-    id "com.gradle.enterprise" version "3.2"
+    id "com.gradle.develocity" version "3.19.2"
 }
 
 rootProject.name = 'ballerina-oracledb'
@@ -56,9 +56,9 @@ project(':oracledb-ballerina').projectDir = file('ballerina')
 project(':oracledb-compiler-plugin-tests').projectDir = file('compiler-plugin-tests')
 project(':oracledb-examples').projectDir = file('examples')
 
-gradleEnterprise {
+develocity {
     buildScan {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
+        termsOfUseUrl = 'https://gradle.com/terms-of-service'
+        termsOfUseAgree = 'yes'
     }
 }
