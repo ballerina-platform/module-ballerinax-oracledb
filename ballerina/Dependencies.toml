@@ -44,7 +44,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "crypto"
-version = "2.10.1"
+version = "2.12.1"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "time"}
@@ -414,7 +414,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "cdc"
-version = "1.3.2"
+version = "1.4.0"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "data.jsondata"},
@@ -430,7 +430,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "oracledb"
-version = "1.16.1"
+version = "1.17.0"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "file"},
