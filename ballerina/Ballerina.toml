@@ -1,7 +1,7 @@
 [package]
 org = "ballerinax"
 name = "oracledb"
-version = "1.16.1"
+version = "1.17.0"
 authors = ["Ballerina"]
 keywords = ["Client", "Network", "SQL", "RDBMS", "OracleDB", "Vendor/Oracle", "Area/Database", "Type/Connector"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-oracledb"
@@ -9,12 +9,12 @@ icon = "icon.png"
 license = ["Apache-2.0"]
 distribution = "2201.13.1"
 
-# Local testing: until cdc 1.3.2 (Debezium 3.5.1) is published to Ballerina Central, consume it
-# from the local repository (`bal push --repository=local`). Remove once 1.3.2 is released.
+# Local testing: until cdc 1.4.0 (Debezium 3.5.1) is published to Ballerina Central, consume it
+# from the local repository (`bal push --repository=local`). Remove once 1.4.0 is released.
 [[dependency]]
 org = "ballerinax"
 name = "cdc"
-version = "1.3.2"
+version = "1.4.0"
 repository = "local"
 
 [platform.java21]
@@ -23,8 +23,8 @@ graalvmCompatible = true
 [[platform.java21.dependency]]
 groupId = "io.ballerina.stdlib"
 artifactId = "oracledb-native"
-version = "1.16.1"
-path = "../native/build/libs/oracledb-native-1.16.1-SNAPSHOT.jar"
+version = "1.17.0"
+path = "../native/build/libs/oracledb-native-1.17.0-SNAPSHOT.jar"
 
 [[platform.java21.dependency]]
 groupId = "io.ballerina.stdlib"
