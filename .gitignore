@@ -56,3 +56,6 @@ lib/
 #Examples
 examples/**/Dependencies.toml
 examples/**/Config.toml
+
+# CDC offset/storage files
+*.dat

@@ -26,6 +26,7 @@ The OracleDB library specification has evolved and may continue to evolve in the
 4. [Database operations](#4-database-operations)
 5. [Observability](#5-observability)
    - [5.1. Metric tags](#51-metric-tags)
+6. [Change Data Capture (CDC) Listener](#6-change-data-capture-cdc-listener)
 
 # 1. Overview
 
@@ -147,3 +148,61 @@ The OracleDB module sets the following metric tags on every connection pool it c
 | `db_host` | `host` parameter | Yes | Hostname of the MySQL server (defaults to `"localhost"`) |
 | `db_port` | `port` parameter | Yes | Port number of the MySQL server (defaults to `3306`) |
 | `db_name` | `database` parameter | No | Database name; omitted when `database` is `nil` or empty |
+
+# 6. Change Data Capture (CDC) Listener
+
+The OracleDB module exposes a `CdcListener` that streams row-level INSERT / UPDATE / DELETE / TRUNCATE events from an Oracle database. It is built on top of the [`ballerinax/cdc`](https://central.ballerina.io/ballerinax/cdc/latest) module, which embeds the Debezium engine, and uses Oracle [LogMiner](https://debezium.io/documentation/reference/3.0/connectors/oracle.html) as the change-capture mechanism. Both connector-buffered (`LOGMINER`) and database-buffered (`LOGMINER_UNBUFFERED`) modes are supported. Other adapters (OpenLogReplicator, XStream) and non-memory transaction buffers (Infinispan, Ehcache) are out of scope in this version.
+
+The listener and its native dependencies (Debezium Oracle connector, Oracle JDBC driver) are pulled in through the companion driver package `ballerinax/oracledb.cdc.driver`. Import it once anywhere in your project to wire the JARs onto the runtime classpath.
+
+## 6.1. Listener configuration
+
+Listener configuration is supplied via `oracledb:OracleListenerConfiguration`, which composes:
+
+- `database: OracleDatabaseConnection` — connection settings (CDB / PDB names, hostname / port or full JDBC `url`, RAC nodes, adapter, schema / table / column filters, LogMiner tunables, and JDBC driver pass-through for TCPS / Oracle Wallet / mTLS).
+- `options: OracleOptions` — Oracle CDC behavior (LOB capture, JDBC fetch size, streaming delay, interval handling, configuration-based snapshots) plus the common `cdc:Options` fields (snapshot mode, decimal handling, signaling, etc.).
+- The base `cdc:ListenerConfiguration` fields — `engineName`, `internalSchemaStorage`, `offsetStorage`, `livenessInterval`.
+
+When `url` is set on the database connection, `hostname`, `port`, `databaseName`, and `racNodes` are silently ignored — use a TNS / SCAN / TCPS descriptor for advanced setups. When `databaseName` and `url` are both unset, listener initialization fails with a `cdc:Error`.
+
+## 6.2. Example
+
+```ballerina
+import ballerinax/cdc;
+import ballerinax/oracledb;
+import ballerinax/oracledb.cdc.driver as _;
+
+listener oracledb:CdcListener orderListener = new (
+    database = {
+        username: "scott",
+        password: "tiger",
+        databaseName: "ORCLCDB",
+        pdbName: "ORCLPDB1",
+        includedTables: "SCOTT\\.ORDERS"
+    },
+    options = {
+        snapshotMode: cdc:NO_DATA
+    }
+);
+
+service cdc:Service on orderListener {
+    isolated remote function onCreate(record {} after, string tableName) returns error? { }
+    isolated remote function onUpdate(record {} before, record {} after, string tableName) returns error? { }
+    isolated remote function onDelete(record {} before, string tableName) returns error? { }
+    isolated remote function onTruncate(string tableName) returns error? { }
+    isolated remote function onError(cdc:Error e) { }
+}
+```
+
+See the `examples/cdc-basic` and `examples/cdc-tcps-wallet` directories for runnable variants — one for plain hostname / port connections, the other for TCPS + Oracle Wallet with mTLS.
+
+## 6.3. Validation
+
+`CdcListener.init` rejects configurations that Debezium would otherwise reject at runtime:
+
+- `database.databaseName` and `database.url` cannot both be unset.
+- The include / exclude pairs (`schemas`, `tables`, `columns`, LogMiner `usernames` and `clientIds`) are mutually exclusive.
+- `logMinerConfig.strategy = HYBRID` is incompatible with `options.lobEnabled = true`; LOB capture requires `ONLINE_CATALOG` or `REDO_LOG_CATALOG`.
+- `snapshotMode = CUSTOM`, `extendedSnapshot.lockingMode = CUSTOM`, and `extendedSnapshot.queryMode = CUSTOM` are rejected because the Java SPI hooks they reference are not surfaced in this version.
+
+For the full list of Debezium properties that are settable through Ballerina, refer to the Oracle-specific records under `oracledb:OracleListenerConfiguration` and the shared types in [`cdc:Options`](https://central.ballerina.io/ballerinax/cdc/latest), [`cdc:OffsetStorage`](https://central.ballerina.io/ballerinax/cdc/latest), and [`cdc:InternalSchemaStorage`](https://central.ballerina.io/ballerinax/cdc/latest).
