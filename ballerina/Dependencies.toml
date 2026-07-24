@@ -80,7 +80,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "http"
-version = "2.16.4"
+version = "2.16.5"
 scope = "testOnly"
 dependencies = [
 	{org = "ballerina", name = "auth"},
