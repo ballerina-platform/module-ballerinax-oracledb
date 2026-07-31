@@ -9,14 +9,6 @@ icon = "icon.png"
 license = ["Apache-2.0"]
 distribution = "2201.13.1"
 
-# Local testing: until cdc 1.4.0 (Debezium 3.5.1) is published to Ballerina Central, consume it
-# from the local repository (`bal push --repository=local`). Remove once 1.4.0 is released.
-[[dependency]]
-org = "ballerinax"
-name = "cdc"
-version = "1.4.0"
-repository = "local"
-
 [platform.java21]
 graalvmCompatible = true
 
