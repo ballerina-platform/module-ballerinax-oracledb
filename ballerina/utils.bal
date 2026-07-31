@@ -32,6 +32,7 @@ const string SCHEMA_EXCLUDE_LIST = "schema.exclude.list";
 
 // LogMiner
 const string LOG_MINING_STRATEGY = "log.mining.strategy";
+const string LOG_MINING_INCLUDE_REDO_SQL = "log.mining.include.redo.sql";
 const string LOG_MINING_QUERY_FILTER_MODE = "log.mining.query.filter.mode";
 const string LOG_MINING_READONLY_HOSTNAME = "log.mining.readonly.hostname";
 const string LOG_MINING_FLUSH_TABLE_NAME = "log.mining.flush.table.name";
@@ -183,6 +184,7 @@ isolated function populateSchemaConfigurations(OracleDatabaseConnection connecti
 
 isolated function populateLogMinerProperties(LogMinerConfiguration config, map<string> debeziumConfigs) {
     debeziumConfigs[LOG_MINING_STRATEGY] = config.strategy;
+    debeziumConfigs[LOG_MINING_INCLUDE_REDO_SQL] = (config.strategy == REDO_LOG_CATALOG).toString();
     debeziumConfigs[LOG_MINING_QUERY_FILTER_MODE] = config.queryFilterMode;
     string? readOnlyHostname = config?.readOnlyHostname;
     if readOnlyHostname is string {

@@ -163,7 +163,7 @@ Listener configuration is supplied via `oracledb:OracleListenerConfiguration`, w
 - `options: OracleOptions` — Oracle CDC behavior (LOB capture, JDBC fetch size, streaming delay, interval handling, configuration-based snapshots) plus the common `cdc:Options` fields (snapshot mode, decimal handling, signaling, etc.).
 - The base `cdc:ListenerConfiguration` fields — `engineName`, `internalSchemaStorage`, `offsetStorage`, `livenessInterval`.
 
-When `url` is set on the database connection, `hostname`, `port`, `databaseName`, and `racNodes` are silently ignored — use a TNS / SCAN / TCPS descriptor for advanced setups. When `databaseName` and `url` are both unset, listener initialization fails with a `cdc:Error`.
+When `url` is set on the database connection, `hostname` and `port` are silently ignored; `databaseName` and `racNodes` are still emitted. Use a TNS / SCAN / TCPS descriptor for advanced setups. When `databaseName` and `url` are both unset, listener initialization fails with a `cdc:Error`.
 
 ## 6.2. Example
 

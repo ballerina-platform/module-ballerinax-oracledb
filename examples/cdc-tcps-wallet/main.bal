@@ -22,6 +22,7 @@ import ballerinax/oracledb.cdc.driver as _;
 
 configurable string username = os:getEnv("DB_USERNAME");
 configurable string password = os:getEnv("DB_PASSWORD");
+configurable string walletLocation = "./wallet";
 
 // Full TNS connect string pointing at a TCPS (mTLS) listener. Must target the root container's
 // service (not the PDB's service) — LogMiner (DBMS_LOGMNR) can only be driven from the CDB root;
@@ -38,12 +39,7 @@ listener oracledb:CdcListener secureListener = new (
         pdbName: "FREEPDB1",
         url: tcpsUrl,
         driverConfig: {
-            mtls: {
-                trustStore: {
-                    path: "/private/tmp/claude-501/-Users-gayaldassanayake-Documents-event-integration-cdc-repos/8c70e7c4-c5ab-492f-9f08-5c282733cc4f/scratchpad/oracle-tcps/server-truststore.jks",
-                    password: "changeit"
-                }
-            },
+            mtls: walletLocation,
             // Set to false when the Oracle JDBC driver complains with ORA-01882
             // ("timezone region not found") because the client OS timezone is
             // not registered in v$timezone_names.

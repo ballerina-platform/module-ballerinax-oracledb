@@ -210,7 +210,7 @@ function testLogMinerBufferEmitsMemoryType() {
     test:assertEquals(configs["log.mining.buffer.type"], "memory");
     test:assertEquals(configs["log.mining.buffer.track.rs_id"], "false");
     test:assertEquals(configs["log.mining.buffer.transaction.events.threshold"], "1000");
-    test:assertEquals(configs["log.mining.buffer.drop.on.stop"], "true");
+    test:assertEquals(configs["log.mining.include.redo.sql"], "false");
 }
 
 @test:Config {groups: [CDC_GROUP]}
