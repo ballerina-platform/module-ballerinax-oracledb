@@ -1,0 +1,4 @@
+[package]
+org = "oracledb"
+name = "cdc_basic"
+version = "0.1.0"
