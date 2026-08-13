@@ -78,11 +78,15 @@ and datafile paths with values for your environment.
    STARTUP MOUNT;
    ALTER DATABASE ARCHIVELOG;
    ALTER DATABASE OPEN;
+   ALTER PLUGGABLE DATABASE FREEPDB1 OPEN;
+   ALTER PLUGGABLE DATABASE FREEPDB1 SAVE STATE;
 
    ARCHIVE LOG LIST;
    ```
 
-   Verify that `ARCHIVE LOG LIST` reports `Database log mode: Archive Mode`.
+   The `ALTER PLUGGABLE DATABASE` statements apply only to multitenant databases; omit them for a non-container database.
+   If the PDB is already open, omit the `OPEN` statement and run only `SAVE STATE`. Verify that `ARCHIVE LOG LIST` reports
+   `Database log mode: Archive Mode`.
 
 2. Enable minimal supplemental logging at the database level.
 
@@ -90,16 +94,17 @@ and datafile paths with values for your environment.
    ALTER DATABASE ADD SUPPLEMENTAL LOG DATA;
    ```
 
-3. Enable all-column supplemental logging for every table that the listener captures. Run this command in the PDB that
-   owns the table. Enabling it only on captured tables limits the additional redo-log volume.
+3. For a multitenant database, enable all-column supplemental logging for every table that the listener captures. Run
+   this command in the PDB that owns the table. Enabling it only on captured tables limits the additional redo-log
+   volume.
 
    ```sql
    ALTER SESSION SET CONTAINER = FREEPDB1;
    ALTER TABLE SCOTT.ORDERS ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;
    ```
 
-4. Create a LogMiner tablespace in both the root container and the PDB. Adjust the datafile paths for your Oracle
-   installation.
+4. For a multitenant database, create a LogMiner tablespace in both the root container and the PDB. Adjust the datafile
+   paths for your Oracle installation.
 
    ```sql
    ALTER SESSION SET CONTAINER = CDB$ROOT;
@@ -113,8 +118,8 @@ and datafile paths with values for your environment.
        SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
    ```
 
-5. Return to the root container, create the common CDC user, and grant the privileges required by LogMiner and the
-   initial snapshot process.
+5. For a multitenant database, return to the root container, create the common CDC user, and grant the privileges
+   required by LogMiner and the initial snapshot process.
 
    ```sql
    ALTER SESSION SET CONTAINER = CDB$ROOT;
@@ -158,9 +163,52 @@ and datafile paths with values for your environment.
    tablespace quota allow it to create and update this table. On Oracle versions that do not provide the `LOGMINING`
    role, omit that grant; the explicit `DBMS_LOGMNR` and dynamic performance view grants provide the required access.
 
-For non-container databases, create a regular user instead of a common `c##` user and omit `SET CONTAINER` and the
-`CONTAINER=ALL` clauses. For Oracle on Amazon RDS, use the RDS-specific archive logging and supplemental logging
-procedures described in the
+##### Non-container database setup
+
+For a non-container database, run steps 1 and 2 without the PDB statements, then configure the captured tables,
+tablespace, regular CDC user, and grants directly in that database:
+
+```sql
+ALTER TABLE SCOTT.ORDERS ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;
+
+CREATE TABLESPACE logminer_tbs
+    DATAFILE '<datafile_path>/logminer_tbs.dbf'
+    SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+
+CREATE USER dbzuser IDENTIFIED BY <cdc_password>
+    DEFAULT TABLESPACE logminer_tbs
+    QUOTA UNLIMITED ON logminer_tbs;
+
+GRANT CREATE SESSION TO dbzuser;
+GRANT SELECT ON V_$DATABASE TO dbzuser;
+GRANT FLASHBACK ANY TABLE TO dbzuser;
+GRANT SELECT ANY TABLE TO dbzuser;
+GRANT SELECT_CATALOG_ROLE TO dbzuser;
+GRANT EXECUTE_CATALOG_ROLE TO dbzuser;
+GRANT SELECT ANY TRANSACTION TO dbzuser;
+GRANT LOGMINING TO dbzuser;
+
+GRANT CREATE TABLE TO dbzuser;
+GRANT LOCK ANY TABLE TO dbzuser;
+GRANT CREATE SEQUENCE TO dbzuser;
+
+GRANT EXECUTE ON DBMS_LOGMNR TO dbzuser;
+GRANT EXECUTE ON DBMS_LOGMNR_D TO dbzuser;
+
+GRANT SELECT ON V_$LOG TO dbzuser;
+GRANT SELECT ON V_$LOG_HISTORY TO dbzuser;
+GRANT SELECT ON V_$LOGMNR_LOGS TO dbzuser;
+GRANT SELECT ON V_$LOGMNR_CONTENTS TO dbzuser;
+GRANT SELECT ON V_$LOGMNR_PARAMETERS TO dbzuser;
+GRANT SELECT ON V_$LOGFILE TO dbzuser;
+GRANT SELECT ON V_$ARCHIVED_LOG TO dbzuser;
+GRANT SELECT ON V_$ARCHIVE_DEST_STATUS TO dbzuser;
+GRANT SELECT ON V_$TRANSACTION TO dbzuser;
+GRANT SELECT ON V_$MYSTAT TO dbzuser;
+GRANT SELECT ON V_$STATNAME TO dbzuser;
+```
+
+For Oracle on Amazon RDS, use the RDS-specific archive logging and supplemental logging procedures described in the
 [Debezium Oracle connector setup guide](https://debezium.io/documentation/reference/3.0/connectors/oracle.html#setting-up-oracle).
 
 ### Client
@@ -699,7 +747,7 @@ expression that limits the tables captured by the listener.
 #### Implement a service to handle CDC events
 
 Attach a `cdc:Service` to react to the captured changes. The listener supports callbacks such as `onRead`, `onCreate`,
-`onUpdate`, `onDelete`, `onTruncate`, and `onError`.
+`onUpdate`, `onDelete`, and `onError`.
 
 ```ballerina
 service cdc:Service on orderListener {
