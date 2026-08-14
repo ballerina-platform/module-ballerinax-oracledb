@@ -7,6 +7,7 @@ This module provides the functionality required to access and manipulate data st
 - Reliable and high-performance database connectivity
 - Support for common SQL operations (Query, Execute, Batch)
 - Efficient connection pooling and resource management
+- Support for Change Data Capture (CDC) using Oracle LogMiner
 - Support for OracleDB-specific data types (INTERVAL, VARRAY)
 - Secure communication with SSL and authentication
 - GraalVM compatible for native image builds
@@ -51,6 +52,164 @@ Follow one of the following ways to add the JARs in the file:
     artifactId = "xmlparserv2"
     version = "12.2.0.1"
     ```
+
+### Setup guide
+
+#### Change Data Capture
+
+The Oracle CDC listener uses LogMiner to read changes from the database transaction logs. The following example prepares
+a multitenant Oracle database with a root container named `FREE`, a pluggable database named `FREEPDB1`, and a common CDC
+user named `c##dbzuser`. Run these commands as a database administrator and replace the example passwords, database names,
+and datafile paths with values for your environment.
+
+> **Note**: Enabling archive logging requires a database restart. Coordinate this operation with your database
+> administrator before applying it to an existing environment.
+
+1. Connect to the root container as `SYSDBA`, configure an archive-log destination, and enable archive logging. Skip the
+   `ALTER SYSTEM` statements if a recovery area or another local archive-log destination is already configured.
+
+   ```sql
+   sqlplus sys/<sys_password>@//localhost:1521/FREE as sysdba
+
+   ALTER SYSTEM SET db_recovery_file_dest_size = 10G;
+   ALTER SYSTEM SET db_recovery_file_dest = '<recovery_area_path>' SCOPE=SPFILE;
+
+   SHUTDOWN IMMEDIATE;
+   STARTUP MOUNT;
+   ALTER DATABASE ARCHIVELOG;
+   ALTER DATABASE OPEN;
+   ALTER PLUGGABLE DATABASE FREEPDB1 OPEN;
+   ALTER PLUGGABLE DATABASE FREEPDB1 SAVE STATE;
+
+   ARCHIVE LOG LIST;
+   ```
+
+   The `ALTER PLUGGABLE DATABASE` statements apply only to multitenant databases; omit them for a non-container database.
+   If the PDB is already open, omit the `OPEN` statement and run only `SAVE STATE`. Verify that `ARCHIVE LOG LIST` reports
+   `Database log mode: Archive Mode`.
+
+2. Enable minimal supplemental logging at the database level.
+
+   ```sql
+   ALTER DATABASE ADD SUPPLEMENTAL LOG DATA;
+   ```
+
+3. For a multitenant database, enable all-column supplemental logging for every table that the listener captures. Run
+   this command in the PDB that owns the table. Enabling it only on captured tables limits the additional redo-log
+   volume.
+
+   ```sql
+   ALTER SESSION SET CONTAINER = FREEPDB1;
+   ALTER TABLE SCOTT.ORDERS ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;
+   ```
+
+4. For a multitenant database, create a LogMiner tablespace in both the root container and the PDB. Adjust the datafile
+   paths for your Oracle installation.
+
+   ```sql
+   ALTER SESSION SET CONTAINER = CDB$ROOT;
+   CREATE TABLESPACE logminer_tbs
+       DATAFILE '<root_datafile_path>/logminer_tbs.dbf'
+       SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+
+   ALTER SESSION SET CONTAINER = FREEPDB1;
+   CREATE TABLESPACE logminer_tbs
+       DATAFILE '<pdb_datafile_path>/logminer_tbs.dbf'
+       SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+   ```
+
+5. For a multitenant database, return to the root container, create the common CDC user, and grant the privileges
+   required by LogMiner and the initial snapshot process.
+
+   ```sql
+   ALTER SESSION SET CONTAINER = CDB$ROOT;
+
+   CREATE USER c##dbzuser IDENTIFIED BY <cdc_password>
+       DEFAULT TABLESPACE logminer_tbs
+       QUOTA UNLIMITED ON logminer_tbs
+       CONTAINER=ALL;
+
+   GRANT CREATE SESSION TO c##dbzuser CONTAINER=ALL;
+   GRANT SET CONTAINER TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ON V_$DATABASE TO c##dbzuser CONTAINER=ALL;
+   GRANT FLASHBACK ANY TABLE TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ANY TABLE TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT_CATALOG_ROLE TO c##dbzuser CONTAINER=ALL;
+   GRANT EXECUTE_CATALOG_ROLE TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ANY TRANSACTION TO c##dbzuser CONTAINER=ALL;
+   GRANT LOGMINING TO c##dbzuser CONTAINER=ALL;
+
+   GRANT CREATE TABLE TO c##dbzuser CONTAINER=ALL;
+   GRANT LOCK ANY TABLE TO c##dbzuser CONTAINER=ALL;
+   GRANT CREATE SEQUENCE TO c##dbzuser CONTAINER=ALL;
+
+   GRANT EXECUTE ON DBMS_LOGMNR TO c##dbzuser CONTAINER=ALL;
+   GRANT EXECUTE ON DBMS_LOGMNR_D TO c##dbzuser CONTAINER=ALL;
+
+   GRANT SELECT ON V_$LOG TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ON V_$LOG_HISTORY TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ON V_$LOGMNR_LOGS TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ON V_$LOGMNR_CONTENTS TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ON V_$LOGMNR_PARAMETERS TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ON V_$LOGFILE TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ON V_$ARCHIVED_LOG TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ON V_$ARCHIVE_DEST_STATUS TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ON V_$TRANSACTION TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ON V_$MYSTAT TO c##dbzuser CONTAINER=ALL;
+   GRANT SELECT ON V_$STATNAME TO c##dbzuser CONTAINER=ALL;
+   ```
+
+   The listener creates the `LOG_MINING_FLUSH` table in `logminer_tbs` when it starts. The `CREATE TABLE` grant and the
+   tablespace quota allow it to create and update this table. On Oracle versions that do not provide the `LOGMINING`
+   role, omit that grant; the explicit `DBMS_LOGMNR` and dynamic performance view grants provide the required access.
+
+##### Non-container database setup
+
+For a non-container database, run steps 1 and 2 without the PDB statements, then configure the captured tables,
+tablespace, regular CDC user, and grants directly in that database:
+
+```sql
+ALTER TABLE SCOTT.ORDERS ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;
+
+CREATE TABLESPACE logminer_tbs
+    DATAFILE '<datafile_path>/logminer_tbs.dbf'
+    SIZE 25M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+
+CREATE USER dbzuser IDENTIFIED BY <cdc_password>
+    DEFAULT TABLESPACE logminer_tbs
+    QUOTA UNLIMITED ON logminer_tbs;
+
+GRANT CREATE SESSION TO dbzuser;
+GRANT SELECT ON V_$DATABASE TO dbzuser;
+GRANT FLASHBACK ANY TABLE TO dbzuser;
+GRANT SELECT ANY TABLE TO dbzuser;
+GRANT SELECT_CATALOG_ROLE TO dbzuser;
+GRANT EXECUTE_CATALOG_ROLE TO dbzuser;
+GRANT SELECT ANY TRANSACTION TO dbzuser;
+GRANT LOGMINING TO dbzuser;
+
+GRANT CREATE TABLE TO dbzuser;
+GRANT LOCK ANY TABLE TO dbzuser;
+GRANT CREATE SEQUENCE TO dbzuser;
+
+GRANT EXECUTE ON DBMS_LOGMNR TO dbzuser;
+GRANT EXECUTE ON DBMS_LOGMNR_D TO dbzuser;
+
+GRANT SELECT ON V_$LOG TO dbzuser;
+GRANT SELECT ON V_$LOG_HISTORY TO dbzuser;
+GRANT SELECT ON V_$LOGMNR_LOGS TO dbzuser;
+GRANT SELECT ON V_$LOGMNR_CONTENTS TO dbzuser;
+GRANT SELECT ON V_$LOGMNR_PARAMETERS TO dbzuser;
+GRANT SELECT ON V_$LOGFILE TO dbzuser;
+GRANT SELECT ON V_$ARCHIVED_LOG TO dbzuser;
+GRANT SELECT ON V_$ARCHIVE_DEST_STATUS TO dbzuser;
+GRANT SELECT ON V_$TRANSACTION TO dbzuser;
+GRANT SELECT ON V_$MYSTAT TO dbzuser;
+GRANT SELECT ON V_$STATNAME TO dbzuser;
+```
+
+For Oracle on Amazon RDS, use the RDS-specific archive logging and supplemental logging procedures described in the
+[Debezium Oracle connector setup guide](https://debezium.io/documentation/reference/3.0/connectors/oracle.html#setting-up-oracle).
 
 ### Client
 To access a database, you must first create an
@@ -549,6 +708,73 @@ In Ballerina, `oracledb:Varray` can be used to pass values for `VARRAY` data typ
 string?[] charArray = [null, "Hello", "World"];
 Varray charVarray = { name:"CharArrayType", elements: charArray };
 ```
+
+### Change Data Capture Listener
+
+To listen for change data capture (CDC) events from an Oracle database, create an
+[`oracledb:CdcListener`](https://docs.central.ballerina.io/ballerinax/oracledb/latest#CdcListener). The listener uses
+Oracle LogMiner to emit events for inserts, updates, deletes, and table truncations.
+
+#### Create a listener
+
+Import the `ballerinax/oracledb.cdc.driver` package once in the application to add the Debezium Oracle connector and
+Oracle JDBC driver JARs to the runtime classpath. Then create the listener with the CDC user's credentials and database
+details.
+
+```ballerina
+import ballerinax/cdc;
+import ballerinax/oracledb;
+import ballerinax/oracledb.cdc.driver as _;
+
+listener oracledb:CdcListener orderListener = new (
+    database = {
+        username: "c##dbzuser",
+        password: "<cdc_password>",
+        databaseName: "FREE",
+        pdbName: "FREEPDB1",
+        includedTables: "SCOTT\\.ORDERS"
+    },
+    options = {
+        snapshotMode: cdc:NO_DATA
+    }
+);
+```
+
+`databaseName` identifies the root container database (CDB), which LogMiner connects to. Set `pdbName` when capturing
+changes from a pluggable database (PDB); omit it for a non-container database. The `includedTables` value is a regular
+expression that limits the tables captured by the listener.
+
+#### Implement a service to handle CDC events
+
+Attach a `cdc:Service` to react to the captured changes. The listener supports callbacks such as `onRead`, `onCreate`,
+`onUpdate`, `onDelete`, and `onError`.
+
+```ballerina
+service cdc:Service on orderListener {
+    isolated remote function onCreate(record {} after, string tableName) returns error? {
+        // Handle the inserted record.
+    }
+
+    isolated remote function onUpdate(record {} before, record {} after, string tableName) returns error? {
+        // Handle the record before and after the update.
+    }
+
+    isolated remote function onDelete(record {} before, string tableName) returns error? {
+        // Handle the deleted record.
+    }
+
+    isolated remote function onError(cdc:Error err) {
+        // Handle listener errors.
+    }
+}
+```
+
+The listener also supports Oracle-specific LogMiner, snapshot, LOB, data type, RAC, and secure connection options. See
+the [`oracledb:OracleListenerConfiguration`](https://docs.central.ballerina.io/ballerinax/oracledb/latest#OracleListenerConfiguration)
+API documentation and the runnable
+[`cdc-basic`](https://github.com/ballerina-platform/module-ballerinax-oracledb/tree/main/examples/cdc-basic) and
+[`cdc-tcps-wallet`](https://github.com/ballerina-platform/module-ballerinax-oracledb/tree/main/examples/cdc-tcps-wallet)
+examples for additional configurations.
 
 >**Note**: The default thread pool size used in Ballerina is: `the number of processors available * 2`. You can configure the thread pool size by using the `BALLERINA_MAX_POOL_SIZE` environment variable.
 
