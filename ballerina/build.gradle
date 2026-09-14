@@ -16,12 +16,21 @@
  */
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.process.ExecOperations
+
+import javax.inject.Inject
+
+abstract class BallerinaExecHelper {
+    @Inject abstract ExecOperations getExecOperations()
+}
 
 plugins {
     id 'io.ballerina.plugin'
 }
 
 description = 'Ballerina - Oracle DB Ballerina Generator'
+
+def execHelper = project.objects.newInstance(BallerinaExecHelper)
 
 def packageName = 'oracledb'
 def packageOrg = 'ballerinax'
@@ -76,7 +85,7 @@ task updateTomlFiles {
 
 task commitTomlFiles {
     doLast {
-        project.exec {
+        execHelper.execOperations.exec {
             ignoreExitValue true
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 commandLine 'cmd', '/c', "git commit -m \"[Automated] Update the native jar versions\" Ballerina.toml Dependencies.toml CompilerPlugin.toml"
@@ -140,7 +149,7 @@ def waitForContainerHealth(containerName) {
             def cmd = !Os.isFamily(Os.FAMILY_WINDOWS) ?
                     ['sh', '-c', "docker inspect --format='{{json .State.Health.Status}}' ${containerName}"] :
                     ['cmd', '/c', "docker inspect --format=\"{{json .State.Health.Status}}\" ${containerName}"]
-            exec {
+            execHelper.execOperations.exec {
                 commandLine cmd
                 standardOutput = output
             }
@@ -169,7 +178,7 @@ def initializeDatabase(containerName) {
         def cmd = Os.isFamily(Os.FAMILY_WINDOWS) ?
                 ['cmd', '/c', "docker exec ${containerName} /bin/bash -c 'cd /home/oracle && source .bashrc; sh ./sql-scripts/run-sql-scripts.sh'"] :
                 ['sh', '-c', "docker exec ${containerName} /bin/bash -c 'cd /home/oracle && source .bashrc; sh ./sql-scripts/run-sql-scripts.sh'"]
-        temp = exec {
+        temp = execHelper.execOperations.exec {
             commandLine cmd ?: []
         }.exitValue
         return temp
@@ -183,7 +192,7 @@ def startDockerContainer(containerName, port, sslPort) {
     def cmd = !Os.isFamily(Os.FAMILY_WINDOWS) ?
             ['sh', '-c', "docker run --rm -d --name ${containerName} -p ${port}:1521 -p ${sslPort}:2484 -t ballerina-oracledb"] :
             ['cmd', '/c', "docker run --rm -d --name ${containerName} -p ${port}:1521 -p ${sslPort}:2484 -t ballerina-oracledb"]
-    exec {
+    execHelper.execOperations.exec {
         commandLine cmd ?: []
     }
     def healthCheck = waitForContainerHealth(containerName)
@@ -211,7 +220,7 @@ def stopTestDockerContainer(containerName) {
         def cmd = !Os.isFamily(Os.FAMILY_WINDOWS) ?
                 ['sh', '-c', "docker stop ${containerName}"] :
                 ['cmd', '/c', "docker stop ${containerName}"]
-        exec {
+        execHelper.execOperations.exec {
             commandLine cmd
             standardOutput = stdOut
         }
