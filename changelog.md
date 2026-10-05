@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Added Change Data Capture (CDC) listener support for Oracle databases via the Debezium LogMiner adapter](https://github.com/ballerina-platform/ballerina-library/issues/8802)
 - Support for Oracle AI Database 26ai (and 23ai) in the CDC listener by upgrading the bundled Debezium connector to 3.5.1.Final.
 
+### Fixed
+- [Bump `ballerinax/cdc` to 1.4.1 to resolve CVE-2026-91776 and related `jackson-databind` vulnerabilities](https://github.com/ballerina-platform/ballerina-library/issues/9249)
+
 ## [1.16.0]
 
 ### Added
