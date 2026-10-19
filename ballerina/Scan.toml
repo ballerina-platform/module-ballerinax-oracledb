@@ -1,0 +1,7 @@
+# bal scan rules excluded for this package (false positives):
+# - ballerina:13 flags private string constants in utils.bal whose names contain "PASSWORD". They are only the
+#   names of driver/connector property keys (e.g. "driver.javax.net.ssl.keyStorePassword"), not secret values.
+# - ballerina:14 flags the public `Client.init` parameter `string? password = ()`. The default is nil
+#   (no password), not a secret value, and changing the signature would break the public API.
+[rule]
+exclude = ["ballerina:13", "ballerina:14"]
