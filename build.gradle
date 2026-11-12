@@ -17,7 +17,7 @@
 
 plugins {
     id "com.github.spotbugs"
-    id "com.github.johnrengelman.shadow"
+    id "com.gradleup.shadow"
     id "de.undercouch.download"
     id "net.researchgate.release"
 }
@@ -103,6 +103,7 @@ subprojects {
         ballerinaStdLibs "io.ballerina.stdlib:observe-ballerina:${observeVersion}"
         ballerinaStdLibs "io.ballerina:observe-ballerina:${observeInternalVersion}"
         ballerinaStdLibs "io.ballerina.stdlib:oracledb.driver-ballerina:${stdlibOracledbDriverVersion}"
+        ballerinaStdLibs "io.ballerina.lib:cdc-ballerina:${stdlibCdcVersion}"
         ballerinaStdLibs "io.ballerina.lib:data.jsondata-ballerina:${stdlibDataJsonDataVersion}"
     }
 }
@@ -123,12 +124,24 @@ release {
     }
 }
 
-task build {
-    dependsOn("${packageName}-native:build")
-    dependsOn("${packageName}-compiler-plugin:build")
-    dependsOn("${packageName}-ballerina:build")
-    dependsOn("${packageName}-compiler-plugin-tests:build")
-    dependsOn("${packageName}-examples:build")
+if (tasks.names.contains('build')) {
+    tasks.named('build') {
+        dependsOn("${packageName}-native:build")
+        dependsOn("${packageName}-compiler-plugin:build")
+        dependsOn("${packageName}-ballerina:build")
+        dependsOn("${packageName}-compiler-plugin-tests:build")
+        dependsOn("${packageName}-examples:build")
+
+    }
+} else {
+    tasks.register('build') {
+        dependsOn("${packageName}-native:build")
+        dependsOn("${packageName}-compiler-plugin:build")
+        dependsOn("${packageName}-ballerina:build")
+        dependsOn("${packageName}-compiler-plugin-tests:build")
+        dependsOn("${packageName}-examples:build")
+
+    }
 }
 
 publishToMavenLocal.dependsOn build
